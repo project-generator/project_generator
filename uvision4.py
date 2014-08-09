@@ -35,6 +35,15 @@ class Uvision4(Exporter):
                 group = k
                 self.expand_data(dic, expanded_data, attribute, group)
 
+    def parse_specific_options(self, data):
+        for dic in data['misc']:
+            for k,v in dic.items():
+                self.optimization(k,v,data)
+
+    def optimization(self, key, value, data):
+        if key == 'optimization_level':
+            data['optimization_level'] = int(value[0]) + 1
+
     def generate(self, data, ide):
         expanded_dic = data.copy();
         expanded_dic['source_files_c'] = []
@@ -46,6 +55,8 @@ class Uvision4(Exporter):
         self.iterate(data, expanded_dic, 'source_files_s')
         self.iterate(data, expanded_dic, 'source_files_obj')
         self.iterate(data, expanded_dic, 'source_files_lib')
+
+        self.parse_specific_options(expanded_dic)
 
         # Project file
         self.gen_file('uvision4_%s.uvproj.tmpl' % data['mcu'], expanded_dic, '%s.uvproj' % data['name'], ide)

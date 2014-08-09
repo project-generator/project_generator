@@ -15,14 +15,11 @@ from optparse import OptionParser
 import yaml
 import logging
 import os
-from yaml_parser import get_project_files, get_ide, YAML_parser
+from yaml_parser import get_project_files, YAML_parser
 from os.path import join
 import sys
 from os.path import basename
 from ide import export
-
-# TODO:
-# GCC support
 
 def run_generator(dic, project, ide):
     project_list = []
@@ -117,7 +114,6 @@ if __name__ == '__main__':
 
     # always run from the root directory
     script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
-    print script_dir
     # os.chdir(script_dir)
     # os.chdir('../')
 

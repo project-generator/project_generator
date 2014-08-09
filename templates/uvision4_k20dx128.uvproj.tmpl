@@ -333,7 +333,11 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
+            {%if optimization_level%}
+            <Optim>{{optimization_level}}</Optim>
+            {% else %}
             <Optim>1</Optim>
+            {% endif %}
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>

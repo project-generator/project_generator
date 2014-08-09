@@ -30,6 +30,7 @@ class YAML_parser():
             'source_files_lib': [],
             'symbols': [],
             'flags' : [],
+            'misc' : []
         }
 
     # returns updated data structure by virtual-folders
@@ -43,7 +44,7 @@ class YAML_parser():
         self.data['source_paths'] = get_source_paths(dic)
         #print self.data['include-paths']
 
-        group_name = get_group_name(dic)
+        group_name = _finditem(dic, 'group_name')
         self.data['source_files_c'] = {}
         self.data['source_files_c'][group_name] = {}
         self.data['source_files_cpp'] = {}
@@ -73,6 +74,8 @@ class YAML_parser():
             if "source_files" in k:
                 # source files have virtual dir
                 self.data[k][group_name] = v
+            elif "misc" in k:
+                self.data[k] = v
             else:
                 self.data[k] = v
 
@@ -97,13 +100,13 @@ class YAML_parser():
         for dic in project_list:
             name = _finditem(dic, 'name') #TODO fix naming
             if name:
-                self.data['name'] = name
+                self.data['name'] = name[0]
             mcu = _finditem(dic, 'mcu') #TODO fix naming
             if mcu:
-                self.data['mcu'] = mcu
+                self.data['mcu'] = mcu[0]
             ide = _finditem(dic, 'ide')
             if ide:
-                self.data['ide'] = ide
+                self.data['ide'] = ide[0]
             include_paths = get_include_paths(dic)
             if include_paths:
                 self.data['include_paths'].append(include_paths)
@@ -112,7 +115,7 @@ class YAML_parser():
                 self.data['source_paths'].append(source_paths)
             linker_file = _finditem(dic, 'linker_file')
             if linker_file:
-                self.data['linker_file'] = linker_file
+                self.data['linker_file'] = linker_file[0] #only one linker can be defined
             source_c = find_all_values(dic, 'source_files_c')
             if source_c:
                 self.data['source_files_c'].append(source_c)
@@ -135,8 +138,12 @@ class YAML_parser():
             flags = find_all_values(dic, 'flags')
             if flags:
                 self.data['flags'].append(flags)
+            misc = find_all_values(dic, 'misc')
+            if misc:
+                self.data['misc'].append(misc)
 
         self.data['flags'] = flatten(self.data['flags'])
+        self.data['tool_specific_options'] = flatten(self.data['misc'])
         self.data['symbols'] = flatten(self.data['symbols'])
         self.data['include_paths'] = flatten(self.data['include_paths'])
         self.data['source_paths'] = flatten(self.data['source_paths'])
@@ -198,14 +205,5 @@ def _finditem(obj, key):
             if item is not None:
                 return item
 
-def get_linker_file(dic):
-    return _finditem(dic, 'linker_file')
-
-def get_group_name(dic):
-    return _finditem(dic, 'group_name')
-
 def get_project_files(dic, name):
     return flatten(find_all_values(dic, name))
-
-def get_ide(dic):
-    return _finditem(dic, 'ide')
