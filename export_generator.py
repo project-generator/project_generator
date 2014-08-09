@@ -1,3 +1,16 @@
+# Copyright 2014 0xc0170
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Just a template for subclassing"""
 import uuid, shutil, os, logging, fnmatch
 from os.path import join, dirname, isdir, split
@@ -18,10 +31,13 @@ class Exporter():
         template = Template(template_text)
         target_text = template.render(data)
 
-        project_file_loc = 'project_files' + '/'+ data['name'] + '_' + ide
+        project_file_loc = ide + '_' + 'project_files' + '\\'
         if not os.path.exists(project_file_loc):
             os.makedirs(project_file_loc)
-        target_path = join(project_file_loc, target_file)
+        project_dir = project_file_loc + data['name']
+        if not os.path.exists(project_dir):
+            os.makedirs(project_dir)
+        target_path = join(project_dir, target_file)
         logging.debug("Generating: %s" % target_path)
         open(target_path, "w").write(target_text)
 

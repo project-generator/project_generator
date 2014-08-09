@@ -1,3 +1,16 @@
+# Copyright 2014 0xc0170
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 from compiler.ast import flatten
 
 class YAML_parser():
@@ -30,19 +43,19 @@ class YAML_parser():
         self.data['source_paths'] = get_source_paths(dic)
         #print self.data['include-paths']
 
-        virtual_dir = get_virtual_dir(dic)
+        group_name = get_group_name(dic)
         self.data['source_files_c'] = {}
-        self.data['source_files_c'][virtual_dir] = {}
+        self.data['source_files_c'][group_name] = {}
         self.data['source_files_cpp'] = {}
-        self.data['source_files_cpp'][virtual_dir] = {}
+        self.data['source_files_cpp'][group_name] = {}
         self.data['source_files_s'] = {}
-        self.data['source_files_s'][virtual_dir] = {}
+        self.data['source_files_s'][group_name] = {}
 
         # load all common attributes - source files
         common_attributes = find_all_values(dic, 'common')
         for common_attribute in common_attributes:
             for k,v in common_attribute.items():
-                self.data[k][virtual_dir] = v
+                self.data[k][group_name] = v
 
         #load all specific files
         specific_dic = {}
@@ -59,7 +72,7 @@ class YAML_parser():
         for k,v in specific_dic.items():
             if "source_files" in k:
                 # source files have virtual dir
-                self.data[k][virtual_dir] = v
+                self.data[k][group_name] = v
             else:
                 self.data[k] = v
 
@@ -136,11 +149,11 @@ def get_cc_flags(dic):
     return _finditem(dic, 'cc_flags')
 
 def get_project_name(dic):
-    return _finditem(dic, 'project_name')
+    return _finditem(dic, 'name')
 
 def get_project_name_list(dic_list):
     for dic in dic_list:
-        result = _finditem(dic, 'project_name')
+        result = _finditem(dic, 'name')
         # print result
         # print dic
         if result:
@@ -188,8 +201,8 @@ def _finditem(obj, key):
 def get_linker_file(dic):
     return _finditem(dic, 'linker_file')
 
-def get_virtual_dir(dic):
-    return _finditem(dic, 'virtual_dir')
+def get_group_name(dic):
+    return _finditem(dic, 'group_name')
 
 def get_project_files(dic, name):
     return flatten(find_all_values(dic, name))
