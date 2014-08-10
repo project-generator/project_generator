@@ -32,30 +32,78 @@ class YAML_parser():
             'misc' : []
         }
 
+    def process_files(self, source_list, group_name):
+        # print source_list
+        for source_file in source_list:
+            extension = source_file.split(".")[-1]
+            if extension == 'c':
+                 self.data['source_files_c'][group_name].append(source_file)
+            elif extension == 's':
+                self.data['source_files_s'][group_name].append(source_file)
+            elif extension == 'cpp':
+                self.data['source_files_cpp'][group_name].append(source_file)
+
+    def find_group_name(self, common_attributes):
+        group_name = None
+        for common_attribute in common_attributes:
+            if common_attribute:
+                try:
+                    for k,v in common_attribute.items():
+                        # print k
+                        if k == 'group_name':
+                            # print k,v
+                            group_name = v
+                except:
+                    continue
+        self.data['source_files_c'] = {}
+        self.data['source_files_c'][group_name] = []
+        self.data['source_files_cpp'] = {}
+        self.data['source_files_cpp'][group_name] = []
+        self.data['source_files_s'] = {}
+        self.data['source_files_s'][group_name] = []
+        return group_name
+
+    def find_paths(self, common_attributes):
+        include_paths = []
+        source_paths = []
+        for common_attribute in common_attributes:
+            if common_attribute:
+                try:
+                    for k,v in common_attribute.items():
+                        if k == 'paths':
+                            for key,value in v.items():
+                                if key == 'source_paths':
+                                    source_paths.append(value)
+                                elif key == 'include_paths':
+                                    include_paths.append(value)
+                except:
+                    continue
+        self.data['source_paths'] = source_paths;
+        self.data['include_paths'] = include_paths;
+
+    def find_source_files(self, common_attributes, group_name):
+        for common_attribute in common_attributes:
+            if common_attribute:
+                try:
+                    for k,v in common_attribute.items():
+                        if k == 'source_files':
+                            # print v
+                            # print group_name, v
+                            self.process_files(v, group_name)
+                except:
+                    continue
+
     # returns updated data structure by virtual-folders
     def parse_yaml(self, dic, ide):
-        #print '\n'
-        # get name
         self.data['name'] = get_project_name(dic)
-        #print self.data['name']
-        # get include paths
-        self.data['include_paths'] = get_include_paths(dic)
-        self.data['source_paths'] = get_source_paths(dic)
-        #print self.data['include-paths']
 
-        group_name = _finditem(dic, 'group_name')
-        self.data['source_files_c'] = {}
-        self.data['source_files_c'][group_name] = {}
-        self.data['source_files_cpp'] = {}
-        self.data['source_files_cpp'][group_name] = {}
-        self.data['source_files_s'] = {}
-        self.data['source_files_s'][group_name] = {}
-
-        # load all common attributes - source files
+        # load all common attributes (paths, files, groups)
         common_attributes = find_all_values(dic, 'common')
-        for common_attribute in common_attributes:
-            for k,v in common_attribute.items():
-                self.data[k][group_name] = v
+
+        # prepare dic based on found groups in common
+        group_name = self.find_group_name(common_attributes);
+        self.find_paths(common_attributes)
+        self.find_source_files(common_attributes, group_name)
 
         #load all specific files
         specific_dic = {}
@@ -72,7 +120,7 @@ class YAML_parser():
         for k,v in specific_dic.items():
             if "source_files" in k:
                 # source files have virtual dir
-                self.data[k][group_name] = v
+                self.process_files(v, group_name)
             elif "misc" in k:
                 self.data[k] = v
             else:
@@ -154,8 +202,6 @@ def get_project_name(dic):
 def get_project_name_list(dic_list):
     for dic in dic_list:
         result = _finditem(dic, 'name')
-        # print result
-        # print dic
         if result:
             return result
     return None
