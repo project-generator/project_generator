@@ -29,7 +29,6 @@ class YAML_parser():
             'source_files_obj': [],
             'source_files_lib': [],
             'symbols': [],
-            'flags' : [],
             'misc' : []
         }
 
@@ -90,8 +89,6 @@ class YAML_parser():
         # get symbols
         self.data['symbols'] = get_macros(dic)
         #print self.data['symbols']
-        # get flags
-        self.data['flags'] = get_cc_flags(dic)
         self.data['mcu'] = _finditem(dic, 'mcu')
         self.data['ide'] = _finditem(dic, 'ide')
         return self.data
@@ -135,14 +132,10 @@ class YAML_parser():
             symbols = find_all_values(dic, 'symbols')
             if symbols:
                 self.data['symbols'].append(symbols)
-            flags = find_all_values(dic, 'flags')
-            if flags:
-                self.data['flags'].append(flags)
             misc = find_all_values(dic, 'misc')
             if misc:
                 self.data['misc'].append(misc)
 
-        self.data['flags'] = flatten(self.data['flags'])
         self.data['tool_specific_options'] = flatten(self.data['misc'])
         self.data['symbols'] = flatten(self.data['symbols'])
         self.data['include_paths'] = flatten(self.data['include_paths'])

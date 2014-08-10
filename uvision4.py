@@ -15,8 +15,11 @@
 from os.path import basename
 from export_generator import Exporter
 
+
 class Uvision4(Exporter):
     NAME = 'uVision4'
+
+    optimization_options = ['O0', 'O1', 'O2', 'O3']
 
     def __init__(self):
         self.data = []
@@ -39,10 +42,22 @@ class Uvision4(Exporter):
         for dic in data['misc']:
             for k,v in dic.items():
                 self.optimization(k,v,data)
+                self.c_misc(k,v,data)
+                self.one_elf_per_fun(k,v,data)
 
     def optimization(self, key, value, data):
-        if key == 'optimization_level':
-            data['optimization_level'] = int(value[0]) + 1
+        for option in value:
+            if option in self.optimization_options:
+                data['optimization_level'] = int(option[1]) + 1
+
+    def c_misc(self, key,value, data):
+        if key == 'c_command_line':
+            data['c_command_line'] = value
+
+    def one_elf_per_fun(self, key, value, data):
+        for option in value:
+            if option == 'one_elf_per_function':
+                data['one_elf_per_function'] = 1
 
     def generate(self, data, ide):
         expanded_dic = data.copy();

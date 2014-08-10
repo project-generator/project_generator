@@ -340,7 +340,11 @@
             {% endif %}
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
+             {%if one_elf_per_function%}
+            <OneElfS>{{one_elf_per_function}}</OneElfS>
+            {% else %}
             <OneElfS>0</OneElfS>
+            {% endif %}
             <Strict>0</Strict>
             <EnumInt>0</EnumInt>
             <PlainCh>0</PlainCh>
@@ -350,7 +354,7 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <VariousControls>
-              <MiscControls>{% for f in flags %}{{f}} {% endfor %}</MiscControls>
+              <MiscControls>{% for f in c_command_line %}{{f}} {% endfor %}</MiscControls>
               <Define>{% for s in symbols %} {{s}}, {% endfor %}</Define>
               <Undefine></Undefine>
               <IncludePath> {% for path in include_paths %} ../../{{path}}; {% endfor %} </IncludePath>
