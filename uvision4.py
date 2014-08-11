@@ -28,10 +28,6 @@ class Uvision4(Exporter):
 
     def expand_data(self, old_data, new_data, attribute, group):
         # data expansion - uvision needs filename and path separately
-        # if group == None:
-        #     group = attribute
-
-        #new_data['groups'][group][attribute] = []
         if group == 'Sources':
             old_group = None
         else:

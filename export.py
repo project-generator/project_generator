@@ -87,6 +87,10 @@ def scrape_dir():
     with open(target_path, 'w') as logfile:
         logfile.write('%s' % logbody)
 
+def list_projects(dic):
+    for k,v in dic['projects'].items():
+        print k
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     # Should be launched from root/tools but all scripts are referenced to root
@@ -99,6 +103,7 @@ if __name__ == '__main__':
     parser.add_option("-f", "--file", help="YAML projects file")
     parser.add_option("-p", "--project", help="Project to be generated")
     parser.add_option("-i", "--ide", help="Create project files for toolchain (uvision by default)")
+    parser.add_option("-l", "--list", action="store_true", help="List projects defined in the project file.")
 
     (options, args) = parser.parse_args()
 
@@ -120,6 +125,11 @@ if __name__ == '__main__':
     print "Processing projects file."
     project_file = open('tools//' + options.file)
     config = yaml.load(project_file)
+
+    if options.list:
+        print "Projects defined in the %s" % options.file
+        list_projects(config)
+        sys.exit()
 
     if options.project:
         run_generator(config, options.project, options.ide) # one project
