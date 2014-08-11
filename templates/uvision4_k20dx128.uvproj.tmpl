@@ -396,56 +396,22 @@
         </TargetArmAds>
       </TargetOption>
       <Groups>
+        {% for group_name,files in groups.items() %}
         <Group>
-          <GroupName>Source</GroupName>
+          <GroupName>{{group_name}}</GroupName>
           <Files>
-            {% if source_files_s %}
-            {% for file in source_files_s %}
+            {% if files %}
+            {% for file in files %}
             <File>
               <FileName>{{file.name}}</FileName>
-              <FileType>2</FileType>
+              <FileType>{{file.filetype}}</FileType>
               <FilePath>../../{{file.path}}</FilePath>
-            </File>
-            {% endfor %}
-            {% endif %}
-            {% if source_files_c %}
-            {% for file in source_files_c %}
-            <File>
-              <FileName>{{file.name}}</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../{{file.path}}</FilePath>
-            </File>
-            {% endfor %}
-            {% endif %}
-            {% if source_files_cpp %}
-            {% for file in source_files_cpp %}
-            <File>
-              <FileName>{{file.name}}</FileName>
-              <FileType>8</FileType>
-              <FilePath>../../{{file.path}}</FilePath>
-            </File>
-            {% endfor %}
-            {% endif %}
-            {% if source_files_obj %}
-            {% for file in source_files_obj %}
-            <File>
-              <FileName>{{file}}</FileName>
-              <FileType>3</FileType>
-              <FilePath>../../{{file}}</FilePath>
-            </File>
-            {% endfor %}
-            {% endif %}
-            {% if source_files_lib %}
-            {% for file in source_files_lib %}
-            <File>
-              <FileName>{{file}}</FileName>
-              <FileType>4</FileType>
-              <FilePath>../../{{file}}</FilePath>
             </File>
             {% endfor %}
             {% endif %}
           </Files>
         </Group>
+        {% endfor %}
       </Groups>
     </Target>
   </Targets>

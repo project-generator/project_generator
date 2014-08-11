@@ -21,6 +21,7 @@ class Uvision4(Exporter):
 
     optimization_options = ['O0', 'O1', 'O2', 'O3']
     source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
+    file_types = {'cpp': 8, 'c' : 1, 's' : 2 ,'obj' : 3, 'lib' : 4}
 
     def __init__(self):
         self.data = []
@@ -30,15 +31,16 @@ class Uvision4(Exporter):
         # if group == None:
         #     group = attribute
 
-        new_data['groups'][group][attribute] = []
+        #new_data['groups'][group][attribute] = []
         if group == 'Sources':
             old_group = None
         else:
             old_group = group
         for file in old_data[old_group]:
             if file:
-                new_file = {"path" : file, "name" : basename(file)}
-                new_data['groups'][group][attribute].append(new_file)
+                extension = file.split(".")[-1]
+                new_file = {"path" : file, "name" : basename(file), "filetype" : self.file_types[extension]}
+                new_data['groups'][group].append(new_file)
 
     def iterate(self, data, expanded_data):
         for attribute in self.source_files_dic:
@@ -88,7 +90,7 @@ class Uvision4(Exporter):
         groups = self.get_groups(data)
         expanded_dic['groups'] = {}
         for group in groups:
-            expanded_dic['groups'][group] = {}
+            expanded_dic['groups'][group] = []
         self.iterate(data, expanded_dic)
 
         self.parse_specific_options(expanded_dic)
