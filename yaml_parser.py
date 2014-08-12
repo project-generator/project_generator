@@ -70,16 +70,14 @@ class YAML_parser():
             if common_attribute:
                 try:
                     for k,v in common_attribute.items():
-                        if k == 'paths':
-                            for key,value in v.items():
-                                if key == 'source_paths':
-                                    source_paths.append(value)
-                                elif key == 'include_paths':
-                                    include_paths.append(value)
+                        if k == 'source_paths':
+                            source_paths = (v)
+                        elif k == 'include_paths':
+                            include_paths = (v)
                 except:
                     continue
-        self.data['source_paths'] = source_paths;
-        self.data['include_paths'] = include_paths;
+        self.data['source_paths'] = source_paths
+        self.data['include_paths'] = include_paths
 
     def find_source_files(self, common_attributes, group_name):
         for common_attribute in common_attributes:
@@ -118,11 +116,13 @@ class YAML_parser():
                     continue
 
         for k,v in specific_dic.items():
-            if "source_files" in k:
+            if "source_files" == k:
                 # source files have virtual dir
                 self.process_files(v, group_name)
-            elif "misc" in k:
+            elif "misc" == k:
                 self.data[k] = v
+            elif "include_paths" == k or "source_paths" == k:
+                self.data[k].append(v)
             else:
                 self.data[k] = v
 

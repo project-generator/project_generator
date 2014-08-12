@@ -73,10 +73,10 @@
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>1</RunUserProg1>
-            <RunUserProg2>1</RunUserProg2>
-            <UserProg1Name>fromelf --bin -o "$L@L.bin" "#L"</UserProg1Name>
-            <UserProg2Name>fromelf --m32 -o "$L@L.s19" "#L"</UserProg2Name>
+            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg2>0</RunUserProg2>
+            <UserProg1Name></UserProg1Name>
+            <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
           </AfterMake>
@@ -341,7 +341,7 @@
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
              {%if one_elf_per_function%}
-            <OneElfS>{{one_elf_per_function}}</OneElfS>
+            <OneElfS>1</OneElfS>
             {% else %}
             <OneElfS>0</OneElfS>
             {% endif %}
@@ -353,6 +353,11 @@
             <wLevel>0</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
+            {% if c99 %}
+            <uC99>1</uC99>
+            {% else %}
+            <uC99>0</uC99>
+            {% endif %}
             <VariousControls>
               <MiscControls>{% for f in c_command_line %}{{f}} {% endfor %}</MiscControls>
               <Define>{% for s in symbols %} {{s}}, {% endfor %}</Define>
@@ -371,7 +376,7 @@
             <uSurpInc>0</uSurpInc>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>{% for s in symbols %} {{s}}, {% endfor %}</Define>
+              <Define></Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>

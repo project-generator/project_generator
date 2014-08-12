@@ -54,6 +54,7 @@ class Uvision4(Exporter):
                 self.optimization(k,v,data)
                 self.c_misc(k,v,data)
                 self.one_elf_per_fun(k,v,data)
+                self.c99mode(k,v,data)
 
     def optimization(self, key, value, data):
         for option in value:
@@ -68,6 +69,11 @@ class Uvision4(Exporter):
         for option in value:
             if option == 'one_elf_per_function':
                 data['one_elf_per_function'] = 1
+
+    def c99mode(self, key, value, data):
+        for option in value:
+            if option == 'c99':
+                data['c99'] = 1
 
     def get_groups(self, data):
         groups = []
