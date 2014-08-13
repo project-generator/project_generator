@@ -25,5 +25,4 @@ def export(data, ide):
 
     Exporter = IDE_SUPPORTED[ide]
     exporter = Exporter()
-    #run exporter for defined bootloader project
     exporter.generate(data, ide)

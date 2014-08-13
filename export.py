@@ -41,7 +41,6 @@ def run_generator(dic, project, ide):
         raise RuntimeError("Project record is empty")
 
     logging.info("Generating project: %s" % project)
-    #ide = get_ide(process_data)
     export(process_data, ide)
 
 def process_all_projects(dic, ide):
@@ -119,8 +118,6 @@ if __name__ == '__main__':
 
     # always run from the root directory
     script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
-    # os.chdir(script_dir)
-    # os.chdir('../')
 
     print "Processing projects file."
     project_file = open('tools//' + options.file)

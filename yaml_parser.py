@@ -17,24 +17,23 @@ class YAML_parser():
 
     def __init__(self):
         self.data = {
-            'name': '' ,
-            'mcu' : '',
-            'core' : '',
-            'ide': '',
-            'linker_file': '',
-            'include_paths': [],
-            'source_paths' : [],
-            'source_files_c': [],
-            'source_files_cpp': [],
-            'source_files_s': [],
-            'source_files_obj': [],
-            'source_files_lib': [],
-            'macros': [],
-            'misc' : []
+            'name': '' ,                # project name
+            'mcu' : '',                 # mcu
+            'core' : '',                # core
+            'linker_file': '',          # linker command file
+            'include_paths': [],        # include paths
+            'source_paths' : [],        # source paths
+            'source_files_c': [],       # c source files
+            'source_files_cpp': [],     # c++ source files
+            'source_files_s': [],       # assembly source files
+            'source_files_obj': [],     # object files
+            'source_files_lib': [],     # libraries
+            'macros': [],               # macros (defines)
+            'misc' : [],                # tool specific settings, will be parsed separately
         }
 
     def process_files(self, source_list, group_name):
-        # print source_list
+        """Process files accroding to the extension."""
         for source_file in source_list:
             extension = source_file.split(".")[-1]
             if extension == 'c':
@@ -50,9 +49,7 @@ class YAML_parser():
             if common_attribute:
                 try:
                     for k,v in common_attribute.items():
-                        # print k
                         if k == 'group_name':
-                            # print k,v
                             group_name = v
                 except:
                     continue
@@ -86,8 +83,6 @@ class YAML_parser():
                 try:
                     for k,v in common_attribute.items():
                         if k == 'source_files':
-                            # print v
-                            # print group_name, v
                             self.process_files(v, group_name)
                 except:
                     continue
@@ -106,9 +101,6 @@ class YAML_parser():
 
     # returns updated data structure by virtual-folders
     def parse_yaml(self, dic, ide):
-        self.data['name'] = get_project_name(dic)
-        self.data['core'] = _finditem(dic, 'core')
-
         # load all common attributes (paths, files, groups)
         common_attributes = find_all_values(dic, 'common')
 
@@ -132,7 +124,7 @@ class YAML_parser():
 
         for k,v in specific_dic.items():
             if "source_files" == k:
-                # source files have virtual dir
+                # source files might have virtual dir
                 self.process_files(v, group_name)
             elif "misc" == k:
                 self.data[k] = v
@@ -150,12 +142,9 @@ class YAML_parser():
         self.data['source_files_lib'] = get_source_files_by_extension(dic, 'lib')
         self.data['source_files_lib'].append (get_source_files_by_extension(dic, 'ar'))
         self.data['source_files_lib'].append (get_source_files_by_extension(dic, 'a'))
-        # print self.data['source_files_c']
-        # get symbols
-        # self.data['symbols'] = get_macros(dic)
-        #print self.data['symbols']
         self.data['mcu'] = _finditem(dic, 'mcu')
-        self.data['ide'] = _finditem(dic, 'ide')
+        self.data['name'] = get_project_name(dic)
+        self.data['core'] = _finditem(dic, 'core')
         return self.data
 
     def parse_list_yaml(self, project_list):
@@ -166,9 +155,6 @@ class YAML_parser():
             mcu = _finditem(dic, 'mcu') #TODO fix naming
             if mcu:
                 self.data['mcu'] = mcu[0]
-            ide = _finditem(dic, 'ide')
-            if ide:
-                self.data['ide'] = ide[0]
             include_paths = get_include_paths(dic)
             if include_paths:
                 self.data['include_paths'].append(include_paths)
@@ -177,7 +163,9 @@ class YAML_parser():
                 self.data['source_paths'].append(source_paths)
             linker_file = _finditem(dic, 'linker_file')
             if linker_file:
-                self.data['linker_file'] = linker_file[0] #only one linker can be defined
+                if len(linker_file) != 1:
+                    raise RuntimeError("Defined %s linker files. Only one allowed." % len(linker_file))
+                self.data['linker_file'] = linker_file[0]
             source_c = find_all_values(dic, 'source_files_c')
             if source_c:
                 self.data['source_files_c'].append(source_c)
