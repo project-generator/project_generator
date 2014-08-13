@@ -15,13 +15,16 @@ removed at any time as we come across gotchas.
 
 [ToDo (spreadsheet)](https://docs.google.com/spreadsheets/d/1M413v3yVtD3YhSptgTLz715ctUT0Wa_--Df9jTVVDLQ/edit?usp=sharing)
 
-uVision IDE project only supported at the moment (We are currently working on this IDE, then probably Makefiles with GCC support)
+IDE currently supported:
 
-We appreciate any help and you are more than welcome to send a pull request or create a new issue here.
+ - uVision
+ - GCC ARM (Makefile)
+
+We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository.
 
 How to use it
 ------------
-In your project directory create a tools folder and clone this repo
+In your project directory create a tools folder and clone this repo. There are examples in c0170 github, so check them out!
 
 <pre>
 project/tools>git clone https://github.com/0xc0170/project_generator.git
@@ -73,20 +76,20 @@ bootloader_k20:
         - k20dx128_bootloader
     mcu:
         - k20dx128
-    paths:
-        include_paths:
-            - source/bootloader/hal/freescale/mk20dx128
-            - source/common/cmsis_core/freescale/mk20dx128
-            - source/common/rtos
-        source_paths:
-            - source/bootloader/hal/freescale/mk20dx128
-            - source/common/cmsis_core/freescale/mk20dx128
-            - source/common/rtos
-    common:
-        source_files_c:
-            - source/common/cmsis_core/freescale/mk20dx128/system_MK20D5.c
-            - source/common/rtos/HAL_CM3.c
-            - source/bootloader/hal/freescale/mk20dx128/flash_erase_read_write.c
+    core:
+        - cortex-m4
+    include_paths:
+        - source/bootloader/hal/freescale/mk20dx128
+        - source/common/cmsis_core/freescale/mk20dx128
+        - source/common/rtos
+    source_paths:
+        - source/bootloader/hal/freescale/mk20dx128
+        - source/common/cmsis_core/freescale/mk20dx128
+        - source/common/rtos
+    source_files:
+        - source/common/cmsis_core/freescale/mk20dx128/system_MK20D5.c
+        - source/common/rtos/HAL_CM3.c
+        - source/bootloader/hal/freescale/mk20dx128/flash_erase_read_write.c
     macros:
         - TARGET_MK20DX
         - K20DX128
@@ -95,12 +98,11 @@ bootloader_k20:
         - BOOTLOADER
     tool_specific:
         uvision:
-            paths:
-                include_paths:
-                    - source/common/cmsis_core/freescale/mk20dx128/arm
-                source_paths:
-                    - source/common/cmsis_core/freescale/mk20dx128/arm
-            source_files_s:
+            include_paths:
+                - source/common/cmsis_core/freescale/mk20dx128/arm
+            source_paths:
+                - source/common/cmsis_core/freescale/mk20dx128/arm
+            source_files:
                 - source/common/cmsis_core/freescale/mk20dx128/arm/startup_MK20D5.s
             linker_file:
                 - source/common/cmsis_core/freescale/mk20dx128/arm/MK20D5_0x0000.sct
