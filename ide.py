@@ -16,7 +16,7 @@ from gccarm import GccArm
 
 IDE_SUPPORTED = {
     'uvision': Uvision4,
-    #'gcc_arm': GccArm,
+    'gcc_arm': GccArm,
 }
 
 def export(data, ide):

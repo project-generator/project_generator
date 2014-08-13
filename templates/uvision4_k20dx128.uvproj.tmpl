@@ -360,7 +360,7 @@
             {% endif %}
             <VariousControls>
               <MiscControls>{% for f in c_command_line %}{{f}} {% endfor %}</MiscControls>
-              <Define>{% for s in symbols %} {{s}}, {% endfor %}</Define>
+              <Define>{% for s in macros %} {{s}}, {% endfor %}</Define>
               <Undefine></Undefine>
               <IncludePath> {% for path in include_paths %} ../../{{path}}; {% endfor %} </IncludePath>
             </VariousControls>

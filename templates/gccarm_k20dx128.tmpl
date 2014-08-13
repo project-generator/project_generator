@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-CPU = cortex-m4
+CPU = {{core}}
 
 # toolchain specific
 TOOLCHAIN = arm-none-eabi-
@@ -30,11 +30,11 @@ AR = $(TOOLCHAIN)ar
 INSTRUCTION_MODE = thumb
 TARGET = {{name}}
 TARGET_EXT = elf
-LD_SCRIPT = {{linker_file}}
+LD_SCRIPT = ../../{{linker_file}}
 
-CC_SYMBOLS = {% for symbol in symbols %} -D{{symbol}} {% endfor %}
+CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 
-LIBS = -lm -lgcc -lc -lnosys
+LIBS = {% for library in gcc_libraries %} -l{{library}} {% endfor %}
 
 # directories
 INC_DIRS = {% for path in include_paths %} ../../{{path}} {% endfor %}
@@ -55,9 +55,8 @@ else
 	OBJ_FOLDER = $(strip $(OUT_DIR))/
 endif
 
-COMPILER_OPTIONS  = -g -ggdb -Os -Wall -fno-strict-aliasing
-COMPILER_OPTIONS += -ffunction-sections -fdata-sections -fno-exceptions -fno-delete-null-pointer-checks
-COMPILER_OPTIONS += -fmessage-length=0 -fno-builtin -m$(INSTRUCTION_MODE)
+COMPILER_OPTIONS  = {% for option in compiler_options %} -{{option}} {% endfor %}
+COMPILER_OPTIONS += -m$(INSTRUCTION_MODE)
 COMPILER_OPTIONS += -mcpu=$(CPU) -MMD -MP $(CC_SYMBOLS)
 
 DEPEND_OPTS = -MF $(OBJ_FOLDER)$(@F:.o=.d)
@@ -70,7 +69,7 @@ CXXFLAGS = $(COMPILER_OPTIONS) $(DEPEND_OPTS) $(INC_DIRS_F) -std=gnu++98 -c
 ASFLAGS = $(COMPILER_OPTIONS) $(INC_DIRS_F) -c
 
 # Linker options
-LD_OPTIONS = -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -Os -T $(LD_SCRIPT) $(INC_DIRS_F)
+LD_OPTIONS = -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -{{optimization_level}} -T $(LD_SCRIPT) $(INC_DIRS_F)
 LD_OPTIONS += -specs=nano.specs
 #use this if %f is used, by default it's commented
 #LD_OPTIONS += -u _printf_float -u _scanf_float

@@ -19,6 +19,7 @@ class YAML_parser():
         self.data = {
             'name': '' ,
             'mcu' : '',
+            'core' : '',
             'ide': '',
             'linker_file': '',
             'include_paths': [],
@@ -28,7 +29,7 @@ class YAML_parser():
             'source_files_s': [],
             'source_files_obj': [],
             'source_files_lib': [],
-            'symbols': [],
+            'macros': [],
             'misc' : []
         }
 
@@ -91,9 +92,22 @@ class YAML_parser():
                 except:
                     continue
 
+    def find_macros(self, common_attributes):
+        macros = []
+        for common_attribute in common_attributes:
+            if common_attribute:
+                try:
+                    for k,v in common_attribute.items():
+                        if k == 'macros':
+                            macros = v
+                except:
+                    continue
+        self.data['macros'] = macros
+
     # returns updated data structure by virtual-folders
     def parse_yaml(self, dic, ide):
         self.data['name'] = get_project_name(dic)
+        self.data['core'] = _finditem(dic, 'core')
 
         # load all common attributes (paths, files, groups)
         common_attributes = find_all_values(dic, 'common')
@@ -102,6 +116,7 @@ class YAML_parser():
         group_name = self.find_group_name(common_attributes);
         self.find_paths(common_attributes)
         self.find_source_files(common_attributes, group_name)
+        self.find_macros(common_attributes)
 
         #load all specific files
         specific_dic = {}
@@ -123,6 +138,8 @@ class YAML_parser():
                 self.data[k] = v
             elif "include_paths" == k or "source_paths" == k:
                 self.data[k].append(v)
+            elif "macros" == k:
+                self.data[k].append(v)
             else:
                 self.data[k] = v
 
@@ -135,7 +152,7 @@ class YAML_parser():
         self.data['source_files_lib'].append (get_source_files_by_extension(dic, 'a'))
         # print self.data['source_files_c']
         # get symbols
-        self.data['symbols'] = get_macros(dic)
+        # self.data['symbols'] = get_macros(dic)
         #print self.data['symbols']
         self.data['mcu'] = _finditem(dic, 'mcu')
         self.data['ide'] = _finditem(dic, 'ide')
@@ -176,16 +193,19 @@ class YAML_parser():
             source_lib = find_all_values(dic, 'source_files_lib')
             if source_lib:
                 self.data['source_files_lib'].append(source_lib)
+            core = _finditem(dic, 'core')
+            if core:
+                self.data['core'] = core[0]
 
-            symbols = find_all_values(dic, 'symbols')
-            if symbols:
-                self.data['symbols'].append(symbols)
+            macros = find_all_values(dic, 'macros')
+            if macros:
+                self.data['macros'].append(macros)
             misc = find_all_values(dic, 'misc')
             if misc:
                 self.data['misc'].append(misc)
 
         self.data['tool_specific_options'] = flatten(self.data['misc'])
-        self.data['symbols'] = flatten(self.data['symbols'])
+        self.data['macros'] = flatten(self.data['macros'])
         self.data['include_paths'] = flatten(self.data['include_paths'])
         self.data['source_paths'] = flatten(self.data['source_paths'])
         self.data['source_files_obj'] = flatten(self.data['source_files_obj'])
@@ -205,6 +225,7 @@ def get_project_name_list(dic_list):
         if result:
             return result
     return None
+
 def get_macros(dic):
     return _finditem(dic, 'macros')
 
