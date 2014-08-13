@@ -34,7 +34,7 @@ LD_SCRIPT = ../../{{linker_file}}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 
-LIBS = {% for library in gcc_libraries %} -l{{library}} {% endfor %}
+LIBS = {% for library in source_files_lib %} -l{{library}} {% endfor %}
 
 # directories
 INC_DIRS = {% for path in include_paths %} ../../{{path}} {% endfor %}
@@ -70,7 +70,7 @@ ASFLAGS = $(COMPILER_OPTIONS) $(INC_DIRS_F) -c
 
 # Linker options
 LD_OPTIONS = -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -{{optimization_level}} -T $(LD_SCRIPT) $(INC_DIRS_F)
-LD_OPTIONS += -specs=nano.specs
+LD_OPTIONS += -specs=nano.specs {% for option in linker_options %} -{{option}} {% endfor %}
 #use this if %f is used, by default it's commented
 #LD_OPTIONS += -u _printf_float -u _scanf_float
 LD_OPTIONS += -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--gc-sections

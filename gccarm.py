@@ -27,7 +27,6 @@ class GccArm(Exporter):
             try:
                 for k,v in groups.items():
                     for file in v:
-                        # name = basename(file)
                         file_list.append(file)
             except:
                 continue
@@ -36,12 +35,17 @@ class GccArm(Exporter):
     def libraries(self, key, value, data):
         for option in value:
             if key == "libraries":
-                data['gcc_libraries'].append(option)
+                data['source_files_lib'].append(option)
 
     def compiler_options(self, key, value, data):
         for option in value:
             if key == "compiler_options":
                 data['compiler_options'].append(option)
+
+    def linker_options(self, key, value, data):
+        for option in value:
+            if key == "linker_options":
+                data['linker_options'].append(option)
 
     def optimization(self, key, value, data):
         for option in value:
@@ -50,7 +54,6 @@ class GccArm(Exporter):
 
     def parse_specific_options(self, data):
         data['compiler_options'] = []
-        data['gcc_libraries'] = []
         for dic in data['misc']:
             for k,v in dic.items():
                 self.libraries(k, v, data)
@@ -58,12 +61,10 @@ class GccArm(Exporter):
                 self.optimization(k, v, data)
 
     def generate(self, data, ide):
-        # Project file
-
         self.list_files(data, 'source_files_c')
         self.list_files(data, 'source_files_cpp')
         self.list_files(data, 'source_files_s')
 
         self.parse_specific_options(data)
 
-        self.gen_file('gccarm_%s.tmpl' % data['mcu'], data, 'Makefile', ide)
+        self.gen_file('gcc_arm.tmpl', data, 'Makefile', ide)
