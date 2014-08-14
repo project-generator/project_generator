@@ -14,8 +14,51 @@
 from export_generator import Exporter
 
 class IAR(Exporter):
+    source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
+
+    def __init__(self):
+        self.data = []
+
+    def expand_data(self, old_data, new_data, attribute, group):
+        # data expansion - uvision needs filename and path separately
+        if group == 'Sources':
+            old_group = None
+        else:
+            old_group = group
+        for file in old_data[old_group]:
+            if file:
+                new_data['groups'][group].append(file)
+
+    def iterate(self, data, expanded_data):
+        for attribute in self.source_files_dic:
+            for dic in data[attribute]:
+                for k,v in dic.items():
+                    if k == None:
+                        group = 'Sources'
+                    else:
+                        group = k
+                    self.expand_data(dic, expanded_data, attribute, group)
+
+    def get_groups(self, data):
+        groups = []
+        for attribute in self.source_files_dic:
+            for dic in data[attribute]:
+                for k,v in dic.items():
+                    if k == None:
+                        k = 'Sources'
+                    if k not in groups:
+                        groups.append(k)
+        return groups
 
     def generate(self, data, ide):
-        self.gen_file('iar.ewp.tmpl' , data, '%s.ewp' % data['name'])
-        self.gen_file('iar.eww.tmpl' , data, '%s.eww' % data['name'])
+        expanded_dic = data.copy()
+
+        groups = self.get_groups(data)
+        expanded_dic['groups'] = {}
+        for group in groups:
+            expanded_dic['groups'][group] = []
+        self.iterate(data, expanded_dic)
+
+        self.gen_file('iar.ewp.tmpl' , expanded_dic, '%s.ewp' % data['name'], ide)
+        self.gen_file('iar.eww.tmpl' , expanded_dic, '%s.eww' % data['name'], ide)
 

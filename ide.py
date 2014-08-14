@@ -13,6 +13,7 @@
 # limitations under the License.
 from uvision4 import Uvision4
 from gccarm import GccArm
+from iar import IAR
 
 IDE_SUPPORTED = {
     'uvision': Uvision4,
