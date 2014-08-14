@@ -11,19 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from uvision4 import Uvision4
-from gccarm import GccArm
+from export_generator import Exporter
 
-IDE_SUPPORTED = {
-    'uvision': Uvision4,
-    'gcc_arm': GccArm,
-    'iar' : IAR,
-}
+class IAR(Exporter):
 
-def export(data, ide):
-    if ide not in IDE_SUPPORTED:
-        raise RuntimeError("Non supported IDE")
+    def generate(self, data, ide):
+        self.gen_file('iar.ewp.tmpl' , data, '%s.ewp' % data['name'])
+        self.gen_file('iar.eww.tmpl' , data, '%s.eww' % data['name'])
 
-    Exporter = IDE_SUPPORTED[ide]
-    exporter = Exporter()
-    exporter.generate(data, ide)
