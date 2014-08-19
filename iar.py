@@ -15,6 +15,13 @@ from export_generator import Exporter
 
 class IAR(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
+    core_dic = {
+        "cortex-m0" : 34,
+        "cortex-m0+" : 35,
+        "cortex-m3" : 38,
+        "cortex-m4" : 39,
+        "cortex-m4f" : 40,
+    }
 
     def __init__(self):
         self.data = []
@@ -50,6 +57,12 @@ class IAR(Exporter):
                         groups.append(k)
         return groups
 
+    def find_target_core(self, data):
+        for k,v in self.core_dic.items():
+            if k == data['core']:
+                return v
+        return core_dic['cortex-m0'] #def cortex-m0 if not defined otherwise
+
     def generate(self, data, ide):
         expanded_dic = data.copy()
 
@@ -58,6 +71,7 @@ class IAR(Exporter):
         for group in groups:
             expanded_dic['groups'][group] = []
         self.iterate(data, expanded_dic)
+        expanded_dic['target_core'] = self.find_target_core(expanded_dic)
 
         self.gen_file('iar.ewp.tmpl' , expanded_dic, '%s.ewp' % data['name'], ide)
         self.gen_file('iar.eww.tmpl' , expanded_dic, '%s.eww' % data['name'], ide)
