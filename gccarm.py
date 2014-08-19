@@ -15,7 +15,6 @@ from os.path import basename
 from export_generator import Exporter
 
 class GccArm(Exporter):
-    NAME = 'GccArm'
     optimization_options = ['O0', 'O1', 'O2', 'O3', 'Os']
 
     def __init__(self):
