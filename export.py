@@ -15,7 +15,7 @@ from optparse import OptionParser
 import yaml
 import logging
 import os
-from yaml_parser import get_project_files, YAML_parser
+from yaml_parser import get_project_files, YAML_parser, _finditem
 from os.path import join
 import sys
 from os.path import basename
@@ -23,7 +23,7 @@ from ide import export
 
 def run_generator(dic, project, ide):
     project_list = []
-    yaml_files = get_project_files(dic, project) # TODO fix list inside list
+    yaml_files = _finditem(dic, project)
     if yaml_files:
         for yaml_file in yaml_files:
             try:

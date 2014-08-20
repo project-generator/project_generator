@@ -79,11 +79,12 @@ class Uvision4(Exporter):
         groups = []
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
-                for k,v in dic.items():
-                    if k == None:
-                        k = 'Sources'
-                    if k not in groups:
-                        groups.append(k)
+                if dic:
+                    for k,v in dic.items():
+                        if k == None:
+                            k = 'Sources'
+                        if k not in groups:
+                            groups.append(k)
         return groups
 
     def generate(self, data, ide):

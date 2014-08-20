@@ -31,10 +31,10 @@ class Exporter():
         template = Template(template_text)
         target_text = template.render(data)
 
-        project_file_loc = ide + '_' + 'project_files' + '\\'
+        project_file_loc = 'generated_projects' + '\\'
         if not os.path.exists(project_file_loc):
             os.makedirs(project_file_loc)
-        project_dir = project_file_loc + data['name']
+        project_dir = project_file_loc + ide + '_' + data['name']
         if not os.path.exists(project_dir):
             os.makedirs(project_dir)
         target_path = join(project_dir, target_file)
