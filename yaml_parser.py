@@ -45,13 +45,11 @@ class YAML_parser():
 
     def find_group_name(self, common_attributes):
         group_name = None
-        # for common_attribute in common_attributes:
-        #     if common_attribute:
         try:
             for k,v in common_attributes.items():
                 if k == 'group_name':
                     group_name = v
-        except:
+        except KeyError:
             pass
         self.data['source_files_c'] = {}
         self.data['source_files_c'][group_name] = []
@@ -64,38 +62,32 @@ class YAML_parser():
     def find_paths(self, common_attributes):
         include_paths = []
         source_paths = []
-        # for common_attribute in common_attributes:
-            # if common_attribute:
         try:
             for k,v in common_attributes.items():
                 if k == 'source_paths':
                     source_paths = (v)
                 elif k == 'include_paths':
                     include_paths = (v)
-        except:
+        except KeyError:
             pass
         self.data['source_paths'] = source_paths
         self.data['include_paths'] = include_paths
 
     def find_source_files(self, common_attributes, group_name):
-        # for common_attribute in common_attributes:
-        #     if common_attribute:
         try:
             for k,v in common_attributes.items():
                 if k == 'source_files':
                     self.process_files(v, group_name)
-        except:
+        except KeyError:
             pass
 
     def find_macros(self, common_attributes):
         macros = []
-        # for common_attribute in common_attributes:
-            # if common_attribute:
         try:
             for k,v in common_attributes.items():
                 if k == 'macros':
                     macros = v
-        except:
+        except KeyError:
             pass
         self.data['macros'] = macros
 
@@ -114,13 +106,11 @@ class YAML_parser():
         specific_dic = {}
         specific_attributes = _finditem(dic, 'tool_specific')
         if specific_attributes:
-            # for specific_attribute in specific_attributes:
-                # if specific_attribute:
             try:
                 for k,v in specific_attributes.items():
                     if k == ide:
                         specific_dic = v
-            except:
+            except KeyError:
                 pass
 
         for k,v in specific_dic.items():
@@ -156,7 +146,7 @@ class YAML_parser():
             self.data['source_files_lib'].append(lib)
 
         self.data['mcu'] = _finditem(dic, 'mcu')
-        self.data['name'] = get_project_name(dic)
+        self.data['name'] = _finditem(dic, 'name')
         self.data['core'] = _finditem(dic, 'core')
         return self.data
 
@@ -168,10 +158,10 @@ class YAML_parser():
             mcu = _finditem(dic, 'mcu') #TODO fix naming
             if mcu:
                 self.data['mcu'] = mcu[0]
-            include_paths = get_include_paths(dic)
+            include_paths = _finditem(dic, 'include_paths')
             if include_paths:
                 self.data['include_paths'] += (include_paths)
-            source_paths = get_source_paths(dic)
+            source_paths = _finditem(dic, 'source_paths')
             if source_paths:
                 self.data['source_paths'] += (source_paths)
             linker_file = _finditem(dic, 'linker_file')
@@ -205,46 +195,11 @@ class YAML_parser():
             if misc:
                 self.data['misc'].append(misc)
 
-        self.data['tool_specific_options'] = self.data['misc']
-        # self.data['macros'] = self.data['macros']
-        # self.data['include_paths'] = self.data['include_paths']
-        # self.data['source_paths'] = self.data['source_paths']
-        # self.data['source_files_obj'] = self.data['source_files_obj']
-        # self.data['source_files_lib'] = self.data['source_files_lib']
         return self.data
-
-
-def get_cc_flags(dic):
-    return _finditem(dic, 'cc_flags')
-
-def get_project_name(dic):
-    return _finditem(dic, 'name')
-
-def get_project_name_list(dic_list):
-    for dic in dic_list:
-        result = _finditem(dic, 'name')
-        if result:
-            return result
-    return None
-
-def get_macros(dic):
-    return _finditem(dic, 'macros')
-
-def get_include_paths(dic):
-    return _finditem(dic, 'include_paths')
-    # paths = flatten(paths_list)
-    # return paths
-
-def get_source_paths(dic):
-    return _finditem(dic, 'source_paths')
-    # paths = flatten(paths_list)
-    # return paths
 
 def get_source_files_by_extension(dic, extension):
     find_extension = 'source_files_' + extension
     return _finditem(dic, find_extension)
-    # source = flatten(source_list)
-    # return source
 
 def find_all_values(obj, key):
     files = []
@@ -265,6 +220,3 @@ def _finditem(obj, key):
             item = _finditem(v, key)
             if item is not None:
                 return item
-
-def get_project_files(dic, name):
-    return flatten(find_all_values(dic, name))
