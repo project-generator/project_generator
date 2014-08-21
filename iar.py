@@ -23,11 +23,8 @@ class IAR(Exporter):
         "cortex-m4f" : 40,
     }
 
-    def __init__(self):
-        self.data = []
-
     def expand_data(self, old_data, new_data, attribute, group):
-        # data expansion - uvision needs filename and path separately
+        """ Groups expansion for Sources. """
         if group == 'Sources':
             old_group = None
         else:
@@ -37,6 +34,7 @@ class IAR(Exporter):
                 new_data['groups'][group].append(file)
 
     def iterate(self, data, expanded_data):
+        """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
                 for k,v in dic.items():
@@ -47,6 +45,7 @@ class IAR(Exporter):
                     self.expand_data(dic, expanded_data, attribute, group)
 
     def get_groups(self, data):
+        """ Get all groups defined. """
         groups = []
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
@@ -58,12 +57,14 @@ class IAR(Exporter):
         return groups
 
     def find_target_core(self, data):
+        """ Sets Target core. """
         for k,v in self.core_dic.items():
             if k == data['core']:
                 return v
         return core_dic['cortex-m0'] #def cortex-m0 if not defined otherwise
 
     def generate(self, data, ide):
+        """ Processes groups and misc options specific for IAR, and run generator """
         expanded_dic = data.copy()
 
         groups = self.get_groups(data)

@@ -22,6 +22,7 @@ IDE_SUPPORTED = {
 }
 
 def export(data, ide):
+    """ Invokes IDE generator. """
     if ide not in IDE_SUPPORTED:
         raise RuntimeError("Non supported IDE")
 

@@ -22,6 +22,7 @@ from os.path import basename
 from ide import export
 
 def run_generator(dic, project, ide):
+    """ Generates one project. """
     project_list = []
     yaml_files = _finditem(dic, project)
     if yaml_files:
@@ -36,7 +37,7 @@ def run_generator(dic, project, ide):
                 project_list.append(yaml_parser.parse_yaml(loaded_yaml, ide))
                 file.close()
         yaml_parser_final = YAML_parser()
-        process_data = yaml_parser_final.parse_list_yaml(project_list)
+        process_data = yaml_parser_final.parse_yaml_list(project_list)
     else:
         raise RuntimeError("Project record is empty")
 
@@ -44,6 +45,7 @@ def run_generator(dic, project, ide):
     export(process_data, ide)
 
 def process_all_projects(dic, ide):
+    """ Generates all project. """
     projects = []
     yaml_files = []
     for k,v in dic['projects'].items():
@@ -87,6 +89,7 @@ def scrape_dir():
         logfile.write('%s' % logbody)
 
 def list_projects(dic):
+    """ Print all defined project. """
     for k,v in dic['projects'].items():
         print k
 

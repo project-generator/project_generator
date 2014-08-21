@@ -27,7 +27,7 @@ class Uvision4(Exporter):
         self.data = []
 
     def expand_data(self, old_data, new_data, attribute, group):
-        # data expansion - uvision needs filename and path separately
+        """ data expansion - uvision needs filename and path separately. """
         if group == 'Sources':
             old_group = None
         else:
@@ -39,6 +39,7 @@ class Uvision4(Exporter):
                 new_data['groups'][group].append(new_file)
 
     def iterate(self, data, expanded_data):
+        """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
                 for k,v in dic.items():
@@ -49,6 +50,7 @@ class Uvision4(Exporter):
                     self.expand_data(dic, expanded_data, attribute, group)
 
     def parse_specific_options(self, data):
+        """ Parse all uvision specific setttings. """
         for dic in data['misc']:
             for k,v in dic.items():
                 self.optimization(k,v,data)
@@ -57,25 +59,30 @@ class Uvision4(Exporter):
                 self.c99mode(k,v,data)
 
     def optimization(self, key, value, data):
+        """ Optimization setting. """
         for option in value:
             if option in self.optimization_options:
                 data['optimization_level'] = int(option[1]) + 1
 
     def c_misc(self, key,value, data):
+        """ Command line commands. """
         if key == 'c_command_line':
             data['c_command_line'] = value
 
     def one_elf_per_fun(self, key, value, data):
+        """ Checkbox - One Elf Per Function. """
         for option in value:
             if option == 'one_elf_per_function':
                 data['one_elf_per_function'] = 1
 
     def c99mode(self, key, value, data):
+        """ Checkbox - C99 ."""
         for option in value:
             if option == 'c99':
                 data['c99'] = 1
 
     def get_groups(self, data):
+        """ Get all groups defined. """
         groups = []
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
@@ -88,6 +95,7 @@ class Uvision4(Exporter):
         return groups
 
     def generate(self, data, ide):
+        """ Processes groups and misc options specific for uVision, and run generator """
         expanded_dic = data.copy()
 
         groups = self.get_groups(data)

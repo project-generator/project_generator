@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from compiler.ast import flatten
 
 class YAML_parser():
 
@@ -44,6 +43,7 @@ class YAML_parser():
                 self.data['source_files_cpp'][group_name].append(source_file)
 
     def find_group_name(self, common_attributes):
+        """ Creates new dictionaries based on group_name """
         group_name = None
         try:
             for k,v in common_attributes.items():
@@ -60,6 +60,7 @@ class YAML_parser():
         return group_name
 
     def find_paths(self, common_attributes):
+        """ Find defined include and source paths """
         include_paths = []
         source_paths = []
         try:
@@ -91,8 +92,8 @@ class YAML_parser():
             pass
         self.data['macros'] = macros
 
-    # returns updated data structure by virtual-folders
     def parse_yaml(self, dic, ide):
+        """ Parse single yaml file, find all data in records and return it. """
         # load all common attributes (paths, files, groups)
         common_attributes = _finditem(dic, 'common')
 
@@ -150,7 +151,8 @@ class YAML_parser():
         self.data['core'] = _finditem(dic, 'core')
         return self.data
 
-    def parse_list_yaml(self, project_list):
+    def parse_yaml_list(self, project_list):
+        """ Process list of dictionaries from yaml files. """
         for dic in project_list:
             name = _finditem(dic, 'name') #TODO fix naming
             if name:
@@ -198,6 +200,7 @@ class YAML_parser():
         return self.data
 
 def get_source_files_by_extension(dic, extension):
+    """ Returns list of source files based on defined extension. """
     find_extension = 'source_files_' + extension
     return _finditem(dic, find_extension)
 

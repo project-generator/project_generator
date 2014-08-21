@@ -22,10 +22,8 @@ class Exporter():
     TEMPLATE_DIR = dirname(__file__) + '/templates'
     DOT_IN_RELATIVE_PATH = False
 
-    def __init__(self):
-        self.data = []
-
     def gen_file(self, template_file, data, target_file, ide):
+        """ Fills data to the project template, using jinja2. """
         template_path = join(Exporter.TEMPLATE_DIR, template_file)
         template_text = open(template_path).read()
         template = Template(template_text)
