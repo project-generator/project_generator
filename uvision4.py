@@ -21,6 +21,61 @@ class Uvision4(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
     file_types = {'cpp': 8, 'c' : 1, 's' : 2 ,'obj' : 3, 'lib' : 4}
 
+    uvision_settings = {
+        # C/C++ settings
+        'Cads' : {
+            'interw' : 0,
+            'Optim' : 0,
+            'oTime' : 0,
+            'SplitLS' : 0,
+            'OneElfS' : 0,
+            'Strict' : 0,
+            'EnumInt' : 0,
+            'PlainCh' : 0,
+            'Ropi' : 0,
+            'Rwpi' : 0,
+            'wLevel' : 0,
+            'uThumb' : 0,
+            'uSurpInc' : 0,
+            'uC99' : 0,
+            'MiscControls': [],
+        },
+
+        # Linker settings
+        'LDads' : {
+           'umfTarg' : 0,
+           'Ropi' : 0,
+           'Rwpi' : 0,
+           'noStLib' : 0,
+           'RepFail' : 0,
+           'useFile' : 0,
+           'TextAddressRange' : 0,
+           'DataAddressRange' : 0,
+           'IncludeLibs' : 0,
+           'IncludeLibsPath' : 0,
+           'Misc' : 0,
+           'LinkerInputFile' : 0,
+           'DisabledWarnings' : [],
+        },
+
+        # Assembly settings
+        'Aads' : {
+            'interw' : 0,
+            'Ropi' : 0,
+            'Rwpi' : 0,
+            'thumb' : 0,
+            'SplitLS' : 0,
+            'SwStkChk' : 0,
+            'NoWarn' : 0,
+            'uSurpInc' : 0,
+            'VariousControls' : 0,
+            'MiscControls' : 0,
+            'Define' : [],
+            'Undefine' : 0,
+            'IncludePath' : [],
+            'VariousControls' : 0,
+        }
+    }
     def __init__(self):
         self.data = []
 
@@ -51,33 +106,16 @@ class Uvision4(Exporter):
         """ Parse all uvision specific setttings. """
         for dic in data['misc']:
             for k,v in dic.items():
-                self.optimization(k,v,data)
-                self.c_misc(k,v,data)
-                self.one_elf_per_fun(k,v,data)
-                self.c99mode(k,v,data)
+                self.set_specific_settings(v, data, k)
 
-    def optimization(self, key, value, data):
-        """ Optimization setting. """
-        for option in value:
-            if option in self.optimization_options:
-                data['optimization_level'] = int(option[1]) + 1
-
-    def c_misc(self, key,value, data):
-        """ Command line commands. """
-        if key == 'c_command_line':
-            data['c_command_line'] = value
-
-    def one_elf_per_fun(self, key, value, data):
-        """ Checkbox - One Elf Per Function. """
-        for option in value:
-            if option == 'one_elf_per_function':
-                data['one_elf_per_function'] = 1
-
-    def c99mode(self, key, value, data):
-        """ Checkbox - C99 ."""
-        for option in value:
-            if option == 'c99':
-                data['c99'] = 1
+    def set_specific_settings(self, value_list, data, uvision_dic):
+        data[uvision_dic] = self.uvision_settings[uvision_dic]
+        for option in value_list:
+                if value_list[option][0] == 'enable':
+                    value_list[option] = 1
+                elif value_list[option][0] == 'disable':
+                    value_list[option] = 0
+                data[uvision_dic][option] = value_list[option]
 
     def get_groups(self, data):
         """ Get all groups defined. """

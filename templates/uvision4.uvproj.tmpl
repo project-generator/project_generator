@@ -332,48 +332,36 @@
             <RvctStartVector></RvctStartVector>
           </ArmAdsMisc>
           <Cads>
-            <interw>1</interw>
-            {%if optimization_level%}
-            <Optim>{{optimization_level}}</Optim>
-            {% else %}
-            <Optim>1</Optim>
-            {% endif %}
-            <oTime>0</oTime>
-            <SplitLS>0</SplitLS>
-             {%if one_elf_per_function%}
-            <OneElfS>1</OneElfS>
-            {% else %}
-            <OneElfS>0</OneElfS>
-            {% endif %}
-            <Strict>0</Strict>
-            <EnumInt>0</EnumInt>
-            <PlainCh>0</PlainCh>
-            <Ropi>0</Ropi>
-            <Rwpi>0</Rwpi>
-            <wLevel>0</wLevel>
-            <uThumb>0</uThumb>
-            <uSurpInc>0</uSurpInc>
-            {% if c99 %}
-            <uC99>1</uC99>
-            {% else %}
-            <uC99>0</uC99>
-            {% endif %}
+            <interw>{{Cads['interw']}}</interw>
+            <Optim>{{Cads['Optim'][0]}}</Optim>
+            <oTime>{{Cads['interw']}}</oTime>
+            <SplitLS>{{Cads['SplitLS']}}</SplitLS>
+            <OneElfS>{{Cads['OneElfS']}}</OneElfS>
+            <Strict>{{Cads['Strict']}}</Strict>
+            <EnumInt>{{Cads['EnumInt']}}</EnumInt>
+            <PlainCh>{{Cads['PlainCh']}}</PlainCh>
+            <Ropi>{{Cads['Ropi']}}</Ropi>
+            <Rwpi>{{Cads['Rwpi']}}</Rwpi>
+            <wLevel>{{Cads['wLevel']}}</wLevel>
+            <uThumb>{{Cads['uThumb']}}</uThumb>
+            <uSurpInc>{{Cads['uSurpInc']}}</uSurpInc>
+            <uC99>{{Cads['uC99']}}</uC99>
             <VariousControls>
-              <MiscControls>{% for f in c_command_line %}{{f}} {% endfor %}</MiscControls>
+              <MiscControls>{% for f in Cads['MiscControls'] %}{{f}} {% endfor %}</MiscControls>
               <Define>{% for s in macros %} {{s}}, {% endfor %}</Define>
               <Undefine></Undefine>
               <IncludePath> {% for path in include_paths %} ../../{{path}}; {% endfor %} </IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
-            <interw>1</interw>
-            <Ropi>0</Ropi>
-            <Rwpi>0</Rwpi>
-            <thumb>0</thumb>
-            <SplitLS>0</SplitLS>
-            <SwStkChk>0</SwStkChk>
-            <NoWarn>0</NoWarn>
-            <uSurpInc>0</uSurpInc>
+            <interw>{{Aads['interw']}}</interw>
+            <Ropi>{{Aads['Ropi']}}</Ropi>
+            <Rwpi>{{Aads['Rwpi']}}</Rwpi>
+            <thumb>{{Aads['thumb']}}</thumb>
+            <SplitLS>{{Aads['SplitLS']}}</SplitLS>
+            <SwStkChk>{{Aads['SwStkChk']}}</SwStkChk>
+            <NoWarn>{{Aads['NoWarn']}}</NoWarn>
+            <uSurpInc>{{Aads['uSurpInc']}}</uSurpInc>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -382,12 +370,12 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>0</umfTarg>
-            <Ropi>0</Ropi>
-            <Rwpi>0</Rwpi>
-            <noStLib>0</noStLib>
-            <RepFail>1</RepFail>
-            <useFile>0</useFile>
+            <umfTarg>{{LDads['umfTarg']}}</umfTarg>
+            <Ropi>{{LDads['Ropi']}}</Ropi>
+            <Rwpi>{{LDads['Rwpi']}}</Rwpi>
+            <noStLib>{{LDads['noStLib']}}</noStLib>
+            <RepFail>{{LDads['RepFail']}}</RepFail>
+            <useFile>{{LDads['useFile']}}</useFile>
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x10000000</DataAddressRange>
             <ScatterFile>../../{{linker_file}}</ScatterFile>
@@ -396,7 +384,7 @@
             <Misc>
             </Misc>
             <LinkerInputFile></LinkerInputFile>
-            <DisabledWarnings></DisabledWarnings>
+            <DisabledWarnings>{% for diswarn in LDads['DisabledWarnings'] %} {{diswarn}} {% endfor %}</DisabledWarnings>
           </LDads>
         </TargetArmAds>
       </TargetOption>
