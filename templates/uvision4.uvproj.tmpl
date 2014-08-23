@@ -55,10 +55,10 @@
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
           <BeforeCompile>
-            <RunUserProg1>0</RunUserProg1>
-            <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
-            <UserProg2Name></UserProg2Name>
+            <RunUserProg1>{{TargetOption['BeforeCompile']['RunUserProg1'][0]}}</RunUserProg1>
+            <RunUserProg2>{{TargetOption['BeforeCompile']['RunUserProg2'][0]}}</RunUserProg2>
+            <UserProg1Name>{{TargetOption['BeforeCompile']['UserProg1Name'][0]}}</UserProg1Name>
+            <UserProg2Name>{{TargetOption['BeforeCompile']['UserProg2Name'][0]}}</UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopU1X>0</nStopU1X>
@@ -210,18 +210,18 @@
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>{{ArmAdsMisc['useUlib']}}</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <RoSelD>3</RoSelD>
             <RwSelD>3</RwSelD>
             <CodeSel>0</CodeSel>
             <OptFeed>0</OptFeed>
-            <NoZi1>0</NoZi1>
-            <NoZi2>0</NoZi2>
-            <NoZi3>0</NoZi3>
-            <NoZi4>0</NoZi4>
-            <NoZi5>0</NoZi5>
+            <NoZi1>{{ArmAdsMisc['NoZi1']}}</NoZi1>
+            <NoZi2>{{ArmAdsMisc['NoZi2']}}</NoZi2>
+            <NoZi3>{{ArmAdsMisc['NoZi3']}}</NoZi3>
+            <NoZi4>{{ArmAdsMisc['NoZi4']}}</NoZi4>
+            <NoZi5>{{ArmAdsMisc['NoZi5']}}</NoZi5>
             <Ro1Chk>0</Ro1Chk>
             <Ro2Chk>0</Ro2Chk>
             <Ro3Chk>0</Ro3Chk>
@@ -279,54 +279,54 @@
                 <Size>0x0</Size>
               </XRAM>
               <OCR_RVCT1>
-                <Type>1</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Type>{{ArmAdsMisc['OCR_RVCT1']['Type'][0]}}</Type>
+                <StartAddress>{{ArmAdsMisc['OCR_RVCT1']['StartAddress']}}</StartAddress>
+                <Size>{{ArmAdsMisc['OCR_RVCT1']['Size'][0]}}</Size>
               </OCR_RVCT1>
               <OCR_RVCT2>
-                <Type>1</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Type>{{ArmAdsMisc['OCR_RVCT2']['Type'][0]}}</Type>
+                <StartAddress>{{ArmAdsMisc['OCR_RVCT2']['StartAddress']}}</StartAddress>
+                <Size>{{ArmAdsMisc['OCR_RVCT2']['Size'][0]}}</Size>
               </OCR_RVCT2>
               <OCR_RVCT3>
-                <Type>1</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Type>{{ArmAdsMisc['OCR_RVCT3']['Type'][0]}}</Type>
+                <StartAddress>{{ArmAdsMisc['OCR_RVCT3']['StartAddress']}}</StartAddress>
+                <Size>{{ArmAdsMisc['OCR_RVCT3']['Size'][0]}}</Size>
               </OCR_RVCT3>
               <OCR_RVCT4>
-                <Type>1</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size></Size>
+                <Type>{{ArmAdsMisc['OCR_RVCT4']['Type'][0]}}</Type>
+                <StartAddress>{{ArmAdsMisc['OCR_RVCT4']['StartAddress']}}</StartAddress>
+                <Size>{{ArmAdsMisc['OCR_RVCT4']['Size'][0]}}</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
-                <Type>1</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Type>{{ArmAdsMisc['OCR_RVCT5']['Type'][0]}}</Type>
+                <StartAddress>{{ArmAdsMisc['OCR_RVCT5']['StartAddress']}}</StartAddress>
+                <Size>{{ArmAdsMisc['OCR_RVCT5']['Size'][0]}}</Size>
               </OCR_RVCT5>
               <OCR_RVCT6>
-                <Type>0</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Type>{{ArmAdsMisc['OCR_RVCT6']['Type'][0]}}</Type>
+                <StartAddress>{{ArmAdsMisc['OCR_RVCT6']['StartAddress']}}</StartAddress>
+                <Size>{{ArmAdsMisc['OCR_RVCT6']['Size'][0]}}</Size>
               </OCR_RVCT6>
               <OCR_RVCT7>
-                <Type>0</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Type>{{ArmAdsMisc['OCR_RVCT7']['Type'][0]}}</Type>
+                <StartAddress>{{ArmAdsMisc['OCR_RVCT7']['StartAddress']}}</StartAddress>
+                <Size>{{ArmAdsMisc['OCR_RVCT7']['Size'][0]}}</Size>
               </OCR_RVCT7>
               <OCR_RVCT8>
-                <Type>0</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Type>{{ArmAdsMisc['OCR_RVCT8']['Type'][0]}}</Type>
+                <StartAddress>{{ArmAdsMisc['OCR_RVCT8']['StartAddress']}}</StartAddress>
+                <Size>{{ArmAdsMisc['OCR_RVCT8']['Size'][0]}}</Size>
               </OCR_RVCT8>
               <OCR_RVCT9>
-                <Type>0</Type>
-                <StartAddress></StartAddress>
-                <Size></Size>
+                <Type>{{ArmAdsMisc['OCR_RVCT9']['Type'][0]}}</Type>
+                <StartAddress>{{ArmAdsMisc['OCR_RVCT9']['StartAddress']}}</StartAddress>
+                <Size>{{ArmAdsMisc['OCR_RVCT9']['Size'][0]}}</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
-                <Type>0</Type>
-                <StartAddress></StartAddress>
-                <Size></Size>
+                <Type>{{ArmAdsMisc['OCR_RVCT10']['Type'][0]}}</Type>
+                <StartAddress>{{ArmAdsMisc['OCR_RVCT10']['StartAddress']}}</StartAddress>
+                <Size>{{ArmAdsMisc['OCR_RVCT10']['Size'][0]}}</Size>
               </OCR_RVCT10>
             </OnChipMemories>
             <RvctStartVector></RvctStartVector>

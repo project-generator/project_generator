@@ -74,8 +74,104 @@ class Uvision4(Exporter):
             'Undefine' : 0,
             'IncludePath' : [],
             'VariousControls' : 0,
+        },
+
+        # User settings
+        'TargetOption' : {
+            'CreateExecutable' : 0,
+            'CreateLib' : 0,
+            'CreateHexFile' : 0,
+            'DebugInformation' : 0,
+            'BrowseInformation' : 0,
+            'CreateBatchFile' : 0,
+            'BeforeCompile' : {
+                'RunUserProg1' : 0,
+                'UserProg1Name' : 0,
+                'RunUserProg2' : 0,
+                'UserProg2Name' : 0,
+                'UserProg1Dos16Mode' : 0,
+                'UserProg2Dos16Mode' : 0,
+            },
+            'BeforeMake' : {
+                'RunUserProg1' : 0,
+                'UserProg1Name' : 0,
+                'RunUserProg2' : 0,
+                'UserProg2Name' : 0,
+                'UserProg1Dos16Mode' : 0,
+                'UserProg2Dos16Mode' : 0,
+            },
+            'AfterMake' : {
+                'RunUserProg1' : 0,
+                'UserProg1Name' : 0,
+                'RunUserProg2' : 0,
+                'UserProg2Name' : 0,
+                'UserProg1Dos16Mode' : 0,
+                'UserProg2Dos16Mode' : 0,
+            }
+        },
+
+        # Target settings
+        'ArmAdsMisc' : {
+            'useUlib' : 0,
+            'NoZi1' : 0,
+            'NoZi2' : 0,
+            'NoZi3' : 0,
+            'NoZi4' : 0,
+            'NoZi5' : 0,
+            'OCR_RVCT1' : {
+                'Type' : 0,
+                'StartAddress' : 0,
+                'Size' : 0,
+            },
+            'OCR_RVCT2' : {
+                'Type' : 0,
+                'StartAddress' : 0,
+                'Size' : 0,
+            },
+            'OCR_RVCT3' : {
+                'Type' : 0,
+                'StartAddress' : 0,
+                'Size' : 0,
+            },
+            'OCR_RVCT4' : {
+                'Type' : 0,
+                'StartAddress' : 0,
+                'Size' : 0,
+            },
+            'OCR_RVCT5' : {
+                'Type' : 0,
+                'StartAddress' : 0,
+                'Size' : 0,
+            },
+            'OCR_RVCT6' : {
+                'Type' : 0,
+                'StartAddress' : 0,
+                'Size' : 0,
+            },
+            'OCR_RVCT7' : {
+                'Type' : 0,
+                'StartAddress' : 0,
+                'Size' : 0,
+            },
+            'OCR_RVCT8' : {
+                'Type' : 0,
+                'StartAddress' : 0,
+                'Size' : 0,
+            },
+            'OCR_RVCT9' : {
+                'Type' : 0,
+                'StartAddress' : 0,
+                'Size' : 0,
+            },
+            'OCR_RVCT10' : {
+                'Type' : 0,
+                'StartAddress' : 0,
+                'Size' : 0,
+            }
+            
         }
     }
+
     def __init__(self):
         self.data = []
 
@@ -106,11 +202,50 @@ class Uvision4(Exporter):
         """ Parse all uvision specific setttings. """
         for dic in data['misc']:
             for k,v in dic.items():
-                self.set_specific_settings(v, data, k)
+                if k == 'ArmAdsMisc':
+                    self.set_target_options(v, data, k)
+                elif k == 'TargetOption':
+                    self.set_user_options(v, data, k)
+                else:
+                    self.set_specific_settings(v, data, k)
 
     def set_specific_settings(self, value_list, data, uvision_dic):
         data[uvision_dic] = self.uvision_settings[uvision_dic]
         for option in value_list:
+            if value_list[option][0] == 'enable':
+                value_list[option] = 1
+            elif value_list[option][0] == 'disable':
+                value_list[option] = 0
+            data[uvision_dic][option] = value_list[option]
+
+    def set_target_options(self, value_list, data, uvision_dic):
+        data[uvision_dic] = self.uvision_settings[uvision_dic]
+        for option in value_list:
+            if option.startswith('OCR_'):
+                for k,v in value_list[option].items():
+                    if v[0] == 'enable':
+                        value_list[option][k] = 1
+                    elif v[0] == 'disable':
+                        value_list[option][k] = 0
+                    data[uvision_dic][option][k] = value_list[option][k]
+            else:
+                if value_list[option][0] == 'enable':
+                    value_list[option] = 1
+                elif value_list[option][0] == 'disable':
+                    value_list[option] = 0
+                data[uvision_dic][option] = value_list[option]
+
+    def set_user_options(self, value_list, data, uvision_dic):
+        data[uvision_dic] = self.uvision_settings[uvision_dic]
+        for option in value_list:
+            if option.startswith('Before'):
+                for k,v in value_list[option].items():
+                    if v[0] == 'enable':
+                        value_list[option][k] = 1
+                    elif v[0] == 'disable':
+                        value_list[option][k] = 0
+                    data[uvision_dic][option][k] = value_list[option][k]
+            else:
                 if value_list[option][0] == 'enable':
                     value_list[option] = 1
                 elif value_list[option][0] == 'disable':
