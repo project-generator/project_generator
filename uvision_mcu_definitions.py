@@ -13,7 +13,10 @@
 # limitations under the License.
 
 def get_mcu_definition(name):
-    return MCU_def[name]
+    try:
+        return MCU_def[name]
+    except KeyError:
+        raise RuntimeError("Mcu was not recognized for uvision. Please check MCU_def dictionary.")
 
 # definition dictionaries, please visit wiki page for more information
 MCU_def = {
