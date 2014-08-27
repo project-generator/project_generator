@@ -17,7 +17,6 @@ class YAML_parser():
     def __init__(self):
         self.data = {
             'name': '' ,                # project name
-            'mcu' : '',                 # mcu
             'core' : '',                # core
             'linker_file': '',          # linker command file
             'include_paths': [],        # include paths
@@ -146,7 +145,6 @@ class YAML_parser():
         if lib:
             self.data['source_files_lib'].append(lib)
 
-        self.data['mcu'] = _finditem(dic, 'mcu')
         self.data['name'] = _finditem(dic, 'name')
         self.data['core'] = _finditem(dic, 'core')
         return self.data

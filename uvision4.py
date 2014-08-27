@@ -14,7 +14,7 @@
 
 from os.path import basename
 from export_generator import Exporter
-
+from uvision_mcu_definitions import get_mcu_definition
 
 class Uvision4(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
@@ -200,6 +200,7 @@ class Uvision4(Exporter):
 
     def parse_specific_options(self, data):
         """ Parse all uvision specific setttings. """
+        data.update(self.uvision_settings) # set specific options to default values
         for dic in data['misc']:
             for k,v in dic.items():
                 if k == 'ArmAdsMisc':
@@ -210,7 +211,6 @@ class Uvision4(Exporter):
                     self.set_specific_settings(v, data, k)
 
     def set_specific_settings(self, value_list, data, uvision_dic):
-        data[uvision_dic] = self.uvision_settings[uvision_dic]
         for option in value_list:
             if value_list[option][0] == 'enable':
                 value_list[option] = 1
@@ -219,7 +219,6 @@ class Uvision4(Exporter):
             data[uvision_dic][option] = value_list[option]
 
     def set_target_options(self, value_list, data, uvision_dic):
-        data[uvision_dic] = self.uvision_settings[uvision_dic]
         for option in value_list:
             if option.startswith('OCR_'):
                 for k,v in value_list[option].items():
@@ -236,7 +235,6 @@ class Uvision4(Exporter):
                 data[uvision_dic][option] = value_list[option]
 
     def set_user_options(self, value_list, data, uvision_dic):
-        data[uvision_dic] = self.uvision_settings[uvision_dic]
         for option in value_list:
             if option.startswith('Before'):
                 for k,v in value_list[option].items():
@@ -265,6 +263,15 @@ class Uvision4(Exporter):
                             groups.append(k)
         return groups
 
+    def append_mcu_def(self, data, mcu_def):
+        """ Get MCU definitons as Flash algo, RAM, ROM size , etc. """
+        try:
+            data['TargetOption'].update(mcu_def['TargetOption'])
+        except KeyError:
+            # does not exist, create it
+            # data['TargetOption'] = self.uvision_settings['TargetOption']
+            data['TargetOption'].update(mcu_def['TargetOption'])
+
     def generate(self, data, ide):
         """ Processes groups and misc options specific for uVision, and run generator """
         expanded_dic = data.copy()
@@ -276,6 +283,9 @@ class Uvision4(Exporter):
         self.iterate(data, expanded_dic)
 
         self.parse_specific_options(expanded_dic)
+
+        mcu_def_dic = get_mcu_definition(expanded_dic['mcu'])
+        self.append_mcu_def(expanded_dic, mcu_def_dic)
 
         # Project file
         self.gen_file('uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], ide)
