@@ -72,49 +72,70 @@ projects:
 For more detailed syntax information of a component file, have a look at yaml parser script file (defines dictionaries and how data are processed from components).
 
 <pre>
-bootloader_k20:
+k20d50m_blinky:
     name:
-        - k20dx128_bootloader
-    mcu:
-        - k20dx128
+        - k20d50m_blinky
     core:
         - cortex-m4
-    include_paths:
-        - source/bootloader/hal/freescale/mk20dx128
-        - source/common/cmsis_core/freescale/mk20dx128
-        - source/common/rtos
-    source_paths:
-        - source/bootloader/hal/freescale/mk20dx128
-        - source/common/cmsis_core/freescale/mk20dx128
-        - source/common/rtos
-    source_files:
-        - source/common/cmsis_core/freescale/mk20dx128/system_MK20D5.c
-        - source/common/rtos/HAL_CM3.c
-        - source/bootloader/hal/freescale/mk20dx128/flash_erase_read_write.c
-    macros:
-        - TARGET_MK20DX
-        - K20DX128
-        - CPU_MK20DX128VFM5
-        - __RTX
-        - BOOTLOADER
+    common:
+        include_paths:
+            - examples/blinky
+        source_paths:
+            - examples/blinky
+        source_files:
+            - examples/blinky/main.cpp
+        macros:
+            - TARGET_K20D50M
+            - TARGET_M4
+            - TARGET_Freescale
+            - __CORTEX_M4
+            - ARM_MATH_CM4
+            - __MBED__=1
     tool_specific:
         uvision:
-            include_paths:
-                - source/common/cmsis_core/freescale/mk20dx128/arm
-            source_paths:
-                - source/common/cmsis_core/freescale/mk20dx128/arm
-            source_files:
-                - source/common/cmsis_core/freescale/mk20dx128/arm/startup_MK20D5.s
-            linker_file:
-                - source/common/cmsis_core/freescale/mk20dx128/arm/MK20D5_0x0000.sct
+            mcu:
+                - MK20DX128xxx5
+            macros:
+                - TOOLCHAIN_ARM_STD
+                - __ASSERT_MSG
+                - TOOLCHAIN_ARM
             misc:
-                c_settings:
-                    - one_elf_per_function
-                    - O3
-                c_command_line:
-                    - --debug
-                    - --c99
-                    - -g
+                Cads:
+                    MiscControls:
+                        - --debug
+                        - -g
+                        - --gnu
+                    Optim:
+                        - 1
+                    uC99:
+                        - enable
+                    OneElfS:
+                        - enable
+        gcc_arm:
+            mcu:
+                - MK20DX128xxx5
+            macros:
+                - TOOLCHAIN_ARM_GCC
+            misc:
+                libraries:
+                    - m
+                    - gcc
+                    - c
+                    - nosys
+                optimization:
+                    - O1
+                compiler_options:
+                    - g
+                    - ggdb
+                    - Wall
+                    - fno-strict-aliasing
+                    - ffunction-sections
+                    - fdata-sections
+                    - fno-exceptions
+                    - fno-delete-null-pointer-checks
+                    - fmessage-length=0
+                    - fno-builtin
+
 </pre>
 
 Notes
