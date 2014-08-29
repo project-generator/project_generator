@@ -48,7 +48,7 @@ def process_all_projects(dic, ide):
     """ Generates all project. """
     projects = []
     yaml_files = []
-    for k,v in dic['projects'].items():
+    for k,v in dic.items():
         projects.append(k);
 
     for project in projects:

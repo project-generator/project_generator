@@ -15,6 +15,7 @@
 from os.path import basename
 from export_generator import Exporter
 from uvision_mcu_definitions import get_mcu_definition
+import copy
 
 class Uvision4(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
@@ -263,7 +264,8 @@ class Uvision4(Exporter):
 
     def parse_specific_options(self, data):
         """ Parse all uvision specific setttings. """
-        data.update(self.uvision_settings) # set specific options to default values
+        default_set = copy.deepcopy(self.uvision_settings)
+        data.update(default_set) # set specific options to default values
         for dic in data['misc']:
             for k,v in dic.items():
                 if k == 'ArmAdsMisc':
@@ -352,6 +354,8 @@ class Uvision4(Exporter):
 
         mcu_def_dic = get_mcu_definition(expanded_dic['mcu'])
         self.append_mcu_def(expanded_dic, mcu_def_dic)
+
+        expanded_dic['Cads']['Optim'][0] += 1 #optimization set to correct value, default not used
 
         # Project file
         self.gen_file('uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], ide)

@@ -47,7 +47,7 @@ class YAML_parser():
         try:
             for k,v in common_attributes.items():
                 if k == 'group_name':
-                    group_name = v
+                    group_name = v[0]
         except KeyError:
             pass
         self.data['source_files_c'] = {}
