@@ -29,17 +29,17 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>20</version>
-          <state>{{target_core}}</state>
+          <version>{{iar_settings['Variant']['version']}}</version>
+          <state>{{iar_settings['Variant']['state']}}</state>
         </option>
         <option>
           <name>GEndianMode</name>
-          <state>0</state>
+          <state>{{iar_settings['GEndianMode']['state']}}</state>
         </option>
         <option>
           <name>Input variant</name>
-          <version>3</version>
-          <state>1</state>
+          <version>{{iar_settings['GEndianMode']['version']}}</version>
+          <state>{{iar_settings['GEndianMode']['state']}}</state>
         </option>
         <option>
           <name>Input description</name>
@@ -65,17 +65,17 @@
         </option>
         <option>
           <name>OGCoreOrChip</name>
-          <state>0</state>
+          <state>{{iar_settings['OGCoreOrChip']['state']}}</state>
         </option>
         <option>
           <name>GRuntimeLibSelect</name>
-          <version>0</version>
-          <state>2</state>
+          <version>{{iar_settings['GRuntimeLibSelect']['version']}}</version>
+          <state>{{iar_settings['GRuntimeLibSelect']['state']}}</state>
         </option>
         <option>
           <name>GRuntimeLibSelectSlave</name>
-          <version>0</version>
-          <state>2</state>
+          <version>{{iar_settings['GRuntimeLibSelectSlave']['version']}}</version>
+          <state>{{iar_settings['GRuntimeLibSelectSlave']['state']}}</state>
         </option>
         <option>
           <name>RTDescription</name>
@@ -91,31 +91,31 @@
         </option>
         <option>
           <name>GeneralEnableMisra</name>
-          <state>0</state>
+          <state>{{iar_settings['GRuntimeLibSelectSlave']['state']}}</state>
         </option>
         <option>
           <name>GeneralMisraVerbose</name>
-          <state>0</state>
+          <state>{{iar_settings['GeneralMisraVerbose']['state']}}</state>
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state></state>
+          <state>{{iar_settings['OGChipSelectEditMenu']['state']}}</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
-          <state>0</state>
+          <state>{{iar_settings['GenLowLevelInterface']['state']}}</state>
         </option>
         <option>
           <name>GEndianModeBE</name>
-          <state>1</state>
+          <state>{{iar_settings['GEndianModeBE']['state']}}</state>
         </option>
         <option>
           <name>OGBufferedTerminalOutput</name>
-          <state>0</state>
+          <state>{{iar_settings['OGBufferedTerminalOutput']['state']}}</state>
         </option>
         <option>
           <name>GenStdoutInterface</name>
-          <state>0</state>
+          <state>{{iar_settings['GenStdoutInterface']['state']}}</state>
         </option>
         <option>
           <name>GeneralMisraRules98</name>
@@ -124,7 +124,7 @@
         </option>
         <option>
           <name>GeneralMisraVer</name>
-          <state>0</state>
+          <state>{{iar_settings['GeneralMisraVer']['state']}}</state>
         </option>
         <option>
           <name>GeneralMisraRules04</name>
@@ -137,21 +137,21 @@
         </option>
         <option>
           <name>GFPUCoreSlave</name>
-          <version>20</version>
-          <state>{{target_core}} </state>
+          <version>{{iar_settings['GFPUCoreSlave']['version']}}</version>
+          <state>{{iar_settings['GFPUCoreSlave']['state']}} </state>
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>20</version>
-          <state>{{target_core}}</state>
+          <version>{{iar_settings['GBECoreSlave']['version']}}</version>
+          <state>{{iar_settings['GBECoreSlave']['state']}}</state>
         </option>
         <option>
           <name>OGUseCmsis</name>
-          <state>0</state>
+          <state>{{iar_settings['OGUseCmsis']['state']}}</state>
         </option>
         <option>
           <name>OGUseCmsisDspLib</name>
-          <state>0</state>
+          <state>{{iar_settings['OGUseCmsisDspLib']['state']}}</state>
         </option>
       </data>
     </settings>

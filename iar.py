@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from export_generator import Exporter
+from iar_mcu_definitions import get_mcu_definition
 
 class IAR(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
@@ -21,6 +22,73 @@ class IAR(Exporter):
         "cortex-m3" : 38,
         "cortex-m4" : 39,
         "cortex-m4f" : 40,
+    }
+
+    iar_settings = {
+        'GEndianMode' : {
+            'state' : 0,
+        },
+        'Input variant' : {
+            'version' : 0,
+            'state' : 0,
+        },
+        'Output variant' : {
+            'state' : 0,
+        },
+        'GOutputBinary' : {
+            'state' : 0,
+        },
+        'FPU' : {
+            'version' : 2,
+            'state' : 0,
+        },
+        'OGCoreOrChip' : {
+            'state' : 0,
+        },
+        'GRuntimeLibSelect' : {
+            'version' : 0,
+            'state' : 0,
+        },
+        'GRuntimeLibSelectSlave' : {
+            'version' : 0,
+            'state' : 0,
+        },
+        'GeneralEnableMisra' : {
+            'state' : 0,
+        },
+        'GeneralMisraVerbose' : {
+            'state' : 0,
+        },
+        'OGChipSelectEditMenu' : {
+            'state' : 0,
+        },
+        'GenLowLevelInterface' : {
+            'state' : 0,
+        },
+        'GEndianModeBE' : {
+            'state' : 0,
+        },
+        'OGBufferedTerminalOutput' : {
+            'state' : 0,
+        },
+        'GenStdoutInterface' : {
+            'state' : 0,
+        },
+        'GeneralMisraVer' : {
+            'state' : 0,
+        },
+        'GFPUCoreSlave' : {
+            'state' : 0,
+        },
+        'GBECoreSlave' : {
+            'state' : 0,
+        },
+        'OGUseCmsis' : {
+            'state' : 0,
+        },
+        'OGUseCmsisDspLib' : {
+            'state' : 0,
+        },
     }
 
     def expand_data(self, old_data, new_data, attribute, group):
@@ -72,7 +140,9 @@ class IAR(Exporter):
         for group in groups:
             expanded_dic['groups'][group] = []
         self.iterate(data, expanded_dic)
-        expanded_dic['target_core'] = self.find_target_core(expanded_dic)
+        # expanded_dic['target_core'] = self.find_target_core(expanded_dic)
+        expanded_dic['iar_settings'] = {}
+        expanded_dic['iar_settings'].update(get_mcu_definition(expanded_dic['mcu']))
 
         self.gen_file('iar.ewp.tmpl' , expanded_dic, '%s.ewp' % data['name'], ide)
         self.gen_file('iar.eww.tmpl' , expanded_dic, '%s.eww' % data['name'], ide)
