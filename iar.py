@@ -25,6 +25,9 @@ class IAR(Exporter):
     }
 
     iar_settings = {
+        'Variant' : {
+            'state' : 0,
+        },
         'GEndianMode' : {
             'state' : 0,
         },
@@ -40,9 +43,6 @@ class IAR(Exporter):
         },
         'FPU' : {
             'version' : 2,
-            'state' : 0,
-        },
-        'OGCoreOrChip' : {
             'state' : 0,
         },
         'GRuntimeLibSelect' : {
@@ -89,6 +89,283 @@ class IAR(Exporter):
         'OGUseCmsisDspLib' : {
             'state' : 0,
         },
+        'CCPreprocFile' : {
+            'state' : 0,
+        },
+        'CCPreprocComments' : {
+            'state' : 0,
+        },
+        'CCPreprocLine' : {
+            'state' : 0,
+        },
+        'CCListCFile' : {
+            'state' : 0,
+        },
+        'CCListCMnemonics' : {
+            'state' : 0,
+        },
+        'CCListCMessages' : {
+            'state' : 0,
+        },
+        'CCListAssFile' : {
+            'state' : 0,
+        },
+        'CCListAssSource' : {
+            'state' : 0,
+        },
+        'CCEnableRemarks' : {
+            'state' : [],
+        },
+        'CCDiagRemark' : {
+            'state' : 0,
+        },
+        'CCDiagWarning' : {
+            'state' : 0,
+        },
+        'CCDiagError' : {
+            'state' : 0,
+        },
+        'CCObjPrefix' : {
+            'state' : 0,
+        },
+        'CCAllowList' : {
+            'version' : 1,
+            'state' : 1111111,
+        },
+        'CCDebugInfo' : {
+            'state' : 1,
+        },
+        'IEndianMode' : {
+            'state' : 1,
+        },
+        'IProcessor' : {
+            'state' : 1,
+        },
+        'IExtraOptionsCheck' : {
+            'state' : 0,
+        },
+        'IExtraOptions' : {
+            'state' : 0,
+        },
+        'CCLangConformance' : {
+            'state' : 0,
+        },
+        'CCSignedPlainChar' : {
+            'state' : 1,
+        },
+        'CCRequirePrototypes' : {
+            'state' : 0,
+        },
+        'CCMultibyteSupport' : {
+            'state' : 0,
+        },
+        'CCDiagWarnAreErr' : {
+            'state' : 0,
+        },
+        'IFpuProcessor' : {
+            'state' : 0,
+        },
+        'OutputFile' : {
+            'state' : '',
+        },
+        'CCLibConfigHeader' : {
+            'state' : 0,
+        },
+        'PreInclude' : {
+            'state' : 0,
+        },
+        'CompilerMisraOverride' : {
+            'state' : 0,
+        },
+        'CCStdIncCheck' : {
+            'state' : 0,
+        },
+        'CCCodeSection' : {
+            'state' : '.text',
+        },
+        'IInterwork2' : {
+            'state' : 0,
+        },
+        'IProcessorMode2' : {
+            'state' : 0,
+        },
+        'IInterwork2' : {
+            'state' : 0,
+        },
+        'CCOptStrategy' : {
+            'version' : 0,
+            'state' : 0,
+        },
+        'CCOptLevelSlave' : {
+            'state' : 0,
+        },
+        'CompilerMisraRules98' : {
+            'version' : 0,
+            'state' : 0,
+        },
+        'CompilerMisraRules04' : {
+            'version': 0,
+            'state' : 0,
+        },
+        'CCPosIndRopi' : {
+            'state' : 0,
+        },
+        'IccLang' : {
+            'state' : 0,
+        },
+        'CCPosIndRwpi' : {
+            'state' : 0,
+        },
+        'IccCDialect' : {
+            'state' : 1,
+        },
+        'IccAllowVLA' : {
+            'state' : 0,
+        },
+        'IccCppDialect' : {
+            'state' : 0,
+        },
+        'IccExceptions' : {
+            'state' : 0,
+        },
+        'IccRTTI' : {
+            'state' : 0,
+        },
+        'IccStaticDestr' : {
+            'state' : 1,
+        },
+        'IccCppInlineSemantics' : {
+            'state' : 0,
+        },
+        'IccCmsis' : {
+            'state' : 1,
+        },
+        'IccFloatSemantics' : {
+            'state' : 0,
+        },
+        'AObjPrefix' : {
+            'state' : 0,
+        },
+        'AEndian' : {
+            'state' : 0,
+        },
+        'ACaseSensitivity' : {
+            'state' : 0,
+        },
+        'MacroChars' : {
+            'state' : 0,
+        },
+        'AWarnEnable' : {
+            'state' : 0,
+        },
+        'AWarnWhat' : {
+            'state' : 0,
+        },
+        'AWarnOne' : {
+            'state' : 0,
+        },
+        'AWarnRange1' : {
+            'state' : 0,
+        },
+        'AWarnRange2' : {
+            'state' : 0,
+        },
+        'ADebug' : {
+            'state' : 0,
+        },
+        'AltRegisterNames' : {
+            'state' : 0,
+        },
+        'ADefines' : {
+            'state' : 0,
+        },
+        'AList' : {
+            'state' : 0,
+        },
+        'AListHeader' : {
+            'state' : 0,
+        },
+        'AListing' : {
+            'state' : 0,
+        },
+        'Includes' : {
+            'state' : 0,
+        },
+        'MacDefs' : {
+            'state' : 0,
+        },
+        'MacExps' : {
+            'state' : 0,
+        },
+        'MacExec' : {
+            'state' : 0,
+        },
+        'OnlyAssed' : {
+            'state' : 0,
+        },
+        'MultiLine' : {
+            'state' : 0,
+        },
+        'PageLengthCheck' : {
+            'state' : 0,
+        },
+        'PageLength' : {
+            'state' : 0,
+        },
+        'TabSpacing' : {
+            'state' : 0,
+        },
+        'AXRefDefines' : {
+            'state' : 0,
+        },
+        'AXRefInternal' : {
+            'state' : 0,
+        },
+        'AXRefDual' : {
+            'state' : 0,
+        },
+        'AProcessor' : {
+            'state' : 0,
+        },
+        'AFpuProcessor' : {
+            'state' : 0,
+        },
+        'AOutputFile' : {
+            'state' : 0,
+        },
+        'AMultibyteSupport' : {
+            'state' : 0,
+        },
+        'ALimitErrorsCheck' : {
+            'state' : 0,
+        },
+        'ALimitErrorsEdit' : {
+            'state' : 0,
+        },
+        'AIgnoreStdInclude' : {
+            'state' : 0,
+        },
+        'AUserIncludes' : {
+            'state' : 0,
+        },
+        'AExtraOptionsCheckV2' : {
+            'state' : 0,
+        },
+        'AExtraOptionsV2' : {
+            'state' : 0,
+        },
+        'OOCOutputFormat' : {
+            'state' : 0,
+        },
+        'OCOutputOverride' : {
+            'state' : 0,
+        },
+        'OOCCommandLineProducer' : {
+            'state' : 0,
+        },
+        'OOCObjCopyEnable' : {
+            'state' : 1,
+        },
     }
 
     def expand_data(self, old_data, new_data, attribute, group):
@@ -131,6 +408,21 @@ class IAR(Exporter):
                 return v
         return core_dic['cortex-m0'] #def cortex-m0 if not defined otherwise
 
+    def parse_specific_options(self, data):
+        """ Parse all IAR specific setttings. """
+        data['iar_settings'].update(self.iar_settings) # set specific options to default values
+        for dic in data['misc']:
+            #for k,v in dic.items():
+            self.set_specific_settings(dic, data)
+
+    def set_specific_settings(self, value_list, data):
+        for k,v in value_list.items():
+            if v[0] == 'enable':
+                v[0] = 1
+            elif v[0] == 'disable':
+                v[0] = 0
+            data['iar_settings'][k]['state'] = v[0]
+
     def generate(self, data, ide):
         """ Processes groups and misc options specific for IAR, and run generator """
         expanded_dic = data.copy()
@@ -142,6 +434,7 @@ class IAR(Exporter):
         self.iterate(data, expanded_dic)
         # expanded_dic['target_core'] = self.find_target_core(expanded_dic)
         expanded_dic['iar_settings'] = {}
+        self.parse_specific_options(expanded_dic)
         expanded_dic['iar_settings'].update(get_mcu_definition(expanded_dic['mcu']))
 
         self.gen_file('iar.ewp.tmpl' , expanded_dic, '%s.ewp' % data['name'], ide)

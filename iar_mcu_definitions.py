@@ -20,24 +20,12 @@ def get_mcu_definition(name):
 
 MCU_def = {
     'LPC1768' : {
-            # 'Variant' : {
-            #     'version' : 20,
-            #     'state' : 0,
-            # },
-            # 'GFPUCoreSlave' : {
-            #     'version' : 20,
-            #     'state' : 0,
-            # },
-            # 'GBECoreSlave' : {
-            #     'version' : 20,
-            #     'state' : 0,
-            # },
-            'OGChipSelectEditMenu' : {
-                'state' : 'LPC1768	NXP LPC1768',
-            },
-            'OGCoreOrChip' : {
-                'state' : '1'
-            }
+        'OGChipSelectEditMenu' : {
+            'state' : 'LPC1768	NXP LPC1768',
+        },
+        'OGCoreOrChip' : {
+            'state' : '1'
+        }
     }
 
 }

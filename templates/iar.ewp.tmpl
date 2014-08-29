@@ -164,7 +164,7 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state></state>
+          {% for s in macros %}<state>{{s}}</state>{% endfor %}
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -303,7 +303,7 @@
         </option>
         <option>
           <name>CCCodeSection</name>
-          <state>.text</state>
+          <state></state>
         </option>
         <option>
           <name>IInterwork2</name>
