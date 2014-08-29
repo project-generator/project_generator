@@ -353,6 +353,8 @@ class Uvision4(Exporter):
         mcu_def_dic = get_mcu_definition(expanded_dic['mcu'])
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
+        expanded_dic['Cads']['Optim'][0] += 1 #optimization set to correct value, default not used
+
         # Project file
         self.gen_file('uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], ide)
         self.gen_file('uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], ide)
