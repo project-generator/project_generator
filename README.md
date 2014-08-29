@@ -7,6 +7,8 @@ Sharing project files decoding XML in commit messages because someone was debugg
 This project allows you to define a project in text using YAML files and generate IDE project files
 based on the rules defined in records. No one should ever commit IDE specific project file to a repository again!
 
+All open sourced - licensed under Apache v2.0 license.
+
 ### Current Status
 
 The project is in alpha phase. Check issues for the ongoing tasks or todo tasks.
