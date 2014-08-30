@@ -11,12 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from uvision4 import Uvision4
+from uvision import Uvision
 from gccarm import GccArm
 from iar import IAR
 
 IDE_SUPPORTED = {
-    'uvision': Uvision4,
+    'uvision': Uvision,
     'gcc_arm': GccArm,
     'iar' : IAR,
 }

@@ -12,8 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from export_generator import Exporter
+from iar_mcu_definitions import get_mcu_definition
+from iar_definitions import IARDefinitions
 
 class IAR(Exporter):
+
+    def __init__(self):
+        self.definitions = IARDefinitions()
+
     source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
     core_dic = {
         "cortex-m0" : 34,
@@ -63,6 +69,21 @@ class IAR(Exporter):
                 return v
         return core_dic['cortex-m0'] #def cortex-m0 if not defined otherwise
 
+    def parse_specific_options(self, data):
+        """ Parse all IAR specific setttings. """
+        data['iar_settings'].update(self.definitions.iar_settings) # set specific options to default values
+        for dic in data['misc']:
+            #for k,v in dic.items():
+            self.set_specific_settings(dic, data)
+
+    def set_specific_settings(self, value_list, data):
+        for k,v in value_list.items():
+            if v[0] == 'enable':
+                v[0] = 1
+            elif v[0] == 'disable':
+                v[0] = 0
+            data['iar_settings'][k]['state'] = v[0]
+
     def generate(self, data, ide):
         """ Processes groups and misc options specific for IAR, and run generator """
         expanded_dic = data.copy()
@@ -72,7 +93,10 @@ class IAR(Exporter):
         for group in groups:
             expanded_dic['groups'][group] = []
         self.iterate(data, expanded_dic)
-        expanded_dic['target_core'] = self.find_target_core(expanded_dic)
+
+        expanded_dic['iar_settings'] = {}
+        self.parse_specific_options(expanded_dic)
+        expanded_dic['iar_settings'].update(self.definitions.get_mcu_definition(expanded_dic['mcu']))
 
         self.gen_file('iar.ewp.tmpl' , expanded_dic, '%s.ewp' % data['name'], ide)
         self.gen_file('iar.eww.tmpl' , expanded_dic, '%s.eww' % data['name'], ide)

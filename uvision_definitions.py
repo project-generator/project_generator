@@ -12,15 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename
-from export_generator import Exporter
-from uvision_mcu_definitions import get_mcu_definition
-import copy
+class uVisionDefinitions():
+    def get_mcu_definition(self, name):
+        try:
+            return self.mcu_def[name]
+        except KeyError:
+            raise RuntimeError("Mcu was not recognized for uvision. Please check mcu_def dictionary.")
 
-class Uvision4(Exporter):
-    optimization_options = ['O0', 'O1', 'O2', 'O3']
-    source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
-    file_types = {'cpp': 8, 'c' : 1, 's' : 2 ,'obj' : 3, 'lib' : 4}
+    # definition dictionaries, please visit wiki page for more information
+    mcu_def = {
+        'MK20DX128xxx5' : {
+            'TargetOption' : {
+                'Device' : 'MK20DX128xxx5',
+                'Vendor' : 'Freescale Semiconductor',
+                'Cpu'    : 'IRAM(0x1FFFE000-0x1FFFFFFF) IRAM2(0x20000000-0x20001FFF) IROM(0x0-0x1FFFF) IROM2(0x10000000-0x10007FFF) CLOCK(12000000) CPUTYPE("Cortex-M4") ELITTLE',
+                'FlashDriverDll' : 'ULP2CM3(-O2510 -S0 -C0 -FO15 -FD20000000 -FC800 -FN2 -FF0MK_P128_50MHZ -FS00 -FL020000 -FF1MK_D32_50MHZ -FS110000000 -FL108000)',
+                'DeviceId' : 6206,
+                'SFDFile' : 'SFD\Freescale\Kinetis\MK20D5.sfr',
+            }
+        },
+        'LPC1768' : {
+            'TargetOption' : {
+                'Device' : 'LPC1768',
+                'Vendor' : 'NXP',
+                'Cpu'    : 'IRAM(0x10000000-0x10007FFF) IRAM2(0x2007C000-0x20083FFF) IROM(0-0x7FFFF) CLOCK(12000000) CPUTYPE("Cortex-M3")',
+                'FlashDriverDll' : 'UL2CM3(-O463 -S0 -C0 -FO7 -FD10000000 -FC800 -FN1 -FF0LPC_IAP_512 -FS00 -FL080000)',
+                'DeviceId' : 4868,
+                'SFDFile' : 'SFD\NXP\LPC176x5x\LPC176x5x.SFR',
+            }
+        }
+    }
 
     uvision_settings = {
         # C/C++ settings
@@ -235,128 +256,3 @@ class Uvision4(Exporter):
             'FcArmLst' : 0,
         }
     }
-
-    def __init__(self):
-        self.data = []
-
-    def expand_data(self, old_data, new_data, attribute, group):
-        """ data expansion - uvision needs filename and path separately. """
-        if group == 'Sources':
-            old_group = None
-        else:
-            old_group = group
-        for file in old_data[old_group]:
-            if file:
-                extension = file.split(".")[-1]
-                new_file = {"path" : file, "name" : basename(file), "filetype" : self.file_types[extension]}
-                new_data['groups'][group].append(new_file)
-
-    def iterate(self, data, expanded_data):
-        """ Iterate through all data, store the result expansion in extended dictionary. """
-        for attribute in self.source_files_dic:
-            for dic in data[attribute]:
-                for k,v in dic.items():
-                    if k == None:
-                        group = 'Sources'
-                    else:
-                        group = k
-                    self.expand_data(dic, expanded_data, attribute, group)
-
-    def parse_specific_options(self, data):
-        """ Parse all uvision specific setttings. """
-        default_set = copy.deepcopy(self.uvision_settings)
-        data.update(default_set) # set specific options to default values
-        for dic in data['misc']:
-            for k,v in dic.items():
-                if k == 'ArmAdsMisc':
-                    self.set_target_options(v, data, k)
-                elif k == 'TargetOption':
-                    self.set_user_options(v, data, k)
-                elif k == 'DebugOption':
-                    raise RuntimeError("Option not supported yet.")
-                elif k == 'Utilities':
-                    raise RuntimeError("Option not supported yet.")
-                else:
-                    self.set_specific_settings(v, data, k)
-
-    def set_specific_settings(self, value_list, data, uvision_dic):
-        for option in value_list:
-            if value_list[option][0] == 'enable':
-                value_list[option] = 1
-            elif value_list[option][0] == 'disable':
-                value_list[option] = 0
-            data[uvision_dic][option] = value_list[option]
-
-    def set_target_options(self, value_list, data, uvision_dic):
-        for option in value_list:
-            if option.startswith('OCR_'):
-                for k,v in value_list[option].items():
-                    if v[0] == 'enable':
-                        value_list[option][k] = 1
-                    elif v[0] == 'disable':
-                        value_list[option][k] = 0
-                    data[uvision_dic][option][k] = value_list[option][k]
-            else:
-                if value_list[option][0] == 'enable':
-                    value_list[option] = 1
-                elif value_list[option][0] == 'disable':
-                    value_list[option] = 0
-                data[uvision_dic][option] = value_list[option]
-
-    def set_user_options(self, value_list, data, uvision_dic):
-        for option in value_list:
-            if option.startswith('Before'):
-                for k,v in value_list[option].items():
-                    if v[0] == 'enable':
-                        value_list[option][k] = 1
-                    elif v[0] == 'disable':
-                        value_list[option][k] = 0
-                    data[uvision_dic][option][k] = value_list[option][k]
-            else:
-                if value_list[option][0] == 'enable':
-                    value_list[option] = 1
-                elif value_list[option][0] == 'disable':
-                    value_list[option] = 0
-                data[uvision_dic][option] = value_list[option]
-
-    def get_groups(self, data):
-        """ Get all groups defined. """
-        groups = []
-        for attribute in self.source_files_dic:
-            for dic in data[attribute]:
-                if dic:
-                    for k,v in dic.items():
-                        if k == None:
-                            k = 'Sources'
-                        if k not in groups:
-                            groups.append(k)
-        return groups
-
-    def append_mcu_def(self, data, mcu_def):
-        """ Get MCU definitons as Flash algo, RAM, ROM size , etc. """
-        try:
-            data['TargetOption'].update(mcu_def['TargetOption'])
-        except KeyError:
-            # does not exist, create it
-            data['TargetOption'].update(mcu_def['TargetOption'])
-
-    def generate(self, data, ide):
-        """ Processes groups and misc options specific for uVision, and run generator """
-        expanded_dic = data.copy()
-
-        groups = self.get_groups(data)
-        expanded_dic['groups'] = {}
-        for group in groups:
-            expanded_dic['groups'][group] = []
-        self.iterate(data, expanded_dic)
-
-        self.parse_specific_options(expanded_dic)
-
-        mcu_def_dic = get_mcu_definition(expanded_dic['mcu'])
-        self.append_mcu_def(expanded_dic, mcu_def_dic)
-
-        expanded_dic['Cads']['Optim'][0] += 1 #optimization set to correct value, default not used
-
-        # Project file
-        self.gen_file('uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], ide)
-        self.gen_file('uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], ide)
