@@ -18,7 +18,7 @@ from uvision_mcu_definitions import get_mcu_definition
 import copy
 from uvision_definitions import uVisionDefinitions
 
-class Uvision4(Exporter):
+class Uvision(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
     source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
     file_types = {'cpp': 8, 'c' : 1, 's' : 2 ,'obj' : 3, 'lib' : 4}
