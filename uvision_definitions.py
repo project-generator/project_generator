@@ -13,13 +13,17 @@
 # limitations under the License.
 
 class uVisionDefinitions():
+
     def get_mcu_definition(self, name):
+        """ If MCU found, returns its definition dic, error otherwise. """
         try:
             return self.mcu_def[name]
         except KeyError:
             raise RuntimeError("Mcu was not recognized for uvision. Please check mcu_def dictionary.")
 
-    # definition dictionaries, please visit wiki page for more information
+    # MCU definitions which are currently supported. Add a new one, define a name as it is
+    # in uVision, create an empty project for that MCU, open the project file (uvproj) in any text
+    # editor, find out the values of Device, Vendor and so on. Those value define the target.
     mcu_def = {
         'MK20DX128xxx5' : {
             'TargetOption' : {
@@ -46,96 +50,96 @@ class uVisionDefinitions():
     uvision_settings = {
         # C/C++ settings
         'Cads' : {
-            'interw' : 0,
-            'Optim' : 0,
-            'oTime' : 0,
-            'SplitLS' : 0,
-            'OneElfS' : 0,
-            'Strict' : 0,
-            'EnumInt' : 0,
-            'PlainCh' : 0,
-            'Ropi' : 0,
-            'Rwpi' : 0,
-            'wLevel' : 0,
-            'uThumb' : 0,
-            'uSurpInc' : 0,
-            'uC99' : 0,
-            'MiscControls': [],
+            'interw' : 0,   # Execute-only code
+            'Optim' : 0,    # Optimization level
+            'oTime' : 0,    # Optimize for time
+            'SplitLS' : 0,  # Split load and store multiple
+            'OneElfS' : 0,  # One elf section per function
+            'Strict' : 0,   # Strict ANSI C
+            'EnumInt' : 0,  # Enum container always int
+            'PlainCh' : 0,  # Plain char is signed
+            'Ropi' : 0,     # Read-only position independent code
+            'Rwpi' : 0,     # Read-write position independent code
+            'wLevel' : 0,   # Warnings level
+            'uThumb' : 0,   # Thumb mode
+            'uSurpInc' : 0, # No auto includes
+            'uC99' : 0,     # C99 mode
+            'MiscControls': [], # Misc controls
         },
 
         # Linker settings
         'LDads' : {
-           'umfTarg' : 0,
-           'Ropi' : 0,
-           'Rwpi' : 0,
-           'noStLib' : 0,
-           'RepFail' : 0,
+           'umfTarg' : 0,           # Use Memory from Target dialog window
+           'Ropi' : 0,              # Make RO section position independent
+           'Rwpi' : 0,              # Make RW section position independent
+           'noStLib' : 0,           # Dont search Standard libraries
+           'RepFail' : 0,           # Report might fail conditions as errors
            'useFile' : 0,
-           'TextAddressRange' : 0,
-           'DataAddressRange' : 0,
+           'TextAddressRange' : 0,  # RO address range
+           'DataAddressRange' : 0,  # RW address range
            'IncludeLibs' : 0,
            'IncludeLibsPath' : 0,
-           'Misc' : 0,
-           'LinkerInputFile' : 0,
-           'DisabledWarnings' : [],
+           'Misc' : 0,              # Misc controls
+           'LinkerInputFile' : 0,   # Scatter file
+           'DisabledWarnings' : [], # Disable warnings
         },
 
         # Assembly settings
         'Aads' : {
-            'interw' : 0,
-            'Ropi' : 0,
-            'Rwpi' : 0,
-            'thumb' : 0,
-            'SplitLS' : 0,
+            'interw' : 0,           # Execute-only code
+            'Ropi' : 0,             # RO position independent
+            'Rwpi' : 0,             # RW position independent
+            'thumb' : 0,            # Thumb mode
+            'SplitLS' : 0,          # Split load and store multiple
             'SwStkChk' : 0,
-            'NoWarn' : 0,
-            'uSurpInc' : 0,
+            'NoWarn' : 0,           # No warnings
+            'uSurpInc' : 0,         # No auto includes
             'VariousControls' : 0,
-            'MiscControls' : 0,
-            'Define' : [],
-            'Undefine' : 0,
-            'IncludePath' : [],
+            'MiscControls' : 0,     # Misc controls
+            'Define' : [],          # Define
+            'Undefine' : 0,         # Undefine
+            'IncludePath' : [],     # Include paths
             'VariousControls' : 0,
         },
 
         # User settings
         'TargetOption' : {
-            'CreateExecutable' : 0,
-            'CreateLib' : 0,
-            'CreateHexFile' : 0,
-            'DebugInformation' : 0,
-            'BrowseInformation' : 0,
-            'CreateBatchFile' : 0,
-            'BeforeCompile' : {
-                'RunUserProg1' : 0,
-                'UserProg1Name' : 0,
-                'RunUserProg2' : 0,
-                'UserProg2Name' : 0,
-                'UserProg1Dos16Mode' : 0,
-                'UserProg2Dos16Mode' : 0,
+            'CreateExecutable' : 0,     # Create executable
+            'CreateLib' : 0,            # Create library
+            'CreateHexFile' : 0,        # Create hex file
+            'DebugInformation' : 0,     # Debug information
+            'BrowseInformation' : 0,    # Browse information
+            'CreateBatchFile' : 0,      # Create batch file
+            'BeforeCompile' : {         # Run user program before compilation
+                'RunUserProg1' : 0,     # Run #1
+                'UserProg1Name' : 0,    # Program #1 name
+                'RunUserProg2' : 0,     # Run #2
+                'UserProg2Name' : 0,    # Program #2 name
+                'UserProg1Dos16Mode' : 0,   # Dos16 mode for #1
+                'UserProg2Dos16Mode' : 0,   # Dos16 mode for #2
             },
-            'BeforeMake' : {
-                'RunUserProg1' : 0,
-                'UserProg1Name' : 0,
-                'RunUserProg2' : 0,
-                'UserProg2Name' : 0,
-                'UserProg1Dos16Mode' : 0,
-                'UserProg2Dos16Mode' : 0,
+            'BeforeMake' : {                # User programs before build
+                'RunUserProg1' : 0,         # Run #1
+                'UserProg1Name' : 0,        # Program #1 name
+                'RunUserProg2' : 0,         # Run #2
+                'UserProg2Name' : 0,        # Program #2 name
+                'UserProg1Dos16Mode' : 0,   # Dos16 mode for #1
+                'UserProg2Dos16Mode' : 0,   # Dos16 mode for #2
             },
             'AfterMake' : {
-                'RunUserProg1' : 0,
-                'UserProg1Name' : 0,
-                'RunUserProg2' : 0,
-                'UserProg2Name' : 0,
-                'UserProg1Dos16Mode' : 0,
-                'UserProg2Dos16Mode' : 0,
+                'RunUserProg1' : 0,         # Run #2
+                'UserProg1Name' : 0,        # Program #1 name
+                'RunUserProg2' : 0,         # Run #2
+                'UserProg2Name' : 0,        # Program #2 name
+                'UserProg1Dos16Mode' : 0,   # Dos16 mode for #1
+                'UserProg2Dos16Mode' : 0,   # Dos16 mode for #2
             }
         },
 
         # Target settings
         'ArmAdsMisc' : {
-            'useUlib' : 0,
-            'NoZi1' : 0,
+            'useUlib' : 0,  # use MicroLIB
+            'NoZi1' : 0,    #
             'NoZi2' : 0,
             'NoZi3' : 0,
             'NoZi4' : 0,
@@ -193,7 +197,7 @@ class uVisionDefinitions():
         },
 
         'CommonProperty' : {
-            'UseCPPCompile' : 0,
+            'UseCPPCompile' : 0,    # Use CPP compiler for C files
             'RVCTCodeConst' : 0,
             'RVCTZI' : 0,
             'RVCTOtherData' : 0,
