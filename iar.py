@@ -13,6 +13,7 @@
 # limitations under the License.
 from export_generator import Exporter
 from iar_definitions import IARDefinitions
+import copy
 
 class IAR(Exporter):
 
@@ -70,7 +71,7 @@ class IAR(Exporter):
 
     def parse_specific_options(self, data):
         """ Parse all IAR specific setttings. """
-        data['iar_settings'].update(self.definitions.iar_settings) # set specific options to default values
+        data['iar_settings'].update(copy.deepcopy(self.definitions.iar_settings)) # set specific options to default values
         for dic in data['misc']:
             #for k,v in dic.items():
             self.set_specific_settings(dic, data)

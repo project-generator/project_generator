@@ -124,7 +124,7 @@ class Uvision(Exporter):
             data['TargetOption'].update(mcu_def['TargetOption'])
         except KeyError:
             # does not exist, create it
-            data['TargetOption'].update(mcu_def['TargetOption'])
+            data['TargetOption'] = mcu_def['TargetOption']
 
     def generate(self, data, ide):
         """ Processes groups and misc options specific for uVision, and run generator """
