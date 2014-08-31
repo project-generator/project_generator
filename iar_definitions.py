@@ -27,7 +27,7 @@ class IARDefinitions():
     mcu_def = {
         'LPC1768' : {
             'OGChipSelectEditMenu' : {
-                'state' : 'LPC1768  NXP LPC1768',
+                'state' : 'LPC1768	NXP LPC1768',
             },
             'OGCoreOrChip' : {
                 'state' : 1,
@@ -35,7 +35,7 @@ class IARDefinitions():
         },
         'MKL25Z128xxx4' : {
             'OGChipSelectEditMenu' : {
-                'state' : 'MKL25Z128xxx4    Freescale MKL25Z128xxx4',
+                'state' : 'MKL25Z128xxx4	Freescale MKL25Z128xxx4',
             },
             'OGCoreOrChip' : {
                 'state' : 1,
@@ -43,7 +43,7 @@ class IARDefinitions():
         },
         'STM32F401xB' : {
             'OGChipSelectEditMenu' : {
-                'state' : 'STM32F401xB  ST STM32F401xB',
+                'state' : 'STM32F401xB	ST STM32F401xB',
             },
             'OGCoreOrChip' : {
                 'state' : 1,
@@ -59,7 +59,7 @@ class IARDefinitions():
         'Variant' : {
             'state' : 0,
         },
-        'GEndianMode' : {
+        'GEndianMode' : { # [General Options][Target] Endian mode
             'state' : 0,
         },
         'Input variant' : {
@@ -67,43 +67,43 @@ class IARDefinitions():
             'state' : 0,
         },
         'Output variant' : {
-            'state' : 0,
+            'state' : 1,
         },
-        'GOutputBinary' : {
-            'state' : 0,
+        'GOutputBinary' : { # [General Options][Output] Executable or library
+            'state' : 0,    # 1 - library, 0 - executable
         },
         'FPU' : {
             'version' : 2,
             'state' : 0,
         },
-        'GRuntimeLibSelect' : {
+        'GRuntimeLibSelect' : { # [General Options] Use runtime library
             'version' : 0,
-            'state' : 0,
+            'state' : 0,        # 0 - none, 1 - normal, 2 - full, 3 - custom
         },
         'GRuntimeLibSelectSlave' : {
             'version' : 0,
             'state' : 0,
         },
-        'GeneralEnableMisra' : {
+        'GeneralEnableMisra' : {    # [General Options] Enable Misra-C
             'state' : 0,
         },
-        'GeneralMisraVerbose' : {
+        'GeneralMisraVerbose' : {   # [General Options] Misra verbose
             'state' : 0,
         },
-        'OGChipSelectEditMenu' : {
+        'OGChipSelectEditMenu' : {  # [General Options] Select MCU (be aware, tabs are needed in some cases)
             'state' : 0,
         },
-        'GenLowLevelInterface' : {
-            'state' : 0,
+        'GenLowLevelInterface' : {  # [General Options] Use semihosting
+            'state' : 0,            # [General Options] 0 - none, 1 - semihosting, 2 - IAR breakpoint
         },
         'GEndianModeBE' : {
             'state' : 0,
         },
-        'OGBufferedTerminalOutput' : {
+        'OGBufferedTerminalOutput' : { # [General Options] Buffered terminal output
             'state' : 0,
         },
-        'GenStdoutInterface' : {
-            'state' : 0,
+        'GenStdoutInterface' : {    # [General Options] Stdout/err
+            'state' : 0,            # [General Options] 0 - semihosting, 1 - SWD
         },
         'GeneralMisraVer' : {
             'state' : 0,
@@ -114,10 +114,10 @@ class IARDefinitions():
         'GBECoreSlave' : {
             'state' : 0,
         },
-        'OGUseCmsis' : {
+        'OGUseCmsis' : {        # [General Options][Lib configuration] Use CMSIS Lib
             'state' : 0,
         },
-        'OGUseCmsisDspLib' : {
+        'OGUseCmsisDspLib' : {  # [General Options][Lib configuration] Use CMSIS DSP Lib, only valid if CMSIS Lib is selected
             'state' : 0,
         },
         'CCPreprocFile' : {
@@ -129,7 +129,7 @@ class IARDefinitions():
         'CCPreprocLine' : {
             'state' : 0,
         },
-        'CCListCFile' : {
+        'CCListCFile' : { # [C/C++ Compiler][Output] Output list file
             'state' : 0,
         },
         'CCListCMnemonics' : {
@@ -138,7 +138,7 @@ class IARDefinitions():
         'CCListCMessages' : {
             'state' : 0,
         },
-        'CCListAssFile' : {
+        'CCListAssFile' : { # [C/C++ Compiler][Output] Output assembler file
             'state' : 0,
         },
         'CCListAssSource' : {
@@ -159,11 +159,11 @@ class IARDefinitions():
         'CCObjPrefix' : {
             'state' : 0,
         },
-        'CCAllowList' : {
+        'CCAllowList' : {       # [C/C++ Compiler] Enable transformations (Optimizations)
             'version' : 1,
-            'state' : 1111111,
+            'state' : 1111111,  # Each bit is for one optimization settings. For example second bit is for loop unrolling
         },
-        'CCDebugInfo' : {
+        'CCDebugInfo' : {   # [C/C++ Compiler] Generate debug information
             'state' : 1,
         },
         'IEndianMode' : {
@@ -178,13 +178,13 @@ class IARDefinitions():
         'IExtraOptions' : {
             'state' : 0,
         },
-        'CCLangConformance' : {
-            'state' : 0,
+        'CCLangConformance' : { # [C/C++ Compiler] Language conformance
+            'state' : 0,        # 0 - standard with IAR extensions, 1 - standard, 2 - strict
         },
-        'CCSignedPlainChar' : {
-            'state' : 1,
+        'CCSignedPlainChar' : { # [C/C++ Compiler] Plain char
+            'state' : 1,        # 0 - signed, 1 - unsigned
         },
-        'CCRequirePrototypes' : {
+        'CCRequirePrototypes' : { # [C/C++ Compiler] Require prototypes
             'state' : 0,
         },
         'CCMultibyteSupport' : {
@@ -223,12 +223,12 @@ class IARDefinitions():
         'IInterwork2' : {
             'state' : 0,
         },
-        'CCOptStrategy' : {
+        'CCOptStrategy' : {     # [C/C++ Compiler] Valid only for Optimization level High
             'version' : 0,
-            'state' : 0,
+            'state' : 0,        # 0 - Balanced, 1 - Size, 2 - Speed
         },
-        'CCOptLevelSlave' : {
-            'state' : 0,
+        'CCOptLevelSlave' : {   # [C/C++ Compiler] Optimization level
+            'state' : 0,        # 0 - None, 1 - Low, 2 - Medium , 3 - High
         },
         'CompilerMisraRules98' : {
             'version' : 0,
@@ -238,41 +238,41 @@ class IARDefinitions():
             'version': 0,
             'state' : 0,
         },
-        'CCPosIndRopi' : {
+        'CCPosIndRopi' : {  # [C/C++ Compiler][Code] Code and read-only data
             'state' : 0,
         },
-        'IccLang' : {
+        'IccLang' : {       # [C/C++ Compiler] C/C++ Language selection
+            'state' : 0,    # 0 - C, 1- C++, 2 - Auto
+        },
+        'CCPosIndRwpi' : {  # [C/C++ Compiler][Code] Read write/data
             'state' : 0,
         },
-        'CCPosIndRwpi' : {
+        'IccCDialect' : {   # [C/C++ Compiler] C dialect
+            'state' : 1,    # 0 - C89, 1 - C90
+        },
+        'IccAllowVLA' : {   # [C/C++ Compiler] Allow VLA (valid only for C99)
             'state' : 0,
         },
-        'IccCDialect' : {
-            'state' : 1,
+        'IccCppDialect' : { # [C/C++ Compiler] C++ dialect
+            'state' : 0,    # 0 - Embedded C++, 1 - Extended embedded, 2 - C++
         },
-        'IccAllowVLA' : {
+        'IccExceptions' : { # [C/C++ Compiler] With exceptions (valid only for C++ dialect 2)
             'state' : 0,
         },
-        'IccCppDialect' : {
-            'state' : 0,
-        },
-        'IccExceptions' : {
-            'state' : 0,
-        },
-        'IccRTTI' : {
+        'IccRTTI' : {       # [C/C++ Compiler] With RTTI (valid only for C++ dialect 2)
             'state' : 0,
         },
         'IccStaticDestr' : {
             'state' : 1,
         },
-        'IccCppInlineSemantics' : {
+        'IccCppInlineSemantics' : { # [C/C++ Compiler] C++ inline semantic (valid only for C99)
             'state' : 0,
         },
         'IccCmsis' : {
             'state' : 1,
         },
-        'IccFloatSemantics' : {
-            'state' : 0,
+        'IccFloatSemantics' : { # [C/C++ Compiler] Floating point semantic
+            'state' : 0,        # 0 - strict, 1 - relaxed
         },
         'AObjPrefix' : {
             'state' : 0,
