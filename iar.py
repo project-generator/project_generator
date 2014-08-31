@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from export_generator import Exporter
-from iar_mcu_definitions import get_mcu_definition
 from iar_definitions import IARDefinitions
 
 class IAR(Exporter):

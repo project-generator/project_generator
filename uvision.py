@@ -14,7 +14,6 @@
 
 from os.path import basename
 from export_generator import Exporter
-from uvision_mcu_definitions import get_mcu_definition
 import copy
 from uvision_definitions import uVisionDefinitions
 

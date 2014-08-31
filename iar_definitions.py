@@ -15,7 +15,7 @@
 class IARDefinitions():
 
     def get_mcu_definition(self, name):
-    """ If MCU found, returns its definition dic, error otherwise. """
+        """ If MCU found, returns its definition dic, error otherwise. """
         try:
             return self.mcu_def[name]
         except KeyError:
