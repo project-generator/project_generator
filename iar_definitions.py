@@ -147,6 +147,9 @@ class IARDefinitions():
         'CCEnableRemarks' : {
             'state' : [],
         },
+        'CCDiagSuppress' : {
+            'state' : 0,
+        },
         'CCDiagRemark' : {
             'state' : 0,
         },
@@ -190,6 +193,9 @@ class IARDefinitions():
         'CCMultibyteSupport' : {
             'state' : 0,
         },
+        'CCCompilerRuntimeInfo' : {
+            'state' : 0,
+        },
         'CCDiagWarnAreErr' : {
             'state' : 0,
         },
@@ -223,12 +229,15 @@ class IARDefinitions():
         'IInterwork2' : {
             'state' : 0,
         },
+        'CCOptLevel' : {   # [C/C++ Compiler] Optimization level
+            'state' : 0,        # 0 - None, 1 - Low, 2 - Medium , 3 - High
+        },
         'CCOptStrategy' : {     # [C/C++ Compiler] Valid only for Optimization level High
             'version' : 0,
             'state' : 0,        # 0 - Balanced, 1 - Size, 2 - Speed
         },
-        'CCOptLevelSlave' : {   # [C/C++ Compiler] Optimization level
-            'state' : 0,        # 0 - None, 1 - Low, 2 - Medium , 3 - High
+        'CCOptLevelSlave' : {
+            'state' : 0,
         },
         'CompilerMisraRules98' : {
             'version' : 0,
@@ -243,6 +252,9 @@ class IARDefinitions():
         },
         'IccLang' : {       # [C/C++ Compiler] C/C++ Language selection
             'state' : 0,    # 0 - C, 1- C++, 2 - Auto
+        },
+        'CCPosIndNoDynInit' : {  # [C/C++ Compiler][Code]
+            'state' : 0,
         },
         'CCPosIndRwpi' : {  # [C/C++ Compiler][Code] Read write/data
             'state' : 0,
@@ -274,6 +286,7 @@ class IARDefinitions():
         'IccFloatSemantics' : { # [C/C++ Compiler] Floating point semantic
             'state' : 0,        # 0 - strict, 1 - relaxed
         },
+
         'AObjPrefix' : {
             'state' : 0,
         },
@@ -349,6 +362,9 @@ class IARDefinitions():
         'AXRefDefines' : {
             'state' : 0,
         },
+        'AXRef' : {
+            'state' : 0,
+        },
         'AXRefInternal' : {
             'state' : 0,
         },
@@ -396,5 +412,101 @@ class IARDefinitions():
         },
         'OOCObjCopyEnable' : {
             'state' : 1,
+        },
+
+        'IlinkOutputFile' : {
+            'state' : 0,
+        },
+        'IlinkLibIOConfig' : {
+            'state' : 0,
+        },
+        'XLinkMisraHandler' : {
+            'state' : 0,
+        },
+        'IlinkInputFileSlave' : {
+            'state' : 0,
+        },
+        'IlinkDebugInfoEnable' : {
+            'state' : 0,
+        },
+        'IlinkKeepSymbols' : {
+            'state' : 0,
+        },
+        'IlinkRawBinaryFile' : {
+            'state' : 0,
+        },
+        'IlinkRawBinarySymbol' : {
+            'state' : 0,
+        },
+        'IlinkRawBinarySegment' : {
+            'state' : 0,
+        },
+        'IlinkRawBinaryAlign' : {
+            'state' : 0,
+        },
+        'IlinkDefines' : {
+            'state' : 0,
+        },
+        'IlinkConfigDefines' : {
+            'state' : 0,
+        },
+        'IlinkMapFile' : {
+            'state' : 0,
+        },
+        'IlinkLogFile' : {
+            'state' : 0,
+        },
+
+        'IlinkLogInitialization' : {
+            'state' : 0,
+        },
+        'IlinkLogModule' : {
+            'state' : 0,
+        },
+        'IlinkLogSection' : {
+            'state' : 0,
+        },
+        'IlinkLogVeneer' : {
+            'state' : 0,
+        },
+        'IlinkIcfOverride' : {
+            'state' : 0,
+        },
+        'IlinkEnableRemarks' : {
+            'state' : 0,
+        },
+        'IlinkSuppressDiags' : {
+            'state' : 0,
+        },
+
+        'IlinkTreatAsRem' : {
+            'state' : 0,
+        },
+        'IlinkTreatAsWarn' : {
+            'state' : 0,
+        },
+        'IlinkTreatAsErr' : {
+            'state' : 0,
+        },
+        'IlinkWarningsAreErrors' : {
+            'state' : 0,
+        },
+        'IlinkUseExtraOptions' : {
+            'state' : 0,
+        },
+        'IlinkExtraOptions' : {
+            'state' : 0,
+        },
+        'IlinkLowLevelInterfaceSlave' : {
+            'state' : 0,
+        },
+        'IlinkAutoLibEnable' : {
+            'state' : 0,
+        },
+        'IlinkProgramEntryLabelSelect' : {
+            'state' : 0,
+        },
+        'IlinkProgramEntryLabel' : {
+            'state' : 0,
         },
     }
