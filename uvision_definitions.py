@@ -44,6 +44,36 @@ class uVisionDefinitions():
                 'DeviceId' : 4868,
                 'SFDFile' : 'SFD\NXP\LPC176x5x\LPC176x5x.SFR',
             }
+        },
+        'Cortex-M0' : {
+            'TargetOption' : {
+                'Device' : 'Cortex-M0',
+                'Vendor' : 'ARM',
+                'Cpu'    : 'IRAM(0x0-0x0) IRAM2(0x0-0x0) IROM(0x0-0x0) CLOCK(12000000) CPUTYPE("Cortex-M0")',
+                'FlashDriverDll' : 0,
+                'DeviceId' : 0,
+                'SFDFile' : 0
+            }
+        },
+        'Cortex-M3' : {
+            'TargetOption' : {
+                'Device' : 'Cortex-M3',
+                'Vendor' : 'ARM',
+                'Cpu'    : 'IRAM(0x0-0x0) IRAM2(0x0-0x0) IROM(0x0-0x0) CLOCK(12000000) CPUTYPE("Cortex-M3")',
+                'FlashDriverDll' : 0,
+                'DeviceId' : 0,
+                'SFDFile' : 0
+            }
+        },
+        'Cortex-M4' : {
+            'TargetOption' : {
+                'Device' : 'Cortex-M4',
+                'Vendor' : 'ARM',
+                'Cpu'    : 'IRAM(0x0-0x0) IRAM2(0x0-0x0) IROM(0x0-0x0) CLOCK(12000000) CPUTYPE("Cortex-M4")',
+                'FlashDriverDll' : 0,
+                'DeviceId' : 0,
+                'SFDFile' : 0
+            }
         }
     }
 
