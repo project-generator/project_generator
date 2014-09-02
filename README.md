@@ -13,19 +13,22 @@ All open sourced - licensed under Apache v2.0 license.
 
 The project is in alpha phase. Check issues for the ongoing tasks or todo tasks.
 
-Project generator currently generaters projects for the following IDE/toolchains:
+Project generator currently generaters projects for the following tools (IDE, Makefile):
 
  - uVision
  - Makefile (GCC ARM)
  - IAR
 
-We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository. Want to see your IDE here? Create a new issue with a request.
+We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository.
+The plan is to support as many IDE as possible , same applies for MCU.
 
 ### How to use it
 
 In your project directory create a tools folder and clone this repo. There are examples in c0170 github, so check them out!
 
-To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/0xc0170/project_generator/wiki/Getting_started)
+To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/0xc0170/project_generator/wiki/Getting_started).
+
+To get more information, visit the wiki pages here on github, where you can find how to add a new MCU, what options each tool provides, and so on.
 
 Dependencies for Project generator
 -------------------------

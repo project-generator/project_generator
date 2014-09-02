@@ -3,7 +3,7 @@
 <project>
   <fileVersion>2</fileVersion>
   <configuration>
-    <name>Debug</name>
+    <name>{{name}}</name>
     <toolchain>
       <name>ARM</name>
     </toolchain>
@@ -29,17 +29,17 @@
         </option>
         <option>
           <name>Variant</name>
-          <version>20</version>
-          <state>{{target_core}}</state>
+          <version>{{iar_settings['Variant']['version']}}</version>
+          <state>{{iar_settings['Variant']['state']}}</state>
         </option>
         <option>
           <name>GEndianMode</name>
-          <state>0</state>
+          <state>{{iar_settings['GEndianMode']['state']}}</state>
         </option>
         <option>
           <name>Input variant</name>
-          <version>3</version>
-          <state>1</state>
+          <version>{{iar_settings['GEndianMode']['version']}}</version>
+          <state>{{iar_settings['GEndianMode']['state']}}</state>
         </option>
         <option>
           <name>Input description</name>
@@ -47,8 +47,8 @@
         </option>
         <option>
           <name>Output variant</name>
-          <version>2</version>
-          <state>1</state>
+          <version>{{iar_settings['Output variant']['version']}}</version>
+          <state>{{iar_settings['Output variant']['state']}}</state>
         </option>
         <option>
           <name>Output description</name>
@@ -56,26 +56,26 @@
         </option>
         <option>
           <name>GOutputBinary</name>
-          <state>0</state>
+          <state>{{iar_settings['GOutputBinary']['state']}}</state>
         </option>
         <option>
           <name>FPU</name>
-          <version>2</version>
-          <state>0</state>
+          <version>{{iar_settings['FPU']['version']}}</version>
+          <state>{{iar_settings['FPU']['state']}}</state>
         </option>
         <option>
           <name>OGCoreOrChip</name>
-          <state>0</state>
+          <state>{{iar_settings['OGCoreOrChip']['state']}}</state>
         </option>
         <option>
           <name>GRuntimeLibSelect</name>
-          <version>0</version>
-          <state>2</state>
+          <version>{{iar_settings['GRuntimeLibSelect']['version']}}</version>
+          <state>{{iar_settings['GRuntimeLibSelect']['state']}}</state>
         </option>
         <option>
           <name>GRuntimeLibSelectSlave</name>
-          <version>0</version>
-          <state>2</state>
+          <version>{{iar_settings['GRuntimeLibSelectSlave']['version']}}</version>
+          <state>{{iar_settings['GRuntimeLibSelectSlave']['state']}}</state>
         </option>
         <option>
           <name>RTDescription</name>
@@ -91,31 +91,31 @@
         </option>
         <option>
           <name>GeneralEnableMisra</name>
-          <state>0</state>
+          <state>{{iar_settings['GRuntimeLibSelectSlave']['state']}}</state>
         </option>
         <option>
           <name>GeneralMisraVerbose</name>
-          <state>0</state>
+          <state>{{iar_settings['GeneralMisraVerbose']['state']}}</state>
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state></state>
+          <state>{{iar_settings['OGChipSelectEditMenu']['state']}}</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
-          <state>0</state>
+          <state>{{iar_settings['GenLowLevelInterface']['state']}}</state>
         </option>
         <option>
           <name>GEndianModeBE</name>
-          <state>1</state>
+          <state>{{iar_settings['GEndianModeBE']['state']}}</state>
         </option>
         <option>
           <name>OGBufferedTerminalOutput</name>
-          <state>0</state>
+          <state>{{iar_settings['OGBufferedTerminalOutput']['state']}}</state>
         </option>
         <option>
           <name>GenStdoutInterface</name>
-          <state>0</state>
+          <state>{{iar_settings['GenStdoutInterface']['state']}}</state>
         </option>
         <option>
           <name>GeneralMisraRules98</name>
@@ -124,7 +124,7 @@
         </option>
         <option>
           <name>GeneralMisraVer</name>
-          <state>0</state>
+          <state>{{iar_settings['GeneralMisraVer']['state']}}</state>
         </option>
         <option>
           <name>GeneralMisraRules04</name>
@@ -137,21 +137,21 @@
         </option>
         <option>
           <name>GFPUCoreSlave</name>
-          <version>20</version>
-          <state>{{target_core}} </state>
+          <version>{{iar_settings['GFPUCoreSlave']['version']}}</version>
+          <state>{{iar_settings['GFPUCoreSlave']['state']}} </state>
         </option>
         <option>
           <name>GBECoreSlave</name>
-          <version>20</version>
-          <state>{{target_core}}</state>
+          <version>{{iar_settings['GBECoreSlave']['version']}}</version>
+          <state>{{iar_settings['GBECoreSlave']['state']}}</state>
         </option>
         <option>
           <name>OGUseCmsis</name>
-          <state>0</state>
+          <state>{{iar_settings['OGUseCmsis']['state']}}</state>
         </option>
         <option>
           <name>OGUseCmsisDspLib</name>
-          <state>0</state>
+          <state>{{iar_settings['OGUseCmsisDspLib']['state']}}</state>
         </option>
       </data>
     </settings>
@@ -164,63 +164,63 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state></state>
+          {% for s in macros %}<state>{{s}}</state>{% endfor %}
         </option>
         <option>
           <name>CCPreprocFile</name>
-          <state>0</state>
+          <state>{{iar_settings['CCPreprocFile']['state']}}</state>
         </option>
         <option>
           <name>CCPreprocComments</name>
-          <state>0</state>
+          <state>{{iar_settings['CCPreprocComments']['state']}}</state>
         </option>
         <option>
           <name>CCPreprocLine</name>
-          <state>0</state>
+          <state>{{iar_settings['CCPreprocLine']['state']}}</state>
         </option>
         <option>
           <name>CCListCFile</name>
-          <state>0</state>
+          <state>{{iar_settings['CCListCFile']['state']}}</state>
         </option>
         <option>
           <name>CCListCMnemonics</name>
-          <state>0</state>
+          <state>{{iar_settings['CCListCMnemonics']['state']}}</state>
         </option>
         <option>
           <name>CCListCMessages</name>
-          <state>0</state>
+          <state>{{iar_settings['CCListCMessages']['state']}}</state>
         </option>
         <option>
           <name>CCListAssFile</name>
-          <state>0</state>
+          <state>{{iar_settings['CCListAssFile']['state']}}</state>
         </option>
         <option>
           <name>CCListAssSource</name>
-          <state>0</state>
+          <state>{{iar_settings['CCListAssSource']['state']}}</state>
         </option>
         <option>
           <name>CCEnableRemarks</name>
-          <state>0</state>
+          <state>{{iar_settings['CCEnableRemarks']['state']}}</state>
         </option>
         <option>
           <name>CCDiagSuppress</name>
-          <state>Pa050,Pa084,Pa093,Pa082</state>
+          <state>{{iar_settings['CCDiagSuppress']['state']}}</state>
         </option>
         <option>
           <name>CCDiagRemark</name>
-          <state></state>
+          <state>{{iar_settings['CCDiagRemark']['state']}}</state>
         </option>
         <option>
           <name>CCDiagWarning</name>
-          <state></state>
+          <state>{{iar_settings['CCDiagWarning']['state']}}</state>
         </option>
         <option>
           <name>CCDiagError</name>
-          <state></state>
+          <state>{{iar_settings['CCDiagError']['state']}}</state>
         </option>
         <option>
           <name>CCObjPrefix</name>
-          <state>1</state>
+          <state>{{iar_settings['CCObjPrefix']['state']}}</state>
         </option>
         <option>
           <name>CCAllowList</name>
@@ -229,51 +229,51 @@
         </option>
         <option>
           <name>CCDebugInfo</name>
-          <state>1</state>
+          <state>{{iar_settings['CCDebugInfo']['state']}}</state>
         </option>
         <option>
           <name>IEndianMode</name>
-          <state>1</state>
+          <state>{{iar_settings['IEndianMode']['state']}}</state>
         </option>
         <option>
           <name>IProcessor</name>
-          <state>1</state>
+          <state>{{iar_settings['IProcessor']['state']}}</state>
         </option>
         <option>
           <name>IExtraOptionsCheck</name>
-          <state>0</state>
+          <state>{{iar_settings['IExtraOptionsCheck']['state']}}</state>
         </option>
         <option>
           <name>IExtraOptions</name>
-          <state></state>
+          <state>{{iar_settings['IExtraOptions']['state']}}</state>
         </option>
         <option>
           <name>CCLangConformance</name>
-          <state>0</state>
+          <state>{{iar_settings['CCLangConformance']['state']}}</state>
         </option>
         <option>
           <name>CCSignedPlainChar</name>
-          <state>1</state>
+          <state>{{iar_settings['CCSignedPlainChar']['state']}}</state>
         </option>
         <option>
           <name>CCRequirePrototypes</name>
-          <state>0</state>
+          <state>{{iar_settings['CCRequirePrototypes']['state']}}</state>
         </option>
         <option>
           <name>CCMultibyteSupport</name>
-          <state>0</state>
+          <state>{{iar_settings['CCMultibyteSupport']['state']}}</state>
         </option>
         <option>
           <name>CCDiagWarnAreErr</name>
-          <state>0</state>
+          <state>{{iar_settings['CCDiagWarnAreErr']['state']}}</state>
         </option>
         <option>
           <name>CCCompilerRuntimeInfo</name>
-          <state>0</state>
+          <state>{{iar_settings['CCCompilerRuntimeInfo']['state']}}</state>
         </option>
         <option>
           <name>IFpuProcessor</name>
-          <state>1</state>
+          <state>{{iar_settings['IFpuProcessor']['state']}}</state>
         </option>
         <option>
           <name>OutputFile</name>
@@ -281,7 +281,7 @@
         </option>
         <option>
           <name>CCLibConfigHeader</name>
-          <state>1</state>
+          <state>{{iar_settings['CCLibConfigHeader']['state']}}</state>
         </option>
         <option>
           <name>PreInclude</name>
@@ -289,7 +289,7 @@
         </option>
         <option>
           <name>CompilerMisraOverride</name>
-          <state>0</state>
+          <state>{{iar_settings['CompilerMisraOverride']['state']}}</state>
         </option>
         <option>
           <name>CCIncludePath2</name>
@@ -299,32 +299,32 @@
         </option>
         <option>
           <name>CCStdIncCheck</name>
-          <state>0</state>
+          <state>{{iar_settings['CCStdIncCheck']['state']}}</state>
         </option>
         <option>
           <name>CCCodeSection</name>
-          <state>.text</state>
+          <state>{{iar_settings['CCCodeSection']['state']}}</state>
         </option>
         <option>
           <name>IInterwork2</name>
-          <state>0</state>
+          <state>{{iar_settings['IInterwork2']['state']}}</state>
         </option>
         <option>
           <name>IProcessorMode2</name>
-          <state>1</state>
+          <state>{{iar_settings['IProcessorMode2']['state']}}</state>
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>3</state>
+          <state>{{iar_settings['CCOptLevel']['state']}}</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
           <version>0</version>
-          <state>0</state>
+          <state>{{iar_settings['CCOptStrategy']['state']}}</state>
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>3</state>
+          <state>{{iar_settings['CCOptLevelSlave']['state']}}</state>
         </option>
         <option>
           <name>CompilerMisraRules98</name>
@@ -338,55 +338,55 @@
         </option>
         <option>
           <name>CCPosIndRopi</name>
-          <state>0</state>
+          <state>{{iar_settings['CCPosIndRopi']['state']}}</state>
         </option>
         <option>
           <name>CCPosIndRwpi</name>
-          <state>0</state>
+          <state>{{iar_settings['CCPosIndRwpi']['state']}}</state>
         </option>
         <option>
           <name>CCPosIndNoDynInit</name>
-          <state>0</state>
+          <state>{{iar_settings['CCPosIndNoDynInit']['state']}}</state>
         </option>
         <option>
           <name>IccLang</name>
-          <state>1</state>
+          <state>{{iar_settings['IccLang']['state']}}</state>
         </option>
         <option>
           <name>IccCDialect</name>
-          <state>1</state>
+          <state>{{iar_settings['IccCDialect']['state']}}</state>
         </option>
         <option>
           <name>IccAllowVLA</name>
-          <state>0</state>
+          <state>{{iar_settings['IccAllowVLA']['state']}}</state>
         </option>
         <option>
           <name>IccCppDialect</name>
-          <state>2</state>
+          <state>{{iar_settings['IccCppDialect']['state']}}</state>
         </option>
         <option>
           <name>IccExceptions</name>
-          <state>0</state>
+          <state>{{iar_settings['IccExceptions']['state']}}</state>
         </option>
         <option>
           <name>IccRTTI</name>
-          <state>0</state>
+          <state>{{iar_settings['IccRTTI']['state']}}</state>
         </option>
         <option>
           <name>IccStaticDestr</name>
-          <state>1</state>
+          <state>{{iar_settings['IccStaticDestr']['state']}}</state>
         </option>
         <option>
           <name>IccCppInlineSemantics</name>
-          <state>0</state>
+          <state>{{iar_settings['IccCppInlineSemantics']['state']}}</state>
         </option>
         <option>
           <name>IccCmsis</name>
-          <state>1</state>
+          <state>{{iar_settings['IccCmsis']['state']}}</state>
         </option>
         <option>
           <name>IccFloatSemantics</name>
-          <state>0</state>
+          <state>{{iar_settings['IccFloatSemantics']['state']}}</state>
         </option>
       </data>
     </settings>
@@ -399,64 +399,64 @@
         <debug>1</debug>
         <option>
           <name>AObjPrefix</name>
-          <state>1</state>
+          <state>{{iar_settings['AObjPrefix']['state']}}</state>
         </option>
         <option>
           <name>AEndian</name>
-          <state>1</state>
+          <state>{{iar_settings['AEndian']['state']}}</state>
         </option>
         <option>
           <name>ACaseSensitivity</name>
-          <state>1</state>
+          <state>{{iar_settings['ACaseSensitivity']['state']}}</state>
         </option>
         <option>
           <name>MacroChars</name>
           <version>0</version>
-          <state>0</state>
+          <state>{{iar_settings['MacroChars']['state']}}</state>
         </option>
         <option>
           <name>AWarnEnable</name>
-          <state>0</state>
+          <state>{{iar_settings['AWarnEnable']['state']}}</state>
         </option>
         <option>
           <name>AWarnWhat</name>
-          <state>0</state>
+          <state>{{iar_settings['AWarnWhat']['state']}}</state>
         </option>
         <option>
           <name>AWarnOne</name>
-          <state></state>
+          <state>{{iar_settings['AWarnOne']['state']}}</state>
         </option>
         <option>
           <name>AWarnRange1</name>
-          <state></state>
+          <state>{{iar_settings['AWarnRange1']['state']}}</state>
         </option>
         <option>
           <name>AWarnRange2</name>
-          <state></state>
+          <state>{{iar_settings['AWarnRange2']['state']}}</state>
         </option>
         <option>
           <name>ADebug</name>
-          <state>1</state>
+          <state>{{iar_settings['ADebug']['state']}}</state>
         </option>
         <option>
           <name>AltRegisterNames</name>
-          <state>0</state>
+          <state>{{iar_settings['AltRegisterNames']['state']}}</state>
         </option>
         <option>
           <name>ADefines</name>
-          <state></state>
+          <state>{{iar_settings['ADefines']['state']}}</state>
         </option>
         <option>
           <name>AList</name>
-          <state>0</state>
+          <state>{{iar_settings['AList']['state']}}</state>
         </option>
         <option>
           <name>AListHeader</name>
-          <state>1</state>
+          <state>{{iar_settings['AListHeader']['state']}}</state>
         </option>
         <option>
           <name>AListing</name>
-          <state>1</state>
+          <state>{{iar_settings['AListing']['state']}}</state>
         </option>
         <option>
           <name>Includes</name>
@@ -492,31 +492,31 @@
         </option>
         <option>
           <name>TabSpacing</name>
-          <state>8</state>
+          <state>4</state>
         </option>
         <option>
           <name>AXRef</name>
-          <state>0</state>
+          <state>{{iar_settings['AXRef']['state']}}</state>
         </option>
         <option>
           <name>AXRefDefines</name>
-          <state>0</state>
+          <state>{{iar_settings['AXRefDefines']['state']}}</state>
         </option>
         <option>
           <name>AXRefInternal</name>
-          <state>0</state>
+          <state>{{iar_settings['AXRefInternal']['state']}}</state>
         </option>
         <option>
           <name>AXRefDual</name>
-          <state>0</state>
+          <state>{{iar_settings['AXRefDual']['state']}}</state>
         </option>
         <option>
           <name>AProcessor</name>
-          <state>1</state>
+          <state>{{iar_settings['AProcessor']['state']}}</state>
         </option>
         <option>
           <name>AFpuProcessor</name>
-          <state>1</state>
+          <state>{{iar_settings['AFpuProcessor']['state']}}</state>
         </option>
         <option>
           <name>AOutputFile</name>
@@ -524,31 +524,31 @@
         </option>
         <option>
           <name>AMultibyteSupport</name>
-          <state>0</state>
+          <state>{{iar_settings['AMultibyteSupport']['state']}}</state>
         </option>
         <option>
           <name>ALimitErrorsCheck</name>
-          <state>0</state>
+          <state>{{iar_settings['ALimitErrorsCheck']['state']}}</state>
         </option>
         <option>
           <name>ALimitErrorsEdit</name>
-          <state>100</state>
+          <state>{{iar_settings['ALimitErrorsEdit']['state']}}</state>
         </option>
         <option>
           <name>AIgnoreStdInclude</name>
-          <state>1</state>
+          <state>{{iar_settings['AIgnoreStdInclude']['state']}}</state>
         </option>
         <option>
           <name>AUserIncludes</name>
-          <state></state>
+          <state>{{iar_settings['AUserIncludes']['state']}}</state>
         </option>
         <option>
           <name>AExtraOptionsCheckV2</name>
-          <state>0</state>
+          <state>{{iar_settings['AExtraOptionsCheckV2']['state']}}</state>
         </option>
         <option>
           <name>AExtraOptionsV2</name>
-          <state></state>
+          <state>{{iar_settings['AExtraOptionsV2']['state']}}</state>
         </option>
       </data>
     </settings>
@@ -561,12 +561,12 @@
         <debug>1</debug>
         <option>
           <name>OOCOutputFormat</name>
-          <version>2</version>
-          <state>2</state>
+          <version>0</version>
+          <state>{{iar_settings['OOCOutputFormat']['state']}}</state>
         </option>
         <option>
           <name>OCOutputOverride</name>
-          <state>0</state>
+          <state>{{iar_settings['OCOutputOverride']['state']}}</state>
         </option>
         <option>
           <name>OOCOutputFile</name>
@@ -574,11 +574,11 @@
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
-          <state>1</state>
+          <state>{{iar_settings['OOCCommandLineProducer']['state']}}</state>
         </option>
         <option>
           <name>OOCObjCopyEnable</name>
-          <state>1</state>
+          <state>{{iar_settings['OOCObjCopyEnable']['state']}}</state>
         </option>
       </data>
     </settings>
@@ -612,7 +612,7 @@
         <debug>1</debug>
         <option>
           <name>IlinkOutputFile</name>
-          <state>cpp.out</state>
+          <state></state>
         </option>
         <option>
           <name>IlinkLibIOConfig</name>
