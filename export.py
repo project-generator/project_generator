@@ -19,7 +19,7 @@ from yaml_parser import YAML_parser, _finditem
 from os.path import join
 import sys
 from os.path import basename
-from ide import export
+from ide import export, build
 
 class ProjectGenerator():
 
@@ -55,6 +55,7 @@ class ProjectGenerator():
 
         for project in projects:
             self.run_generator(dic, project, ide)
+        return projects
 
     def scrape_dir(self):
         exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld']
@@ -103,12 +104,6 @@ class ProjectGenerator():
             parser.print_help()
             sys.exit()
 
-        if not options.ide:
-            options.ide = "uvision"
-
-        # always run from the root directory
-        script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
-
         print "Processing projects file."
         project_file = open('tools//' + options.file)
         config = yaml.load(project_file)
@@ -118,16 +113,33 @@ class ProjectGenerator():
             self.list_projects(config)
             sys.exit()
 
+        projects = []
         if options.project:
             self.run_generator(config, options.project, options.ide) # one project
+            projects = options.project
         else:
-            self.process_all_projects(config, options.ide) # all projects within project.yaml
+            projects = self.process_all_projects(config, options.ide) # all projects within project.yaml
 
         project_file.close()
+        return projects
 
 class ProjectBuilder():
-    def run(self, options):
-        pass
+    def __init__(self):
+        self.root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.project_path = os.path.join(self.root_path, os.pardir, 'generated_projects')
+
+    def build_project_list(self, options, projects):
+        projects_list = []
+        for dirpath, dirnames, files in os.walk(self.project_path):
+            for d in dirnames:
+                if d.startswith(options.ide) and (d.strip(options.ide + '_')) in projects:
+                    projects_list.append(d)
+        return projects_list
+
+    def run(self, options, projects):
+        project_list = self.build_project_list(options, projects)
+        logging.info("Building all defined projects.")
+        build(self.project_path, project_list, options.ide)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
@@ -146,9 +158,12 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
 
+    if not options.ide:
+        options.ide = "uvision"
+
     # Generate projects
-    ProjectGenerator().run(options)
+    projects = ProjectGenerator().run(options)
 
     # Build all exported projects
     if options.build:
-        ProjectBuilder().run(options)
+        ProjectBuilder().run(options, projects)

@@ -62,7 +62,7 @@ class GccArmExporter(Exporter):
                 self.compiler_options(k, v, data)
                 self.optimization(k, v, data)
 
-    def generate(self, data, ide):
+    def generate(self, data):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.list_files(data, 'source_files_c')
         self.list_files(data, 'source_files_cpp')
@@ -71,7 +71,9 @@ class GccArmExporter(Exporter):
         self.parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-';
 
-        self.gen_file('makefile_gcc.tmpl', data, 'Makefile', ide)
+        self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gccarm")
 
 class GccArmBuilder():
-    pass
+
+    def build(self, project_path, project_list):
+        pass

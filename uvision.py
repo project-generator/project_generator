@@ -126,7 +126,7 @@ class UvisionExporter(Exporter):
             # does not exist, create it
             data['TargetOption'] = mcu_def['TargetOption']
 
-    def generate(self, data, ide):
+    def generate(self, data):
         """ Processes groups and misc options specific for uVision, and run generator """
         expanded_dic = data.copy()
 
@@ -144,8 +144,10 @@ class UvisionExporter(Exporter):
         expanded_dic['Cads']['Optim'][0] += 1 #optimization set to correct value, default not used
 
         # Project file
-        self.gen_file('uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], ide)
-        self.gen_file('uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], ide)
+        self.gen_file('uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], "uvision")
+        self.gen_file('uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision")
 
 class UvisionBuilder():
-    pass
+    
+    def build(self, project_path, project_list):
+        pass

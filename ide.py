@@ -34,9 +34,13 @@ def export(data, ide):
 
     Exporter = EXPORTER_IDE[ide]
     exporter = Exporter()
-    exporter.generate(data, ide)
+    exporter.generate(data)
 
-def build(ide):
+def build(project_path, project_list, ide):
     """ Invokes builder for specificed IDE. """
     if ide not in BUILDER_IDE:
         raise RuntimeError("Builder does not support defined IDE.")
+
+    Builder = BUILDER_IDE[ide]
+    builder = Builder()
+    builder.build(project_path, project_list)

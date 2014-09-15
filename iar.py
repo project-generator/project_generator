@@ -84,7 +84,7 @@ class IARExporter(Exporter):
                 v[0] = 0
             data['iar_settings'][k]['state'] = v[0]
 
-    def generate(self, data, ide):
+    def generate(self, data):
         """ Processes groups and misc options specific for IAR, and run generator """
         expanded_dic = data.copy()
 
@@ -98,8 +98,10 @@ class IARExporter(Exporter):
         self.parse_specific_options(expanded_dic)
         expanded_dic['iar_settings'].update(self.definitions.get_mcu_definition(expanded_dic['mcu']))
 
-        self.gen_file('iar.ewp.tmpl' , expanded_dic, '%s.ewp' % data['name'], ide)
-        self.gen_file('iar.eww.tmpl' , expanded_dic, '%s.eww' % data['name'], ide)
+        self.gen_file('iar.ewp.tmpl' , expanded_dic, '%s.ewp' % data['name'], "iar")
+        self.gen_file('iar.eww.tmpl' , expanded_dic, '%s.eww' % data['name'], "iar")
 
 class IARBuilder():
-    pass
+
+    def build(self, project_path, project_list):
+        pass
