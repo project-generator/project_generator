@@ -11,21 +11,32 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from uvision import Uvision
-from gccarm import GccArm
-from iar import IAR
+from uvision import UvisionExporter, UvisionBuilder
+from gccarm import GccArmExporter, GccArmBuilder
+from iar import IARExporter, IARBuilder
 
-IDE_SUPPORTED = {
-    'uvision': Uvision,
-    'gcc_arm': GccArm,
-    'iar' : IAR,
+EXPORTER_IDE = {
+    'uvision': UvisionExporter,
+    'gcc_arm': GccArmExporter,
+    'iar' : IARExporter,
+}
+
+BUILDER_IDE = {
+    'uvision': UvisionBuilder,
+    'gcc_arm': GccArmBuilder,
+    'iar' : IARBuilder,
 }
 
 def export(data, ide):
     """ Invokes IDE generator. """
-    if ide not in IDE_SUPPORTED:
-        raise RuntimeError("Non supported IDE")
+    if ide not in EXPORTER_IDE:
+        raise RuntimeError("Exporter does not support defined IDE.")
 
-    Exporter = IDE_SUPPORTED[ide]
+    Exporter = EXPORTER_IDE[ide]
     exporter = Exporter()
     exporter.generate(data, ide)
+
+def build(ide):
+    """ Invokes builder for specificed IDE. """
+    if ide not in BUILDER_IDE:
+        raise RuntimeError("Builder does not support defined IDE.")

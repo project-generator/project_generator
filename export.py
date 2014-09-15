@@ -21,77 +21,113 @@ import sys
 from os.path import basename
 from ide import export
 
-def run_generator(dic, project, ide):
-    """ Generates one project. """
-    project_list = []
-    yaml_files = _finditem(dic, project)
-    if yaml_files:
-        for yaml_file in yaml_files:
-            try:
-                file = open(yaml_file)
-            except IOError:
-                raise RuntimeError("Cannot open a file: %s" % yaml_file)
-            else:
-                loaded_yaml = yaml.load(file)
-                yaml_parser = YAML_parser()
-                project_list.append(yaml_parser.parse_yaml(loaded_yaml, ide))
-                file.close()
-        yaml_parser_final = YAML_parser()
-        process_data = yaml_parser_final.parse_yaml_list(project_list)
-    else:
-        raise RuntimeError("Project record is empty")
+class ProjectGenerator():
 
-    logging.info("Generating project: %s" % project)
-    export(process_data, ide)
+    def run_generator(self, dic, project, ide):
+        """ Generates one project. """
+        project_list = []
+        yaml_files = _finditem(dic, project)
+        if yaml_files:
+            for yaml_file in yaml_files:
+                try:
+                    file = open(yaml_file)
+                except IOError:
+                    raise RuntimeError("Cannot open a file: %s" % yaml_file)
+                else:
+                    loaded_yaml = yaml.load(file)
+                    yaml_parser = YAML_parser()
+                    project_list.append(yaml_parser.parse_yaml(loaded_yaml, ide))
+                    file.close()
+            yaml_parser_final = YAML_parser()
+            process_data = yaml_parser_final.parse_yaml_list(project_list)
+        else:
+            raise RuntimeError("Project record is empty")
 
-def process_all_projects(dic, ide):
-    """ Generates all project. """
-    projects = []
-    yaml_files = []
-    for k,v in dic.items():
-        projects.append(k);
+        logging.info("Generating project: %s" % project)
+        export(process_data, ide)
 
-    for project in projects:
-        run_generator(dic, project, ide)
+    def process_all_projects(self, dic, ide):
+        """ Generates all project. """
+        projects = []
+        yaml_files = []
+        for k,v in dic.items():
+            projects.append(k);
 
-def scrape_dir():
-    exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld']
-    found = {x: [] for x in exts} # lists of found files
-    ignore = '.'
-    for dirpath, dirnames, files in os.walk(os.getcwd()):
-        # Remove directories in ignore
-        # directory names must match exactly!
-        for idir in ignore:
-            if idir in dirnames:
-                dirnames.remove(idir)
-        # Loop through the file names for the current step
-        for name in files:
-            # Split the name by '.' & get the last element
-            ext = name.lower().rsplit('.', 1)[-1]
-            # Save the full name if ext matches
-            if ext in exts:
-                relpath = dirpath.replace(os.getcwd(), "")
-                found[ext].append(os.path.join(relpath, name))
-    # The body of our log file
-    logbody = ''
-    # loop thru results
-    for search in found:
-        # Concatenate the result from the found dict
-        logbody += "<< Results with the extension '%s' >>" % search
-        logbody += '\n\n%s\n\n' % '\n'.join(found[search])
-    # Write results to the logfile
-    source_list_path = os.getcwd() + '\\tools\\records\\'
-    if not os.path.exists(source_list_path):
-        os.makedirs(source_list_path)
-    target_path = join(source_list_path, 'scrape.log')
-    logging.debug("Generating: %s" % target_path)
-    with open(target_path, 'w') as logfile:
-        logfile.write('%s' % logbody)
+        for project in projects:
+            self.run_generator(dic, project, ide)
 
-def list_projects(dic):
-    """ Print all defined project. """
-    for k,v in dic['projects'].items():
-        print k
+    def scrape_dir(self):
+        exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld']
+        found = {x: [] for x in exts} # lists of found files
+        ignore = '.'
+        for dirpath, dirnames, files in os.walk(os.getcwd()):
+            # Remove directories in ignore
+            # directory names must match exactly!
+            for idir in ignore:
+                if idir in dirnames:
+                    dirnames.remove(idir)
+            # Loop through the file names for the current step
+            for name in files:
+                # Split the name by '.' & get the last element
+                ext = name.lower().rsplit('.', 1)[-1]
+                # Save the full name if ext matches
+                if ext in exts:
+                    relpath = dirpath.replace(os.getcwd(), "")
+                    found[ext].append(os.path.join(relpath, name))
+        # The body of our log file
+        logbody = ''
+        # loop thru results
+        for search in found:
+            # Concatenate the result from the found dict
+            logbody += "<< Results with the extension '%s' >>" % search
+            logbody += '\n\n%s\n\n' % '\n'.join(found[search])
+        # Write results to the logfile
+        source_list_path = os.getcwd() + '\\tools\\records\\'
+        if not os.path.exists(source_list_path):
+            os.makedirs(source_list_path)
+        target_path = join(source_list_path, 'scrape.log')
+        logging.debug("Generating: %s" % target_path)
+        with open(target_path, 'w') as logfile:
+            logfile.write('%s' % logbody)
+
+    def list_projects(self, dic):
+        """ Print all defined project. """
+        for k,v in dic['projects'].items():
+            print k
+
+    def run(self, options):
+        if not options.file:
+            # create a list of all files in the dir that we're interested in
+            self.scrape_dir()
+            # print help menu
+            parser.print_help()
+            sys.exit()
+
+        if not options.ide:
+            options.ide = "uvision"
+
+        # always run from the root directory
+        script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+
+        print "Processing projects file."
+        project_file = open('tools//' + options.file)
+        config = yaml.load(project_file)
+
+        if options.list:
+            print "Projects defined in the %s" % options.file
+            self.list_projects(config)
+            sys.exit()
+
+        if options.project:
+            self.run_generator(config, options.project, options.ide) # one project
+        else:
+            self.process_all_projects(config, options.ide) # all projects within project.yaml
+
+        project_file.close()
+
+class ProjectBuilder():
+    def run(self, options):
+        pass
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
@@ -106,34 +142,13 @@ if __name__ == '__main__':
     parser.add_option("-p", "--project", help="Project to be generated")
     parser.add_option("-i", "--ide", help="Create project files for toolchain (uvision by default)")
     parser.add_option("-l", "--list", action="store_true", help="List projects defined in the project file.")
+    parser.add_option("-b", "--build", action="store_true", help="Build defined projects.")
 
     (options, args) = parser.parse_args()
 
-    if not options.file:
-        # create a list of all files in the dir that we're interested in
-        scrape_dir()
-        # print help menu
-        parser.print_help()
-        sys.exit()
+    # Generate projects
+    ProjectGenerator().run(options)
 
-    if not options.ide:
-        options.ide = "uvision"
-
-    # always run from the root directory
-    script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
-
-    print "Processing projects file."
-    project_file = open('tools//' + options.file)
-    config = yaml.load(project_file)
-
-    if options.list:
-        print "Projects defined in the %s" % options.file
-        list_projects(config)
-        sys.exit()
-
-    if options.project:
-        run_generator(config, options.project, options.ide) # one project
-    else:
-        process_all_projects(config, options.ide) # all projects within project.yaml
-
-    project_file.close()
+    # Build all exported projects
+    if options.build:
+        ProjectBuilder().run(options)

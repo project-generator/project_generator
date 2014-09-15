@@ -13,11 +13,11 @@
 # limitations under the License.
 
 from os.path import basename
-from export_generator import Exporter
+from exporter import Exporter
 import copy
 from uvision_definitions import uVisionDefinitions
 
-class Uvision(Exporter):
+class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
     source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
     file_types = {'cpp': 8, 'c' : 1, 's' : 2 ,'obj' : 3, 'lib' : 4}
@@ -146,3 +146,6 @@ class Uvision(Exporter):
         # Project file
         self.gen_file('uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], ide)
         self.gen_file('uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], ide)
+
+class UvisionBuilder():
+    pass

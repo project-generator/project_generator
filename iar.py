@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from export_generator import Exporter
+from exporter import Exporter
 from iar_definitions import IARDefinitions
 import copy
 
-class IAR(Exporter):
+class IARExporter(Exporter):
 
     def __init__(self):
         self.definitions = IARDefinitions()
@@ -101,3 +101,5 @@ class IAR(Exporter):
         self.gen_file('iar.ewp.tmpl' , expanded_dic, '%s.ewp' % data['name'], ide)
         self.gen_file('iar.eww.tmpl' , expanded_dic, '%s.eww' % data['name'], ide)
 
+class IARBuilder():
+    pass

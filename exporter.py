@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Just a template for subclassing"""
-import uuid, shutil, os, logging, fnmatch
-from os.path import join, dirname, isdir, split
+import os, logging
+from os.path import join, dirname
 from jinja2 import Template
-
-class OldLibrariesException(Exception): pass
 
 class Exporter():
     TEMPLATE_DIR = dirname(__file__) + '/templates'

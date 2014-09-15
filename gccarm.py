@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from os.path import basename
-from export_generator import Exporter
+from exporter import Exporter
 
-class GccArm(Exporter):
+class GccArmExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3', 'Os']
 
     def list_files(self, data, attribute):
@@ -72,3 +72,6 @@ class GccArm(Exporter):
         data['toolchain'] = 'arm-none-eabi-';
 
         self.gen_file('makefile_gcc.tmpl', data, 'Makefile', ide)
+
+class GccArmBuilder():
+    pass
