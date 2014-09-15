@@ -20,7 +20,7 @@ class Exporter():
     TEMPLATE_DIR = dirname(__file__) + '/templates'
     DOT_IN_RELATIVE_PATH = False
 
-    def gen_file(self, template_file, data, target_file, ide):
+    def gen_file(self, template_file, data, target_file, tool):
         """ Fills data to the project template, using jinja2. """
         template_path = join(Exporter.TEMPLATE_DIR, template_file)
         template_text = open(template_path).read()
@@ -30,7 +30,7 @@ class Exporter():
         project_file_loc = 'generated_projects' + '\\'
         if not os.path.exists(project_file_loc):
             os.makedirs(project_file_loc)
-        project_dir = project_file_loc + ide + '_' + data['name']
+        project_dir = project_file_loc + tool + '_' + data['name']
         if not os.path.exists(project_dir):
             os.makedirs(project_dir)
         target_path = join(project_dir, target_file)

@@ -91,7 +91,7 @@ class YAML_parser():
             pass
         self.data['macros'] = macros
 
-    def parse_yaml(self, dic, ide):
+    def parse_yaml(self, dic, tool):
         """ Parse single yaml file, find all data in records and return it. """
         # load all common attributes (paths, files, groups)
         common_attributes = _finditem(dic, 'common')
@@ -108,7 +108,7 @@ class YAML_parser():
         if specific_attributes:
             try:
                 for k,v in specific_attributes.items():
-                    if k == ide:
+                    if k == tool:
                         specific_dic = v
             except KeyError:
                 pass

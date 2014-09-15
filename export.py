@@ -19,11 +19,11 @@ from yaml_parser import YAML_parser, _finditem
 from os.path import join
 import sys
 from os.path import basename
-from ide import export, build
+from tool import export, build
 
 class ProjectGenerator():
 
-    def run_generator(self, dic, project, ide):
+    def run_generator(self, dic, project, tool):
         """ Generates one project. """
         project_list = []
         yaml_files = _finditem(dic, project)
@@ -36,7 +36,7 @@ class ProjectGenerator():
                 else:
                     loaded_yaml = yaml.load(file)
                     yaml_parser = YAML_parser()
-                    project_list.append(yaml_parser.parse_yaml(loaded_yaml, ide))
+                    project_list.append(yaml_parser.parse_yaml(loaded_yaml, tool))
                     file.close()
             yaml_parser_final = YAML_parser()
             process_data = yaml_parser_final.parse_yaml_list(project_list)
@@ -44,9 +44,9 @@ class ProjectGenerator():
             raise RuntimeError("Project record is empty")
 
         logging.info("Generating project: %s" % project)
-        export(process_data, ide)
+        export(process_data, tool)
 
-    def process_all_projects(self, dic, ide):
+    def process_all_projects(self, dic, tool):
         """ Generates all project. """
         projects = []
         yaml_files = []
@@ -54,7 +54,7 @@ class ProjectGenerator():
             projects.append(k);
 
         for project in projects:
-            self.run_generator(dic, project, ide)
+            self.run_generator(dic, project, tool)
         return projects
 
     def scrape_dir(self):
@@ -115,10 +115,10 @@ class ProjectGenerator():
 
         projects = []
         if options.project:
-            self.run_generator(config, options.project, options.ide) # one project
+            self.run_generator(config, options.project, options.tool) # one project
             projects = options.project
         else:
-            projects = self.process_all_projects(config, options.ide) # all projects within project.yaml
+            projects = self.process_all_projects(config, options.tool) # all projects within project.yaml
 
         project_file.close()
         return projects
@@ -132,14 +132,14 @@ class ProjectBuilder():
         projects_list = []
         for dirpath, dirnames, files in os.walk(self.project_path):
             for d in dirnames:
-                if d.startswith(options.ide) and (d.strip(options.ide + '_')) in projects:
+                if d.startswith(options.tool) and (d.strip(options.tool + '_')) in projects:
                     projects_list.append(d)
         return projects_list
 
     def run(self, options, projects):
         project_list = self.build_project_list(options, projects)
         logging.info("Building all defined projects.")
-        build(self.project_path, project_list, options.ide)
+        build(self.project_path, project_list, options.tool)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
@@ -152,14 +152,14 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-f", "--file", help="YAML projects file")
     parser.add_option("-p", "--project", help="Project to be generated")
-    parser.add_option("-i", "--ide", help="Create project files for toolchain (uvision by default)")
+    parser.add_option("-t", "--tool", help="Create project files for provided tool (uvision by default)")
     parser.add_option("-l", "--list", action="store_true", help="List projects defined in the project file.")
     parser.add_option("-b", "--build", action="store_true", help="Build defined projects.")
 
     (options, args) = parser.parse_args()
 
-    if not options.ide:
-        options.ide = "uvision"
+    if not options.tool:
+        options.tool = "uvision"
 
     # Generate projects
     projects = ProjectGenerator().run(options)

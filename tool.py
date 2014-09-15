@@ -15,32 +15,32 @@ from uvision import UvisionExporter, UvisionBuilder
 from gccarm import GccArmExporter, GccArmBuilder
 from iar import IARExporter, IARBuilder
 
-EXPORTER_IDE = {
+EXPORTERS = {
     'uvision': UvisionExporter,
     'gcc_arm': GccArmExporter,
     'iar' : IARExporter,
 }
 
-BUILDER_IDE = {
+BUILDERS = {
     'uvision': UvisionBuilder,
     'gcc_arm': GccArmBuilder,
     'iar' : IARBuilder,
 }
 
-def export(data, ide):
-    """ Invokes IDE generator. """
-    if ide not in EXPORTER_IDE:
-        raise RuntimeError("Exporter does not support defined IDE.")
+def export(data, tool):
+    """ Invokes tool generator. """
+    if tool not in EXPORTERS:
+        raise RuntimeError("Exporter does not support defined tool.")
 
-    Exporter = EXPORTER_IDE[ide]
+    Exporter = EXPORTERS[tool]
     exporter = Exporter()
     exporter.generate(data)
 
-def build(project_path, project_list, ide):
-    """ Invokes builder for specificed IDE. """
-    if ide not in BUILDER_IDE:
-        raise RuntimeError("Builder does not support defined IDE.")
+def build(project_path, project_list, tool):
+    """ Invokes builder for specificed tool. """
+    if tool not in BUILDERS:
+        raise RuntimeError("Builder does not support defined tool.")
 
-    Builder = BUILDER_IDE[ide]
+    Builder = BUILDERS[tool]
     builder = Builder()
     builder.build(project_path, project_list)
