@@ -12,22 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 class YAML_parser():
 
     def __init__(self):
         self.data = {
-            'name': '' ,                # project name
-            'core' : '',                # core
+            'name': '',                # project name
+            'core': '',                # core
             'linker_file': '',          # linker command file
             'include_paths': [],        # include paths
-            'source_paths' : [],        # source paths
+            'source_paths': [],        # source paths
             'source_files_c': [],       # c source files
             'source_files_cpp': [],     # c++ source files
             'source_files_s': [],       # assembly source files
             'source_files_obj': [],     # object files
             'source_files_lib': [],     # libraries
             'macros': [],               # macros (defines)
-            'misc' : [],                # tool specific settings, will be parsed separately
+            # tool specific settings, will be parsed separately
+            'misc': [],
         }
 
     def process_files(self, source_list, group_name):
@@ -35,7 +37,7 @@ class YAML_parser():
         for source_file in source_list:
             extension = source_file.split(".")[-1]
             if extension == 'c':
-                 self.data['source_files_c'][group_name].append(source_file)
+                self.data['source_files_c'][group_name].append(source_file)
             elif extension == 's':
                 self.data['source_files_s'][group_name].append(source_file)
             elif extension == 'cpp':
@@ -45,7 +47,7 @@ class YAML_parser():
         """ Creates new dictionaries based on group_name """
         group_name = None
         try:
-            for k,v in common_attributes.items():
+            for k, v in common_attributes.items():
                 if k == 'group_name':
                     group_name = v[0]
         except KeyError:
@@ -63,7 +65,7 @@ class YAML_parser():
         include_paths = []
         source_paths = []
         try:
-            for k,v in common_attributes.items():
+            for k, v in common_attributes.items():
                 if k == 'source_paths':
                     source_paths = (v)
                 elif k == 'include_paths':
@@ -75,7 +77,7 @@ class YAML_parser():
 
     def find_source_files(self, common_attributes, group_name):
         try:
-            for k,v in common_attributes.items():
+            for k, v in common_attributes.items():
                 if k == 'source_files':
                     self.process_files(v, group_name)
         except KeyError:
@@ -84,7 +86,7 @@ class YAML_parser():
     def find_macros(self, common_attributes):
         macros = []
         try:
-            for k,v in common_attributes.items():
+            for k, v in common_attributes.items():
                 if k == 'macros':
                     macros = v
         except KeyError:
@@ -97,23 +99,23 @@ class YAML_parser():
         common_attributes = _finditem(dic, 'common')
 
         # prepare dic based on found groups in common
-        group_name = self.find_group_name(common_attributes);
+        group_name = self.find_group_name(common_attributes)
         self.find_paths(common_attributes)
         self.find_source_files(common_attributes, group_name)
         self.find_macros(common_attributes)
 
-        #load all specific files
+        # load all specific files
         specific_dic = {}
         specific_attributes = _finditem(dic, 'tool_specific')
         if specific_attributes:
             try:
-                for k,v in specific_attributes.items():
+                for k, v in specific_attributes.items():
                     if k == tool:
                         specific_dic = v
             except KeyError:
                 pass
 
-        for k,v in specific_dic.items():
+        for k, v in specific_dic.items():
             if "source_files" == k:
                 # source files might have virtual dir
                 self.process_files(v, group_name)
@@ -152,10 +154,10 @@ class YAML_parser():
     def parse_yaml_list(self, project_list):
         """ Process list of dictionaries from yaml files. """
         for dic in project_list:
-            name = _finditem(dic, 'name') #TODO fix naming
+            name = _finditem(dic, 'name')  # TODO fix naming
             if name:
                 self.data['name'] = name[0]
-            mcu = _finditem(dic, 'mcu') #TODO fix naming
+            mcu = _finditem(dic, 'mcu')  # TODO fix naming
             if mcu:
                 self.data['mcu'] = mcu[0]
             include_paths = _finditem(dic, 'include_paths')
@@ -167,7 +169,8 @@ class YAML_parser():
             linker_file = _finditem(dic, 'linker_file')
             if linker_file:
                 if len(linker_file) != 1:
-                    raise RuntimeError("Defined %s linker files. Only one allowed." % len(linker_file))
+                    raise RuntimeError(
+                        "Defined %s linker files. Only one allowed." % len(linker_file))
                 self.data['linker_file'] = linker_file[0]
             source_c = _finditem(dic, 'source_files_c')
             if source_c:
@@ -197,27 +200,30 @@ class YAML_parser():
 
         return self.data
 
+
 def get_source_files_by_extension(dic, extension):
     """ Returns list of source files based on defined extension. """
     find_extension = 'source_files_' + extension
     return _finditem(dic, find_extension)
+
 
 def find_all_values(obj, key):
     files = []
     if key in obj:
         return obj[key]
     for k, v in obj.items():
-        if isinstance(v,dict):
+        if isinstance(v, dict):
             item = find_all_values(v, key)
             if item:
                 files.append(item)
     return files
 
+
 def _finditem(obj, key):
     if key in obj:
         return obj[key]
     for k, v in obj.items():
-        if isinstance(v,dict):
+        if isinstance(v, dict):
             item = _finditem(v, key)
             if item is not None:
                 return item

@@ -21,6 +21,7 @@ import sys
 from os.path import basename
 from tool import export, build
 
+
 class ProjectGenerator():
 
     def run_generator(self, dic, project, tool):
@@ -36,7 +37,8 @@ class ProjectGenerator():
                 else:
                     loaded_yaml = yaml.load(file)
                     yaml_parser = YAML_parser()
-                    project_list.append(yaml_parser.parse_yaml(loaded_yaml, tool))
+                    project_list.append(
+                        yaml_parser.parse_yaml(loaded_yaml, tool))
                     file.close()
             yaml_parser_final = YAML_parser()
             process_data = yaml_parser_final.parse_yaml_list(project_list)
@@ -50,8 +52,8 @@ class ProjectGenerator():
         """ Generates all project. """
         projects = []
         yaml_files = []
-        for k,v in dic.items():
-            projects.append(k);
+        for k, v in dic.items():
+            projects.append(k)
 
         for project in projects:
             self.run_generator(dic, project, tool)
@@ -59,7 +61,7 @@ class ProjectGenerator():
 
     def scrape_dir(self):
         exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld']
-        found = {x: [] for x in exts} # lists of found files
+        found = {x: [] for x in exts}  # lists of found files
         ignore = '.'
         for dirpath, dirnames, files in os.walk(os.getcwd()):
             # Remove directories in ignore
@@ -83,7 +85,7 @@ class ProjectGenerator():
             logbody += "<< Results with the extension '%s' >>" % search
             logbody += '\n\n%s\n\n' % '\n'.join(found[search])
         # Write results to the logfile
-        source_list_path = os.getcwd() + '\\tools\\records\\'
+        source_list_path = join(os.getcwd(), 'tools', 'join')
         if not os.path.exists(source_list_path):
             os.makedirs(source_list_path)
         target_path = join(source_list_path, 'scrape.log')
@@ -93,7 +95,7 @@ class ProjectGenerator():
 
     def list_projects(self, dic):
         """ Print all defined project. """
-        for k,v in dic['projects'].items():
+        for k, v in dic.items():
             print k
 
     def run(self, options):
@@ -105,7 +107,7 @@ class ProjectGenerator():
             sys.exit()
 
         print "Processing projects file."
-        project_file = open('tools//' + options.file)
+        project_file = open(join('tools', options.file))
         config = yaml.load(project_file)
 
         if options.list:
@@ -115,25 +117,30 @@ class ProjectGenerator():
 
         projects = []
         if options.project:
-            self.run_generator(config, options.project, options.tool) # one project
+            self.run_generator(
+                config, options.project, options.tool)  # one project
             projects = options.project
         else:
-            projects = self.process_all_projects(config, options.tool) # all projects within project.yaml
+            # all projects within project.yaml
+            projects = self.process_all_projects(config, options.tool)
 
         project_file.close()
         return projects
 
+
 class ProjectBuilder():
+
     def __init__(self):
-        self.root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.project_path = os.path.join(self.root_path, os.pardir, 'generated_projects')
+        self.project_path = "generated_projects"
 
     def build_project_list(self, options, projects):
         projects_list = []
         for dirpath, dirnames, files in os.walk(self.project_path):
             for d in dirnames:
-                if d.startswith(options.tool) and (d.strip(options.tool + '_')) in projects:
-                    projects_list.append(d)
+                for project_name in projects:
+                    if project_name in d:
+                        projects_list.append(d)
+                        break
         return projects_list
 
     def run(self, options, projects):
@@ -152,9 +159,12 @@ if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-f", "--file", help="YAML projects file")
     parser.add_option("-p", "--project", help="Project to be generated")
-    parser.add_option("-t", "--tool", help="Create project files for provided tool (uvision by default)")
-    parser.add_option("-l", "--list", action="store_true", help="List projects defined in the project file.")
-    parser.add_option("-b", "--build", action="store_true", help="Build defined projects.")
+    parser.add_option(
+        "-t", "--tool", help="Create project files for provided tool (uvision by default)")
+    parser.add_option("-l", "--list", action="store_true",
+                      help="List projects defined in the project file.")
+    parser.add_option(
+        "-b", "--build", action="store_true", help="Build defined projects.")
 
     (options, args) = parser.parse_args()
 

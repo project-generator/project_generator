@@ -14,6 +14,7 @@
 from os.path import basename
 from exporter import Exporter
 
+
 class GccArmExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3', 'Os']
 
@@ -22,7 +23,7 @@ class GccArmExporter(Exporter):
         file_list = []
         for groups in data[attribute]:
             try:
-                for k,v in groups.items():
+                for k, v in groups.items():
                     for file in v:
                         file_list.append(file)
             except:
@@ -57,7 +58,7 @@ class GccArmExporter(Exporter):
         """ Parse all uvision specific setttings. """
         data['compiler_options'] = []
         for dic in data['misc']:
-            for k,v in dic.items():
+            for k, v in dic.items():
                 self.libraries(k, v, data)
                 self.compiler_options(k, v, data)
                 self.optimization(k, v, data)
@@ -69,9 +70,10 @@ class GccArmExporter(Exporter):
         self.list_files(data, 'source_files_s')
 
         self.parse_specific_options(data)
-        data['toolchain'] = 'arm-none-eabi-';
+        data['toolchain'] = 'arm-none-eabi-'
 
         self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gccarm")
+
 
 class GccArmBuilder():
 
