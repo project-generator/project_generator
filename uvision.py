@@ -166,7 +166,17 @@ class UvisionBuilder():
 
         args = ['UV4', '-b', path, '-j0']
 
-        subprocess.call(args)
+        try:
+            ret_code = None
+            ret_code = subprocess.call(args)
+        except:
+            logging.error("Error whilst calling UV4. Is it in your PATH?")
+        finally:
+            if ret_code != 0:
+                # Seems like something went wrong.
+                logging.error("Build failed.")
+            else:
+                logging.info("Build succeeded.")
 
     def build(self, project_path, project_list):
         # Loop through each of the projects and build them.
@@ -174,5 +184,5 @@ class UvisionBuilder():
 
         for i, project_name in enumerate(project_list):
             logging.debug("Building project %i of %i: %s" %
-                          (i, len(project_list), project_name))
+                          (i + 1, len(project_list), project_name))
             self.build_project(project_name, project_path)
