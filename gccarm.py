@@ -63,7 +63,7 @@ class GccArmExporter(Exporter):
                 self.compiler_options(k, v, data)
                 self.optimization(k, v, data)
 
-    def generate(self, data):
+    def generate(self, data, project):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.list_files(data, 'source_files_c')
         self.list_files(data, 'source_files_cpp')

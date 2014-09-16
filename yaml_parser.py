@@ -147,16 +147,12 @@ class YAML_parser():
         if lib:
             self.data['source_files_lib'].append(lib)
 
-        self.data['name'] = _finditem(dic, 'name')
         self.data['core'] = _finditem(dic, 'core')
         return self.data
 
     def parse_yaml_list(self, project_list):
         """ Process list of dictionaries from yaml files. """
         for dic in project_list:
-            name = _finditem(dic, 'name')  # TODO fix naming
-            if name:
-                self.data['name'] = name[0]
             mcu = _finditem(dic, 'mcu')  # TODO fix naming
             if mcu:
                 self.data['mcu'] = mcu[0]
@@ -200,6 +196,8 @@ class YAML_parser():
 
         return self.data
 
+    def set_name(self, project_name):
+        self.data['name'] = project_name
 
 def get_source_files_by_extension(dic, extension):
     """ Returns list of source files based on defined extension. """

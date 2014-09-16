@@ -157,14 +157,23 @@ class UvisionExporter(Exporter):
 
 
 class UvisionBuilder():
+    ERRORLEVEL = {
+        0 : 'success (0 warnings, 0 errors)',
+        1 : 'warnings',
+        2 : 'errors',
+        3 : 'fatal errors',
+        11 : 'cant write to project file',
+        12 : 'device error',
+        13 : 'error writing',
+        15 : ' error reading xml file',
+    }
 
     def build_project(self, project, project_path):
         # > UV4 -b [project_path]
-
-        path = relpath(join(project_path, "%s.uvproj" % project))
+        path = relpath(join(project_path, ("uvision_" + project) ,"%s.uvproj" % project))
         logging.debug("Building uVision project: %s" % path)
 
-        args = ['UV4', '-b', path, '-j0']
+        args = ['UV4', '-r', '-j0' ,path]
 
         try:
             ret_code = None
@@ -172,11 +181,11 @@ class UvisionBuilder():
         except:
             logging.error("Error whilst calling UV4. Is it in your PATH?")
         finally:
-            if ret_code != 0:
+            if ret_code > 1:
                 # Seems like something went wrong.
-                logging.error("Build failed.")
+                logging.error("Build failed with the status: %s" % self.ERRORLEVEL[ret_code])
             else:
-                logging.info("Build succeeded.")
+                logging.info("Build succeeded with the status: %s" % self.ERRORLEVEL[ret_code])
 
     def build(self, project_path, project_list):
         # Loop through each of the projects and build them.

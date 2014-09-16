@@ -42,6 +42,7 @@ class ProjectGenerator():
                     file.close()
             yaml_parser_final = YAML_parser()
             process_data = yaml_parser_final.parse_yaml_list(project_list)
+            yaml_parser_final.set_name(project)
         else:
             raise RuntimeError("Project record is empty")
 
@@ -119,7 +120,7 @@ class ProjectGenerator():
         if options.project:
             self.run_generator(
                 config, options.project, options.tool)  # one project
-            projects = options.project
+            projects.append(options.project)
         else:
             # all projects within project.yaml
             projects = self.process_all_projects(config, options.tool)
@@ -138,8 +139,9 @@ class ProjectBuilder():
         for dirpath, dirnames, files in os.walk(self.project_path):
             for d in dirnames:
                 for project_name in projects:
-                    if project_name in d:
-                        projects_list.append(d)
+                    proj = options.tool + '_' + project_name
+                    if proj in d:
+                        projects_list.append(project_name)
                         break
         return projects_list
 
