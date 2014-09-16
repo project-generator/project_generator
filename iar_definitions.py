@@ -30,7 +30,7 @@ class IARDefinitions():
     mcu_def = {
         'LPC1768': {
             'OGChipSelectEditMenu': {
-                'state': 'LPC1768   NXP LPC1768',
+                'state': 'LPC1768	NXP LPC1768',
             },
             'OGCoreOrChip': {
                 'state': 1,
@@ -38,7 +38,7 @@ class IARDefinitions():
         },
         'MKL25Z128xxx4': {
             'OGChipSelectEditMenu': {
-                'state': 'MKL25Z128xxx4 Freescale MKL25Z128xxx4',
+                'state': 'MKL25Z128xxx4	Freescale MKL25Z128xxx4',
             },
             'OGCoreOrChip': {
                 'state': 1,
@@ -46,7 +46,7 @@ class IARDefinitions():
         },
         'STM32F401xB': {
             'OGChipSelectEditMenu': {
-                'state': 'STM32F401xB   ST STM32F401xB',
+                'state': 'STM32F401xB	ST STM32F401xB',
             },
             'OGCoreOrChip': {
                 'state': 1,
