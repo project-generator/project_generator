@@ -18,14 +18,15 @@ from iar import IARExporter, IARBuilder
 EXPORTERS = {
     'uvision': UvisionExporter,
     'gcc_arm': GccArmExporter,
-    'iar' : IARExporter,
+    'iar': IARExporter,
 }
 
 BUILDERS = {
     'uvision': UvisionBuilder,
     'gcc_arm': GccArmBuilder,
-    'iar' : IARBuilder,
+    'iar': IARBuilder,
 }
+
 
 def export(data, tool):
     """ Invokes tool generator. """
@@ -35,6 +36,7 @@ def export(data, tool):
     Exporter = EXPORTERS[tool]
     exporter = Exporter()
     exporter.generate(data)
+
 
 def build(project_path, project_list, tool):
     """ Invokes builder for specificed tool. """

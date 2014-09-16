@@ -18,10 +18,12 @@ import subprocess
 import copy
 from uvision_definitions import uVisionDefinitions
 
+
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
-    source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
-    file_types = {'cpp': 8, 'c' : 1, 's' : 2 ,'obj' : 3, 'lib' : 4}
+    source_files_dic = ['source_files_c', 'source_files_s',
+                        'source_files_cpp', 'source_files_obj', 'source_files_lib']
+    file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3, 'lib': 4}
 
     def __init__(self):
         self.definitions = uVisionDefinitions()
@@ -35,14 +37,15 @@ class UvisionExporter(Exporter):
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
-                new_file = {"path" : file, "name" : basename(file), "filetype" : self.file_types[extension]}
+                new_file = {"path": file, "name": basename(
+                    file), "filetype": self.file_types[extension]}
                 new_data['groups'][group].append(new_file)
 
     def iterate(self, data, expanded_data):
         """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
-                for k,v in dic.items():
+                for k, v in dic.items():
                     if k == None:
                         group = 'Sources'
                     else:
@@ -52,9 +55,9 @@ class UvisionExporter(Exporter):
     def parse_specific_options(self, data):
         """ Parse all uvision specific setttings. """
         default_set = copy.deepcopy(self.definitions.uvision_settings)
-        data.update(default_set) # set specific options to default values
+        data.update(default_set)  # set specific options to default values
         for dic in data['misc']:
-            for k,v in dic.items():
+            for k, v in dic.items():
                 if k == 'ArmAdsMisc':
                     self.set_target_options(v, data, k)
                 elif k == 'TargetOption':
@@ -77,7 +80,7 @@ class UvisionExporter(Exporter):
     def set_target_options(self, value_list, data, uvision_dic):
         for option in value_list:
             if option.startswith('OCR_'):
-                for k,v in value_list[option].items():
+                for k, v in value_list[option].items():
                     if v[0] == 'enable':
                         value_list[option][k] = 1
                     elif v[0] == 'disable':
@@ -93,7 +96,7 @@ class UvisionExporter(Exporter):
     def set_user_options(self, value_list, data, uvision_dic):
         for option in value_list:
             if option.startswith('Before'):
-                for k,v in value_list[option].items():
+                for k, v in value_list[option].items():
                     if v[0] == 'enable':
                         value_list[option][k] = 1
                     elif v[0] == 'disable':
@@ -112,7 +115,7 @@ class UvisionExporter(Exporter):
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
                 if dic:
-                    for k,v in dic.items():
+                    for k, v in dic.items():
                         if k == None:
                             k = 'Sources'
                         if k not in groups:
@@ -142,11 +145,15 @@ class UvisionExporter(Exporter):
         mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
-        expanded_dic['Cads']['Optim'][0] += 1 #optimization set to correct value, default not used
+        # optimization set to correct value, default not used
+        expanded_dic['Cads']['Optim'][0] += 1
 
         # Project file
-        self.gen_file('uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], "uvision")
-        self.gen_file('uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision")
+        self.gen_file(
+            'uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], "uvision")
+        self.gen_file(
+            'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision")
+
 
 class UvisionBuilder():
 

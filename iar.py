@@ -15,18 +15,20 @@ from exporter import Exporter
 from iar_definitions import IARDefinitions
 import copy
 
+
 class IARExporter(Exporter):
 
     def __init__(self):
         self.definitions = IARDefinitions()
 
-    source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
+    source_files_dic = ['source_files_c', 'source_files_s',
+                        'source_files_cpp', 'source_files_obj', 'source_files_lib']
     core_dic = {
-        "cortex-m0" : 34,
-        "cortex-m0+" : 35,
-        "cortex-m3" : 38,
-        "cortex-m4" : 39,
-        "cortex-m4f" : 40,
+        "cortex-m0": 34,
+        "cortex-m0+": 35,
+        "cortex-m3": 38,
+        "cortex-m4": 39,
+        "cortex-m4f": 40,
     }
 
     def expand_data(self, old_data, new_data, attribute, group):
@@ -43,7 +45,7 @@ class IARExporter(Exporter):
         """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
-                for k,v in dic.items():
+                for k, v in dic.items():
                     if k == None:
                         group = 'Sources'
                     else:
@@ -55,7 +57,7 @@ class IARExporter(Exporter):
         groups = []
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
-                for k,v in dic.items():
+                for k, v in dic.items():
                     if k == None:
                         k = 'Sources'
                     if k not in groups:
@@ -64,20 +66,21 @@ class IARExporter(Exporter):
 
     def find_target_core(self, data):
         """ Sets Target core. """
-        for k,v in self.core_dic.items():
+        for k, v in self.core_dic.items():
             if k == data['core']:
                 return v
-        return core_dic['cortex-m0'] #def cortex-m0 if not defined otherwise
+        return core_dic['cortex-m0']  # def cortex-m0 if not defined otherwise
 
     def parse_specific_options(self, data):
         """ Parse all IAR specific setttings. """
-        data['iar_settings'].update(copy.deepcopy(self.definitions.iar_settings)) # set specific options to default values
+        data['iar_settings'].update(copy.deepcopy(
+            self.definitions.iar_settings))  # set specific options to default values
         for dic in data['misc']:
-            #for k,v in dic.items():
+            # for k,v in dic.items():
             self.set_specific_settings(dic, data)
 
     def set_specific_settings(self, value_list, data):
-        for k,v in value_list.items():
+        for k, v in value_list.items():
             if v[0] == 'enable':
                 v[0] = 1
             elif v[0] == 'disable':
@@ -96,10 +99,14 @@ class IARExporter(Exporter):
 
         expanded_dic['iar_settings'] = {}
         self.parse_specific_options(expanded_dic)
-        expanded_dic['iar_settings'].update(self.definitions.get_mcu_definition(expanded_dic['mcu']))
+        expanded_dic['iar_settings'].update(
+            self.definitions.get_mcu_definition(expanded_dic['mcu']))
 
-        self.gen_file('iar.ewp.tmpl' , expanded_dic, '%s.ewp' % data['name'], "iar")
-        self.gen_file('iar.eww.tmpl' , expanded_dic, '%s.eww' % data['name'], "iar")
+        self.gen_file('iar.ewp.tmpl', expanded_dic, '%s.ewp' %
+                      data['name'], "iar")
+        self.gen_file('iar.eww.tmpl', expanded_dic, '%s.eww' %
+                      data['name'], "iar")
+
 
 class IARBuilder():
 
