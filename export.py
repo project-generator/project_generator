@@ -51,7 +51,7 @@ class ProjectGenerator():
         projects = []
         yaml_files = []
         for k,v in dic.items():
-            projects.append(k);
+            projects.append(k)
 
         for project in projects:
             self.run_generator(dic, project, tool)
@@ -83,7 +83,7 @@ class ProjectGenerator():
             logbody += "<< Results with the extension '%s' >>" % search
             logbody += '\n\n%s\n\n' % '\n'.join(found[search])
         # Write results to the logfile
-        source_list_path = os.getcwd() + '\\tools\\records\\'
+        source_list_path = join(os.getcwd(), 'tools', 'join')
         if not os.path.exists(source_list_path):
             os.makedirs(source_list_path)
         target_path = join(source_list_path, 'scrape.log')
@@ -93,7 +93,7 @@ class ProjectGenerator():
 
     def list_projects(self, dic):
         """ Print all defined project. """
-        for k,v in dic['projects'].items():
+        for k, v in dic.items():
             print k
 
     def run(self, options):
@@ -105,7 +105,7 @@ class ProjectGenerator():
             sys.exit()
 
         print "Processing projects file."
-        project_file = open('tools//' + options.file)
+        project_file = open(join('tools', options.file))
         config = yaml.load(project_file)
 
         if options.list:
@@ -125,15 +125,16 @@ class ProjectGenerator():
 
 class ProjectBuilder():
     def __init__(self):
-        self.root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.project_path = os.path.join(self.root_path, os.pardir, 'generated_projects')
+        self.project_path = "generated_projects"
 
     def build_project_list(self, options, projects):
         projects_list = []
         for dirpath, dirnames, files in os.walk(self.project_path):
             for d in dirnames:
-                if d.startswith(options.tool) and (d.strip(options.tool + '_')) in projects:
-                    projects_list.append(d)
+                for project_name in projects:
+                    if project_name in d:
+                        projects_list.append(d)
+                        break
         return projects_list
 
     def run(self, options, projects):

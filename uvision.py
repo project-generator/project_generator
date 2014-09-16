@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename
+from os.path import basename, join, relpath
 from exporter import Exporter
+import subprocess
 import copy
 from uvision_definitions import uVisionDefinitions
 
@@ -148,6 +149,22 @@ class UvisionExporter(Exporter):
         self.gen_file('uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision")
 
 class UvisionBuilder():
-    
+
+    def build_project(self, project, project_path):
+        # > UV4 -b [project_path]
+
+        path = relpath(join(project, "%s.uvproj" % project_path))
+        logging.debug("Building uVision project: %s" % path)
+
+        args = ['UV4', '-b', path, '-j0']
+
+        subprocess.call(args)
+
     def build(self, project_path, project_list):
-        pass
+        # Loop through each of the projects and build them.
+        logging.debug("Building projects.")
+
+        for i, project_name in enumerate(project_list):
+            logging.debug("Building project %i of %i: %s" %
+                          i, len(project_list), project_name)
+            self.build_project(project_name, project_path)
