@@ -15,6 +15,7 @@
 from os.path import basename, join, relpath
 from exporter import Exporter
 import subprocess
+import logging
 import copy
 from uvision_definitions import uVisionDefinitions
 
@@ -160,7 +161,7 @@ class UvisionBuilder():
     def build_project(self, project, project_path):
         # > UV4 -b [project_path]
 
-        path = relpath(join(project, "%s.uvproj" % project_path))
+        path = relpath(join(project_path, "%s.uvproj" % project))
         logging.debug("Building uVision project: %s" % path)
 
         args = ['UV4', '-b', path, '-j0']
@@ -173,5 +174,5 @@ class UvisionBuilder():
 
         for i, project_name in enumerate(project_list):
             logging.debug("Building project %i of %i: %s" %
-                          i, len(project_list), project_name)
+                          (i, len(project_list), project_name))
             self.build_project(project_name, project_path)
