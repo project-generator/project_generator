@@ -11,8 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from os.path import basename
+from __future__ import print_function
+
+import logging
+import subprocess
+from os.path import basename, relpath, join
 from exporter import Exporter
+
+from builder import Builder
 
 
 class GccArmExporter(Exporter):
@@ -63,7 +69,7 @@ class GccArmExporter(Exporter):
                 self.compiler_options(k, v, data)
                 self.optimization(k, v, data)
 
-    def generate(self, data, project):
+    def generate(self, data):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.list_files(data, 'source_files_c')
         self.list_files(data, 'source_files_cpp')
@@ -72,10 +78,37 @@ class GccArmExporter(Exporter):
         self.parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'
 
-        self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gccarm")
+        self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm")
 
 
-class GccArmBuilder():
+class GccArmBuilder(Builder):
+    # http://www.gnu.org/software/make/manual/html_node/Running.html
+    ERRORLEVEL = {
+        0: 'success (0 warnings, 0 errors)',
+        1: 'targets not already up to date',
+        2: 'errors'
+    }
 
-    def build(self, project_path, project_list):
-        pass
+    SUCCESSVALUE = 0
+
+    def build_project(self, project, project_path):
+        # cwd: relpath(join(project_path, ("gcc_arm" + project)))
+        # > make all
+        path = relpath(join(project_path, "gcc_arm_" + project))
+        logging.debug("Building GCC ARM project: %s" % path)
+
+        args = ['make', 'all']
+
+        try:
+            ret_code = None
+            ret_code = subprocess.call(args, cwd=path)
+        except:
+            logging.error("Error whilst calling make. Is it in your PATH?")
+        else:
+            if ret_code != self.SUCCESSVALUE:
+                # Seems like something went wrong.
+                logging.error("Build failed with the status: %s" %
+                              self.ERRORLEVEL[ret_code])
+            else:
+                logging.info("Build succeeded with the status: %s" %
+                             self.ERRORLEVEL[ret_code])

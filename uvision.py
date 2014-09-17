@@ -19,6 +19,8 @@ import logging
 import copy
 from uvision_definitions import uVisionDefinitions
 
+from builder import Builder
+
 
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
@@ -156,42 +158,38 @@ class UvisionExporter(Exporter):
             'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision")
 
 
-class UvisionBuilder():
+class UvisionBuilder(Builder):
     ERRORLEVEL = {
-        0 : 'success (0 warnings, 0 errors)',
-        1 : 'warnings',
-        2 : 'errors',
-        3 : 'fatal errors',
-        11 : 'cant write to project file',
-        12 : 'device error',
-        13 : 'error writing',
-        15 : ' error reading xml file',
+        0: 'success (0 warnings, 0 errors)',
+        1: 'warnings',
+        2: 'errors',
+        3: 'fatal errors',
+        11: 'cant write to project file',
+        12: 'device error',
+        13: 'error writing',
+        15: ' error reading xml file',
     }
+
+    SUCCESSVALUE = 0
 
     def build_project(self, project, project_path):
         # > UV4 -b [project_path]
-        path = relpath(join(project_path, ("uvision_" + project) ,"%s.uvproj" % project))
+        path = relpath(
+            join(project_path, ("uvision_" + project), "%s.uvproj" % project))
         logging.debug("Building uVision project: %s" % path)
 
-        args = ['UV4', '-r', '-j0' ,path]
+        args = ['UV4', '-r', '-j0', path]
 
         try:
             ret_code = None
             ret_code = subprocess.call(args)
         except:
             logging.error("Error whilst calling UV4. Is it in your PATH?")
-        finally:
-            if ret_code > 1:
+        else:
+            if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
-                logging.error("Build failed with the status: %s" % self.ERRORLEVEL[ret_code])
+                logging.error("Build failed with the status: %s" %
+                              self.ERRORLEVEL[ret_code])
             else:
-                logging.info("Build succeeded with the status: %s" % self.ERRORLEVEL[ret_code])
-
-    def build(self, project_path, project_list):
-        # Loop through each of the projects and build them.
-        logging.debug("Building projects.")
-
-        for i, project_name in enumerate(project_list):
-            logging.debug("Building project %i of %i: %s" %
-                          (i + 1, len(project_list), project_name))
-            self.build_project(project_name, project_path)
+                logging.info("Build succeeded with the status: %s" %
+                             self.ERRORLEVEL[ret_code])

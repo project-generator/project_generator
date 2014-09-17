@@ -15,6 +15,8 @@ from exporter import Exporter
 from iar_definitions import IARDefinitions
 import copy
 
+from builder import Builder
+
 
 class IARExporter(Exporter):
 
@@ -108,7 +110,5 @@ class IARExporter(Exporter):
                       data['name'], "iar")
 
 
-class IARBuilder():
-
-    def build(self, project_path, project_list):
-        pass
+class IARBuilder(Builder):
+    pass
