@@ -18,7 +18,7 @@ import copy
 import logging
 
 from builder import Builder
-
+import subprocess
 
 class IARExporter(Exporter):
 
@@ -123,7 +123,9 @@ class IARBuilder(Builder):
 
         try:
             ret_code = None
-            ret_code = subprocess.check_output(args)
+            ret_code = subprocess.call(args)
         except:
             logging.error("Error whilst calling IarBuild. Is it in your PATH?")
-
+        else:
+            # no IAR doc describes errors from IarBuild
+            logging.info("Build completed.")
