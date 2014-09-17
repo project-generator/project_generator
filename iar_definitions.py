@@ -151,16 +151,16 @@ class IARDefinitions():
             'state': [],
         },
         'CCDiagSuppress': {
-            'state': 0,
+            'state': '',
         },
         'CCDiagRemark': {
-            'state': 0,
+            'state': '',
         },
         'CCDiagWarning': {
-            'state': 0,
+            'state': '',
         },
         'CCDiagError': {
-            'state': 0,
+            'state': '',
         },
         'CCObjPrefix': {
             'state': 0,
@@ -320,14 +320,14 @@ class IARDefinitions():
         'AWarnRange2': {
             'state': 0,
         },
-        'ADebug': {
+        'ADebug': {     # [Assembler] Generate debug info
             'state': 0,
         },
         'AltRegisterNames': {
             'state': 0,
         },
-        'ADefines': {
-            'state': 0,
+        'ADefines': {   # [Assembler] Preprocessor - Defines
+            'state': '',
         },
         'AList': {
             'state': 0,
@@ -339,7 +339,7 @@ class IARDefinitions():
             'state': 0,
         },
         'Includes': {
-            'state': 0,
+            'state': '',
         },
         'MacDefs': {
             'state': 0,
@@ -393,13 +393,13 @@ class IARDefinitions():
             'state': 0,
         },
         'ALimitErrorsEdit': {
-            'state': 0,
+            'state': 100,
         },
         'AIgnoreStdInclude': {
             'state': 0,
         },
         'AUserIncludes': {
-            'state': 0,
+            'state': '',
         },
         'AExtraOptionsCheckV2': {
             'state': 0,

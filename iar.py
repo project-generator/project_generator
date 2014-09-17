@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from os.path import basename, join, relpath
 from exporter import Exporter
 from iar_definitions import IARDefinitions
 import copy
+import logging
 
 from builder import Builder
 
@@ -111,4 +113,17 @@ class IARExporter(Exporter):
 
 
 class IARBuilder(Builder):
-    pass
+
+    def build_project(self, project, project_path):
+        # > IarBuild [project_path] -build [project_name]
+        path = relpath(join(project_path, ("iar_" + project), "%s.ewp" % project))
+        logging.debug("Building IAR project: %s" % path)
+
+        args = ['IarBuild', path, '-build', project]
+
+        try:
+            ret_code = None
+            ret_code = subprocess.check_output(args)
+        except:
+            logging.error("Error whilst calling IarBuild. Is it in your PATH?")
+
