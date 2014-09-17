@@ -78,7 +78,7 @@ class GccArmExporter(Exporter):
         self.parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'
 
-        self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gccarm")
+        self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm")
 
 
 class GccArmBuilder(Builder):

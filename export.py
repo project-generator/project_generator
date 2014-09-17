@@ -140,7 +140,7 @@ class ProjectBuilder():
             for d in dirnames:
                 for project_name in projects:
                     proj = options.tool + '_' + project_name
-                    if project_name in d:
+                    if proj in d:
                         projects_list.append(project_name)
                         break
         return projects_list
