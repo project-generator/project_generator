@@ -77,7 +77,47 @@ class uVisionDefinitions():
                 'DeviceId': 0,
                 'SFDFile': 0
             }
-        }
+        },
+        'nRF51822AA': {
+            'TargetOption': {
+                'Device': 'nRF51822_xxAA',
+                'Vendor': 'Nordic Semiconductor',
+                'Cpu': 'IROM(0x00000000,0x40000) IRAM(0x20000000,0x4000) CPUTYPE("Cortex-M0") CLOCK(16000000) ELITTLE',
+                'FlashDriverDll': 'UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0nrf51xxx -FS00 -FL0200000 -FP0($$Device:nRF51822_xxAA$Flash\nrf51xxx.flm))',
+                'DeviceId': 0,
+                'SFDFile': '$$Device:nRF51822_xxAA$SVD\nrf51.xml'
+            }
+        },
+        'MK64FN1M0xxx12': {
+            'TargetOption': {
+                'Device': 'MK64FN1M0xxx12',
+                'Vendor': 'Freescale Semiconductor',
+                'Cpu': 'IROM(0x00000000,0x100000) IRAM(0x20000000,0x30000) IRAM2(0x1FFF0000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(120000000) ELITTLE',
+                'FlashDriverDll': 'UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0MK_P1M0 -FS00 -FL0100000 -FP0($$Device:MK64FN1M0xxx12$Flash\MK_P1M0.FLM))',
+                'DeviceId': 7425,
+                'SFDFile': '$$Device:MK64FN1M0xxx12$SVD\MK64F12.svd'
+            }
+        },
+        'STM32F401RC': {
+            'TargetOption': {
+                'Device': 'STM32F401RC',
+                'Vendor': 'STMicroelectronics',
+                'Cpu': 'IROM(0x08000000,0x40000) IRAM(0x20000000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(84000000) ELITTLE',
+                'FlashDriverDll': 'UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_256 -FS08000000 -FL040000 -FP0($$Device:STM32F401RC$Flash\STM32F4xx_256.FLM))',
+                'DeviceId': 7383,
+                'SFDFile': '$$Device:STM32F401RC$SVD\STM32F40x.svd'
+            }
+        },
+        'MKL25Z128xxx4': {
+            'TargetOption': {
+                'Device': 'MKL25Z128xxx4',
+                'Vendor': 'Freescale Semiconductor',
+                'Cpu': 'IRAM(0x1FFFF000-0x1FFFFFFF) IRAM2(0x20000000-0x20002FFF) IROM(0x0-0x1FFFF) CLOCK(8000000) CPUTYPE("Cortex-M0+") ELITTLE',
+                'FlashDriverDll': 'ULP2CM3(-O2510 -S0 -C0 -FO15 -FD20000000 -FC800 -FN1 -FF0MK_P128_48MHZ -FS00 -FL020000)',
+                'DeviceId': 6533,
+                'SFDFile': 'SFD\Freescale\Kinetis\MKL25Z4.sfr'
+            }
+        },
     }
 
     uvision_settings = {
