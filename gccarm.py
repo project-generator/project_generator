@@ -92,9 +92,9 @@ class GccArmBuilder(Builder):
     SUCCESSVALUE = 0
 
     def build_project(self, project, project_path):
-        # cwd: relpath(join(project_path, ("gccarm" + project)))
+        # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
-        path = relpath(join(project_path, "gccarm_" + project))
+        path = relpath(join(project_path, "gcc_arm_" + project))
         logging.debug("Building GCC ARM project: %s" % path)
 
         args = ['make', 'all']
