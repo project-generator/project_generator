@@ -20,7 +20,7 @@ import copy
 from uvision_definitions import uVisionDefinitions
 
 from builder import Builder
-
+import user_settings
 
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
@@ -174,17 +174,16 @@ class UvisionBuilder(Builder):
 
     def build_project(self, project, project_path):
         # > UV4 -b [project_path]
-        path = relpath(
-            join(project_path, ("uvision_" + project), "%s.uvproj" % project))
+        path = join(self.root_path, project_path, ("uvision_" + project), "%s.uvproj" % project)
         logging.debug("Building uVision project: %s" % path)
 
-        args = ['UV4', '-r', '-j0', path]
+        args = [user_settings.UV4, '-r', '-j0', path]
 
         try:
             ret_code = None
             ret_code = subprocess.call(args)
         except:
-            logging.error("Error whilst calling UV4. Is it in your PATH?")
+            logging.error("Error whilst calling UV4. Please check UV4 path in the user_settings.py file.")
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.

@@ -19,6 +19,7 @@ import logging
 
 from builder import Builder
 import subprocess
+import user_settings
 
 class IARExporter(Exporter):
 
@@ -116,16 +117,16 @@ class IARBuilder(Builder):
 
     def build_project(self, project, project_path):
         # > IarBuild [project_path] -build [project_name]
-        path = relpath(join(project_path, ("iar_" + project), "%s.ewp" % project))
+        path = join(self.root_path, project_path, ("iar_" + project), "%s.ewp" % project)
         logging.debug("Building IAR project: %s" % path)
 
-        args = ['IarBuild', path, '-build', project]
+        args = [user_settings.IARBUILD, path, '-build', project]
 
         try:
             ret_code = None
             ret_code = subprocess.call(args)
         except:
-            logging.error("Error whilst calling IarBuild. Is it in your PATH?")
+            logging.error("Error whilst calling IarBuild. Please check IARBUILD path in the user_settings.py file.")
         else:
             # no IAR doc describes errors from IarBuild
             logging.info("Build completed.")
