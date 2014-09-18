@@ -54,3 +54,5 @@ docs/_build/
 
 .tags
 .tags_sorted_by_file
+
+user_settings.py

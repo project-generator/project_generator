@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """ Template to be subclassed """
-
+import os
 import logging
 
 
 class Builder:
+    def __init__(self):
+        self.root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     def build_project(self, project, project_path):
         raise NotImplementedError
