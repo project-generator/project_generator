@@ -86,7 +86,7 @@ class ProjectGenerator():
             logbody += "<< Results with the extension '%s' >>" % search
             logbody += '\n\n%s\n\n' % '\n'.join(found[search])
         # Write results to the logfile
-        source_list_path = join(os.getcwd(), 'tools', 'join')
+        source_list_path = join(os.getcwd(), 'tools', 'records')
         if not os.path.exists(source_list_path):
             os.makedirs(source_list_path)
         target_path = join(source_list_path, 'scrape.log')
