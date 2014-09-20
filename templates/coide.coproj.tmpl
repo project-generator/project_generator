@@ -4,45 +4,40 @@
 -->
 <Project version="2G - 1.7.5" name="{{name}}">
   <Target name="{{name}}" isCurrent="1">
-    <Device manufacturerId="4" manufacturerName="Freescale" chipId="86" chipName="MKL25Z128VLK4" boardId="" boardName=""/>
+    <Device manufacturerId="{{coide_settings['Device']['manufacturerId']}}" manufacturerName="{{coide_settings['Device']['manufacturerName']}}" chipId="{{coide_settings['Device']['chipId']}}" chipName="{{coide_settings['Device']['chipName']}}" boardId="" boardName=""/>
     <BuildOption>
       <Compile>
-        <Option name="OptimizationLevel" value="4"/>
+        <Option name="OptimizationLevel" value="{{coide_settings['Compile']['OptimizationLevel']}}"/>
         <Option name="UseFPU" value="0"/>
-        <Option name="UserEditCompiler" value="-fno-common; -fmessage-length=0; -Wall; -fno-strict-aliasing; -fno-rtti; -fno-exceptions; -ffunction-sections; -fdata-sections; -std=gnu++98"/>
+        <Option name="UserEditCompiler" value="{% for flag in coide_settings['Compile']['UserEditCompiler'] %}-{{flag}};{% endfor%}"/>
         <Includepaths>
-          {% for path in include_paths %} <Includepath path="../../{{path}}"/> {% endfor %}
+          {% for path in include_paths %} <Includepath path="../../{{path}}"/>{% endfor %}
         </Includepaths>
         <DefinedSymbols>
-          {% for s in macros %} <Define name="{{s}}"/> {% endfor %}
+          {% for s in macros %} <Define name="{{s}}"/>{% endfor %}
         </DefinedSymbols>
       </Compile>
       <Link useDefault="0">
-        <Option name="DiscardUnusedSection" value="0"/>
+        <Option name="DiscardUnusedSection" value="{{coide_settings['Link']['DiscardUnusedSection']}}"/>
         <Option name="UserEditLinkder" value=""/>
-        <Option name="UseMemoryLayout" value="0"/>
-        <Option name="LTO" value="0"/>
-        <Option name="IsNewStartupCode" value="1"/>
+        <Option name="UseMemoryLayout" value="{{coide_settings['Link']['UseMemoryLayout']}}"/>
+        <Option name="LTO" value="coide_settings['Link']['LTO']"/>
+        <Option name="IsNewStartupCode" value="{{coide_settings['Link']['IsNewStartupCode']}}"/>
         <Option name="Library" value="Not use C Library"/>
-        <Option name="nostartfiles" value="0"/>
-        <Option name="UserEditLinker" value="--specs=nano.specs; -u _printf_float; -u _scanf_float; {% for file in object_files %}
+        <Option name="nostartfiles" value="{{coide_settings['Link']['nostartfiles']}}"/>
+        <Option name="UserEditLinker" value=" {% for option in coide_settings['Link']['UserEditLinker'] %}
+        {{option}}; {% endfor %} {% for file in object_files %}
         ${project.path}/{{file}}; {% endfor %} {% for p in library_paths %}-L${project.path}/{{p}}; {% endfor %}"/>
         <LinkedLibraries>
-          {% for lib in libraries %}
+          {% for lib in coide_settings['Link']['LinkedLibraries'] %}
           <Libset dir="" libs="{{lib}}"/>
           {% endfor %}
-          <Libset dir="" libs="stdc++"/>
-          <Libset dir="" libs="supc++"/>
-          <Libset dir="" libs="m"/>
-          <Libset dir="" libs="gcc"/>
-          <Libset dir="" libs="c"/>
-          <Libset dir="" libs="nosys"/>
         </LinkedLibraries>
         <MemoryAreas debugInFlashNotRAM="1">
-          <Memory name="IROM1" type="ReadOnly" size="0x00020000" startValue="0x00000000"/>
-          <Memory name="IRAM1" type="ReadWrite" size="0x00001000" startValue="0x1FFFF000"/>
-          <Memory name="IROM2" type="ReadOnly" size="" startValue=""/>
-          <Memory name="IRAM2" type="ReadWrite" size="" startValue=""/>
+          <Memory name="IROM1" type="ReadOnly" size="{{coide_settings['MemoryAreas']['IROM1']['size']}}" startValue="MemoryAreas['IROM1']['startValue']"/>
+          <Memory name="IRAM1" type="ReadWrite" size="{{coide_settings['MemoryAreas']['IRAM1']['size']}}" startValue="{{coide_settings['MemoryAreas']['IRAM1']['startValue']}}"/>
+          <Memory name="IROM2" type="ReadOnly" size="{{coide_settings['MemoryAreas']['IROM2']['size']}}" startValue="{{coide_settings['MemoryAreas']['IROM2']['startValue']}}"/>
+          <Memory name="IRAM2" type="ReadWrite" size="{{coide_settings['MemoryAreas']['IRAM2']['size']}}" startValue="{{coide_settings['MemoryAreas']['IRAM2']['startValue']}}"/>
         </MemoryAreas>
         <LocateLinkFile path="../../{{linker_file}}" type="0"/>
       </Link>
@@ -75,7 +70,7 @@
       <Option name="org.coocox.codebugger.gdbjtag.core.autoDownload" value="1"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.verify" value="1"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.downloadFuction" value="Erase Effected"/>
-      <Option name="org.coocox.codebugger.gdbjtag.core.defaultAlgorithm" value="KLxx_128_PRG_NO_CFG.elf"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.defaultAlgorithm" value="{{coide_settings['DebugOption']['defaultAlgorithm']}}"/>
     </DebugOption>
     <ExcludeFile/>
   </Target>

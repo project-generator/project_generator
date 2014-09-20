@@ -17,18 +17,17 @@ from exporter import Exporter
 import subprocess
 import logging
 import copy
+from coide_definitions import CoIDEdefinitions
 
-from builder import Builder
 import user_settings
 
 class CoideExporter(Exporter):
-    optimization_options = ['O0', 'O1', 'O2', 'O3']
     source_files_dic = ['source_files_c', 'source_files_s',
                         'source_files_cpp', 'source_files_obj', 'source_files_lib']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
 
     def __init__(self):
-        self.definitions = 0
+        self.definitions = CoIDEdefinitions()
 
     def expand_data(self, old_data, new_data, attribute, group):
         """ data expansion - uvision needs filename and path separately. """
@@ -67,8 +66,17 @@ class CoideExporter(Exporter):
                         group = k
                     self.expand_data(dic, expanded_data, attribute, group)
 
+    def parse_specific_options(self, data):
+        """ Parse all CoIDE specific setttings. """
+        data['coide_settings'].update(copy.deepcopy(
+            self.definitions.coide_settings))  # set specific options to default values
+        for dic in data['misc']:
+            for k,v in dic.items():
+                for option in v:
+                    data['coide_settings'][k][option] = v[option]
+
     def generate(self, data):
-        """ Processes groups and misc options specific for uVision, and run generator """
+        """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = data.copy()
 
         groups = self.get_groups(data)
@@ -76,6 +84,11 @@ class CoideExporter(Exporter):
         for group in groups:
             expanded_dic['groups'][group] = []
         self.iterate(data, expanded_dic)
+
+        expanded_dic['coide_settings'] = {}
+        self.parse_specific_options(expanded_dic)
+        expanded_dic['coide_settings'].update(
+            self.definitions.get_mcu_definition(expanded_dic['mcu']))
 
         # Project file
         self.gen_file(
