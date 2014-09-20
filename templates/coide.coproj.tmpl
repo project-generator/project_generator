@@ -42,15 +42,15 @@
         <LocateLinkFile path="../../{{linker_file}}" type="0"/>
       </Link>
       <Output>
-        <Option name="OutputFileType" value="0"/>
+        <Option name="OutputFileType" value="{{coide_settings['Output']['OutputFileType']}}"/>
         <Option name="Path" value="./"/>
         <Option name="Name" value="{{name}}"/>
-        <Option name="HEX" value="1"/>
-        <Option name="BIN" value="1"/>
+        <Option name="HEX" value="{{coide_settings['Output']['HEX']}}"/>
+        <Option name="BIN" value="{{coide_settings['Output']['BIN']}}"/>
       </Output>
       <User>
-        <UserRun name="Run#1" type="Before" checked="0" value=""/>
-        <UserRun name="Run#1" type="After" checked="0" value=""/>
+        <UserRun name="Run#1" type="Before" checked="0" value="{{coide_settings['User']['UserRun']['Before']}}"/>
+        <UserRun name="Run#1" type="After" checked="0" value="{{coide_settings['User']['UserRun']['After']}}"/>
       </User>
     </BuildOption>
     <DebugOption>

@@ -98,5 +98,16 @@ class CoIDEdefinitions():
             'LTO' : 0,
             'IsNewStartupCode' : 1,
             'nostartfiles' : 0,
+        },
+        'User' : {
+            'UserRun' : {
+                'Before': '',
+                'After' : '',
+            }
+        },
+        'Output' : {
+            'OutputFileType' : 0,
+            'HEX' : 1,
+            'BIN' : 1,
         }
     }
