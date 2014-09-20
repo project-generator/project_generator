@@ -14,11 +14,13 @@
 from uvision import UvisionExporter, UvisionBuilder
 from gccarm import GccArmExporter, GccArmBuilder
 from iar import IARExporter, IARBuilder
+from coide import CoideExporter
 
 EXPORTERS = {
     'uvision': UvisionExporter,
     'gcc_arm': GccArmExporter,
     'iar': IARExporter,
+    'coide' : CoideExporter,
 }
 
 BUILDERS = {

@@ -18,6 +18,7 @@ Project generator currently generaters projects for the following tools (IDE, Ma
  - uVision
  - Makefile (GCC ARM)
  - IAR
+ - CoIDE (GCC ARM)
 
 We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository.
 The plan is to support as many IDE as possible , same applies for MCU.
