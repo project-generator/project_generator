@@ -15,12 +15,14 @@ from uvision import UvisionExporter, UvisionBuilder
 from gccarm import GccArmExporter, GccArmBuilder
 from iar import IARExporter, IARBuilder
 from coide import CoideExporter
+from eclipse import EclipseExporter
 
 EXPORTERS = {
     'uvision': UvisionExporter,
     'gcc_arm': GccArmExporter,
     'iar': IARExporter,
     'coide' : CoideExporter,
+    'eclipse_makefile' : EclipseExporter,
 }
 
 BUILDERS = {

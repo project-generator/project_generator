@@ -80,6 +80,13 @@ class GccArmExporter(Exporter):
 
         self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm")
 
+    def process_data_for_makefile(self, data):
+        self.list_files(data, 'source_files_c')
+        self.list_files(data, 'source_files_cpp')
+        self.list_files(data, 'source_files_s')
+
+        self.parse_specific_options(data)
+        data['toolchain'] = 'arm-none-eabi-'
 
 class GccArmBuilder(Builder):
     # http://www.gnu.org/software/make/manual/html_node/Running.html
