@@ -17,16 +17,17 @@ from exporter import Exporter
 import subprocess
 import logging
 import copy
-from gccarm import GccArmExporter
+from gccarm import MakefileGccArmExporter
 import user_settings
 
-class EclipseExporter(Exporter):
+class EclipseGnuARMExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',
-                        'source_files_cpp', 'source_files_obj', 'source_files_lib']
+                        'source_files_cpp', 'source_files_obj']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
 
     def __init__(self):
         self.definitions = 0
+        self.exporter = MakefileGccArmExporter()
 
     def expand_data(self, old_data, new_data, attribute, group):
         """ data expansion - uvision needs filename and path separately. """
@@ -67,13 +68,14 @@ class EclipseExporter(Exporter):
 
     def generate(self, data):
         """ Processes groups and misc options specific for eclipse, and run generator """
+        data_for_make = data.copy()
+
+        self.exporter.process_data_for_makefile(data_for_make)
+        self.gen_file('makefile_gcc.tmpl', data_for_make, 'Makefile', "eclipse_makefile")
+
         expanded_dic = data.copy()
 
-        exporter = GccArmExporter()
-        exporter.process_data_for_makefile(expanded_dic)
-        self.gen_file('makefile_gcc.tmpl', expanded_dic, 'Makefile', "eclipse_makefile")
-
-        groups = self.get_groups(data)
+        groups = self.get_groups(expanded_dic)
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []

@@ -12,22 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from uvision import UvisionExporter, UvisionBuilder
-from gccarm import GccArmExporter, GccArmBuilder
+from gccarm import MakefileGccArmExporter, MakefileGccArmBuilder
 from iar import IARExporter, IARBuilder
 from coide import CoideExporter
-from eclipse import EclipseExporter
+from eclipse import EclipseGnuARMExporter
 
 EXPORTERS = {
     'uvision': UvisionExporter,
-    'gcc_arm': GccArmExporter,
+    'make_gcc_arm': MakefileGccArmExporter,
     'iar': IARExporter,
     'coide' : CoideExporter,
-    'eclipse_makefile' : EclipseExporter,
+    'eclipse_make_gcc_arm' : EclipseGnuARMExporter,
 }
 
 BUILDERS = {
     'uvision': UvisionBuilder,
-    'gcc_arm': GccArmBuilder,
+    'make_gcc_arm': MakefileGccArmBuilder,
     'iar': IARBuilder,
 }
 
