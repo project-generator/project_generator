@@ -98,7 +98,7 @@ class UvisionExporter(Exporter):
 
     def set_user_options(self, value_list, data, uvision_dic):
         for option in value_list:
-            if option.startswith('Before'):
+            if option.startswith('Before') or option.startswith('After'):
                 for k, v in value_list[option].items():
                     if v[0] == 'enable':
                         value_list[option][k] = 1
