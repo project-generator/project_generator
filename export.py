@@ -23,8 +23,16 @@ from tool import export, build
 
 
 class ProjectGenerator():
+    # Each tool defines used toolchain.
+    TOOLCHAINS = {
+        'iar' : 'iar',
+        'uvision' : 'uvision',
+        'coide' : 'gcc_arm',
+        'make_gcc_arm' : 'gcc_arm',
+        'eclipse_make_gcc_arm' : 'gcc_arm',
+    }
 
-    def run_generator(self, dic, project, tool):
+    def run_generator(self, dic, project, tool, toolchain):
         """ Generates one project. """
         project_list = []
         yaml_files = _finditem(dic, project)
@@ -38,7 +46,7 @@ class ProjectGenerator():
                     loaded_yaml = yaml.load(file)
                     yaml_parser = YAML_parser()
                     project_list.append(
-                        yaml_parser.parse_yaml(loaded_yaml, tool))
+                        yaml_parser.parse_yaml(loaded_yaml, tool, toolchain))
                     file.close()
             yaml_parser_final = YAML_parser()
             process_data = yaml_parser_final.parse_yaml_list(project_list)
@@ -49,7 +57,7 @@ class ProjectGenerator():
         logging.info("Generating project: %s" % project)
         export(process_data, tool)
 
-    def process_all_projects(self, dic, tool):
+    def process_all_projects(self, dic, toolchain, tool):
         """ Generates all project. """
         projects = []
         yaml_files = []
@@ -57,7 +65,7 @@ class ProjectGenerator():
             projects.append(k)
 
         for project in projects:
-            self.run_generator(dic, project, tool)
+            self.run_generator(dic, project, tool, toolchain)
         return projects
 
     def scrape_dir(self):
@@ -99,6 +107,9 @@ class ProjectGenerator():
         for k, v in dic.items():
             print k
 
+    def set_toolchain(self, options):
+        options.toolchain = self.TOOLCHAINS[options.tool]
+
     def run(self, options):
         if not options.file:
             # create a list of all files in the dir that we're interested in
@@ -119,11 +130,11 @@ class ProjectGenerator():
         projects = []
         if options.project:
             self.run_generator(
-                config, options.project, options.tool)  # one project
+                config, options.project, options.tool, options.toolchain)  # one project
             projects.append(options.project)
         else:
             # all projects within project.yaml
-            projects = self.process_all_projects(config, options.tool)
+            projects = self.process_all_projects(config, option.tool, options.toolchain)
 
         project_file.close()
         return projects
@@ -174,7 +185,9 @@ if __name__ == '__main__':
         options.tool = "uvision"
 
     # Generate projects
-    projects = ProjectGenerator().run(options)
+    generator = ProjectGenerator()
+    generator.set_toolchain(options)
+    projects = generator.run(options)
 
     # Build all exported projects
     if options.build:
