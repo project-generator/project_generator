@@ -24,7 +24,7 @@ class Exporter():
 
     def gen_file(self, template_file, data, target_file, tool):
         """ Fills data to the project template, using jinja2. """
-        template_path = join(Exporter.TEMPLATE_DIR, template_file)
+        template_path = join(self.TEMPLATE_DIR, template_file)
         template_text = open(template_path).read()
         template = Template(template_text)
         target_text = template.render(data)

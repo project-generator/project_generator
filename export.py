@@ -20,6 +20,7 @@ from os.path import join
 import sys
 from os.path import basename
 from tool import export, build
+import default_settings
 
 
 class ProjectGenerator():
@@ -119,7 +120,7 @@ class ProjectGenerator():
             sys.exit()
 
         print "Processing projects file."
-        project_file = open(join('tools', options.file))
+        project_file = open( options.file)
         config = yaml.load(project_file)
 
         if options.list:
@@ -164,7 +165,7 @@ class ProjectBuilder():
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     # Should be launched from root/tools but all scripts are referenced to root
-    root = os.path.normpath(os.getcwd() + os.sep + os.pardir)
+    root = os.path.normpath(os.getcwd() + default_settings.PROJECT_ROOT)
     os.chdir(root)
     logging.debug('This should be the project root: %s', os.getcwd())
 
