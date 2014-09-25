@@ -21,7 +21,7 @@ from exporter import Exporter
 from builder import Builder
 
 
-class GccArmExporter(Exporter):
+class MakefileGccArmExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3', 'Os']
 
     def list_files(self, data, attribute):
@@ -71,6 +71,11 @@ class GccArmExporter(Exporter):
 
     def generate(self, data):
         """ Processes misc options specific for GCC ARM, and run generator. """
+        self.process_data_for_makefile(data)
+
+        self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm")
+
+    def process_data_for_makefile(self, data):
         self.list_files(data, 'source_files_c')
         self.list_files(data, 'source_files_cpp')
         self.list_files(data, 'source_files_s')
@@ -78,10 +83,7 @@ class GccArmExporter(Exporter):
         self.parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'
 
-        self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm")
-
-
-class GccArmBuilder(Builder):
+class MakefileGccArmBuilder(Builder):
     # http://www.gnu.org/software/make/manual/html_node/Running.html
     ERRORLEVEL = {
         0: 'success (0 warnings, 0 errors)',

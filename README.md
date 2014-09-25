@@ -14,11 +14,13 @@ All open sourced - licensed under Apache v2.0 license.
 
 The project is in alpha phase. Check issues for the ongoing tasks or todo tasks.
 
-Project generator currently generaters projects for the following tools (IDE, Makefile):
+Project generator currently generaters projects for the following tools (IDE, Makefile, etc..):
 
  - uVision
  - Makefile (GCC ARM)
  - IAR
+ - CoIDE (GCC ARM)
+ - Eclipse (Makefile with GCC ARM)
 
 We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository.
 The plan is to support as many IDE as possible , same applies for MCU.
