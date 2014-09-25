@@ -91,5 +91,6 @@ class CoideExporter(Exporter):
             self.definitions.get_mcu_definition(expanded_dic['mcu']))
 
         # Project file
-        self.gen_file(
-            'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], "coide")
+        project_path = self.gen_file(
+            'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], "coide", data['project_dir']['path'], data['project_dir']['name'])
+        return project_path

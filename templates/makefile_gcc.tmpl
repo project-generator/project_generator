@@ -28,20 +28,20 @@ AR = $(TOOLCHAIN)ar
 INSTRUCTION_MODE = thumb
 TARGET = {{name}}
 TARGET_EXT = elf
-LD_SCRIPT = ../../{{linker_file}}
+LD_SCRIPT = {{rel_path_output}}{{linker_file}}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 
 LIBS = {% for library in source_files_lib %} -l{{library}} {% endfor %}
 
 # directories
-INC_DIRS = {% for path in include_paths %} ../../{{path}} {% endfor %}
+INC_DIRS = {% for path in include_paths %} {{rel_path_output}}{{path}} {% endfor %}
 
 OUT_DIR = build
 
 INC_DIRS_F = -I. $(patsubst %, -I%, $(INC_DIRS))
 
-SRC_DIRS = {% for path in source_paths %} ../../{{path}} {% endfor %}
+SRC_DIRS = {% for path in source_paths %} {{rel_path_output}}{{path}} {% endfor %}
 
 ifeq ($(strip $(OUT_DIR)), )
 	OBJ_FOLDER =
@@ -73,13 +73,13 @@ ARFLAGS = cr
 
 RM = rm -rf
 
-C_SRCS := {% for file in source_files_c %} ../../{{file}} {% endfor %}
+C_SRCS := {% for file in source_files_c %} {{rel_path_output}}{{file}} {% endfor %}
 C_OBJS := $(patsubst %.c,$(OBJ_FOLDER)%.o,$(notdir $(C_SRCS)))
 
-CPP_SRCS := {% for file in source_files_cpp %} ../../{{file}} {% endfor %}
+CPP_SRCS := {% for file in source_files_cpp %} {{rel_path_output}}{{file}} {% endfor %}
 CPP_OBJS := $(patsubst %.cpp,$(OBJ_FOLDER)%.o,$(notdir $(CPP_SRCS)))
 
-S_SRCS := {% for file in source_files_s %} ../../{{file}} {% endfor %}
+S_SRCS := {% for file in source_files_s %} {{rel_path_output}}{{file}} {% endfor %}
 S_OBJS := $(patsubst %.s,$(OBJ_FOLDER)%.o,$(notdir $(S_SRCS)))
 
 VPATH := $(SRC_DIRS)

@@ -153,10 +153,10 @@ class UvisionExporter(Exporter):
 
         # Project file
         self.gen_file(
-            'uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], "uvision")
-        self.gen_file(
-            'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision")
-
+            'uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], "uvision", data['project_dir']['path'], data['project_dir']['name'])
+        project_path = self.gen_file(
+            'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision", data['project_dir']['path'], data['project_dir']['name'])
+        return project_path
 
 class UvisionBuilder(Builder):
     ERRORLEVEL = {
@@ -172,9 +172,9 @@ class UvisionBuilder(Builder):
 
     SUCCESSVALUE = 0
 
-    def build_project(self, project, project_path):
+    def build_project(self, project_path, project):
         # > UV4 -b [project_path]
-        path = join(self.root_path, project_path, ("uvision_" + project), "%s.uvproj" % project)
+        path = join(self.root_path, project_path, "%s.uvproj" % project)
         logging.debug("Building uVision project: %s" % path)
 
         args = [user_settings.UV4, '-r', '-j0', path]

@@ -22,19 +22,34 @@ class Exporter():
     TEMPLATE_DIR = dirname(__file__) + '/templates'
     DOT_IN_RELATIVE_PATH = False
 
-    def gen_file(self, template_file, data, target_file, tool):
+    def gen_file(self, template_file, data, target_file, tool, destination, dir_name):
+        if destination is '':
+            destination = 'generated_projects'
+        if not os.path.exists(destination):
+            os.makedirs(destination)
+        if dir_name is '':
+            dir_name = tool + '_' + data['name']
+        project_dir = join(destination, dir_name)
+        # else:
+        #     project_dir=destination
+        if not os.path.exists(project_dir):
+            os.makedirs(project_dir)
+        target_path = join(project_dir, target_file)
+        target_path = target_path.replace('/', '\\')
+        count = target_path.count('\\')
+        rel_path_output = ''
+        data['rel_path_count'] = count
+        while count:
+            rel_path_output += '..\\'
+            count = count - 1
+        data['rel_path_output'] = rel_path_output
+        logging.debug("Generating: %s" % target_path)
+
         """ Fills data to the project template, using jinja2. """
         template_path = join(self.TEMPLATE_DIR, template_file)
         template_text = open(template_path).read()
         template = Template(template_text)
         target_text = template.render(data)
 
-        project_file_loc = 'generated_projects'
-        if not os.path.exists(project_file_loc):
-            os.makedirs(project_file_loc)
-        project_dir = join(project_file_loc, tool + '_' + data['name'])
-        if not os.path.exists(project_dir):
-            os.makedirs(project_dir)
-        target_path = join(project_dir, target_file)
-        logging.debug("Generating: %s" % target_path)
         open(target_path, "w").write(target_text)
+        return dirname(target_path)
