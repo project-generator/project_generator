@@ -126,7 +126,7 @@ class ProjectGenerator():
             sys.exit()
 
         print "Processing projects file."
-        project_file = open( options.file)
+        project_file = open(options.file)
         config = yaml.load(project_file)
 
         if options.list:

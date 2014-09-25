@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+from os.path import join
 
-UV4 = r'C:\Keil_v5\UV4\UV4.exe'
-IARBUILD = r'C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.0\common\bin\IarBuild.exe'
+UV4 = join("C:","Keil","UV4","UV4.exe")
+IARBUILD = join('C:','Program Files (x86)','IAR Systems','Embedded Workbench 7.0','common','bin','IarBuild.exe')
 
 # Be able to locate project generator anywhere in a project
 # By default it's tools/project_generator (2 folders deep from root)
-PROJECT_ROOT=r'\\..\\..'
+PROJECT_ROOT=join('..','..','..')
 
 try:
     from user_settings import *
