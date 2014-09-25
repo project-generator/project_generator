@@ -17,7 +17,7 @@ import logging
 import subprocess
 from os.path import basename, relpath, join
 from exporter import Exporter
-from user_settings import gcc_bin_path
+from default_settings import gcc_bin_path
 
 from builder import Builder
 

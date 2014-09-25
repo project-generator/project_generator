@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
-from os.path import join
+import os
 
-UV4 = join("C:","Keil","UV4","UV4.exe")
-IARBUILD = join('C:','Program Files (x86)','IAR Systems','Embedded Workbench 7.0','common','bin','IarBuild.exe')
+UV4 = os.path.join("C:","Keil","UV4","UV4.exe")
+IARBUILD = os.path.join('C:','Program Files (x86)','IAR Systems','Embedded Workbench 7.0','common','bin','IarBuild.exe')
 
 # Be able to locate project generator anywhere in a project
 # By default it's tools/project_generator (2 folders deep from root)
-PROJECT_ROOT=join('..','..','..'
+PROJECT_ROOT= os.path.join('..','..','..')
 
 if os.name == "posix":
     # Expects either arm-none-eabi to be installed here, or
