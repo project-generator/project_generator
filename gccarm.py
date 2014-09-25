@@ -74,7 +74,8 @@ class MakefileGccArmExporter(Exporter):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.process_data_for_makefile(data)
 
-        self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm")
+        project_path = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm", data['project_dir']['path'], data['project_dir']['name'])
+        return project_path
 
     def process_data_for_makefile(self, data):
         self.list_files(data, 'source_files_c')
@@ -103,10 +104,10 @@ class MakefileGccArmBuilder(Builder):
 
     SUCCESSVALUE = 0
 
-    def build_project(self, project, project_path):
+    def build_project(self, project_path, project):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
-        path = relpath(join(project_path, "gcc_arm_" + project))
+        path = relpath(project_path)
         logging.debug("Building GCC ARM project: %s" % path)
 
         args = ['make', 'all']

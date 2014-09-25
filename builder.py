@@ -23,11 +23,11 @@ class Builder:
     def build_project(self, project, project_path):
         raise NotImplementedError
 
-    def build(self, project_path, project_list):
+    def build(self, projects_path, project_list):
         # Loop through each of the projects and build them.
         logging.debug("Building projects.")
 
         for i, project_name in enumerate(project_list):
             logging.debug("Building project %i of %i: %s" %
                           (i + 1, len(project_list), project_name))
-            self.build_project(project_name, project_path)
+            self.build_project(project_name, projects_path[i])

@@ -296,7 +296,7 @@
         <option>
           <name>CCIncludePath2</name>
         {% for path in include_paths %}
-          <state>$PROJ_DIR$\..\..\{{path}}</state>
+          <state>$PROJ_DIR$\{{rel_path_output}}{{path}}</state>
         {% endfor %}
         </option>
         <option>
@@ -690,7 +690,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\..\..\{{linker_file}}</state>
+          <state>$PROJ_DIR$\{{rel_path_output}}{{linker_file}}</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -740,10 +740,10 @@
           <name>IlinkAdditionalLibs</name>
           <state> </state>
         {% for library in source_files_lib %}
-          <state>$PROJ_DIR$\..\..\{{library}}</state>
+          <state>$PROJ_DIR$\{{rel_path_output}}{{library}}</state>
         {% endfor %}
         {% for object in object_files %}
-          <state>$PROJ_DIR$\..\..\{{object}}</state>
+          <state>$PROJ_DIR$\{{rel_path_output}}{{object}}</state>
         {% endfor %}
         </option>
         <option>
@@ -924,7 +924,7 @@
     <name>{{group_name}}</name>
     {% for file in files %}
       <file>
-        <name>$PROJ_DIR$\..\..\{{file}}</name>
+        <name>$PROJ_DIR$\{{rel_path_output}}{{file}}</name>
       </file>
     {% endfor %}
   </group>

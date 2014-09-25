@@ -28,6 +28,9 @@ class YAML_parser():
             'source_files_obj': [],     # object files
             'source_files_lib': [],     # libraries
             'macros': [],               # macros (defines)
+            'project_dir': {
+                'name': '',
+                'path' : '' },
             # tool specific settings, will be parsed separately
             'misc': [],
         }
@@ -103,6 +106,9 @@ class YAML_parser():
         self.find_paths(common_attributes)
         self.find_source_files(common_attributes, group_name)
         self.find_macros(common_attributes)
+        project_dir = _finditem(common_attributes, 'project_dir')
+        if project_dir:
+            self.data['project_dir'].update(project_dir)
 
         # load all specific files
         specific_dic = {}
@@ -125,6 +131,8 @@ class YAML_parser():
                 self.data[k] += (v)
             elif "macros" == k:
                 self.data[k] += (v)
+            elif "project_dir" == k:
+                self.data[k].update(v)
             else:
                 self.data[k] = v
 
@@ -156,6 +164,11 @@ class YAML_parser():
             mcu = _finditem(dic, 'mcu')  # TODO fix naming
             if mcu:
                 self.data['mcu'] = mcu[0]
+            project_dir = _finditem(dic, 'project_dir')
+            if project_dir['name']:
+                self.data['project_dir']['name'] = project_dir['name'][0]
+            if project_dir['path']:
+                self.data['project_dir']['path'] = project_dir['path'][0]
             include_paths = _finditem(dic, 'include_paths')
             if include_paths:
                 self.data['include_paths'] += (include_paths)

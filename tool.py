@@ -39,14 +39,14 @@ def export(data, tool):
 
     Exporter = EXPORTERS[tool]
     exporter = Exporter()
-    exporter.generate(data)
+    project_path = exporter.generate(data)
+    return project_path
 
-
-def build(project_path, project_list, tool):
+def build(projects, project_path, tool):
     """ Invokes builder for specificed tool. """
     if tool not in BUILDERS:
         raise RuntimeError("Builder does not support defined tool.")
 
     Builder = BUILDERS[tool]
     builder = Builder()
-    builder.build(project_path, project_list)
+    builder.build(projects, project_path)

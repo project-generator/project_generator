@@ -20,6 +20,7 @@ from os.path import join
 import sys
 from os.path import basename
 from tool import export, build
+import default_settings
 
 
 class ProjectGenerator:
@@ -55,18 +56,20 @@ class ProjectGenerator:
             raise RuntimeError("Project record is empty")
 
         logging.info("Generating project: %s" % project)
-        export(process_data, tool)
+        project_path = export(process_data, tool)
+        return project_path
 
-    def process_all_projects(self, dic, toolchain, tool):
+    def process_all_projects(self, dic, tool, toolchain):
         """ Generates all project. """
         projects = []
+        projects_paths = []
         yaml_files = []
         for k, v in dic.items():
             projects.append(k)
 
         for project in projects:
-            self.run_generator(dic, project, tool, toolchain)
-        return projects
+            projects_paths.append(self.run_generator(dic, project, tool, toolchain))
+        return (projects, projects_paths)
 
     def scrape_dir(self):
         exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld']
@@ -108,7 +111,11 @@ class ProjectGenerator:
             print k
 
     def set_toolchain(self, options):
-        options.toolchain = self.TOOLCHAINS[options.tool]
+        try:
+            options.toolchain = self.TOOLCHAINS[options.tool]
+        except KeyError:
+            logging.error("The tool was find as supported: %s", options.tool)
+            sys.exit(-1)
 
     def run(self, options):
         if not options.file:
@@ -119,7 +126,7 @@ class ProjectGenerator:
             sys.exit()
 
         print "Processing projects file."
-        project_file = open(join('tools', options.file))
+        project_file = open(options.file)
         config = yaml.load(project_file)
 
         if options.list:
@@ -128,16 +135,18 @@ class ProjectGenerator:
             sys.exit()
 
         projects = []
+        projects_paths = []
         if options.project:
-            self.run_generator(
+            project_path = self.run_generator(
                 config, options.project, options.tool, options.toolchain)  # one project
             projects.append(options.project)
+            projects_paths.append(project_path)
         else:
             # all projects within project.yaml
-            projects = self.process_all_projects(config, option.tool, options.toolchain)
+            projects, projects_paths = self.process_all_projects(config, options.tool, options.toolchain)
 
         project_file.close()
-        return projects
+        return (projects, projects_paths)
 
 
 class ProjectBuilder:
@@ -156,15 +165,15 @@ class ProjectBuilder:
                         break
         return projects_list
 
-    def run(self, options, projects):
-        project_list = self.build_project_list(options, projects)
+    def run(self, options, projects, projects_paths):
+        #project_list = self.build_project_list(options, projects)
         logging.info("Building all defined projects.")
-        build(self.project_path, project_list, options.tool)
+        build(projects, projects_paths, options.tool)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     # Should be launched from root/tools but all scripts are referenced to root
-    root = os.path.normpath(os.getcwd() + os.sep + os.pardir)
+    root = os.path.normpath(os.getcwd() + default_settings.PROJECT_ROOT)
     os.chdir(root)
     logging.debug('This should be the project root: %s', os.getcwd())
 
@@ -187,8 +196,8 @@ if __name__ == '__main__':
     # Generate projects
     generator = ProjectGenerator()
     generator.set_toolchain(options)
-    projects = generator.run(options)
+    projects, project_paths = generator.run(options)
 
     # Build all exported projects
     if options.build:
-        ProjectBuilder().run(options, projects)
+        ProjectBuilder().run(options, projects, project_paths)
