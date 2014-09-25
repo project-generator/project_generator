@@ -22,7 +22,7 @@ from os.path import basename
 from tool import export, build
 
 
-class ProjectGenerator():
+class ProjectGenerator:
     # Each tool defines used toolchain.
     TOOLCHAINS = {
         'iar' : 'iar',
@@ -140,7 +140,7 @@ class ProjectGenerator():
         return projects
 
 
-class ProjectBuilder():
+class ProjectBuilder:
 
     def __init__(self):
         self.project_path = "generated_projects"
