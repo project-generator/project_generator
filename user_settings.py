@@ -11,6 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+
 FROMELF = 'fromelf'
 UV4 = r'C:\Keil_v5\UV4\UV4.exe'
 IARBUILD = r'C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.0\common\bin\IarBuild.exe'
+
+if os.name == "posix":
+    # Expects either arm-none-eabi to be installed here, or
+    # even better, a symlink from /usr/local/arm-none-eabi to the most recent
+    # version.
+    gcc_bin_path = "/usr/local/arm-none-eabi/bin/"
+elif os.name == "nt":
+    gcc_bin_path = ""

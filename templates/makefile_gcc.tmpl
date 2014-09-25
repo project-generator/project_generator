@@ -17,12 +17,17 @@ CPU = {{core}}
 
 # toolchain specific
 TOOLCHAIN = {{toolchain}}
-CC = $(TOOLCHAIN)gcc
-CXX = $(TOOLCHAIN)g++
-AS = $(TOOLCHAIN)gcc -x assembler-with-cpp
-LD = $(TOOLCHAIN)gcc
-OBJCP = $(TOOLCHAIN)objcopy
-AR = $(TOOLCHAIN)ar
+TOOLCHAIN_BINPATH = {{toolchain_bin_path}}
+CC = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)gcc
+CXX = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)g++
+AS = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)gcc -x assembler-with-cpp
+LD = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)gcc
+OBJCP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)objcopy
+AR = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)ar
+
+SIZE = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)size
+OBJCOPY = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)objcopy
+NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)nm
 
 # application specific
 INSTRUCTION_MODE = thumb
@@ -126,11 +131,11 @@ clean:
 
 print_info:
 	@echo 'Printing size'
-	arm-none-eabi-size --totals $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT)
-	arm-none-eabi-objcopy -O srec $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(OBJ_FOLDER)$(TARGET).s19
-	arm-none-eabi-objcopy -O binary -v $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(OBJ_FOLDER)$(TARGET).bin
-	arm-none-eabi-objdump -D $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET).lst
-	arm-none-eabi-nm $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
+	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT)
+	$(OBJCOPY) -O srec $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(OBJ_FOLDER)$(TARGET).s19
+	$(OBJCOPY) -O binary -v $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(OBJ_FOLDER)$(TARGET).bin
+	$(OBJDUMP) -D $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET).lst
+	$(NM) $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
 	@echo ' '
 
 .PHONY: all clean print_info
