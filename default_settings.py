@@ -19,9 +19,12 @@ IARBUILD = join('C:','Program Files (x86)','IAR Systems','Embedded Workbench 7.0
 
 # Be able to locate project generator anywhere in a project
 # By default it's tools/project_generator (2 folders deep from root)
-PROJECT_ROOT=join('..','..','..')
+PROJECT_ROOT=join('..','..','..'
 
-try:
-    from user_settings import *
-except ImportError:
-    logging.info("Using the default settings. Please look at default_settings script file.")
+if os.name == "posix":
+    # Expects either arm-none-eabi to be installed here, or
+    # even better, a symlink from /usr/local/arm-none-eabi to the most recent
+    # version.
+    gcc_bin_path = "/usr/local/arm-none-eabi/bin/"
+elif os.name == "nt":
+    gcc_bin_path = ""

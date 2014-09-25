@@ -23,7 +23,7 @@ from tool import export, build
 import default_settings
 
 
-class ProjectGenerator():
+class ProjectGenerator:
     # Each tool defines used toolchain.
     TOOLCHAINS = {
         'iar' : 'iar',
@@ -149,7 +149,7 @@ class ProjectGenerator():
         return (projects, projects_paths)
 
 
-class ProjectBuilder():
+class ProjectBuilder:
 
     def __init__(self):
         self.project_path = "generated_projects"

@@ -1,4 +1,5 @@
 # Project generator
+[![Build Status](https://travis-ci.org/matthewelse/project_generator.svg?branch=master)](https://travis-ci.org/matthewelse/project_generator)
 
 Source code is often times simple but building it is difficult when more than one person is involved.
 Developers like what they like: IDE, compiler, debugger and really all we want is to produce an executable.

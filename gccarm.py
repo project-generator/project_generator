@@ -17,6 +17,7 @@ import logging
 import subprocess
 from os.path import basename, relpath, join
 from exporter import Exporter
+from user_settings import gcc_bin_path
 
 from builder import Builder
 
@@ -83,6 +84,15 @@ class MakefileGccArmExporter(Exporter):
 
         self.parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'
+        data['toolchain_bin_path'] = gcc_bin_path
+
+        # gcc arm is funny about cortex-m4f.
+        if data['core'] == 'cortex-m4f':
+            data['core'] = 'cortex-m4'
+
+        # change cortex-m0+ to cortex-m0plus
+        if data['core'] == 'cortex-m0+':
+            data['core'] = 'cortex-m0plus'
 
 class MakefileGccArmBuilder(Builder):
     # http://www.gnu.org/software/make/manual/html_node/Running.html

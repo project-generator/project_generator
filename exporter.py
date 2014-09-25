@@ -18,7 +18,7 @@ from os.path import join, dirname
 from jinja2 import Template
 
 
-class Exporter():
+class Exporter:
     TEMPLATE_DIR = dirname(__file__) + '/templates'
     DOT_IN_RELATIVE_PATH = False
 
