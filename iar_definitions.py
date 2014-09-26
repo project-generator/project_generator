@@ -162,8 +162,8 @@ class IARDefinitions():
         'CCDiagError': {
             'state': '',
         },
-        'CCObjPrefix': {
-            'state': 0,
+        'CCObjPrefix': { # Generate object files for C/C++
+            'state': 1,
         },
         'CCAllowList': {       # [C/C++ Compiler] Enable transformations (Optimizations)
             'version': 1,
@@ -293,8 +293,8 @@ class IARDefinitions():
             'state': 0,        # 0 - strict, 1 - relaxed
         },
 
-        'AObjPrefix': {
-            'state': 0,
+        'AObjPrefix': { # Generate object files for assembly files
+            'state': 1,
         },
         'AEndian': {
             'state': 0,
