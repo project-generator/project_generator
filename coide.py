@@ -19,7 +19,7 @@ import logging
 import copy
 from coide_definitions import CoIDEdefinitions
 
-import user_settings
+import default_settings
 
 class CoideExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',

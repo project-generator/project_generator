@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class YAML_parser():
+class YAML_parser:
 
     def __init__(self):
         self.data = {
@@ -21,7 +21,7 @@ class YAML_parser():
             'core': '',                # core
             'linker_file': '',          # linker command file
             'include_paths': [],        # include paths
-            'source_paths': [],        # source paths
+            'source_paths': [],         # source paths
             'source_files_c': [],       # c source files
             'source_files_cpp': [],     # c++ source files
             'source_files_s': [],       # assembly source files

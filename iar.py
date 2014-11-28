@@ -19,7 +19,7 @@ import logging
 
 from builder import Builder
 import subprocess
-import user_settings
+import default_settings
 
 class IARExporter(Exporter):
 

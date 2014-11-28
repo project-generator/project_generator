@@ -20,7 +20,7 @@ import copy
 from uvision_definitions import uVisionDefinitions
 
 from builder import Builder
-import user_settings
+import default_settings
 
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']

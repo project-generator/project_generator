@@ -18,7 +18,7 @@ import subprocess
 import logging
 import copy
 from gccarm import MakefileGccArmExporter
-import user_settings
+import default_settings
 
 class EclipseGnuARMExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',
