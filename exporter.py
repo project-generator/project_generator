@@ -35,13 +35,15 @@ class Exporter:
         if not os.path.exists(project_dir):
             os.makedirs(project_dir)
         target_path = join(project_dir, target_file)
-        target_path = target_path.replace('/', '\\')
-        count = target_path.count('\\')
+
+        count = target_path.count('/')
         rel_path_output = ''
+
         data['rel_path_count'] = count
         while count:
-            rel_path_output += '..\\'
+            rel_path_output = join('..', rel_path_output)
             count = count - 1
+
         data['rel_path_output'] = rel_path_output
         logging.debug("Generating: %s" % target_path)
 
