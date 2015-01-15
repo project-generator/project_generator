@@ -19,7 +19,7 @@ IARBUILD = os.path.join('C:','Program Files (x86)','IAR Systems','Embedded Workb
 
 # Be able to locate project generator anywhere in a project
 # By default it's tools/project_generator (2 folders deep from root)
-PROJECT_ROOT= os.path.join('..','..','..')
+PROJECT_ROOT= os.path.join('..','..')
 
 if os.name == "posix":
     # Expects either arm-none-eabi to be installed here, or
