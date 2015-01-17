@@ -28,3 +28,8 @@ if os.name == "posix":
     gcc_bin_path = "/usr/local/arm-none-eabi/bin/"
 elif os.name == "nt":
     gcc_bin_path = ""
+
+try:
+	from user_settings import *
+except:
+	logging.info("Using default settings.")
