@@ -32,4 +32,4 @@ elif os.name == "nt":
 try:
 	from user_settings import *
 except:
-	pass
+	logging.info("Using default settings.")
