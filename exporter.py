@@ -19,7 +19,7 @@ from jinja2 import Template
 
 
 class Exporter:
-    TEMPLATE_DIR = dirname(__file__) + '/templates'
+    TEMPLATE_DIR = join('tools', dirname(__file__), 'templates')
     DOT_IN_RELATIVE_PATH = False
 
     def gen_file(self, template_file, data, target_file, tool, destination, dir_name):
@@ -36,7 +36,9 @@ class Exporter:
             os.makedirs(project_dir)
         target_path = join(project_dir, target_file)
 
-        count = target_path.count('/')
+        # Get number of how far we are from root, to set paths in the project correctly
+        path_from_root, filename = os.path.split(target_path)
+        count = len(os.path.split(path_from_root))
         rel_path_output = ''
 
         data['rel_path_count'] = count
