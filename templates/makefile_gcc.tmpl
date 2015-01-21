@@ -61,7 +61,7 @@ COMPILER_OPTIONS += -mcpu=$(CPU) -MMD -MP $(CC_SYMBOLS)
 DEPEND_OPTS = -MF $(OBJ_FOLDER)$(@F:.o=.d)
 
 # Flags
-CFLAGS = $(COMPILER_OPTIONS) $(DEPEND_OPTS) $(INC_DIRS_F) -std={{ cc_standard|default('gnu99') }} -c
+CFLAGS = $(COMPILER_OPTIONS) $(DEPEND_OPTS) $(INC_DIRS_F) -std={{ c_standard|default('gnu99') }} -c
 
 CXXFLAGS = $(COMPILER_OPTIONS) $(DEPEND_OPTS) $(INC_DIRS_F) -std={{ cc_standard|default('gnu++98') }} -c
 
