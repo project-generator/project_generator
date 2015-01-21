@@ -61,6 +61,16 @@ class MakefileGccArmExporter(Exporter):
             if option in self.optimization_options:
                 data['optimization_level'] = option
 
+    def cc_standard(self, key, value, data):
+        """ C++ Standard """
+        if key == "cc_standard":
+            data['cc_standard'] = value
+
+    def c_standard(self, key, value, data):
+        """ C Standard """
+        if key == "c_standard":
+            data['c_standard'] = value
+
     def parse_specific_options(self, data):
         """ Parse all uvision specific setttings. """
         data['compiler_options'] = []
@@ -69,6 +79,8 @@ class MakefileGccArmExporter(Exporter):
                 self.libraries(k, v, data)
                 self.compiler_options(k, v, data)
                 self.optimization(k, v, data)
+                self.cc_standard(k, v, data)
+                self.c_standard(k, v, data)
 
     def generate(self, data):
         """ Processes misc options specific for GCC ARM, and run generator. """
