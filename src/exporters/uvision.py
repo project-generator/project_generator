@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, join, relpath
-from exporter import Exporter
 import subprocess
 import logging
 import copy
-from uvision_definitions import uVisionDefinitions
 
-from builder import Builder
-import default_settings
+from os.path import basename, join, relpath
+
+from .exporter import Exporter
+from .uvision_definitions import uVisionDefinitions
+
 
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
@@ -157,38 +157,3 @@ class UvisionExporter(Exporter):
         project_path = self.gen_file(
             'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision", data['project_dir']['path'], data['project_dir']['name'])
         return project_path
-
-class UvisionBuilder(Builder):
-    ERRORLEVEL = {
-        0: 'success (0 warnings, 0 errors)',
-        1: 'warnings',
-        2: 'errors',
-        3: 'fatal errors',
-        11: 'cant write to project file',
-        12: 'device error',
-        13: 'error writing',
-        15: ' error reading xml file',
-    }
-
-    SUCCESSVALUE = 0
-
-    def build_project(self, project_path, project):
-        # > UV4 -b [project_path]
-        path = join(self.root_path, project_path, "%s.uvproj" % project)
-        logging.debug("Building uVision project: %s" % path)
-
-        args = [user_settings.UV4, '-r', '-j0', path]
-
-        try:
-            ret_code = None
-            ret_code = subprocess.call(args)
-        except:
-            logging.error("Error whilst calling UV4. Please check UV4 path in the user_settings.py file.")
-        else:
-            if ret_code != self.SUCCESSVALUE:
-                # Seems like something went wrong.
-                logging.error("Build failed with the status: %s" %
-                              self.ERRORLEVEL[ret_code])
-            else:
-                logging.info("Build succeeded with the status: %s" %
-                             self.ERRORLEVEL[ret_code])

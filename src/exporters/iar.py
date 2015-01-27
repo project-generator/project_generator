@@ -11,15 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from os.path import basename, join, relpath
-from exporter import Exporter
-from iar_definitions import IARDefinitions
 import copy
 import logging
 
-from builder import Builder
-import subprocess
-import default_settings
+from .exporter import Exporter
+from .iar_definitions import IARDefinitions
+
 
 class IARExporter(Exporter):
 
@@ -110,23 +109,5 @@ class IARExporter(Exporter):
         self.gen_file('iar.ewp.tmpl', expanded_dic, '%s.ewp' %
                       data['name'], "iar", data['project_dir']['path'], data['project_dir']['name'])
         project_path = self.gen_file('iar.eww.tmpl', expanded_dic, '%s.eww' %
-                      data['name'], "iar", data['project_dir']['path'], data['project_dir']['name'])
+                                     data['name'], "iar", data['project_dir']['path'], data['project_dir']['name'])
         return project_path
-
-class IARBuilder(Builder):
-
-    def build_project(self, project_path, project):
-        # > IarBuild [project_path] -build [project_name]
-        path = join(self.root_path, project_path, "%s.ewp" % project)
-        logging.debug("Building IAR project: %s" % path)
-
-        args = [user_settings.IARBUILD, path, '-build', project]
-
-        try:
-            ret_code = None
-            ret_code = subprocess.call(args)
-        except:
-            logging.error("Error whilst calling IarBuild. Please check IARBUILD path in the user_settings.py file.")
-        else:
-            # no IAR doc describes errors from IarBuild
-            logging.info("Build completed.")

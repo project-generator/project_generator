@@ -11,16 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from optparse import OptionParser
+from os.path import join, basename
+
+import os
+import sys
 import yaml
 import logging
-import os
-from yaml_parser import YAML_parser, _finditem
-from os.path import join
-import sys
-from os.path import basename
-from tool import export, build
-import default_settings
+
+from .yaml_parser import YAML_parser, _finditem
+from .tool import export, build
+
+from . import settings
 
 
 class ProjectGenerator:
@@ -173,7 +176,7 @@ class ProjectBuilder:
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     # Should be launched from root/tools but all scripts are referenced to root
-    root = os.path.normpath(os.getcwd() + default_settings.PROJECT_ROOT)
+    root = os.path.normpath(os.getcwd() + settings.PROJECT_ROOT)
     os.chdir(root)
     logging.debug('This should be the project root: %s', os.getcwd())
 
@@ -191,7 +194,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     if not options.tool:
-        options.tool = "uvision"
+        options.tool = settings.DEFAULT_TOOL
 
     # Generate projects
     generator = ProjectGenerator()

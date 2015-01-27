@@ -11,18 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from uvision import UvisionExporter, UvisionBuilder
-from gccarm import MakefileGccArmExporter, MakefileGccArmBuilder
-from iar import IARExporter, IARBuilder
-from coide import CoideExporter
-from eclipse import EclipseGnuARMExporter
+
+# exporters
+from .exporters.iar import IARExporter
+from .exporters.coide import CoideExporter
+from .exporters.gccarm import MakefileGccArmExporter
+from .exporters.uvision import UvisionExporter
+from .exporters.eclipse import EclipseGnuARMExporter
+
+# builders
+from .builders.iar import IARBuilder
+from .builders.gccarm import MakefileGccArmBuilder
+from .builders.uvision import UvisionBuilder
 
 EXPORTERS = {
     'uvision': UvisionExporter,
     'make_gcc_arm': MakefileGccArmExporter,
     'iar': IARExporter,
-    'coide' : CoideExporter,
-    'eclipse_make_gcc_arm' : EclipseGnuARMExporter,
+    'coide': CoideExporter,
+    'eclipse_make_gcc_arm': EclipseGnuARMExporter,
 }
 
 BUILDERS = {
@@ -41,6 +48,7 @@ def export(data, tool):
     exporter = Exporter()
     project_path = exporter.generate(data)
     return project_path
+
 
 def build(projects, project_path, tool):
     """ Invokes builder for specificed tool. """

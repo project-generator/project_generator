@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, join, relpath
-from exporter import Exporter
 import subprocess
 import logging
 import copy
-from coide_definitions import CoIDEdefinitions
 
-import default_settings
+from os.path import basename, join, relpath
+
+from .exporter import Exporter
+from .coide_definitions import CoIDEdefinitions
+
 
 class CoideExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',
@@ -71,7 +72,7 @@ class CoideExporter(Exporter):
         data['coide_settings'].update(copy.deepcopy(
             self.definitions.coide_settings))  # set specific options to default values
         for dic in data['misc']:
-            for k,v in dic.items():
+            for k, v in dic.items():
                 for option in v:
                     data['coide_settings'][k][option] = v[option]
 
