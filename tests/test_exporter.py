@@ -17,8 +17,7 @@ from os.path import abspath
 import sys
 
 # Enable us to import all of the other code.
-sys.path.append(abspath('../'))
-from builder import Builder
+from project_generator.builders.builder import Builder
 
 
 # Makes sure that exporting using generic builder will fail.
