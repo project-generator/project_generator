@@ -22,7 +22,7 @@ from . import settings
 from .builder import ProjectBuilder
 from .generator import ProjectGenerator
 
-if __name__ == '__main__':
+def main():
     logging.basicConfig(level=logging.DEBUG)
     # Should be launched from root/tools but all scripts are referenced to root
     root = os.path.normpath(os.getcwd() + settings.PROJECT_ROOT)
