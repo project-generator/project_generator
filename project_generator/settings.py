@@ -1,4 +1,4 @@
-# Copyright 2014 Matthew Else
+# Copyright 2014 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from nose.tools import *
-from os.path import abspath
-import sys
+"""
+Settings needed:
+UV4
+IARBUILD
+PROJECT_ROOT
+GCC_BIN_PATH
+"""
 
-# Enable us to import all of the other code.
-from project_generator.builders.builder import Builder
+import os.environ as ENV
+from os.path import join, pardir
 
+UV4 = ENV['UV4'] or join('C:', 'Keil', 'UV4', 'UV4.exe')
+IARBUILD = ENV['IARBUILD'] or join(
+    'C:', 'Program Files (x86)', 
+    'IAR Systems', 'Embedded Workbench 7.0', 
+    'common', 'bin', 'IarBuild.exe')
+GCC_BIN_PATH = ENV['ARM_GCC_PATH'] or ''
 
-# Makes sure that exporting using generic builder will fail.
-@raises(NotImplementedError)
-def test_exporter_location():
-    b = Builder()
-    b.build_project('', '')
+PROJECT_ROOT = ENV['PROJECT_GENERATOR_ROOT'] or join(pardir, pardir)
+DEFAULT_TOOL = ENV['PROJECT_GENERATOR_DEFAULT_TOOL'] or 'uvision'

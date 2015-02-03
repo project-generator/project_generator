@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, join, relpath
-from exporter import Exporter
 import subprocess
 import logging
 import copy
-from gccarm import MakefileGccArmExporter
-import default_settings
+
+from os.path import basename, join, relpath
+
+from .exporter import Exporter
+
 
 class EclipseGnuARMExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',
@@ -71,7 +72,8 @@ class EclipseGnuARMExporter(Exporter):
         data_for_make = data.copy()
 
         self.exporter.process_data_for_makefile(data_for_make)
-        self.gen_file('makefile_gcc.tmpl', data_for_make, 'Makefile', "eclipse_makefile", data['project_dir']['path'], data['project_dir']['name'])
+        self.gen_file('makefile_gcc.tmpl', data_for_make, 'Makefile', "eclipse_makefile", data[
+                      'project_dir']['path'], data['project_dir']['name'])
 
         expanded_dic = data.copy()
 

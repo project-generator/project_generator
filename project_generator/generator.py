@@ -11,26 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from optparse import OptionParser
+import os
+import sys
 import yaml
 import logging
-import os
-from yaml_parser import YAML_parser, _finditem
-from os.path import join
-import sys
-from os.path import basename
-from tool import export, build
-import default_settings
+
+from os.path import join, basename
+
+from .yaml_parser import YAML_parser, _finditem
+from .tool import export
 
 
 class ProjectGenerator:
     # Each tool defines used toolchain.
     TOOLCHAINS = {
-        'iar' : 'iar',
-        'uvision' : 'uvision',
-        'coide' : 'gcc_arm',
-        'make_gcc_arm' : 'gcc_arm',
-        'eclipse_make_gcc_arm' : 'gcc_arm',
+        'iar': 'iar',
+        'uvision': 'uvision',
+        'coide': 'gcc_arm',
+        'make_gcc_arm': 'gcc_arm',
+        'eclipse_make_gcc_arm': 'gcc_arm',
     }
 
     def run_generator(self, dic, project, tool, toolchain):
@@ -68,7 +67,8 @@ class ProjectGenerator:
             projects.append(k)
 
         for project in projects:
-            projects_paths.append(self.run_generator(dic, project, tool, toolchain))
+            projects_paths.append(
+                self.run_generator(dic, project, tool, toolchain))
         return (projects, projects_paths)
 
     def scrape_dir(self):
@@ -88,7 +88,7 @@ class ProjectGenerator:
                 # Save the full name if ext matches
                 if ext in exts:
                     relpath = dirpath.replace(os.getcwd(), "")
-                    found[ext].append(os.path.join(relpath, name))
+                    found[ext].append(join(relpath, name))
         # The body of our log file
         logbody = ''
         # loop thru results
@@ -143,61 +143,8 @@ class ProjectGenerator:
             projects_paths.append(project_path)
         else:
             # all projects within project.yaml
-            projects, projects_paths = self.process_all_projects(config, options.tool, options.toolchain)
+            projects, projects_paths = self.process_all_projects(
+                config, options.tool, options.toolchain)
 
         project_file.close()
         return (projects, projects_paths)
-
-
-class ProjectBuilder:
-
-    def __init__(self):
-        self.project_path = "generated_projects"
-
-    def build_project_list(self, options, projects):
-        projects_list = []
-        for dirpath, dirnames, files in os.walk(self.project_path):
-            for d in dirnames:
-                for project_name in projects:
-                    proj = options.tool + '_' + project_name
-                    if proj in d:
-                        projects_list.append(project_name)
-                        break
-        return projects_list
-
-    def run(self, options, projects, projects_paths):
-        #project_list = self.build_project_list(options, projects)
-        logging.info("Building all defined projects.")
-        build(projects, projects_paths, options.tool)
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    # Should be launched from root/tools but all scripts are referenced to root
-    root = os.path.normpath(os.getcwd() + default_settings.PROJECT_ROOT)
-    os.chdir(root)
-    logging.debug('This should be the project root: %s', os.getcwd())
-
-    # Parse Options
-    parser = OptionParser()
-    parser.add_option("-f", "--file", help="YAML projects file")
-    parser.add_option("-p", "--project", help="Project to be generated")
-    parser.add_option(
-        "-t", "--tool", help="Create project files for provided tool (uvision by default)")
-    parser.add_option("-l", "--list", action="store_true",
-                      help="List projects defined in the project file.")
-    parser.add_option(
-        "-b", "--build", action="store_true", help="Build defined projects.")
-
-    (options, args) = parser.parse_args()
-
-    if not options.tool:
-        options.tool = "uvision"
-
-    # Generate projects
-    generator = ProjectGenerator()
-    generator.set_toolchain(options)
-    projects, project_paths = generator.run(options)
-
-    # Build all exported projects
-    if options.build:
-        ProjectBuilder().run(options, projects, project_paths)
