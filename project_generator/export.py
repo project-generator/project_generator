@@ -25,7 +25,7 @@ from .generator import ProjectGenerator
 def main():
     logging.basicConfig(level=logging.DEBUG)
     # Should be launched from root/tools but all scripts are referenced to root
-    root = os.path.normpath(os.getcwd() + settings.PROJECT_ROOT)
+    root = os.path.normpath(os.getcwd())
     os.chdir(root)
     logging.debug('This should be the project root: %s', os.getcwd())
 
@@ -53,3 +53,6 @@ def main():
     # Build all exported projects
     if options.build:
         ProjectBuilder().run(options, projects, project_paths)
+
+if __name__ == '__main__':
+    main()
