@@ -20,7 +20,7 @@ import subprocess
 from os.path import basename, relpath, join
 
 from .exporter import Exporter
-from ..settings import gcc_bin_path
+from ..settings import GCC_BIN_PATH
 
 
 class MakefileGccArmExporter(Exporter):

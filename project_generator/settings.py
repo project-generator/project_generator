@@ -20,15 +20,16 @@ PROJECT_ROOT
 GCC_BIN_PATH
 """
 
-import os.environ as ENV
+import os
 from os.path import join, pardir
 
-UV4 = ENV['UV4'] or join('C:', 'Keil', 'UV4', 'UV4.exe')
-IARBUILD = ENV['IARBUILD'] or join(
-    'C:', 'Program Files (x86)', 
-    'IAR Systems', 'Embedded Workbench 7.0', 
-    'common', 'bin', 'IarBuild.exe')
-GCC_BIN_PATH = ENV['ARM_GCC_PATH'] or ''
 
-PROJECT_ROOT = ENV['PROJECT_GENERATOR_ROOT'] or join(pardir, pardir)
-DEFAULT_TOOL = ENV['PROJECT_GENERATOR_DEFAULT_TOOL'] or 'uvision'
+UV4 =  os.environ.get('UV4') or join('C:', 'Keil', 'UV4', 'UV4.exe')
+IARBUILD = os.environ.get('IARBUILD') or join(
+    'C:', 'Program Files (x86)',
+    'IAR Systems', 'Embedded Workbench 7.0',
+    'common', 'bin', 'IarBuild.exe')
+GCC_BIN_PATH = os.environ.get('ARM_GCC_PATH') or ''
+
+PROJECT_ROOT = os.environ.get('PROJECT_GENERATOR_ROOT') or join(pardir, pardir)
+DEFAULT_TOOL = os.environ.get('PROJECT_GENERATOR_DEFAULT_TOOL') or 'uvision'

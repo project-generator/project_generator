@@ -122,7 +122,7 @@ class ProjectGenerator:
             # create a list of all files in the dir that we're interested in
             self.scrape_dir()
             # print help menu
-            parser.print_help()
+            # parser.print_help()
             sys.exit()
 
         print "Processing projects file."

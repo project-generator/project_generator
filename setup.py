@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from setuptools import setup, find_packages
 
-import os
-
 setup(
-    name='Project Generator',
+    name='project generator',
     version='0.3-alpha',
     description='Project generators for various embedded tools (IDE). IAR, uVision, Makefile and many more in the roadmap!',
     author='Martin Kojtal, Matthew Else',
@@ -27,7 +26,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            "pg=project_generator.export:main"
+            "project_generator=project_generator.export:main",
         ]
     },
 
