@@ -22,7 +22,7 @@ class Exporter:
 
     """Just a template for subclassing"""
 
-    TEMPLATE_DIR = join('tools', dirname(__file__), '..','templates')
+    TEMPLATE_DIR = join(dirname(__file__), '..','templates')
     DOT_IN_RELATIVE_PATH = False
 
     def gen_file(self, template_file, data, target_file, tool, destination, dir_name):
