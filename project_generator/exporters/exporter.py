@@ -61,3 +61,6 @@ class Exporter:
 
         open(target_path, "w").write(target_text)
         return dirname(target_path)
+
+    def fixupExecutable(self, exe_path):
+        pass

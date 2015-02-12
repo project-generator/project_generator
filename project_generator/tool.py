@@ -49,6 +49,10 @@ def export(data, tool, env_settings):
     project_path = exporter.generate(data, env_settings)
     return project_path
 
+ def fixupExecutable(executable_path, tool):
+     """ Perform any munging of the executable necessary to debug it with the specified tool. """
+     exporter = EXPORTERS[tool]()
+     exporter.fixupExecutable(executable_path)
 
 def build(projects, project_path, tool, env_settings, root):
     """ Invokes builder for specificed tool. """

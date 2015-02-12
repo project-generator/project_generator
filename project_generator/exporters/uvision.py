@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import copy
+import shutil
 
 from os.path import basename, join, relpath
 
@@ -149,6 +150,10 @@ class UvisionExporter(Exporter):
         mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
+        # set default build directory if unset
+        if not 'output_dir' in expanded_dic:
+            expanded_dic['output_dir'] = '.\\build\\' + data['name'] + '\\'
+
         # optimization set to correct value, default not used
         expanded_dic['Cads']['Optim'][0] += 1
 
@@ -158,3 +163,6 @@ class UvisionExporter(Exporter):
         project_path = self.gen_file(
             'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision", data['project_dir']['path'], data['project_dir']['name'])
         return project_path
+
+     def fixupExecutable(self, exe_path):
+         shutil.copy(exe_path, exe_path + '.axf')
