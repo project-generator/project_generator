@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import subprocess
+import logging
 
 from .builder import Builder
-
+from os.path import relpath
 
 class MakefileGccArmBuilder(Builder):
     # http://www.gnu.org/software/make/manual/html_node/Running.html
@@ -27,7 +28,7 @@ class MakefileGccArmBuilder(Builder):
 
     SUCCESSVALUE = 0
 
-    def build_project(self, project_path, project):
+    def build_project(self, project_path, project, settings, root):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
         path = relpath(project_path)

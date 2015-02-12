@@ -7,6 +7,7 @@ class ProjectBuilder:
 
     def __init__(self):
         self.project_path = "generated_projects"
+        # self.root = root
 
     def build_project_list(self, options, projects):
         projects_list = []
@@ -19,7 +20,7 @@ class ProjectBuilder:
                         break
         return projects_list
 
-    def run(self, options, projects, projects_paths):
+    def run(self, options, projects, projects_paths, settings, root):
         #project_list = self.build_project_list(options, projects)
         logging.info("Building all defined projects.")
-        build(projects, projects_paths, options.tool)
+        build(projects, projects_paths, options.tool, settings, root)

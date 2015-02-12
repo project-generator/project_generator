@@ -13,18 +13,20 @@
 # limitations under the License.
 
 import subprocess
+import logging
 
 from .builder import Builder
 from .. import settings
+from os.path import join
 
 class IARBuilder(Builder):
 
-    def build_project(self, project_path, project):
+    def build_project(self, project_path, project, settings, root):
         # > IarBuild [project_path] -build [project_name]
-        path = join(self.root_path, project_path, "%s.ewp" % project)
+        path = join(root, project_path, "%s.ewp" % project)
         logging.debug("Building IAR project: %s" % path)
 
-        args = [settings.IARBUILD, path, '-build', project]
+        args = [settings.get_env_settings('iar'), path, '-build', project]
 
         try:
             ret_code = None

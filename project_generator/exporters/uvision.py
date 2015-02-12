@@ -133,7 +133,7 @@ class UvisionExporter(Exporter):
             # does not exist, create it
             data['TargetOption'] = mcu_def['TargetOption']
 
-    def generate(self, data):
+    def generate(self, data, settings):
         """ Processes groups and misc options specific for uVision, and run generator """
         expanded_dic = data.copy()
 

@@ -19,18 +19,18 @@ import logging
 class Builder:
     """ Template to be subclassed """
 
-    def __init__(self):
-        self.root_path = os.path.dirname(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    # def __init__(self):
+        # self.root_path = os.path.dirname(
+        #     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     def build_project(self, project, project_path):
         raise NotImplementedError
 
-    def build(self, projects_path, project_list):
+    def build(self, projects_path, project_list, settings, root):
         # Loop through each of the projects and build them.
         logging.debug("Building projects.")
 
         for i, project_name in enumerate(project_list):
             logging.debug("Building project %i of %i: %s" %
                           (i + 1, len(project_list), project_name))
-            self.build_project(project_name, projects_path[i])
+            self.build_project(project_name, projects_path[i], settings, root)

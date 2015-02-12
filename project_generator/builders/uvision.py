@@ -13,10 +13,11 @@
 # limitations under the License.
 
 import subprocess
+import logging
 
 from .builder import Builder
 from .. import settings
-
+from os.path import join
 
 class UvisionBuilder(Builder):
     ERRORLEVEL = {
@@ -32,19 +33,19 @@ class UvisionBuilder(Builder):
 
     SUCCESSVALUE = 0
 
-    def build_project(self, project_path, project):
+    def build_project(self, project_path, project, settings, root):
         # > UV4 -b [project_path]
-        path = join(self.root_path, project_path, "%s.uvproj" % project)
+        path = join(root, project_path, "%s.uvproj" % project)
         logging.debug("Building uVision project: %s" % path)
 
-        args = [settings.UV4, '-r', '-j0', path]
+        args = [settings.get_env_settings('uvision'), '-r', '-j0', path]
 
         try:
             ret_code = None
             ret_code = subprocess.call(args)
         except:
             logging.error(
-                "Error whilst calling UV4. Please check UV4 path in the user_settings.py file.")
+                "Error whilst calling UV4: '%s'. Please set uvision path in the projects.yaml file." % settings.get_env_settings('uvision'))
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.

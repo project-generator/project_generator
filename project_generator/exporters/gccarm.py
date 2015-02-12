@@ -20,7 +20,7 @@ import subprocess
 from os.path import basename, relpath, join
 
 from .exporter import Exporter
-from ..settings import GCC_BIN_PATH
+# from ..settings import GCC_BIN_PATH
 
 
 class MakefileGccArmExporter(Exporter):
@@ -84,22 +84,22 @@ class MakefileGccArmExporter(Exporter):
                 self.cc_standard(k, v, data)
                 self.c_standard(k, v, data)
 
-    def generate(self, data):
+    def generate(self, data, settings):
         """ Processes misc options specific for GCC ARM, and run generator. """
-        self.process_data_for_makefile(data)
+        self.process_data_for_makefile(data, settings)
 
         project_path = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm", data[
                                      'project_dir']['path'], data['project_dir']['name'])
         return project_path
 
-    def process_data_for_makefile(self, data):
+    def process_data_for_makefile(self, data, settings):
         self.list_files(data, 'source_files_c')
         self.list_files(data, 'source_files_cpp')
         self.list_files(data, 'source_files_s')
 
         self.parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'
-        data['toolchain_bin_path'] = gcc_bin_path
+        data['toolchain_bin_path'] = settings.get_env_settings('gcc')
 
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':

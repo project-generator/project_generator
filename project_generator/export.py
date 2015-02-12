@@ -21,6 +21,7 @@ from . import settings
 
 from .builder import ProjectBuilder
 from .generator import ProjectGenerator
+from .settings import ProjectSettings
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
@@ -45,14 +46,16 @@ def main():
     if not options.tool:
         options.tool = settings.DEFAULT_TOOL
 
+    settings = ProjectSettings()
+
     # Generate projects
     generator = ProjectGenerator()
     generator.set_toolchain(options)
-    projects, project_paths = generator.run(options)
+    projects, project_paths = generator.run(options, settings)
 
     # Build all exported projects
     if options.build:
-        ProjectBuilder().run(options, projects, project_paths)
+        ProjectBuilder().run(options, projects, project_paths, settings, root)
 
 if __name__ == '__main__':
     main()

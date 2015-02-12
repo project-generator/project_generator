@@ -21,15 +21,43 @@ GCC_BIN_PATH
 """
 
 import os
-from os.path import join, pardir
+import yaml
 
+from os.path import join, pardir, sep
+from .yaml_parser import YAML_parser, _finditem
 
-UV4 =  os.environ.get('UV4') or join('C:', 'Keil', 'UV4', 'UV4.exe')
-IARBUILD = os.environ.get('IARBUILD') or join(
-    'C:', 'Program Files (x86)',
-    'IAR Systems', 'Embedded Workbench 7.0',
-    'common', 'bin', 'IarBuild.exe')
-GCC_BIN_PATH = os.environ.get('ARM_GCC_PATH') or ''
+class ProjectSettings:
+    PROJECT_ROOT = os.environ.get('PROJECT_GENERATOR_ROOT') or join(pardir, pardir)
+    DEFAULT_TOOL = os.environ.get('PROJECT_GENERATOR_DEFAULT_TOOL') or 'uvision'
 
-PROJECT_ROOT = os.environ.get('PROJECT_GENERATOR_ROOT') or join(pardir, pardir)
-DEFAULT_TOOL = os.environ.get('PROJECT_GENERATOR_DEFAULT_TOOL') or 'uvision'
+    def __init__(self):
+        self.paths = {}
+        self.paths['uvision'] = os.environ.get('UV4') or join('C:', sep, 'Keil', 'UV4', 'UV4.exe')
+        self.paths['iar'] = os.environ.get('IARBUILD') or join(
+            'C:', sep, 'Program Files (x86)',
+            'IAR Systems', 'Embedded Workbench 7.0',
+            'common', 'bin', 'IarBuild.exe')
+        self.paths['gcc'] = os.environ.get('ARM_GCC_PATH') or ''
+
+    def load_env_settings(self, config_file):
+        settings = 0
+        try:
+            for k, v in config_file.items():
+                if k == 'settings':
+                    settings = v
+        except KeyError:
+            pass
+        if settings:
+            uvision = _finditem(settings, 'uvision')
+            if uvision:
+                self.paths['uvision'] = uvision
+            iar = _finditem(settings, 'iar')
+            if iar:
+                self.paths['iar'] = iar
+            gcc = _finditem(settings, 'gcc')
+            if gcc:
+                self.paths['gcc'] = gcc
+
+    def get_env_settings(self, env_set):
+        return self.paths[env_set]
+

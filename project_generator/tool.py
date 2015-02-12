@@ -39,22 +39,22 @@ BUILDERS = {
 }
 
 
-def export(data, tool):
+def export(data, tool, settings):
     """ Invokes tool generator. """
     if tool not in EXPORTERS:
         raise RuntimeError("Exporter does not support defined tool.")
 
     Exporter = EXPORTERS[tool]
     exporter = Exporter()
-    project_path = exporter.generate(data)
+    project_path = exporter.generate(data, settings)
     return project_path
 
 
-def build(projects, project_path, tool):
+def build(projects, project_path, tool, settings, root):
     """ Invokes builder for specificed tool. """
     if tool not in BUILDERS:
         raise RuntimeError("Builder does not support defined tool.")
 
     Builder = BUILDERS[tool]
     builder = Builder()
-    builder.build(projects, project_path)
+    builder.build(projects, project_path, settings, root)
