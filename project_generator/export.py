@@ -32,7 +32,7 @@ def main():
 
     # Parse Options
     parser = OptionParser()
-    # parser.add_option("-f", "--file", help="YAML projects file")
+    parser.add_option("-f", "--file", help="YAML projects file")
     parser.add_option("-p", "--project", help="Project to be generated")
     parser.add_option(
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
@@ -46,7 +46,8 @@ def main():
     if not options.tool:
         options.tool = settings.DEFAULT_TOOL
 
-    options.file = 'projects.yaml'
+    if not options.file:
+        options.file = 'projects.yaml'
 
     settings = ProjectSettings()
 
