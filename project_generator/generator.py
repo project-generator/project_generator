@@ -65,7 +65,7 @@ class ProjectGenerator:
         projects = []
         projects_paths = []
         yaml_files = []
-        for k, v in dic.items():
+        for k, v in dic['projects'].items():
             projects.append(k)
 
         for project in projects:
