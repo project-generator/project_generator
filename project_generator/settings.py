@@ -32,7 +32,8 @@ class ProjectSettings:
 
     def __init__(self):
         self.paths = {}
-        self.paths['uvision'] = os.environ.get('UV4') or join('C:', sep, 'Keil', 'UV4', 'UV4.exe')
+        self.paths['uvision'] = os.environ.get('UV4') or join('C:', sep,
+            'Keil', 'UV4', 'UV4.exe')
         self.paths['iar'] = os.environ.get('IARBUILD') or join(
             'C:', sep, 'Program Files (x86)',
             'IAR Systems', 'Embedded Workbench 7.0',
@@ -40,6 +41,7 @@ class ProjectSettings:
         self.paths['gcc'] = os.environ.get('ARM_GCC_PATH') or ''
 
     def load_env_settings(self, config_file):
+        """ Loads predefined settings if any, otherwise default used. """
         settings = 0
         try:
             for k, v in config_file.items():

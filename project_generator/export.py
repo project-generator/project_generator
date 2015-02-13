@@ -43,22 +43,21 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    if not options.tool:
-        options.tool = settings.DEFAULT_TOOL
-
     if not options.file:
         options.file = 'projects.yaml'
 
     settings = ProjectSettings()
+    if not options.tool:
+        options.tool = settings.DEFAULT_TOOL
 
     # Generate projects
-    generator = ProjectGenerator()
+    generator = ProjectGenerator(settings)
     generator.set_toolchain(options)
-    projects, project_paths = generator.run(options, settings)
+    projects, project_paths = generator.run(options)
 
     # Build all exported projects
     if options.build:
-        ProjectBuilder().run(options, projects, project_paths, settings, root)
+        ProjectBuilder(settings).run(options, projects, project_paths, root)
 
 if __name__ == '__main__':
     main()

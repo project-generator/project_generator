@@ -31,7 +31,10 @@ class ProjectGenerator:
         'eclipse_make_gcc_arm': 'gcc_arm',
     }
 
-    def run_generator(self, dic, project, tool, toolchain, settings):
+    def __init__(self, env_settings):
+        self.env_settings = env_settings
+
+    def run_generator(self, dic, project, tool, toolchain):
         """ Generates one project. """
         project_list = []
         yaml_files = _finditem(dic, project)
@@ -54,10 +57,10 @@ class ProjectGenerator:
             raise RuntimeError("Project: %s was not found." % project)
 
         logging.info("Generating project: %s" % project)
-        project_path = export(process_data, tool, settings)
+        project_path = export(process_data, tool, self.env_settings)
         return project_path
 
-    def process_all_projects(self, dic, tool, toolchain, settings):
+    def process_all_projects(self, dic, tool, toolchain):
         """ Generates all project. """
         projects = []
         projects_paths = []
@@ -67,7 +70,7 @@ class ProjectGenerator:
 
         for project in projects:
             projects_paths.append(
-                self.run_generator(dic, project, tool, toolchain, settings))
+                self.run_generator(dic, project, tool, toolchain))
         return (projects, projects_paths)
 
     def scrape_dir(self):
@@ -116,7 +119,7 @@ class ProjectGenerator:
             logging.error("The tool was find as supported: %s", options.tool)
             sys.exit(-1)
 
-    def run(self, options, settings):
+    def run(self, options):
         if not options.file:
             # create a list of all files in the dir that we're interested in
             self.scrape_dir()
@@ -134,19 +137,19 @@ class ProjectGenerator:
             sys.exit()
 
         # update enviroment variables
-        settings.load_env_settings(config)
+        self.env_settings.load_env_settings(config)
 
         projects = []
         projects_paths = []
         if options.project:
             project_path = self.run_generator(
-                config, options.project, options.tool, options.toolchain, settings)  # one project
+                config, options.project, options.tool, options.toolchain)  # one project
             projects.append(options.project)
             projects_paths.append(project_path)
         else:
             # all projects within project.yaml
             projects, projects_paths = self.process_all_projects(
-                config, options.tool, options.toolchain, settings)
+                config, options.tool, options.toolchain)
 
         project_file.close()
         return (projects, projects_paths)

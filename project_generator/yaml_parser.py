@@ -17,8 +17,8 @@ class YAML_parser:
 
     def __init__(self):
         self.data = {
-            'name': '',                # project name
-            'core': '',                # core
+            'name': '',                 # project name
+            'core': '',                 # core
             'linker_file': '',          # linker command file
             'include_paths': [],        # include paths
             'source_paths': [],         # source paths
@@ -29,8 +29,8 @@ class YAML_parser:
             'source_files_lib': [],     # libraries
             'macros': [],               # macros (defines)
             'project_dir': {
-                'name': '',
-                'path' : '' },
+                'name': '',             # the name of the project
+                'path' : '' },          # the path where will be generated
             # tool specific settings, will be parsed separately
             'misc': [],
         }
@@ -217,7 +217,6 @@ def get_source_files_by_extension(dic, extension):
     find_extension = 'source_files_' + extension
     return _finditem(dic, find_extension)
 
-
 def find_all_values(obj, key):
     files = []
     if key in obj:
@@ -228,7 +227,6 @@ def find_all_values(obj, key):
             if item:
                 files.append(item)
     return files
-
 
 def _finditem(obj, key):
     if key in obj:
