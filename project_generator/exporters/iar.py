@@ -103,9 +103,11 @@ class IARExporter(Exporter):
 
         expanded_dic['iar_settings'] = {}
         self.parse_specific_options(expanded_dic)
-        expanded_dic['iar_settings'].update(
-            self.definitions.get_mcu_definition(expanded_dic['mcu']))
-
+        try:
+            expanded_dic['iar_settings'].update(
+                self.definitions.get_mcu_definition(expanded_dic['mcu']))
+        except KeyError:
+            raise RuntimeError("The mcu is not defined (define in tool specific for iar)")
         self.gen_file('iar.ewp.tmpl', expanded_dic, '%s.ewp' %
                       data['name'], "iar", data['project_dir']['path'], data['project_dir']['name'])
         project_path = self.gen_file('iar.eww.tmpl', expanded_dic, '%s.eww' %

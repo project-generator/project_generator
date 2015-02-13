@@ -144,8 +144,10 @@ class UvisionExporter(Exporter):
         self.iterate(data, expanded_dic)
 
         self.parse_specific_options(expanded_dic)
-
-        mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
+        try:
+            mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
+        except KeyError:
+            raise RuntimeError("The mcu is not defined (define in tool specific for uvision)")
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
         # optimization set to correct value, default not used

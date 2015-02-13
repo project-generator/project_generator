@@ -88,9 +88,11 @@ class CoideExporter(Exporter):
 
         expanded_dic['coide_settings'] = {}
         self.parse_specific_options(expanded_dic)
-        expanded_dic['coide_settings'].update(
-            self.definitions.get_mcu_definition(expanded_dic['mcu']))
-
+        try:
+            expanded_dic['coide_settings'].update(
+                self.definitions.get_mcu_definition(expanded_dic['mcu']))
+        except KeyError:
+            raise RuntimeError("The mcu is not defined (define in tool specific for coide)")
         # Project file
         project_path = self.gen_file(
             'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], "coide", data['project_dir']['path'], data['project_dir']['name'])
