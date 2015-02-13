@@ -82,9 +82,9 @@ class MakefileGccArmExporter(Exporter):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.process_data_for_makefile(data, env_settings)
 
-        project_path = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm", data[
+        project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm", data[
                                      'project_dir']['path'], data['project_dir']['name'])
-        return project_path
+        return project_path, [makefile]
 
     def process_data_for_makefile(self, data, env_settings):
         self.list_files(data, 'source_files_c')

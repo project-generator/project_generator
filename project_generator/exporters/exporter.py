@@ -60,7 +60,7 @@ class Exporter:
         target_text = template.render(data)
 
         open(target_path, "w").write(target_text)
-        return dirname(target_path)
+        return dirname(target_path), target_path
 
-    def fixupExecutable(self, exe_path):
-        pass
+    def fixup_executable(self, exe_path):
+        return exe_path
