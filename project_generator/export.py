@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from optparse import OptionParser
-
+import argparse
 import os
 import logging
 
@@ -31,33 +30,33 @@ def main():
     logging.debug('This should be the project root: %s', os.getcwd())
 
     # Parse Options
-    parser = OptionParser()
-    parser.add_option("-f", "--file", help="YAML projects file")
-    parser.add_option("-p", "--project", help="Project to be generated")
-    parser.add_option(
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--file", help="YAML projects file")
+    parser.add_argument("-p", "--project", help="Project to be generated")
+    parser.add_argument(
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
-    parser.add_option("-l", "--list", action="store_true",
+    parser.add_argument("-l", "--list", action="store_true",
                       help="List projects defined in the project file.")
-    parser.add_option(
+    parser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects.")
 
-    (options, args) = parser.parse_args()
+    args = parser.parse_args()
 
-    if not options.file:
-        options.file = 'projects.yaml'
+    if not args.file:
+        args.file = 'projects.yaml'
 
     settings = ProjectSettings()
-    if not options.tool:
-        options.tool = settings.DEFAULT_TOOL
+    if not args.tool:
+        args.tool = settings.DEFAULT_TOOL
 
     # Generate projects
     generator = ProjectGenerator(settings)
-    generator.set_toolchain(options)
-    projects, project_paths = generator.run(options)
+    generator.set_toolchain(args)
+    projects, project_paths = generator.run(args)
 
     # Build all exported projects
-    if options.build:
-        ProjectBuilder(settings).run(options, projects, project_paths, root)
+    if args.build:
+        ProjectBuilder(settings).run(args, projects, project_paths, root)
 
 if __name__ == '__main__':
     main()
