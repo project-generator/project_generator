@@ -31,6 +31,8 @@ class ProjectSettings:
     DEFAULT_TOOL = os.environ.get('PROJECT_GENERATOR_DEFAULT_TOOL') or 'uvision'
 
     def __init__(self):
+        """ This are default enviroment settings for build tools. To override,
+        define them in the projects.yaml file. """
         self.paths = {}
         self.paths['uvision'] = os.environ.get('UV4') or join('C:', sep,
             'Keil', 'UV4', 'UV4.exe')

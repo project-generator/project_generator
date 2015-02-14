@@ -76,7 +76,7 @@ class CoideExporter(Exporter):
                 for option in v:
                     data['coide_settings'][k][option] = v[option]
 
-    def generate(self, data, settings):
+    def generate(self, data, env_settings):
         """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = data.copy()
 

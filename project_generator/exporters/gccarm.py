@@ -81,22 +81,22 @@ class MakefileGccArmExporter(Exporter):
                 self.cc_standard(k, v, data)
                 self.c_standard(k, v, data)
 
-    def generate(self, data, settings):
+    def generate(self, data, env_settings):
         """ Processes misc options specific for GCC ARM, and run generator. """
-        self.process_data_for_makefile(data, settings)
+        self.process_data_for_makefile(data, env_settings)
 
         project_path = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "gcc_arm", data[
                                      'project_dir']['path'], data['project_dir']['name'])
         return project_path
 
-    def process_data_for_makefile(self, data, settings):
+    def process_data_for_makefile(self, data, env_settings):
         self.list_files(data, 'source_files_c')
         self.list_files(data, 'source_files_cpp')
         self.list_files(data, 'source_files_s')
 
         self.parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'
-        data['toolchain_bin_path'] = settings.get_env_settings('gcc')
+        data['toolchain_bin_path'] = env_settings.get_env_settings('gcc')
 
         if not data['core']:
             board = boardDefinitions()

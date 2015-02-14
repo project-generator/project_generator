@@ -91,7 +91,7 @@ class IARExporter(Exporter):
                 v[0] = 0
             data['iar_settings'][k]['state'] = v[0]
 
-    def generate(self, data, settings):
+    def generate(self, data, env_settings):
         """ Processes groups and misc options specific for IAR, and run generator """
         expanded_dic = data.copy()
 

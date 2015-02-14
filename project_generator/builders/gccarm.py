@@ -28,7 +28,7 @@ class MakefileGccArmBuilder(Builder):
 
     SUCCESSVALUE = 0
 
-    def build_project(self, project_path, project, settings, root):
+    def build_project(self, project_path, project, env_settings, root):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
         path = relpath(project_path)

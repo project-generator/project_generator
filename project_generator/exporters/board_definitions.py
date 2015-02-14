@@ -29,28 +29,28 @@ class boardDefinitions():
         # Freescale FRDM boards
         'frdm-k20d50m': {
             'uvision': 'MK20DX128xxx5',
-            'gcc' : 'cortex-m4'
+            'gcc' : 'cortex-m4',
         },
         'frdm-kl25z' : {
             'iar' : 'MKL25Z128xxx4',
-            'gcc' : 'cortex-m0+'
+            'gcc' : 'cortex-m0+',
         },
         'frdm-k64f' : {
-            'uvision' : 'MK64FN1M0xxx12'
-            'gcc' : 'cortex-m4f'
-        }
+            'uvision' : 'MK64FN1M0xxx12',
+            'gcc' : 'cortex-m4f',
+        },
 
         # mbed boards
         'mbed-lpc1768' : {
             'uvision' : 'LPC1768',
             'iar' : 'LPC1768',
             'coide' : 'LPC1768',
-            'gcc' : 'cortex-m3'
+            'gcc' : 'cortex-m3',
         },
 
         # ST Disco boards
         'disco_f407vg' : {
-            'coide' : 'STM32F407VG'
+            'coide' : 'STM32F407VG',
             'gcc' : 'cortex-m4',
         },
     }

@@ -16,17 +16,16 @@ import subprocess
 import logging
 
 from .builder import Builder
-from .. import settings
 from os.path import join
 
 class IARBuilder(Builder):
 
-    def build_project(self, project_path, project, settings, root):
+    def build_project(self, project_path, project, env_settings, root):
         # > IarBuild [project_path] -build [project_name]
         path = join(root, project_path, "%s.ewp" % project)
         logging.debug("Building IAR project: %s" % path)
 
-        args = [settings.get_env_settings('iar'), path, '-build', project]
+        args = [env_settings.get_env_settings('iar'), path, '-build', project]
 
         try:
             ret_code = None
