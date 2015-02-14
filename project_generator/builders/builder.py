@@ -11,23 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" Template to be subclassed """
+
 import os
 import logging
 
-
 class Builder:
-    def __init__(self):
-        self.root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    """ Template to be subclassed """
 
     def build_project(self, project, project_path):
         raise NotImplementedError
 
-    def build(self, projects_path, project_list):
+    def build(self, projects_path, project_list, env_settings, root):
         # Loop through each of the projects and build them.
         logging.debug("Building projects.")
 
         for i, project_name in enumerate(project_list):
             logging.debug("Building project %i of %i: %s" %
                           (i + 1, len(project_list), project_name))
-            self.build_project(project_name, projects_path[i])
+            self.build_project(project_name, projects_path[i], env_settings, root)

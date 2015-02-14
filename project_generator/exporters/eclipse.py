@@ -12,22 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, join, relpath
-from exporter import Exporter
 import subprocess
 import logging
 import copy
-from coide_definitions import CoIDEdefinitions
 
-import default_settings
+from os.path import basename, join, relpath
 
-class CoideExporter(Exporter):
+from .exporter import Exporter
+
+
+class EclipseGnuARMExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',
-                        'source_files_cpp', 'source_files_obj', 'source_files_lib']
+                        'source_files_cpp', 'source_files_obj']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
 
     def __init__(self):
-        self.definitions = CoIDEdefinitions()
+        self.definitions = 0
+        self.exporter = MakefileGccArmExporter()
 
     def expand_data(self, old_data, new_data, attribute, group):
         """ data expansion - uvision needs filename and path separately. """
@@ -66,31 +67,25 @@ class CoideExporter(Exporter):
                         group = k
                     self.expand_data(dic, expanded_data, attribute, group)
 
-    def parse_specific_options(self, data):
-        """ Parse all CoIDE specific setttings. """
-        data['coide_settings'].update(copy.deepcopy(
-            self.definitions.coide_settings))  # set specific options to default values
-        for dic in data['misc']:
-            for k,v in dic.items():
-                for option in v:
-                    data['coide_settings'][k][option] = v[option]
+    def generate(self, data, settings):
+        """ Processes groups and misc options specific for eclipse, and run generator """
+        data_for_make = data.copy()
 
-    def generate(self, data):
-        """ Processes groups and misc options specific for CoIDE, and run generator """
+        self.exporter.process_data_for_makefile(data_for_make, settings)
+        self.gen_file('makefile_gcc.tmpl', data_for_make, 'Makefile', "eclipse_makefile", data[
+                      'project_dir']['path'], data['project_dir']['name'])
+
         expanded_dic = data.copy()
 
-        groups = self.get_groups(data)
+        groups = self.get_groups(expanded_dic)
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
         self.iterate(data, expanded_dic)
 
-        expanded_dic['coide_settings'] = {}
-        self.parse_specific_options(expanded_dic)
-        expanded_dic['coide_settings'].update(
-            self.definitions.get_mcu_definition(expanded_dic['mcu']))
-
         # Project file
+        self.gen_file(
+            'eclipse_makefile.cproject.tmpl', expanded_dic, '.cproject', "eclipse_makefile", data['project_dir']['path'], data['project_dir']['name'])
         project_path = self.gen_file(
-            'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], "coide", data['project_dir']['path'], data['project_dir']['name'])
+            'eclipse.project.tmpl', expanded_dic, '.project', "eclipse_makefile", data['project_dir']['path'], data['project_dir']['name'])
         return project_path

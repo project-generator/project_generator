@@ -11,15 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Just a template for subclassing"""
 import os
 import logging
+
 from os.path import join, dirname
 from jinja2 import Template
 
 
 class Exporter:
-    TEMPLATE_DIR = join('tools', dirname(__file__), 'templates')
+
+    """Just a template for subclassing"""
+
+    TEMPLATE_DIR = join(dirname(__file__), '..','templates')
     DOT_IN_RELATIVE_PATH = False
 
     def gen_file(self, template_file, data, target_file, tool, destination, dir_name):
@@ -36,7 +39,8 @@ class Exporter:
             os.makedirs(project_dir)
         target_path = join(project_dir, target_file)
 
-        # Get number of how far we are from root, to set paths in the project correctly
+        # Get number of how far we are from root, to set paths in the project
+        # correctly
         path_from_root, filename = os.path.split(target_path)
         count = len(os.path.split(path_from_root))
         rel_path_output = ''

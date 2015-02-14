@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, join, relpath
-from exporter import Exporter
 import subprocess
 import logging
 import copy
-from uvision_definitions import uVisionDefinitions
 
-from builder import Builder
-import default_settings
+from os.path import basename, join, relpath
+
+from .exporter import Exporter
+from .uvision_definitions import uVisionDefinitions
+from .board_definitions import boardDefinitions
 
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
@@ -133,7 +133,7 @@ class UvisionExporter(Exporter):
             # does not exist, create it
             data['TargetOption'] = mcu_def['TargetOption']
 
-    def generate(self, data):
+    def generate(self, data, env_settings):
         """ Processes groups and misc options specific for uVision, and run generator """
         expanded_dic = data.copy()
 
@@ -145,6 +145,9 @@ class UvisionExporter(Exporter):
 
         self.parse_specific_options(expanded_dic)
 
+        if not expanded_dic['mcu']:
+            board = boardDefinitions()
+            expanded_dic['mcu'] = board.get_board_definition(expanded_dic['board'], 'uvision')
         mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
@@ -157,38 +160,3 @@ class UvisionExporter(Exporter):
         project_path = self.gen_file(
             'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision", data['project_dir']['path'], data['project_dir']['name'])
         return project_path
-
-class UvisionBuilder(Builder):
-    ERRORLEVEL = {
-        0: 'success (0 warnings, 0 errors)',
-        1: 'warnings',
-        2: 'errors',
-        3: 'fatal errors',
-        11: 'cant write to project file',
-        12: 'device error',
-        13: 'error writing',
-        15: ' error reading xml file',
-    }
-
-    SUCCESSVALUE = 0
-
-    def build_project(self, project_path, project):
-        # > UV4 -b [project_path]
-        path = join(self.root_path, project_path, "%s.uvproj" % project)
-        logging.debug("Building uVision project: %s" % path)
-
-        args = [user_settings.UV4, '-r', '-j0', path]
-
-        try:
-            ret_code = None
-            ret_code = subprocess.call(args)
-        except:
-            logging.error("Error whilst calling UV4. Please check UV4 path in the user_settings.py file.")
-        else:
-            if ret_code != self.SUCCESSVALUE:
-                # Seems like something went wrong.
-                logging.error("Build failed with the status: %s" %
-                              self.ERRORLEVEL[ret_code])
-            else:
-                logging.info("Build succeeded with the status: %s" %
-                             self.ERRORLEVEL[ret_code])
