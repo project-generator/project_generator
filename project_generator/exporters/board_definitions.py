@@ -25,14 +25,17 @@ class boardDefinitions():
     board_def = {
         'frdm-k20d50m': {
             'uvision': 'MK20DX128xxx5',
+            'gcc' : 'cortex-m4'
         },
         'frdm-kl25z' : {
             'iar' : 'MKL25Z128xxx4',
+            'gcc' : 'cortex-m0+'
         },
         'mbed-lpc1768' : {
             'uvision' : 'LPC1768',
             'iar' : 'LPC1768',
             'coide' : 'LPC1768',
+            'gcc' : 'cortex-m3'
         },
     }
 

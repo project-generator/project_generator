@@ -12,16 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import print_function
-
 import logging
 import subprocess
 
 from os.path import basename, relpath, join
 
 from .exporter import Exporter
-# from ..settings import GCC_BIN_PATH
-
+from .board_definitions import boardDefinitions
 
 class MakefileGccArmExporter(Exporter):
 
@@ -101,6 +98,9 @@ class MakefileGccArmExporter(Exporter):
         data['toolchain'] = 'arm-none-eabi-'
         data['toolchain_bin_path'] = settings.get_env_settings('gcc')
 
+        if not data['core']:
+            board = boardDefinitions()
+            data['core'] = board.get_board_definition(data['board'], 'gcc')
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':
             data['core'] = 'cortex-m4'
