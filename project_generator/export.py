@@ -15,6 +15,7 @@
 import argparse
 import os
 import logging
+import pkg_resources
 
 from . import settings
 
@@ -39,6 +40,8 @@ def main():
                       help="List projects defined in the project file.")
     parser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects.")
+    parser.add_argument("--version", action='version',
+        version=pkg_resources.require("project_generator")[0].version, help="Display version")
 
     args = parser.parse_args()
 
