@@ -20,7 +20,7 @@ from os.path import basename, join, relpath
 
 from .exporter import Exporter
 from .uvision_definitions import uVisionDefinitions
-
+from .board_definitions import boardDefinitions
 
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
@@ -144,10 +144,11 @@ class UvisionExporter(Exporter):
         self.iterate(data, expanded_dic)
 
         self.parse_specific_options(expanded_dic)
-        try:
-            mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
-        except KeyError:
-            raise RuntimeError("The mcu is not defined (define in tool specific for uvision)")
+
+        if not expanded_dic['mcu']:
+            board = boardDefinitions()
+            expanded_dic['mcu'] = board.get_board_definition(expanded_dic['board'], 'uvision')
+        mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
         # optimization set to correct value, default not used

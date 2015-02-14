@@ -18,7 +18,7 @@ import logging
 
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions
-
+from .board_definitions import boardDefinitions
 
 class IARExporter(Exporter):
 
@@ -103,11 +103,13 @@ class IARExporter(Exporter):
 
         expanded_dic['iar_settings'] = {}
         self.parse_specific_options(expanded_dic)
-        try:
-            expanded_dic['iar_settings'].update(
-                self.definitions.get_mcu_definition(expanded_dic['mcu']))
-        except KeyError:
-            raise RuntimeError("The mcu is not defined (define in tool specific for iar)")
+
+        if not expanded_dic['mcu']:
+            board = boardDefinitions()
+            expanded_dic['mcu'] = board.get_board_definition(expanded_dic['board'], 'iar')
+        mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
+        expanded_dic['iar_settings'].update(mcu_def_dic)
+
         self.gen_file('iar.ewp.tmpl', expanded_dic, '%s.ewp' %
                       data['name'], "iar", data['project_dir']['path'], data['project_dir']['name'])
         project_path = self.gen_file('iar.eww.tmpl', expanded_dic, '%s.eww' %

@@ -20,7 +20,7 @@ from os.path import basename, join, relpath
 
 from .exporter import Exporter
 from .coide_definitions import CoIDEdefinitions
-
+from .board_definitions import boardDefinitions
 
 class CoideExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',
@@ -88,11 +88,13 @@ class CoideExporter(Exporter):
 
         expanded_dic['coide_settings'] = {}
         self.parse_specific_options(expanded_dic)
-        try:
-            expanded_dic['coide_settings'].update(
-                self.definitions.get_mcu_definition(expanded_dic['mcu']))
-        except KeyError:
-            raise RuntimeError("The mcu is not defined (define in tool specific for coide)")
+
+        if not expanded_dic['mcu']:
+            board = boardDefinitions()
+            expanded_dic['mcu'] = board.get_board_definition(expanded_dic['board'], 'coide')
+        mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
+        expanded_dic['coide_settings'].update(mcu_def_dic)
+
         # Project file
         project_path = self.gen_file(
             'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], "coide", data['project_dir']['path'], data['project_dir']['name'])
