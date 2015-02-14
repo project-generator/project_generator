@@ -17,7 +17,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='project generator',
-    version='0.3-alpha',
+    version='0.3',
     description='Project generators for various embedded tools (IDE). IAR, uVision, Makefile and many more in the roadmap!',
     author='Martin Kojtal, Matthew Else',
     author_email='c0170@rocketmail.com, matthewelse1997@gmail.com',
