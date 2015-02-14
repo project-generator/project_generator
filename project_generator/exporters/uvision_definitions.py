@@ -20,9 +20,8 @@ class uVisionDefinitions():
         try:
             return self.mcu_def[name]
         except KeyError:
-            pass
-            # raise RuntimeError(
-            #     "Mcu was not recognized for uvision. Please check mcu_def dictionary.")
+            raise RuntimeError(
+                "Mcu was not recognized for uvision. Please check mcu_def dictionary.")
 
     # MCU definitions which are currently supported. Add a new one, define a name as it is
     # in uVision, create an empty project for that MCU, open the project file (uvproj) in any text
