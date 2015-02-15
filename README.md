@@ -23,15 +23,34 @@ Project generator currently generaters projects for the following tools (IDE, Ma
  - Eclipse (Makefile with GCC ARM)
 
 We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository.
-The plan is to support as many IDE as possible , same applies for MCU.
+The plan is to support as many IDE as possible , same applies for boards/MCU.
 
 ### How to use it
 
-In your project directory create a tools folder and clone this repo. There are examples in c0170 github, so check them out!
+There are two options, how to use it. Either you download [pypi package](https://pypi.python.org/pypi/project_generator) or you can clone this repository to your project directory.
 
-To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/0xc0170/project_generator/wiki/Getting_started).
+##### Using package
+Once installed, test if project_generator is recognized:
 
-To get more information, visit the wiki pages here on github, where you can find how to add a new board, what options each tool provides, and so on.
+```
+project_generator --version
+```
+This should print the current installed version.
+
+##### Using directly the repository
+In case of using this repository directly, be aware, the project generator is using relative paths. To solve this, create a simple run.py script and place there:
+
+```
+from project_generator.export import main
+
+main()
+```
+
+Then just invoke run.py with arguments as you would if using the package. Somethign like: python run.py --version
+
+There are examples in c0170 github, so check them out!
+
+To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/0xc0170/project_generator/wiki/Getting_started). There are other sections which describe the each blocks of the project generator.
 
 Dependencies for Project generator
 -------------------------
