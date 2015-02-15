@@ -27,7 +27,7 @@ class UvisionBuilder(Builder):
         11: 'cant write to project file',
         12: 'device error',
         13: 'error writing',
-        15: ' error reading xml file',
+        15: 'error reading xml file',
     }
 
     SUCCESSVALUE = 0

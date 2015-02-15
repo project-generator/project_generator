@@ -24,7 +24,7 @@ from .generator import ProjectGenerator
 from .settings import ProjectSettings
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     # Should be launched from root/tools but all scripts are referenced to root
     root = os.path.normpath(os.getcwd())
     os.chdir(root)
@@ -32,16 +32,16 @@ def main():
 
     # Parse Options
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--file", help="YAML projects file")
-    parser.add_argument("-p", "--project", help="Project to be generated")
+    parser.add_argument("-f", "--file", help="YAML projects file.")
+    parser.add_argument("-p", "--project", help="Project to be generated.")
     parser.add_argument(
-        "-t", "--tool", help="Create project files for provided tool (uvision by default)")
+        "-t", "--tool", help="Create project files for provided tool (uvision by default).")
     parser.add_argument("-l", "--list", action="store_true",
                       help="List projects defined in the project file.")
     parser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects.")
     parser.add_argument("--version", action='version',
-        version=pkg_resources.require("project_generator")[0].version, help="Display version")
+        version=pkg_resources.require("project_generator")[0].version, help="Display version.")
 
     args = parser.parse_args()
 

@@ -56,7 +56,7 @@ class ProjectGenerator:
         else:
             raise RuntimeError("Project: %s was not found." % project)
 
-        logging.info("Generating project: %s" % project)
+        logging.debug("Generating project: %s" % project)
         project_path = export(process_data, tool, self.env_settings)
         return project_path
 
@@ -109,8 +109,8 @@ class ProjectGenerator:
 
     def list_projects(self, dic):
         """ Print all defined project. """
-        for k, v in dic.items():
-            print k
+        for k, v in dic['projects'].items():
+            logging.info(k)
 
     def set_toolchain(self, options):
         try:
@@ -127,12 +127,12 @@ class ProjectGenerator:
             # parser.print_help()
             sys.exit()
 
-        print "Processing projects file."
+        logging.debug("Processing projects file.")
         project_file = open(options.file)
         config = yaml.load(project_file)
 
         if options.list:
-            print "Projects defined in the %s" % options.file
+            logging.info("Projects defined in the %s" % options.file)
             self.list_projects(config)
             sys.exit()
 

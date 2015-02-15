@@ -14,7 +14,6 @@
 
 from os.path import basename, join, relpath
 import copy
-import logging
 
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions

@@ -20,7 +20,7 @@ from .tool import build
 class ProjectBuilder:
 
     def __init__(self, env_settings):
-        self.project_path = "generated_projects"
+        self.project_path = "generated_projects" # default project path
         self.env_settings = env_settings
 
     def build_project_list(self, options, projects):
@@ -36,5 +36,5 @@ class ProjectBuilder:
 
     def run(self, options, projects, projects_paths, root):
         #project_list = self.build_project_list(options, projects)
-        logging.info("Building all defined projects.")
+        logging.info("Building defined projects. Might take a while.")
         build(projects, projects_paths, options.tool, self.env_settings, root)

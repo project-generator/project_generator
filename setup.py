@@ -16,12 +16,13 @@ import os
 from setuptools import setup, find_packages
 
 setup(
-    name='project generator',
+    name='project_generator',
     version='0.3',
     description='Project generators for various embedded tools (IDE). IAR, uVision, Makefile and many more in the roadmap!',
     author='Martin Kojtal, Matthew Else',
     author_email='c0170@rocketmail.com, matthewelse1997@gmail.com',
     keywords="c cpp project generator embedded",
+    url="https://github.com/0xc0170/project_generator",
 
     packages=find_packages(),
     entry_points={

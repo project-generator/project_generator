@@ -20,7 +20,7 @@ class boardDefinitions():
             return self.board_def[name][tool]
         except KeyError:
             raise RuntimeError(
-                "The board: %s was not recognized for uvision. Please check board_def dictionary." % name)
+                "The board: %s was not recognized for %s. Please check board_def dictionary." % (name, tool))
 
     # This is a dictionary of supported boards. Each board defines tools and required data which
     # are retreived by tools generator. For gcc, it's core, for others it's mcu_def which is later

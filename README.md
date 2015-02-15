@@ -31,7 +31,7 @@ In your project directory create a tools folder and clone this repo. There are e
 
 To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/0xc0170/project_generator/wiki/Getting_started).
 
-To get more information, visit the wiki pages here on github, where you can find how to add a new MCU, what options each tool provides, and so on.
+To get more information, visit the wiki pages here on github, where you can find how to add a new board, what options each tool provides, and so on.
 
 Dependencies for Project generator
 -------------------------
