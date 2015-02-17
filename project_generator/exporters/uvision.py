@@ -170,4 +170,4 @@ class UvisionExporter(Exporter):
         return new_exe_path
  
     def supports_target(self, target):
-        return target in self.definitions.get_mcu_definition()
+        return target in self.definitions.definitions.mcu_def
