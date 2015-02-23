@@ -9,7 +9,7 @@ from exporter import Exporter
 import gdb_definitions
 
 class GDBExporter(Exporter):
-    def generate(self, data):
+    def generate(self, data, env_settings):
         # for native debugging, no command files are necessary
         return None, []
 
@@ -21,7 +21,7 @@ class GDBExporter(Exporter):
 class ARMNoneEABIGDBExporter(GDBExporter):
     SUPPORTED = gdb_definitions.SUPPORTED_MCUS
 
-    def generate(self, data):
+    def generate(self, data, env_settings):
         expanded_dic = data.copy()
         
         # !!! TODO: store and read settings from gdb_definitions 

@@ -119,12 +119,14 @@ class uVisionDefinitions():
             }
         },
     }
+    # alias mbed standard names to their CPUs:
+    mcu_def['K64F'] = mcu_def['MK64FN1M0xxx12']
 
     uvision_settings = {
         # C/C++ settings
         'Cads': {
             'interw': 0,   # Execute-only code
-            'Optim': 0,    # Optimization level
+            'Optim': [0],  # Optimization level
             'oTime': 0,    # Optimize for time
             'SplitLS': 0,  # Split load and store multiple
             'OneElfS': 0,  # One elf section per function

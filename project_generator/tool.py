@@ -53,7 +53,7 @@ def export(data, tool, env_settings):
 
     Exporter = EXPORTERS[tool]
     exporter = Exporter()
-    project_path, projectfiles = exporter.generate(data)
+    project_path, projectfiles = exporter.generate(data, env_settings)
     return project_path, projectfiles
 
 def fixup_executable(executable_path, tool):
