@@ -18,6 +18,8 @@ from .exporters.coide import CoideExporter
 from .exporters.gccarm import MakefileGccArmExporter
 from .exporters.uvision import UvisionExporter
 from .exporters.eclipse import EclipseGnuARMExporter
+from .exporters.gdb import GDBExporter
+from .exporters.gdb import ARMNoneEABIGDBExporter
 
 # builders
 from .builders.iar import IARBuilder
