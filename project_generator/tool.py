@@ -42,10 +42,6 @@ BUILDERS = {
     'iar': IARBuilder,
 }
 
-LAUNCHERS = {
-    'uvision': UvisionBuilder,
-}
-
 def export(data, tool, env_settings):
     """ Invokes tool generator. """
     if tool not in EXPORTERS:
