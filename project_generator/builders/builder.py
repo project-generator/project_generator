@@ -28,4 +28,4 @@ class Builder:
         for i, project_name in enumerate(project_list):
             logging.debug("Building project %i of %i: %s" %
                           (i + 1, len(project_list), project_name))
-            self.build_project(project_name, projects_path[i], env_settings, root)
+            self.build_project(project_name[0], projects_path[i], env_settings, root)
