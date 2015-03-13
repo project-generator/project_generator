@@ -37,8 +37,10 @@ class ProjectGenerator:
 
     PROJECT_RECORD_TEMPLATE = {
         'common': {
+            'board' : ['add your board name here'],
             'include_paths' : [],
             'source_files' : [],
+            'linker_file' : [],
         }
     }
 
@@ -118,6 +120,9 @@ class ProjectGenerator:
                     path_from_root, filename = os.path.split(file)
                     if path_from_root not in common['common']['include_paths']:
                         common['common']['include_paths'].append(path_from_root)
+            elif k == 'sct' or k == 'ld':
+                for file in v:
+                    common['common']['linker_file'].append(file)
 
         source_list_path = os.getcwd()
         if not os.path.exists(source_list_path):
