@@ -31,6 +31,17 @@ class ProjectGenerator:
         'eclipse_make_gcc_arm': 'gcc_arm',
     }
 
+    PROJECTS_RECORD_TEMPLATE = {
+        'projects' : [],
+    }
+
+    PROJECT_RECORD_TEMPLATE = {
+        'common': {
+            'include_paths' : [],
+            'source_files' : [],
+        }
+    }
+
     def __init__(self, env_settings):
         self.env_settings = env_settings
 
@@ -73,11 +84,16 @@ class ProjectGenerator:
                 self.run_generator(dic, project, tool, toolchain))
         return (projects, projects_paths)
 
-    def scrape_dir(self):
+    def scrape_dir(self, path):
+        # recognized files
         exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld']
         found = {x: [] for x in exts}  # lists of found files
         ignore = '.'
-        for dirpath, dirnames, files in os.walk(os.getcwd()):
+        if path:
+            directory = join(os.getcwd(),path)
+        else:
+            directory = join(os.getcwd(), 'source')
+        for dirpath, dirnames, files in os.walk(directory):
             # Remove directories in ignore
             # directory names must match exactly!
             for idir in ignore:
@@ -91,21 +107,33 @@ class ProjectGenerator:
                 if ext in exts:
                     relpath = dirpath.replace(os.getcwd(), "")
                     found[ext].append(join(relpath, name))
-        # The body of our log file
-        logbody = ''
-        # loop thru results
-        for search in found:
-            # Concatenate the result from the found dict
-            logbody += "<< Results with the extension '%s' >>" % search
-            logbody += '\n\n%s\n\n' % '\n'.join(found[search])
+        common = self.PROJECT_RECORD_TEMPLATE
+        for k,v in found.items():
+            if k == 's'  or k == 'c' or k == 'cpp':
+                for file in v:
+                    common['common']['source_files'].append(file)
+            elif k == 'h' or k == 'inc':
+                for file in v:
+                    path_from_root, filename = os.path.split(file)
+                    common['common']['include_paths'].append(path_from_root)
+
+        common['common']['include_paths'] = set(common['common']['include_paths'])
+        common['common']['include_paths'] = list(common['common']['include_paths'])
+
+        # for search in found:
+        #     # Concatenate the result from the found dict
+        #     # logbody += "<< Results with the extension '%s' >>" % search
+        #     logbody += '\n\n%s\n\n' % '\n'.join(found[search])
         # Write results to the logfile
-        source_list_path = join(os.getcwd(), 'tools', 'records')
+        source_list_path = os.getcwd()
         if not os.path.exists(source_list_path):
             os.makedirs(source_list_path)
-        target_path = join(source_list_path, 'scrape.log')
-        logging.debug("Generating: %s" % target_path)
-        with open(target_path, 'w') as logfile:
-            logfile.write('%s' % logbody)
+        # target_path = join(source_list_path, 'project.yaml')
+        logging.debug("Generating: %s" % source_list_path)
+        with open('project.yaml', 'w') as outfile:
+            outfile.write( yaml.dump(common, default_flow_style=False) )
+        # with open(target_path, 'w') as logfile:
+        #     logfile.write('%s' % logbody)
 
     def list_projects(self, dic):
         """ Print all defined project. """
@@ -120,13 +148,6 @@ class ProjectGenerator:
             sys.exit(-1)
 
     def run(self, options):
-        if not options.file:
-            # create a list of all files in the dir that we're interested in
-            self.scrape_dir()
-            # print help menu
-            # parser.print_help()
-            sys.exit()
-
         logging.debug("Processing projects file.")
         project_file = open(options.file)
         config = yaml.load(project_file)

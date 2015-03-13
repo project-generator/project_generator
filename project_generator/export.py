@@ -14,6 +14,7 @@
 
 import argparse
 import os
+import sys
 import logging
 import pkg_resources
 
@@ -40,20 +41,28 @@ def main():
                       help="List projects defined in the project file.")
     parser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects.")
+    parser.add_argument(
+        "-i", "--init", help="Create records.")
     parser.add_argument("--version", action='version',
         version=pkg_resources.require("project_generator")[0].version, help="Display version.")
 
     args = parser.parse_args()
 
-    if not args.file:
-        args.file = 'projects.yaml'
-
     settings = ProjectSettings()
     if not args.tool:
         args.tool = settings.DEFAULT_TOOL
 
-    # Generate projects
     generator = ProjectGenerator(settings)
+    if args.init:
+        logging.debug("Generating the records.")
+        generator.scrape_dir(args.init)
+        sys.exit()
+
+    if not args.file:
+        args.file = 'projects.yaml'
+
+
+    # Generate projects
     generator.set_toolchain(args)
     projects, project_paths = generator.run(args)
 
