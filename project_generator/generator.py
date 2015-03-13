@@ -135,7 +135,7 @@ class ProjectGenerator:
         try:
             options.toolchain = self.TOOLCHAINS[options.tool]
         except KeyError:
-            logging.error("The tool was find as supported: %s", options.tool)
+            logging.error("The tool was find as unsupported: %s", options.tool)
             sys.exit(-1)
 
     def run(self, options):

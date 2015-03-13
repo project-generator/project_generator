@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 
 class YAML_parser:
 
@@ -48,6 +49,9 @@ class YAML_parser:
             elif extension == 'cpp':
                 self.data['source_files_cpp'][group_name].append(source_file)
 
+            if os.path.dirname(source_file) not in self.data['source_paths']:
+                self.data['source_paths'].append(os.path.dirname(source_file))
+
     def find_group_name(self, common_attributes):
         """ Creates new dictionaries based on group_name """
         group_name = None
@@ -68,16 +72,13 @@ class YAML_parser:
     def find_paths(self, common_attributes):
         """ Find defined include and source paths """
         include_paths = []
-        source_paths = []
         try:
             for k, v in common_attributes.items():
-                if k == 'source_paths':
-                    source_paths = (v)
-                elif k == 'include_paths':
+                if k == 'include_paths':
                     include_paths = (v)
         except KeyError:
             pass
-        self.data['source_paths'] = source_paths
+
         self.data['include_paths'] = include_paths
 
     def find_source_files(self, common_attributes, group_name):
