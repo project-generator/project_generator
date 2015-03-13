@@ -114,6 +114,7 @@ class YAML_parser:
             self.data['project_dir'].update(project_dir)
         self.data['core'] = _finditem(common_attributes, 'core')
         self.data['board'] = _finditem(common_attributes, 'board')
+        self.data['linker_file'] = _finditem(common_attributes, 'linker_file')
 
         # load all specific files
         specific_dic = {}
