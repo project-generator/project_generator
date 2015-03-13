@@ -90,7 +90,7 @@ class ProjectGenerator:
         found = {x: [] for x in exts}  # lists of found files
         ignore = '.'
         if path:
-            directory = join(os.getcwd(),path)
+            directory = join(os.getcwd(), path)
         else:
             directory = join(os.getcwd(), 'source')
         for dirpath, dirnames, files in os.walk(directory):
@@ -107,6 +107,7 @@ class ProjectGenerator:
                 if ext in exts:
                     relpath = dirpath.replace(os.getcwd(), "")
                     found[ext].append(join(relpath, name))
+        # Create a directory which will be stored in the project.yaml file
         common = self.PROJECT_RECORD_TEMPLATE
         for k,v in found.items():
             if k == 's'  or k == 'c' or k == 'cpp':
@@ -115,25 +116,15 @@ class ProjectGenerator:
             elif k == 'h' or k == 'inc':
                 for file in v:
                     path_from_root, filename = os.path.split(file)
-                    common['common']['include_paths'].append(path_from_root)
+                    if path_from_root not in common['common']['include_paths']:
+                        common['common']['include_paths'].append(path_from_root)
 
-        common['common']['include_paths'] = set(common['common']['include_paths'])
-        common['common']['include_paths'] = list(common['common']['include_paths'])
-
-        # for search in found:
-        #     # Concatenate the result from the found dict
-        #     # logbody += "<< Results with the extension '%s' >>" % search
-        #     logbody += '\n\n%s\n\n' % '\n'.join(found[search])
-        # Write results to the logfile
         source_list_path = os.getcwd()
         if not os.path.exists(source_list_path):
             os.makedirs(source_list_path)
-        # target_path = join(source_list_path, 'project.yaml')
         logging.debug("Generating: %s" % source_list_path)
         with open('project.yaml', 'w') as outfile:
-            outfile.write( yaml.dump(common, default_flow_style=False) )
-        # with open(target_path, 'w') as logfile:
-        #     logfile.write('%s' % logbody)
+            outfile.write(yaml.dump(common, default_flow_style=False))
 
     def list_projects(self, dic):
         """ Print all defined project. """
