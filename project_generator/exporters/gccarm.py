@@ -105,3 +105,7 @@ class MakefileGccArmExporter(Exporter):
         # change cortex-m0+ to cortex-m0plus
         if data['core'] == 'cortex-m0+':
             data['core'] = 'cortex-m0plus'
+
+        #set default values
+        if 'optimization_level' not in data:
+            data['optimization_level'] = self.optimization_options[0]
