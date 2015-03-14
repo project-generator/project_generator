@@ -37,7 +37,7 @@ class ProjectGenerator:
 
     PROJECT_RECORD_TEMPLATE = {
         'common': {
-            'board' : ['add your board name here'],
+            'board' : [],
             'include_paths' : [],
             'source_files' : [],
             'linker_file' : [],
@@ -86,7 +86,7 @@ class ProjectGenerator:
                 self.run_generator(dic, project, tool, toolchain))
         return (projects, projects_paths)
 
-    def scrape_dir(self, path):
+    def scrape_dir(self, board, path):
         # recognized files
         exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld']
         found = {x: [] for x in exts}  # lists of found files
@@ -111,6 +111,7 @@ class ProjectGenerator:
                     found[ext].append(join(relpath, name))
         # Create a directory which will be stored in the project.yaml file
         common = self.PROJECT_RECORD_TEMPLATE
+        common['common']['board'].append(board)
         for k,v in found.items():
             if k == 's'  or k == 'c' or k == 'cpp':
                 for file in v:
