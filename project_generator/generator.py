@@ -15,6 +15,7 @@ import os
 import sys
 import yaml
 import logging
+import shutil
 
 from os.path import join, basename
 
@@ -47,8 +48,7 @@ class ProjectGenerator:
     def __init__(self, env_settings):
         self.env_settings = env_settings
 
-    def run_generator(self, dic, project, tool, toolchain):
-        """ Generates one project. """
+    def parse_project(self, dic, project, tool, toolchain):
         project_list = []
         yaml_files = _finditem(dic, project)
         if yaml_files:
@@ -68,7 +68,11 @@ class ProjectGenerator:
             yaml_parser_final.set_name(project)
         else:
             raise RuntimeError("Project: %s was not found." % project)
+        return process_data
 
+    def run_generator(self, dic, project, tool, toolchain):
+        """ Generates one project. """
+        process_data = self.parse_project(dic, project, tool, toolchain)
         logging.debug("Generating project: %s" % project)
         project_path = export(process_data, tool, self.env_settings)
         return project_path
@@ -171,3 +175,9 @@ class ProjectGenerator:
 
         project_file.close()
         return (projects, projects_paths)
+
+    def clean(self, options):
+        project_file = open(options.file)
+        config = yaml.load(project_file)
+        process_data = self.parse_project(dic, project, tool, toolchain)
+        pass
