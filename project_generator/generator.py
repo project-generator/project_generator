@@ -16,6 +16,7 @@ import sys
 import yaml
 import logging
 import shutil
+import errno
 
 from os.path import join, basename
 
@@ -81,7 +82,6 @@ class ProjectGenerator:
         """ Generates all project. """
         projects = []
         projects_paths = []
-        yaml_files = []
         for k, v in dic['projects'].items():
             projects.append(k)
 
@@ -177,7 +177,72 @@ class ProjectGenerator:
         return (projects, projects_paths)
 
     def clean(self, options):
+        if not options.file:
+            options.file = 'projects.yaml'
+        if options.tool or options.project:
+            self.set_toolchain(options)
+        else:
+            options.toolchain = None
         project_file = open(options.file)
         config = yaml.load(project_file)
-        process_data = self.parse_project(dic, project, tool, toolchain)
-        pass
+        projects_paths = []
+        if options.project:
+            process_data = self.parse_project(config, options.project, options.tool, options.toolchain)
+            # now get the path for the project
+            # TODO: fix - similarity to gen_file in the Exporter
+            if process_data['project_dir']['path'] is '':
+                process_data['project_dir']['path'] = 'generated_projects'
+            if not os.path.exists(process_data['project_dir']['path']):
+                # nothing to clean
+                logging.debug("The project does not exist: %s" % process_data['project_dir']['path'])
+                return
+            if process_data['project_dir']['name'] is '':
+                process_data['project_dir']['name'] = options.tool + '_' + process_data['name']
+            projects_paths = join(process_data['project_dir']['path'], process_data['project_dir']['name'])
+        elif options.all:
+            projects = []
+            for k, v in config['projects'].items():
+                projects.append(k)
+
+            for project in projects:
+                process_data = self.parse_project(config, project, options.tool, options.toolchain)
+                # TODO: fix - similarity to gen_file in the Exporter
+                generated_dir = process_data['project_dir']['path']
+                if generated_dir is '':
+                    generated_dir = 'generated_projects'
+                if not os.path.exists(generated_dir):
+                    # nothing to clean
+                    logging.debug("The project does not exist: %s" % generated_dir)
+                    continue
+                for tools in self.TOOLCHAINS.keys():
+                    generated_path = process_data['project_dir']['name']
+                    if generated_path is '':
+                        generated_path = tools + '_' + process_data['name']
+                    projects_paths.append(join(generated_dir, generated_path))
+        else:
+            logging.debug("Nothing specified, returning...")
+            return
+
+        for project in projects_paths:
+            if not os.path.exists(project):
+                logging.debug("The project does not exist: %s" % project)
+                continue
+
+            try:
+                shutil.rmtree(project)
+            except OSError as exception:
+                if 'cannot call rmtree on a symbolic link' in str(exception).lower():
+                    os.unlink(project)
+                elif exception.errno != errno.ENOENT:
+                    raise
+
+        # try to clean the only folder we might have created
+        if os.path.exists('generated_projects') and not os.listdir('generated_projects'):
+            try:
+                shutil.rmtree('generated_projects')
+            except OSError as exception:
+                if 'cannot call rmtree on a symbolic link' in str(exception).lower():
+                    os.unlink('generated_projects')
+                elif exception.errno != errno.ENOENT:
+                    raise
+
