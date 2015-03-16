@@ -36,11 +36,11 @@ def export(generator, settings, args):
         args.file = 'projects.yaml'
     generator.set_toolchain(args)
     projects, project_paths = generator.run(args)
-    if args.build:
+    if args.execute:
         ProjectBuilder(settings).run(args, projects, project_paths, root)
 
 def clean(generator, settings, args):
-    pass
+    generator.clean(args)
 
 def main():
     logging.basicConfig(level=logging.INFO)
@@ -53,13 +53,13 @@ def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(help='commands')
 
-    #
+    # Init commands
     init_parser = subparsers.add_parser('init', help='Create a project record')
     init_parser.add_argument('-b','--board', action='store', help='Board selection')
-    init_parser.add_argument('-f','--folder', action='store', help='Folder selection')
+    init_parser.add_argument('-dir','--directory', action='store', help='Directory selection')
     init_parser.set_defaults(func=init)
 
-    #
+    # Export commands
     export_parser = subparsers.add_parser('export', help='Export a project record')
     export_parser.add_argument("-f", "--file", help="YAML projects file.")
     export_parser.add_argument("-p", "--project", help="Project to be generated.")
@@ -71,9 +71,12 @@ def main():
         "-e", "--execute", action="store_true", help="Build defined projects.")
     export_parser.set_defaults(func=export)
 
-    #
+    # Clean commands
     clean_parser = subparsers.add_parser('clean', help='Clean generated projects')
+    clean_parser.add_argument("-f", "--file", help="YAML projects file.")
     clean_parser.add_argument("-p", "--project", help="Specify which project to be removed")
+    clean_parser.add_argument(
+        "-t", "--tool", help="Create project files for provided tool (uvision by default).")
 
     parser.add_argument("--version", action='version',
         version=pkg_resources.require("project_generator")[0].version, help="Display version.")
