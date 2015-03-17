@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import os
+from os import listdir
+from os.path import isfile, join
 
 class YAML_parser:
 
@@ -82,10 +84,18 @@ class YAML_parser:
         self.data['include_paths'] = include_paths
 
     def find_source_files(self, common_attributes, group_name):
+        files = []
         try:
             for k, v in common_attributes.items():
                 if k == 'source_files':
-                    self.process_files(v, group_name)
+                    # Source directory can be either a directory or files
+                    for paths in v:
+                        if os.path.isdir(paths):
+                            files_in_dir = [ join(paths, f) for f in listdir(paths) if isfile(join(paths,f)) ]
+                            files += files_in_dir
+                        else:
+                            files = v
+                    self.process_files(files, group_name)
         except KeyError:
             pass
 
