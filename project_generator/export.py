@@ -57,7 +57,7 @@ def main():
     init_parser = subparsers.add_parser('init', help='Create a project record')
     init_parser.add_argument('-b','--board', action='store', help='Board selection')
     init_parser.add_argument('-dir','--directory', action='store', help='Directory selection')
-    init_parser.add_argument('-all','--all', action='store', help='List all files, otherwise only folders for sources.')
+    init_parser.add_argument('-all','--all', action='store_true', help='List all files, otherwise only folders for sources.')
     init_parser.set_defaults(func=init)
 
     # Export commands

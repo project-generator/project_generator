@@ -1,4 +1,4 @@
-# Copyright 2014 0xc0170
+# Copyright 2014-2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ class ProjectGenerator:
                     found[ext].append(join(relpath, name))
         # Create a directory which will be stored in the project.yaml file
         common = self.PROJECT_RECORD_TEMPLATE
-        common['common']['board'].append(board)
+        common['common']['board'].append(board if board else 'No board given')
         for k,v in found.items():
             if k == 's'  or k == 'c' or k == 'cpp':
                 for file in v:
