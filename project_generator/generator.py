@@ -90,7 +90,7 @@ class ProjectGenerator:
                 self.run_generator(dic, project, tool, toolchain))
         return (projects, projects_paths)
 
-    def scrape_dir(self, board, path):
+    def scrape_dir(self, board, path, gen_files):
         # recognized files
         exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld']
         found = {x: [] for x in exts}  # lists of found files
@@ -119,7 +119,10 @@ class ProjectGenerator:
         for k,v in found.items():
             if k == 's'  or k == 'c' or k == 'cpp':
                 for file in v:
-                    common['common']['source_files'].append(file)
+                    if gen_files:
+                        common['common']['source_files'].append(file)
+                    elif os.path.dirname(file) not in common['common']['source_files']:
+                        common['common']['source_files'].append(os.path.dirname(file))
             elif k == 'h' or k == 'inc':
                 for file in v:
                     path_from_root, filename = os.path.split(file)
