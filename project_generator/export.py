@@ -26,7 +26,7 @@ from .settings import ProjectSettings
 
 def init(generator, settings, args):
     logging.debug("Generating the records.")
-    generator.scrape_dir(args.board, args.folder)
+    generator.scrape_dir(args.board, args.directory)
     sys.exit()
 
 def export(generator, settings, args):
