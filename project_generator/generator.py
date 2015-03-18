@@ -157,7 +157,9 @@ class ProjectGenerator:
     def load_config(self, options):
         logging.debug("Processing projects file.")
         project_file = open(options.file)
-        return yaml.load(project_file)
+        config = yaml.load(project_file)
+        project_file.close()
+        return config
 
     def default_settings(self, options):
         if not options.tool:
@@ -183,7 +185,6 @@ class ProjectGenerator:
             projects, projects_paths = self.process_all_projects(
                 config, options.tool, options.toolchain)
 
-        project_file.close()
         return (projects, projects_paths)
 
     def clean(self, options):
@@ -194,8 +195,7 @@ class ProjectGenerator:
             self.set_toolchain(options)
         else:
             options.toolchain = None
-        project_file = open(options.file)
-        config = yaml.load(project_file)
+        config = self.load_config(options)
         projects_paths = []
         if options.project:
             process_data = self.parse_project(config, options.project, options.tool, options.toolchain)
@@ -210,7 +210,7 @@ class ProjectGenerator:
             if process_data['project_dir']['name'] is '':
                 process_data['project_dir']['name'] = options.tool + '_' + process_data['name']
             projects_paths = join(process_data['project_dir']['path'], process_data['project_dir']['name'])
-        elif options.all:
+        else:
             projects = []
             for k, v in config['projects'].items():
                 projects.append(k)
@@ -230,9 +230,6 @@ class ProjectGenerator:
                     if generated_path is '':
                         generated_path = tools + '_' + process_data['name']
                     projects_paths.append(join(generated_dir, generated_path))
-        else:
-            logging.debug("Nothing specified, returning...")
-            return
 
         for project in projects_paths:
             if not os.path.exists(project):
