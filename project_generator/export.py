@@ -26,7 +26,7 @@ from .settings import ProjectSettings
 
 def init(generator, settings, args):
     logging.debug("Generating the records.")
-    generator.scrape_dir(args.board, args.directory, args.all)
+    generator.scrape_dir(args.board, args.directory, args.sources)
     sys.exit()
 
 def export(generator, settings, args):
@@ -39,7 +39,7 @@ def export(generator, settings, args):
 def clean(generator, settings, args):
     generator.clean(args)
 
-def list(generator, settings, args):
+def list_projects(generator, settings, args):
     generator.list_projects(generator.load_config(args))
 
 def main():
@@ -58,7 +58,7 @@ def main():
     init_parser.add_argument('-bd','--board', action='store', help='Board definition')
     init_parser.add_argument('-dir','--directory', action='store', help='Directory selection')
     init_parser.add_argument(
-        '-s','--source', action='store_true', help='List all files, otherwise only folders for sources.')
+        '-s','--sources', action='store_true', help='List all files, otherwise only folders for sources.')
     init_parser.set_defaults(func=init)
 
     # Export commands
