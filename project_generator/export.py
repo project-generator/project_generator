@@ -33,7 +33,7 @@ def export(generator, settings, args):
     generator.default_settings(args)
     generator.set_toolchain(args)
     projects, project_paths = generator.run(args)
-    if args.execute:
+    if args.build:
         ProjectBuilder(settings).run(args, projects, project_paths, root)
 
 def clean(generator, settings, args):
@@ -43,7 +43,6 @@ def list_projects(generator, settings, args):
     generator.list_projects(generator.load_config(args))
 
 def main():
-    logging.basicConfig(level=logging.INFO)
     # Should be launched from project's root
     root = os.path.normpath(os.getcwd())
     os.chdir(root)
@@ -82,7 +81,6 @@ def main():
 
     # Clean commands
     clean_parser = subparsers.add_parser('clean', help='Clean generated projects')
-    clean_parser.add_argument("--all", help="All generated projects")
     clean_parser.add_argument("-f", "--file", help="YAML projects file")
     clean_parser.add_argument("-p", "--project", help="Specify which project to be removed")
     clean_parser.add_argument(
@@ -98,7 +96,7 @@ def main():
     verbosity = args.verbosity - args.quietness
 
     logging_level = max(logging.DEBUG - (10*verbosity), 0)
-    logging.setLevel(logging_level)
+    logging.basicConfig(level=logging_level)
 
     settings = ProjectSettings()
     generator = ProjectGenerator(settings)
