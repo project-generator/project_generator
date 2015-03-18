@@ -24,22 +24,22 @@ from .builder import ProjectBuilder
 from .generator import ProjectGenerator
 from .settings import ProjectSettings
 
-def init(generator, settings, args):
+def init(generator, settings, args, root):
     logging.debug("Generating the records.")
     generator.scrape_dir(args.board, args.directory, args.sources)
     sys.exit()
 
-def export(generator, settings, args):
+def export(generator, settings, args, root):
     generator.default_settings(args)
     generator.set_toolchain(args)
     projects, project_paths = generator.run(args)
     if args.build:
         ProjectBuilder(settings).run(args, projects, project_paths, root)
 
-def clean(generator, settings, args):
+def clean(generator, settings, args, root):
     generator.clean(args)
 
-def list_projects(generator, settings, args):
+def list_projects(generator, settings, args, root):
     generator.list_projects(generator.load_config(args))
 
 def main():
@@ -100,7 +100,7 @@ def main():
 
     settings = ProjectSettings()
     generator = ProjectGenerator(settings)
-    args.func(generator, settings, args)
+    args.func(generator, settings, args, root)
 
 if __name__ == '__main__':
     main()
