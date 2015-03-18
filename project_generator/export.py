@@ -46,7 +46,6 @@ def main():
     # Should be launched from project's root
     root = os.path.normpath(os.getcwd())
     os.chdir(root)
-    logging.debug('This should be the project root: %s', os.getcwd())
 
     # Parse Options
     parser = argparse.ArgumentParser()
@@ -98,6 +97,7 @@ def main():
     logging_level = max(logging.DEBUG - (10*verbosity), 0)
     logging.basicConfig(level=logging_level)
 
+    logging.debug('This should be the project root: %s', os.getcwd())
     settings = ProjectSettings()
     generator = ProjectGenerator(settings)
     args.func(generator, settings, args, root)
