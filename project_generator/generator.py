@@ -132,6 +132,9 @@ class ProjectGenerator:
                 for file in v:
                     common['common']['linker_file'].append(file)
 
+        if not common['common']['linker_file']:
+            common['common']['linker_file'].append('No linker file found')
+
         source_list_path = os.getcwd()
         if not os.path.exists(source_list_path):
             os.makedirs(source_list_path)
@@ -142,7 +145,7 @@ class ProjectGenerator:
     def list_projects(self, dic):
         """ Print all defined project. """
         for k, v in dic['projects'].items():
-            logging.info(k)
+            logging.info('project: %s' % k)
 
     def set_toolchain(self, options):
         try:
@@ -151,15 +154,19 @@ class ProjectGenerator:
             logging.error("The tool was find as unsupported: %s", options.tool)
             sys.exit(-1)
 
-    def run(self, options):
+    def load_config(self, options):
         logging.debug("Processing projects file.")
         project_file = open(options.file)
-        config = yaml.load(project_file)
+        return yaml.load(project_file)
 
-        if options.list:
-            logging.info("Projects defined in the %s" % options.file)
-            self.list_projects(config)
-            sys.exit()
+    def default_settings(self, options):
+        if not options.tool:
+            options.tool = settings.DEFAULT_TOOL
+        if not options.file:
+            options.file = 'projects.yaml'
+
+    def run(self, options):
+        config = self.load_config(options)
 
         # update enviroment variables
         self.env_settings.load_env_settings(config)
