@@ -139,7 +139,7 @@ class ProjectGenerator:
         if not os.path.exists(source_list_path):
             os.makedirs(source_list_path)
         logging.debug("Generating: %s" % source_list_path)
-        with open('project.yaml', 'w') as outfile:
+        with open('gen_project.yaml', 'w') as outfile:
             outfile.write(yaml.dump(common, default_flow_style=False))
 
     def list_projects(self, dic):
