@@ -43,7 +43,7 @@ def list_projects(generator, settings, args):
     generator.list_projects(generator.load_config(args))
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     # Should be launched from project's root
     root = os.path.normpath(os.getcwd())
     os.chdir(root)
@@ -51,6 +51,10 @@ def main():
 
     # Parse Options
     parser = argparse.ArgumentParser()
+
+    parser.add_argument('-v', dest='verbosity', action='count', help='Increase the verbosity of the output (repeat for more verbose output)')
+    parser.add_argument('-q', dest='quietness', action='count', help='Decrease the verbosity of the output (repeat for more verbose output)')
+
     subparsers = parser.add_subparsers(help='commands')
 
     # Init commands
@@ -89,6 +93,12 @@ def main():
         version=pkg_resources.require("project_generator")[0].version, help="Display version")
 
     args = parser.parse_args()
+
+    # set the verbosity
+    verbosity = args.verbosity - args.quietness
+
+    logging_level = max(logging.DEBUG - (10*verbosity), 0)
+    logging.setLevel(logging_level)
 
     settings = ProjectSettings()
     generator = ProjectGenerator(settings)
