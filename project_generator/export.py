@@ -30,10 +30,7 @@ def init(generator, settings, args):
     sys.exit()
 
 def export(generator, settings, args):
-    if not args.tool:
-        args.tool = settings.DEFAULT_TOOL
-    if not args.file:
-        args.file = 'projects.yaml'
+    generator.default_settings(args)
     generator.set_toolchain(args)
     projects, project_paths = generator.run(args)
     if args.execute:
@@ -41,6 +38,9 @@ def export(generator, settings, args):
 
 def clean(generator, settings, args):
     generator.clean(args)
+
+def list(generator, settings, args):
+    generator.list_projects(generator.load_config(args))
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
@@ -66,11 +66,14 @@ def main():
     export_parser.add_argument("-p", "--project", help="Project to be generated.")
     export_parser.add_argument(
         "-t", "--tool", help="Create project files for provided tool (uvision by default).")
-    export_parser.add_argument("-l", "--list", action="store_true",
-        help="List projects defined in the project file.")
     export_parser.add_argument(
         "-e", "--execute", action="store_true", help="Build defined projects.")
     export_parser.set_defaults(func=export)
+
+    # List commands
+    list_parser = subparsers.add_parser('list', help='List all projects')
+    list_parser.add_argument("-f", "--file", help="YAML projects file.")
+    list_parser.set_defaults(func=list_projects)
 
     # Clean commands
     clean_parser = subparsers.add_parser('clean', help='Clean generated projects')
