@@ -55,37 +55,38 @@ def main():
 
     # Init commands
     init_parser = subparsers.add_parser('init', help='Create a project record')
-    init_parser.add_argument('-b','--board', action='store', help='Board selection')
+    init_parser.add_argument('-bd','--board', action='store', help='Board definition')
     init_parser.add_argument('-dir','--directory', action='store', help='Directory selection')
-    init_parser.add_argument('-all','--all', action='store_true', help='List all files, otherwise only folders for sources.')
+    init_parser.add_argument(
+        '-s','--source', action='store_true', help='List all files, otherwise only folders for sources.')
     init_parser.set_defaults(func=init)
 
     # Export commands
     export_parser = subparsers.add_parser('export', help='Export a project record')
-    export_parser.add_argument("-f", "--file", help="YAML projects file.")
-    export_parser.add_argument("-p", "--project", help="Project to be generated.")
+    export_parser.add_argument("-f", "--file", help="YAML projects file")
+    export_parser.add_argument("-p", "--project", help="Project to be generated")
     export_parser.add_argument(
-        "-t", "--tool", help="Create project files for provided tool (uvision by default).")
+        "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     export_parser.add_argument(
-        "-e", "--execute", action="store_true", help="Build defined projects.")
+        "-b", "--build", action="store_true", help="Build defined projects")
     export_parser.set_defaults(func=export)
 
     # List commands
     list_parser = subparsers.add_parser('list', help='List all projects')
-    list_parser.add_argument("-f", "--file", help="YAML projects file.")
+    list_parser.add_argument("-f", "--file", help="YAML projects file")
     list_parser.set_defaults(func=list_projects)
 
     # Clean commands
     clean_parser = subparsers.add_parser('clean', help='Clean generated projects')
-    clean_parser.add_argument("--all", help="All generated projects.")
-    clean_parser.add_argument("-f", "--file", help="YAML projects file.")
+    clean_parser.add_argument("--all", help="All generated projects")
+    clean_parser.add_argument("-f", "--file", help="YAML projects file")
     clean_parser.add_argument("-p", "--project", help="Specify which project to be removed")
     clean_parser.add_argument(
-        "-t", "--tool", help="Create project files for provided tool (uvision by default).")
+        "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     clean_parser.set_defaults(func=clean)
 
     parser.add_argument("--version", action='version',
-        version=pkg_resources.require("project_generator")[0].version, help="Display version.")
+        version=pkg_resources.require("project_generator")[0].version, help="Display version")
 
     args = parser.parse_args()
 

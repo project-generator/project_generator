@@ -187,6 +187,7 @@ class ProjectGenerator:
         return (projects, projects_paths)
 
     def clean(self, options):
+        # This function is a bit hacky, this needs a proper implementation
         if not options.file:
             options.file = 'projects.yaml'
         if options.tool or options.project:
