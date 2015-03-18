@@ -52,8 +52,8 @@ def main():
     # Parse Options
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-v', dest='verbosity', action='count', help='Increase the verbosity of the output (repeat for more verbose output)')
-    parser.add_argument('-q', dest='quietness', action='count', help='Decrease the verbosity of the output (repeat for more verbose output)')
+    parser.add_argument('-v', dest='verbosity', action='count', default=0, help='Increase the verbosity of the output (repeat for more verbose output)')
+    parser.add_argument('-q', dest='quietness', action='count', default=0, help='Decrease the verbosity of the output (repeat for more verbose output)')
 
     subparsers = parser.add_subparsers(help='commands')
 
