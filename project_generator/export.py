@@ -53,6 +53,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-v', dest='verbosity', action='count', help='Increase the verbosity of the output (repeat for more verbose output)')
+    parser.add_argument('-q', dest='quietness', action='count', help='Decrease the verbosity of the output (repeat for more verbose output)')
 
     subparsers = parser.add_subparsers(help='commands')
 
@@ -94,7 +95,7 @@ def main():
     args = parser.parse_args()
 
     # set the verbosity
-    verbosity = args.verbosity
+    verbosity = args.verbosity - args.quietness
 
     logging_level = max(logging.DEBUG - (10*verbosity), 0)
     logging.setLevel(logging_level)
