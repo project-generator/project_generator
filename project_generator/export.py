@@ -42,6 +42,11 @@ def clean(generator, settings, args, root):
 def list_projects(generator, settings, args, root):
     generator.list_projects(generator.load_config(args))
 
+def load(generator, settings, args, root):
+    logging.info("Not supported currently")
+    pass
+
+
 def main():
     # Should be launched from project's root
     root = os.path.normpath(os.getcwd())
@@ -85,6 +90,10 @@ def main():
     clean_parser.add_argument(
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     clean_parser.set_defaults(func=clean)
+
+    load_parser = subparsers.add_parser('load', help='Load definition file')
+    load_parser.add_argument("-f", "--file", help="Definition file to be parsed")
+    load_parser.set_defaults(func=load)
 
     parser.add_argument("--version", action='version',
         version=pkg_resources.require("project_generator")[0].version, help="Display version")
