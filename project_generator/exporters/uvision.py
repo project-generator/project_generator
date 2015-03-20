@@ -17,9 +17,11 @@ import shutil
 
 from os.path import basename, join, relpath
 
+from . import board_definitions
+
 from .exporter import Exporter
 from .uvision_definitions import uVisionDefinitions
-from .board_definitions import boardDefinitions
+
 
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
@@ -145,8 +147,8 @@ class UvisionExporter(Exporter):
         self.parse_specific_options(expanded_dic)
 
         if not expanded_dic['mcu']:
-            board = boardDefinitions()
-            expanded_dic['mcu'] = board.get_board_definition(expanded_dic['board'], 'uvision')
+            expanded_dic['mcu'] = board_definitions.get_board_definition(
+                expanded_dic['board'], 'uvision')
         mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
@@ -163,11 +165,11 @@ class UvisionExporter(Exporter):
         project_path, optfile = self.gen_file(
             'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision", data['project_dir']['path'], data['project_dir']['name'])
         return project_path, [projfile, optfile]
-      
+
     def fixup_executable(self, exe_path):
         new_exe_path = exe_path + '.axf'
         shutil.copy(exe_path, new_exe_path)
         return new_exe_path
- 
+
     def supports_target(self, target):
         return target in self.definitions.mcu_def

@@ -12,24 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .builder import ProjectBuilder
-
-help = 'Export a project record'
+help = 'Clean generated projects'
 
 
 def run(generator, settings, args, root):
-    generator.default_settings(args, settings)
-    generator.set_toolchain(args)
-    projects, project_paths = generator.run(args)
-
-    if args.build:
-        ProjectBuilder(settings).run(args, projects, project_paths, root)
+    generator.clean(args)
 
 
 def setup(subparser):
-    subparser.add_argument("-f", "--file", help="YAML projects file")
-    subparser.add_argument("-p", "--project", help="Project to be generated")
+	subparser.add_argument("-f", "--file", help="YAML projects file")
+    subparser.add_argument("-p", "--project", help="Specify which project to be removed")
     subparser.add_argument(
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
-    subparser.add_argument(
-        "-b", "--build", action="store_true", help="Build defined projects")
