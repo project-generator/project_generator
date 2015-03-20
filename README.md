@@ -46,7 +46,7 @@ from project_generator.export import main
 main()
 ```
 
-Then just invoke run.py with arguments as you would if using the package. Somethign like: python run.py --version
+Then just invoke run.py with arguments as you would if using the package. Something like: python run.py --version
 
 There are examples in c0170 github, so check them out!
 

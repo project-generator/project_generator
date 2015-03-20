@@ -105,7 +105,7 @@ class IARExporter(Exporter):
 
         if not expanded_dic['mcu']:
             board = boardDefinitions()
-            expanded_dic['mcu'] = board.get_board_definition(expanded_dic['board'], 'iar')
+            expanded_dic['mcu'] = board.get_board_definition(expanded_dic['target'], 'iar')
         mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
         expanded_dic['iar_settings'].update(mcu_def_dic)
 

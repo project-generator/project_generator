@@ -1,4 +1,4 @@
-# Copyright 2014 0xc0170
+# Copyright 2014-2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+from os import listdir
+from os.path import isfile, join
 
 class YAML_parser:
 
@@ -19,7 +22,7 @@ class YAML_parser:
         self.data = {
             'name': '',                 # project name
             'mcu' : '',
-            'board' : '',
+            'target' : '',
             'core': '',                 # core
             'linker_file': '',          # linker command file
             'include_paths': [],        # include paths
@@ -48,6 +51,9 @@ class YAML_parser:
             elif extension == 'cpp':
                 self.data['source_files_cpp'][group_name].append(source_file)
 
+            if os.path.dirname(source_file) not in self.data['source_paths']:
+                self.data['source_paths'].append(os.path.dirname(source_file))
+
     def find_group_name(self, common_attributes):
         """ Creates new dictionaries based on group_name """
         group_name = None
@@ -68,23 +74,28 @@ class YAML_parser:
     def find_paths(self, common_attributes):
         """ Find defined include and source paths """
         include_paths = []
-        source_paths = []
         try:
             for k, v in common_attributes.items():
-                if k == 'source_paths':
-                    source_paths = (v)
-                elif k == 'include_paths':
+                if k == 'include_paths':
                     include_paths = (v)
         except KeyError:
             pass
-        self.data['source_paths'] = source_paths
+
         self.data['include_paths'] = include_paths
 
     def find_source_files(self, common_attributes, group_name):
+        files = []
         try:
             for k, v in common_attributes.items():
                 if k == 'source_files':
-                    self.process_files(v, group_name)
+                    # Source directory can be either a directory or files
+                    for paths in v:
+                        if os.path.isdir(paths):
+                            files_in_dir = [ join(paths, f) for f in listdir(paths) if isfile(join(paths,f)) ]
+                            files += files_in_dir
+                        else:
+                            files = v
+                    self.process_files(files, group_name)
         except KeyError:
             pass
 
@@ -112,7 +123,8 @@ class YAML_parser:
         if project_dir:
             self.data['project_dir'].update(project_dir)
         self.data['core'] = _finditem(common_attributes, 'core')
-        self.data['board'] = _finditem(common_attributes, 'board')
+        self.data['target'] = _finditem(common_attributes, 'target')
+        self.data['linker_file'] = _finditem(common_attributes, 'linker_file')
 
         # load all specific files
         specific_dic = {}
@@ -159,6 +171,10 @@ class YAML_parser:
         if lib:
             self.data['source_files_lib'].append(lib)
 
+        # in case no include paths were defined, set them to source paths
+        if not self.data['include_paths']:
+            self.data['include_paths'] = self.data['source_paths']
+
         return self.data
 
     def parse_yaml_list(self, project_list):
@@ -167,9 +183,9 @@ class YAML_parser:
             mcu = _finditem(dic, 'mcu')  # TODO fix naming
             if mcu:
                 self.data['mcu'] = mcu[0]
-            board = _finditem(dic, 'board')
-            if board:
-                self.data['board'] = board[0]
+            target = _finditem(dic, 'target')
+            if target:
+                self.data['target'] = target[0]
             project_dir = _finditem(dic, 'project_dir')
             if project_dir['name']:
                 self.data['project_dir']['name'] = project_dir['name'][0]

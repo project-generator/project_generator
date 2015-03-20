@@ -146,7 +146,7 @@ class UvisionExporter(Exporter):
 
         if not expanded_dic['mcu']:
             board = boardDefinitions()
-            expanded_dic['mcu'] = board.get_board_definition(expanded_dic['board'], 'uvision')
+            expanded_dic['mcu'] = board.get_board_definition(expanded_dic['target'], 'uvision')
         mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
@@ -170,4 +170,4 @@ class UvisionExporter(Exporter):
         return new_exe_path
  
     def supports_target(self, target):
-        return target in self.definitions.definitions.mcu_def
+        return target in self.definitions.mcu_def
