@@ -26,11 +26,11 @@ from .settings import ProjectSettings
 
 def init(generator, settings, args, root):
     logging.debug("Generating the records.")
-    generator.scrape_dir(args.board, args.directory, args.sources)
+    generator.scrape_dir(args.board, args.directory, args.sources, root)
     sys.exit()
 
 def export(generator, settings, args, root):
-    generator.default_settings(args)
+    generator.default_settings(args, settings)
     generator.set_toolchain(args)
     projects, project_paths = generator.run(args)
     if args.build:
