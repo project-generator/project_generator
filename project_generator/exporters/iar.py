@@ -15,9 +15,11 @@
 from os.path import basename, join, relpath
 import copy
 
+from . import board_definitions
+
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions
-from .board_definitions import boardDefinitions
+
 
 class IARExporter(Exporter):
 
@@ -104,8 +106,8 @@ class IARExporter(Exporter):
         self.parse_specific_options(expanded_dic)
 
         if not expanded_dic['mcu']:
-            board = boardDefinitions()
-            expanded_dic['mcu'] = board.get_board_definition(expanded_dic['target'], 'iar')
+            expanded_dic['mcu'] = board_definitions.get_board_definition(expanded_dic['target'], 'iar')
+        
         mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
         expanded_dic['iar_settings'].update(mcu_def_dic)
 
