@@ -97,7 +97,7 @@ class MakefileGccArmExporter(Exporter):
 
         if not data['core']:
             board = boardDefinitions()
-            data['core'] = board.get_board_definition(data['board'], 'gcc')
+            data['core'] = board.get_board_definition(data['target'], 'gcc')
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':
             data['core'] = 'cortex-m4'

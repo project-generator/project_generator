@@ -26,7 +26,7 @@ from .settings import ProjectSettings
 
 def init(generator, settings, args, root):
     logging.debug("Generating the records.")
-    generator.scrape_dir(args.board, args.directory, args.sources, root)
+    generator.scrape_dir(args.target, args.directory, args.sources, root)
     sys.exit()
 
 def export(generator, settings, args, root):
@@ -62,7 +62,7 @@ def main():
 
     # Init commands
     init_parser = subparsers.add_parser('init', help='Create a project record')
-    init_parser.add_argument('-bd','--board', action='store', help='Board definition')
+    init_parser.add_argument('-tar','--target', action='store', help='Board definition')
     init_parser.add_argument('-dir','--directory', action='store', help='Directory selection')
     init_parser.add_argument(
         '-s','--sources', action='store_true', help='List all files, otherwise only folders for sources.')
