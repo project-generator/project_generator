@@ -91,8 +91,8 @@ def main():
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     clean_parser.set_defaults(func=clean)
 
-    load_parser = subparsers.add_parser('load', help='Load definition file')
-    load_parser.add_argument("-f", "--file", help="Definition file to be parsed")
+    load_parser = subparsers.add_parser('load', help='Load definition files')
+    load_parser.add_argument("-dir", "--directory", help="Directory for pg definitions")
     load_parser.set_defaults(func=load)
 
     parser.add_argument("--version", action='version',
