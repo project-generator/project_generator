@@ -96,9 +96,9 @@ class ProjectGenerator:
         found = {x: [] for x in exts}  # lists of found files
         ignore = '.'
         if path:
-            directory = join(os.getcwd(), path)
+            directory = join(root, path)
         else:
-            directory = join(os.getcwd(), 'source')
+            directory = root
         for dirpath, dirnames, files in os.walk(directory):
             # Remove directories in ignore
             # directory names must match exactly!
