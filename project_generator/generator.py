@@ -90,9 +90,9 @@ class ProjectGenerator:
                 self.run_generator(dic, project, tool, toolchain))
         return (projects, projects_paths)
 
-    def scrape_dir(self, board, path, gen_files):
+    def scrape_dir(self, board, path, gen_files, root):
         # recognized files
-        exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld']
+        exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld', 'lin']
         found = {x: [] for x in exts}  # lists of found files
         ignore = '.'
         if path:
@@ -111,7 +111,7 @@ class ProjectGenerator:
                 ext = name.lower().rsplit('.', 1)[-1]
                 # Save the full name if ext matches
                 if ext in exts:
-                    relpath = dirpath.replace(os.getcwd(), "")
+                    relpath = os.path.relpath(dirpath, root)
                     found[ext].append(join(relpath, name))
         # Create a directory which will be stored in the project.yaml file
         common = self.PROJECT_RECORD_TEMPLATE
@@ -128,7 +128,7 @@ class ProjectGenerator:
                     path_from_root, filename = os.path.split(file)
                     if path_from_root not in common['common']['include_paths']:
                         common['common']['include_paths'].append(path_from_root)
-            elif k == 'sct' or k == 'ld':
+            elif k == 'sct' or k == 'ld' or k =='lin':
                 for file in v:
                     common['common']['linker_file'].append(file)
 
@@ -161,7 +161,7 @@ class ProjectGenerator:
         project_file.close()
         return config
 
-    def default_settings(self, options):
+    def default_settings(self, options, settings):
         if not options.tool:
             options.tool = settings.DEFAULT_TOOL
         if not options.file:
