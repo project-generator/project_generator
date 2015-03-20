@@ -39,7 +39,11 @@ class ProjectGenerator:
 
     PROJECT_RECORD_TEMPLATE = {
         'common': {
+<<<<<<< HEAD
+            'board' : [],
+=======
             'target' : [],
+>>>>>>> abe03bb816a31f7cc3e833b087be221bd58b08a5
             'include_paths' : [],
             'source_files' : [],
             'linker_file' : [],
@@ -89,6 +93,7 @@ class ProjectGenerator:
             projects_paths.append(
                 self.run_generator(dic, project, tool, toolchain))
         return (projects, projects_paths)
+
 
     def scrape_dir(self, target, path, gen_files, root):
         """ Generates a record for given directory. """

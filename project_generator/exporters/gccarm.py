@@ -14,8 +14,10 @@
 
 from os.path import basename, relpath, join
 
+from . import board_definitions
+
 from .exporter import Exporter
-from .board_definitions import boardDefinitions
+
 
 class MakefileGccArmExporter(Exporter):
 
@@ -84,6 +86,7 @@ class MakefileGccArmExporter(Exporter):
 
         project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "make_gcc_arm", data[
                                      'project_dir']['path'], data['project_dir']['name'])
+
         return project_path, [makefile]
 
     def process_data_for_makefile(self, data, env_settings):
@@ -96,8 +99,7 @@ class MakefileGccArmExporter(Exporter):
         data['toolchain_bin_path'] = env_settings.get_env_settings('gcc')
 
         if not data['core']:
-            board = boardDefinitions()
-            data['core'] = board.get_board_definition(data['target'], 'gcc')
+            data['core'] = board_definitions.get_board_definition(data['target'], 'gcc')
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':
             data['core'] = 'cortex-m4'
@@ -106,6 +108,6 @@ class MakefileGccArmExporter(Exporter):
         if data['core'] == 'cortex-m0+':
             data['core'] = 'cortex-m0plus'
 
-        #set default values
+        # set default values
         if 'optimization_level' not in data:
             data['optimization_level'] = self.optimization_options[0]
