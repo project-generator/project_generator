@@ -171,6 +171,10 @@ class YAML_parser:
         if lib:
             self.data['source_files_lib'].append(lib)
 
+        # in case no include paths were defined, set them to source paths
+        if not self.data['include_paths']:
+            self.data['include_paths'] = self.data['source_paths']
+
         return self.data
 
     def parse_yaml_list(self, project_list):
