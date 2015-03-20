@@ -22,7 +22,7 @@ class YAML_parser:
         self.data = {
             'name': '',                 # project name
             'mcu' : '',
-            'board' : '',
+            'target' : '',
             'core': '',                 # core
             'linker_file': '',          # linker command file
             'include_paths': [],        # include paths
@@ -123,7 +123,7 @@ class YAML_parser:
         if project_dir:
             self.data['project_dir'].update(project_dir)
         self.data['core'] = _finditem(common_attributes, 'core')
-        self.data['board'] = _finditem(common_attributes, 'board')
+        self.data['target'] = _finditem(common_attributes, 'target')
         self.data['linker_file'] = _finditem(common_attributes, 'linker_file')
 
         # load all specific files
@@ -171,6 +171,10 @@ class YAML_parser:
         if lib:
             self.data['source_files_lib'].append(lib)
 
+        # in case no include paths were defined, set them to source paths
+        if not self.data['include_paths']:
+            self.data['include_paths'] = self.data['source_paths']
+
         return self.data
 
     def parse_yaml_list(self, project_list):
@@ -179,9 +183,9 @@ class YAML_parser:
             mcu = _finditem(dic, 'mcu')  # TODO fix naming
             if mcu:
                 self.data['mcu'] = mcu[0]
-            board = _finditem(dic, 'board')
-            if board:
-                self.data['board'] = board[0]
+            target = _finditem(dic, 'target')
+            if target:
+                self.data['target'] = target[0]
             project_dir = _finditem(dic, 'project_dir')
             if project_dir['name']:
                 self.data['project_dir']['name'] = project_dir['name'][0]

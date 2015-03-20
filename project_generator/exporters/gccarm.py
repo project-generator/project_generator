@@ -85,7 +85,8 @@ class MakefileGccArmExporter(Exporter):
         self.process_data_for_makefile(data, env_settings)
 
         project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "make_gcc_arm", data[
-            'project_dir']['path'], data['project_dir']['name'])
+                                     'project_dir']['path'], data['project_dir']['name'])
+
         return project_path, [makefile]
 
     def process_data_for_makefile(self, data, env_settings):
@@ -98,8 +99,7 @@ class MakefileGccArmExporter(Exporter):
         data['toolchain_bin_path'] = env_settings.get_env_settings('gcc')
 
         if not data['core']:
-            data['core'] = board_definitions.get_board_definition(
-                data['board'], 'gcc')
+            data['core'] = board_definitions.get_board_definition(data['target'], 'gcc')
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':
             data['core'] = 'cortex-m4'

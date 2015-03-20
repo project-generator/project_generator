@@ -148,7 +148,7 @@ class UvisionExporter(Exporter):
 
         if not expanded_dic['mcu']:
             expanded_dic['mcu'] = board_definitions.get_board_definition(
-                expanded_dic['board'], 'uvision')
+                expanded_dic['target'], 'uvision')
         mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 

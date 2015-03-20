@@ -39,7 +39,11 @@ class ProjectGenerator:
 
     PROJECT_RECORD_TEMPLATE = {
         'common': {
+<<<<<<< HEAD
             'board' : [],
+=======
+            'target' : [],
+>>>>>>> abe03bb816a31f7cc3e833b087be221bd58b08a5
             'include_paths' : [],
             'source_files' : [],
             'linker_file' : [],
@@ -90,7 +94,9 @@ class ProjectGenerator:
                 self.run_generator(dic, project, tool, toolchain))
         return (projects, projects_paths)
 
-    def scrape_dir(self, board, path, gen_files, root):
+
+    def scrape_dir(self, target, path, gen_files, root):
+        """ Generates a record for given directory. """
         # recognized files
         exts = ['s', 'c', 'cpp', 'h', 'inc', 'sct', 'ld', 'lin']
         found = {x: [] for x in exts}  # lists of found files
@@ -115,7 +121,7 @@ class ProjectGenerator:
                     found[ext].append(join(relpath, name))
         # Create a directory which will be stored in the project.yaml file
         common = self.PROJECT_RECORD_TEMPLATE
-        common['common']['board'].append(board if board else 'No board given')
+        common['common']['target'].append(target if target else 'No target given')
         for k,v in found.items():
             if k == 's'  or k == 'c' or k == 'cpp':
                 for file in v:
@@ -155,6 +161,7 @@ class ProjectGenerator:
             sys.exit(-1)
 
     def load_config(self, options):
+        """ Load the project file. """
         logging.debug("Processing projects file.")
         project_file = open(options.file)
         config = yaml.load(project_file)

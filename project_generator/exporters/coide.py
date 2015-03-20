@@ -90,8 +90,8 @@ class CoideExporter(Exporter):
         self.parse_specific_options(expanded_dic)
 
         if not expanded_dic['mcu']:
-            expanded_dic['mcu'] = board_definitions.get_board_definition(
-                expanded_dic['board'], 'coide')
+            expanded_dic['mcu'] = board_definitions.get_board_definition(expanded_dic['target'], 'coide')
+        
         mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
         expanded_dic['coide_settings'].update(mcu_def_dic)
 
