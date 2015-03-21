@@ -28,6 +28,7 @@ setup(
     entry_points={
         'console_scripts': [
             "project_generator=project_generator.main:main",
+            "pgen=project_generator.main:main",
         ]
     },
 
