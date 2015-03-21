@@ -19,6 +19,7 @@ help = 'Export a project record'
 def run(generator, settings, args, root):
     generator.default_settings(args, settings)
     generator.set_toolchain(args)
+    generator.load_definitions(args.defdirectory)
     projects, project_paths = generator.run(args)
 
     if args.build:
@@ -32,4 +33,5 @@ def setup(subparser):
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     subparser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects")
-    
+    subparser.add_argument(
+        "-defdir", "--defdirectory", help="Path to the definitions, otherwise default is used")

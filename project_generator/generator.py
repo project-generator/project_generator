@@ -17,6 +17,8 @@ import yaml
 import logging
 import shutil
 import errno
+import subprocess
+import distutils.util
 
 from os.path import join, basename
 
@@ -188,6 +190,24 @@ class ProjectGenerator:
                 config, options.tool, options.toolchain)
 
         return (projects, projects_paths)
+
+    def load_definitions(self, def_dir):
+        definitions_directory = def_dir
+        if not definitions_directory:
+            config_directory = os.path.expanduser('~/.pg')
+            definitions_directory = os.path.join(config_directory, 'definitions')
+
+        if not os.path.isdir(config_directory):
+            logging.debug("Config directory does not exist.")
+            logging.debug("Creating config directory: %s" % config_directory)
+            os.mkdir(config_directory)
+
+        if os.path.isdir(definitions_directory):
+            command = ['git', 'pull', '--rebase' ,'origin', 'master']
+            subprocess.call(command, cwd=definitions_directory)
+        else:
+            command = ['git', 'clone', 'https://github.com/0xc0170/project_generator_definitions.git', definitions_directory]
+            subprocess.call(command, cwd=config_directory)
 
     def clean(self, options):
         # This function is a bit hacky, this needs a proper implementation
