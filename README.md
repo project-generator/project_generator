@@ -41,7 +41,7 @@ This should print the current installed version.
 In case of using this repository directly, be aware, the project generator is using relative paths. To solve this, create a simple run.py script and place there:
 
 ```
-from project_generator.export import main
+from project_generator.main import main
 
 main()
 ```
