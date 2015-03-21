@@ -211,7 +211,7 @@ class ProjectGenerator:
                 return
             if process_data['project_dir']['name'] is '':
                 process_data['project_dir']['name'] = options.tool + '_' + process_data['name']
-            projects_paths = join(process_data['project_dir']['path'], process_data['project_dir']['name'])
+            projects_paths.append(join(process_data['project_dir']['path'], process_data['project_dir']['name']))
         else:
             projects = []
             for k, v in config['projects'].items():

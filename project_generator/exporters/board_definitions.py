@@ -47,10 +47,10 @@ board_def = {
     },
 }
 
-def get_board_definition(self, name, tool):
+def get_board_definition(name, tool):
     """ If a board is found, returns its definition for a tool, error otherwise. """
     try:
-        return self.board_def[name][tool]
+        return board_def[name][tool]
     except KeyError:
         raise RuntimeError(
             "The board: %s was not recognized for %s. Please check board_def dictionary." % (name, tool))
