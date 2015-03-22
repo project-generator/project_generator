@@ -15,19 +15,22 @@
 import sys
 import logging
 
+from .project import Project
+
 help = 'Create a project record'
 
 
-def run(generator, settings, args, root):
+def run(args, root):
     logging.debug("Generating the records.")
-    generator.scrape_dir(args.board, args.directory, args.sources, root)
-    sys.exit()
+    Project.scrape_dir(root, args.name, args.board, args.sources)
 
 
 def setup(subparser):
     subparser.add_argument(
+        'name', help='Project name')
+    subparser.add_argument(
         '-bd', '--board', action='store', help='Board definition')
     subparser.add_argument(
-        '-dir', '--directory', action='store', help='Directory selection')
+        '-dir', '--directory', action='store', help='Directory selection', default=None)
     subparser.add_argument(
         '-s', '--sources', action='store_true', help='List all files, otherwise only folders for sources.')

@@ -19,7 +19,7 @@ from . import board_definitions
 
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions
-
+from ..targets import Targets
 
 class IARExporter(Exporter):
 
@@ -92,6 +92,15 @@ class IARExporter(Exporter):
                 v[0] = 0
             data['iar_settings'][k]['state'] = v[0]
 
+    def normalize_mcu_def(self, mcu_def):
+        for k,v in mcu_def['OGChipSelectEditMenu'].items():
+            # hack to insert tab as IAR using tab for MCU definitions
+            v[0] = v[0].replace(' ', '\t', 1)
+            mcu_def['OGChipSelectEditMenu'][k] = v[0]
+        for k,v in mcu_def['OGCoreOrChip'].items():
+            mcu_def['OGCoreOrChip'][k] = v[0]
+
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for IAR, and run generator """
         expanded_dic = data.copy()
@@ -105,10 +114,9 @@ class IARExporter(Exporter):
         expanded_dic['iar_settings'] = {}
         self.parse_specific_options(expanded_dic)
 
-        if not expanded_dic['mcu']:
-            expanded_dic['mcu'] = board_definitions.get_board_definition(expanded_dic['target'], 'iar')
-        
-        mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
+        target = Targets(env_settings.get_env_settings('definitions'))
+        mcu_def_dic = target.get_tool_def(expanded_dic['target'], 'iar')
+        self.normalize_mcu_def(mcu_def_dic)
         expanded_dic['iar_settings'].update(mcu_def_dic)
 
         project_path, ewp = self.gen_file('iar.ewp.tmpl', expanded_dic, '%s.ewp' %

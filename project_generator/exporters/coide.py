@@ -20,7 +20,7 @@ from . import board_definitions
 
 from .exporter import Exporter
 from .coide_definitions import CoIDEdefinitions
-
+from ..targets import Targets
 
 class CoideExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',
@@ -76,6 +76,20 @@ class CoideExporter(Exporter):
                 for option in v:
                     data['coide_settings'][k][option] = v[option]
 
+    def normalize_mcu_def(self, mcu_def):
+        for k,v in mcu_def['Device'].items():
+            mcu_def['Device'][k] = v[0]
+        for k,v in mcu_def['DebugOption'].items():
+            mcu_def['DebugOption'][k] = v[0]
+        for k,v in mcu_def['MemoryAreas']['IROM1'].items():
+            mcu_def['MemoryAreas']['IROM1'][k] = v[0]
+        for k,v in mcu_def['MemoryAreas']['IROM2'].items():
+            mcu_def['MemoryAreas']['IROM2'][k] = v[0]
+        for k,v in mcu_def['MemoryAreas']['IRAM1'].items():
+            mcu_def['MemoryAreas']['IRAM1'][k] = v[0]
+        for k,v in mcu_def['MemoryAreas']['IRAM2'].items():
+            mcu_def['MemoryAreas']['IRAM2'][k] = v[0]
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = data.copy()
@@ -89,9 +103,9 @@ class CoideExporter(Exporter):
         expanded_dic['coide_settings'] = {}
         self.parse_specific_options(expanded_dic)
 
-        if not expanded_dic['mcu']:
-            expanded_dic['mcu'] = board_definitions.get_board_definition(expanded_dic['target'], 'coide')
-        mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
+        target = Targets(env_settings.get_env_settings('definitions'))
+        mcu_def_dic = target.get_tool_def(expanded_dic['target'], 'coide')
+        self.normalize_mcu_def(mcu_def_dic)
         expanded_dic['coide_settings'].update(mcu_def_dic)
 
         # Project file
