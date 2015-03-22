@@ -15,26 +15,24 @@ import os
 import yaml
 import shutil
 import logging
+import operator
 
 from collections import defaultdict
 
 from .tool import build, export
 
-def merge_recursive(a, b):
-    if isinstance(a, dict) and isinstance(b, dict):
+def merge_recursive(*args):
+    if all(isinstance(x, dict) for x in args):
         output = {}
-
-        keys = set(a) | set(b)
+        keys = reduce(operator.or_, [set(x) for x in args])
 
         for key in keys:
-            if key in a and key in b:
-                output[key] = merge_recursive(a[key], b[key])
-            elif key in a:
-                output[key] = a[key]
-            elif key in b:
-                output[key] = b[key]
+            # merge all of the ones that have them
+            output[key] = merge_recursive(*[x[key] for x in args if key in x])
+
+        return output
     else:
-        return a + b
+        return reduce(operator.add, args)
 
 class ToolSpecificSettings:
 
@@ -58,6 +56,9 @@ class ToolSpecificSettings:
         if 'source_files' in data_dictionary:
             self._process_source_files(
                 data_dictionary['source_files'], group_name)
+
+        if 'include_paths' in data_dictionary:
+            self.include_paths += data_dictionary['include_paths']
 
         if 'macros' in data_dictionary:
             self.macros.extend(data_dictionary['macros'])
@@ -170,6 +171,9 @@ class Project:
             group_name = 'default'
             if 'group_name' in project_file_data['common']:
                 group_name = project_file_data['common']['group_name'][0]
+
+            if 'include_paths' in project_file_data['common']:
+                self.include_paths.extend(project_file_data['common']['include_paths'])
 
             if 'source_paths' in project_file_data['common']:
                 self.source_paths.extend(
@@ -293,6 +297,12 @@ class Project:
     def generate_dict_for_tool(self, tool):
         """for backwards compatibility"""
         tool_specific_settings = self.tool_specific[self.TOOLCHAINS[tool]]
+        toolchain_specific_settings = self.tool_specific[tool]
+
+        if tool == self.TOOLCHAINS[tool]:
+            # make sure we don't get duplicates :)
+            tool_specific_settings = ToolSpecificSettings()
+
         d = {
             'name': self.name,
             'mcu': self.mcu,
@@ -300,16 +310,32 @@ class Project:
             'target': self.target,
             'include_paths': self.include_paths + tool_specific_settings.include_paths,
             'source_paths': self.source_paths + tool_specific_settings.source_paths,
-            'source_files': merge_recursive(self.source_groups, tool_specific_settings.source_groups),
+            'source_files': merge_recursive(self.source_groups, 
+                                            tool_specific_settings.source_groups,
+                                            toolchain_specific_settings.source_groups),
             # for backwards compatibility
-            'source_files_c': [merge_recursive(self.source_of_type('c'), tool_specific_settings.source_of_type('c'))],
-            'source_files_cpp': [merge_recursive(self.source_of_type('cpp'), tool_specific_settings.source_of_type('cpp'))],
-            'source_files_s': [merge_recursive(self.source_of_type('s'), tool_specific_settings.source_of_type('s'))],
-            'source_files_obj': self.all_sources_of_type('obj') + tool_specific_settings.all_sources_of_type('obj'),
-            'source_files_lib': self.all_sources_of_type('lib') + tool_specific_settings.all_sources_of_type('lib'),
-            'linker_file': self.tool_specific[self.TOOLCHAINS[tool]].linker_file or self.linker_file,
-            'macros': self.macros + self.tool_specific[self.TOOLCHAINS[tool]].macros,
-            'misc': [self.tool_specific[self.TOOLCHAINS[tool]].misc],
+            'source_files_c': [merge_recursive(self.source_of_type('c'), 
+                                               tool_specific_settings.source_of_type('c'),
+                                               toolchain_specific_settings.source_of_type('c'))],
+            'source_files_cpp': [merge_recursive(self.source_of_type('cpp'),
+                                                 tool_specific_settings.source_of_type('cpp'),
+                                                 toolchain_specific_settings.source_of_type('cpp'))],
+            'source_files_s': [merge_recursive(self.source_of_type('s'), 
+                                               tool_specific_settings.source_of_type('s'),
+                                               toolchain_specific_settings.source_of_type('s'))],
+            'source_files_obj': self.all_sources_of_type('obj') + 
+                                tool_specific_settings.all_sources_of_type('obj') +
+                                toolchain_specific_settings.all_sources_of_type('obj'),
+            'source_files_lib': self.all_sources_of_type('lib') + 
+                                tool_specific_settings.all_sources_of_type('lib') +
+                                toolchain_specific_settings.all_sources_of_type('lib'),
+            'linker_file': tool_specific_settings.linker_file
+                        or toolchain_specific_settings.linker_file
+                        or self.linker_file,
+            'macros': self.macros + 
+                      tool_specific_settings.macros +
+                      toolchain_specific_settings.macros,
+            'misc': [merge_recursive(tool_specific_settings.misc, toolchain_specific_settings.misc)],
             'project_dir': self.project_dir
         }
 
