@@ -26,6 +26,14 @@ setup(
     author_email='c0170@rocketmail.com, matthewelse1997@gmail.com',
     keywords="c cpp project generator embedded",
     url="https://github.com/0xc0170/project_generator",
+    classifiers= [
+        "Development Status :: 3 - Alpha",
+        "Environment :: Console",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Topic :: Software Development"
+    ],
 
     packages=find_packages(),
     entry_points={
