@@ -18,6 +18,7 @@ help = 'Export a project record'
 
 def run(args, root):
     workspace = Workspace(args.file, root)
+    workspace.load_definitions(args.defdirectory)
 
     if args.project:
         workspace.export_project(args.project, args.tool)
@@ -37,4 +38,6 @@ def setup(subparser):
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     subparser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects")
-    
+    subparser.add_argument(
+        "-defdir", "--defdirectory",
+        help="Path to the definitions, otherwise default (~/.pg/definitions) is used")

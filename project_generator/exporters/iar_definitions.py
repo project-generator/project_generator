@@ -15,48 +15,6 @@
 
 class IARDefinitions():
 
-    def get_mcu_definition(self, name):
-        """ If MCU found, returns its definition dic, error otherwise. """
-        try:
-            return self.mcu_def[name]
-        except KeyError:
-            raise RuntimeError(
-                "Mcu was not recognized for IAR. Please check mcu_def dictionary.")
-
-    # MCU definitions which are currently supported. Add a new one, define a name as it is
-    # in IAR, create an empty project for that MCU, open the project file (ewp) in any text
-    # editor, find out the values of SelectEditMenu, CoreOrChip and FPU if
-    # it's not disabled (=0)
-    mcu_def = {
-        'LPC1768': {
-            'OGChipSelectEditMenu': {
-                'state': 'LPC1768	NXP LPC1768',
-            },
-            'OGCoreOrChip': {
-                'state': 1,
-            }
-        },
-        'MKL25Z128xxx4': {
-            'OGChipSelectEditMenu': {
-                'state': 'MKL25Z128xxx4	Freescale MKL25Z128xxx4',
-            },
-            'OGCoreOrChip': {
-                'state': 1,
-            }
-        },
-        'STM32F401xB': {
-            'OGChipSelectEditMenu': {
-                'state': 'STM32F401xB	ST STM32F401xB',
-            },
-            'OGCoreOrChip': {
-                'state': 1,
-            },
-            'FPU': {
-                'state': 5,
-            },
-        },
-    }
-
     iar_settings = {
         'Variant': {
             'state': 0,

@@ -29,7 +29,6 @@ subcommands = {
     'export': export,
     'clean': clean,
     'list': list_projects,
-    'load': load
 }
 
 
