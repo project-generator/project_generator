@@ -11,22 +11,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .builder import ProjectBuilder
+from .workspace import Workspace
 
 help = 'Export a project record'
 
 
-def run(generator, settings, args, root):
-    generator.default_settings(args, settings)
-    generator.set_toolchain(args)
-    projects, project_paths = generator.run(args)
+def run(args, root):
+    workspace = Workspace(args.file, root)
 
-    if args.build:
-        ProjectBuilder(settings).run(args, projects, project_paths, root)
+    if args.project:
+        workspace.export_project(args.project, args.tool)
 
+        if args.build:
+            workspace.build_project(args.project, args.tool)
+    else:
+        workspace.export_projects(args.tool)
+
+        if args.build:
+            workspace.build_projects(args.project, args.tool)
 
 def setup(subparser):
-    subparser.add_argument("-f", "--file", help="YAML projects file")
+    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-p", "--project", help="Project to be generated")
     subparser.add_argument(
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")

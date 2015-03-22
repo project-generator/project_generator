@@ -32,9 +32,9 @@ class UvisionBuilder(Builder):
 
     SUCCESSVALUE = 0
 
-    def build_project(self, project_path, project, env_settings, root):
+    def build_project(self, project_name, project_files, env_settings):
         # > UV4 -b [project_path]
-        path = join(root, project_path, "%s.uvproj" % project)
+        path = join(env_settings.generated_projects_folder, project_files[0])
         logging.debug("Building uVision project: %s" % path)
 
         args = [env_settings.get_env_settings('uvision'), '-r', '-j0', path]

@@ -18,7 +18,7 @@ import distutils.util
 help = 'Load definition files'
 
 
-def run(generator, settings, args, root):
+def run(settings, args, root):
     config_directory = os.path.expanduser('~/.pg')
     definitions_directory = os.path.join(config_directory, 'definitions')
 

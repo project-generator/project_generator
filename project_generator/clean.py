@@ -11,16 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from .workspace import Workspace
 
 help = 'Clean generated projects'
 
 
-def run(generator, settings, args, root):
-    generator.clean(args)
+def run(args, root):
+    workspace = Workspace(args.file, root)
 
+    if args.project:
+        workspace.clean_project(args.project, args.tool)
+    else:
+        workspace.clean_projects(args.tool)
 
 def setup(subparser):
-    subparser.add_argument("-f", "--file", help="YAML projects file")
+    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-p", "--project", help="Specify which project to be removed")
     subparser.add_argument(
-        "-t", "--tool", help="Create project files for provided tool (uvision by default)")
+        "-t", "--tool", help="Clean project files for specified tool (uvision by default)")

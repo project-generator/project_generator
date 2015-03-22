@@ -20,12 +20,12 @@ from os.path import join
 
 class IARBuilder(Builder):
 
-    def build_project(self, project_path, project, env_settings, root):
+    def build_project(self, project_name, project_files, env_settings):
         # > IarBuild [project_path] -build [project_name]
-        path = join(root, project_path, "%s.ewp" % project)
+        path = join(env_settings.generated_projects_folder, project_files[0])
         logging.debug("Building IAR project: %s" % path)
 
-        args = [env_settings.get_env_settings('iar'), path, '-build', project]
+        args = [env_settings.get_env_settings('iar'), path, '-build', project_name]
 
         try:
             ret_code = None
