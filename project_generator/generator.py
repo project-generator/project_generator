@@ -176,6 +176,8 @@ class ProjectGenerator:
 
         # update enviroment variables
         self.env_settings.load_env_settings(config)
+        if options.defdirectory:
+            self.env_settings.set_definitions_file(join(os.getcwd(), options.defdirectory))
 
         projects = []
         projects_paths = []
@@ -197,17 +199,17 @@ class ProjectGenerator:
             config_directory = os.path.expanduser('~/.pg')
             definitions_directory = os.path.join(config_directory, 'definitions')
 
-        if not os.path.isdir(config_directory):
-            logging.debug("Config directory does not exist.")
-            logging.debug("Creating config directory: %s" % config_directory)
-            os.mkdir(config_directory)
+            if not os.path.isdir(config_directory):
+                logging.debug("Config directory does not exist.")
+                logging.debug("Creating config directory: %s" % config_directory)
+                os.mkdir(config_directory)
 
-        if os.path.isdir(definitions_directory):
-            command = ['git', 'pull', '--rebase' ,'origin', 'master']
-            subprocess.call(command, cwd=definitions_directory)
-        else:
-            command = ['git', 'clone', 'https://github.com/0xc0170/project_generator_definitions.git', definitions_directory]
-            subprocess.call(command, cwd=config_directory)
+            if os.path.isdir(definitions_directory):
+                command = ['git', 'pull', '--rebase' ,'origin', 'master']
+                subprocess.call(command, cwd=definitions_directory)
+            else:
+                command = ['git', 'clone', 'https://github.com/0xc0170/project_generator_definitions.git', definitions_directory]
+                subprocess.call(command, cwd=config_directory)
 
     def clean(self, options):
         # This function is a bit hacky, this needs a proper implementation

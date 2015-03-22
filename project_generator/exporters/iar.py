@@ -114,7 +114,7 @@ class IARExporter(Exporter):
         expanded_dic['iar_settings'] = {}
         self.parse_specific_options(expanded_dic)
 
-        target = Targets()
+        target = Targets(env_settings.get_env_settings('definitions'))
         mcu_def_dic = target.get_tool_def(expanded_dic['target'], 'iar')
         self.normalize_mcu_def(mcu_def_dic)
         expanded_dic['iar_settings'].update(mcu_def_dic)

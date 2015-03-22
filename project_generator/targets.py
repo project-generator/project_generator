@@ -11,21 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from os.path import join, normpath, expanduser
-from os import getcwd
+from os.path import join, normpath, expanduser, splitext, isfile
+from os import getcwd, listdir
 import yaml
 import logging
 
 class Targets():
 
-    SUPPORTED_TARGETS = [
-        'frdm-k20d50m'
-        'frdm-k64f',
-        'mbed-lpc1768',
-    ]
-    def __init__(self):
-        config_directory = expanduser('~/.pg')
-        self.definitions_directory = join(config_directory, 'definitions')
+    def __init__(self, directory):
+        self.definitions_directory = directory
+        target_dir = join(self.definitions_directory, 'target')
+        self.targets = [ splitext(f)[0] for f in listdir(target_dir) if isfile(join(target_dir,f)) ]
 
     def load_record(self, file):
         project_file = open(file)
@@ -34,7 +30,7 @@ class Targets():
         return config
 
     def get_tool_def(self, target, tool):
-        if target not in self.SUPPORTED_TARGETS:
+        if target not in self.targets:
             return None
         target_path = join(self.definitions_directory, 'target', target + '.yaml')
         target_record = self.load_record(target_path)
@@ -45,4 +41,4 @@ class Targets():
         return mcu_record['tool_specific'][tool]
 
     def is_supported(self, target):
-        return target in self.SUPPORTED_TARGETS
+        return target in self.targets

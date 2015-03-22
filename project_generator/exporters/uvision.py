@@ -150,7 +150,7 @@ class UvisionExporter(Exporter):
 
         self.parse_specific_options(expanded_dic)
 
-        target = Targets()
+        target = Targets(env_settings.defdirectory)
         # if not expanded_dic['mcu']:
         #     expanded_dic['mcu'] = target.get_definitions(expanded_dic['target'], 'uvision')
 

@@ -21,6 +21,7 @@ GCC_BIN_PATH
 """
 
 import os
+from os.path import expanduser
 import yaml
 
 from os.path import join, pardir, sep
@@ -41,6 +42,7 @@ class ProjectSettings:
             'IAR Systems', 'Embedded Workbench 7.0',
             'common', 'bin', 'IarBuild.exe')
         self.paths['gcc'] = os.environ.get('ARM_GCC_PATH') or ''
+        self.paths['definitions'] = join(expanduser('~/.pg'), 'definitions')
 
     def load_env_settings(self, config_file):
         """ Loads predefined settings if any, otherwise default used. """
@@ -61,6 +63,9 @@ class ProjectSettings:
             gcc = _finditem(settings, 'gcc')
             if gcc:
                 self.paths['gcc'] = gcc
+
+    def set_definitions_file(self, def_dir):
+        self.paths['definitions'] = def_dir
 
     def get_env_settings(self, env_set):
         return self.paths[env_set]

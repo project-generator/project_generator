@@ -34,4 +34,5 @@ def setup(subparser):
     subparser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects")
     subparser.add_argument(
-        "-defdir", "--defdirectory", help="Path to the definitions, otherwise default is used")
+        "-defdir", "--defdirectory",
+        help="Path to the definitions, otherwise default (~/.pg/definitions) is used")
