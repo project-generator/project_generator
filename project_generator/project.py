@@ -21,6 +21,11 @@ from collections import defaultdict
 
 from .tool import build, export
 
+try:
+    input = raw_input
+except:
+    pass
+
 def merge_recursive(*args):
     if all(isinstance(x, dict) for x in args):
         output = {}
@@ -380,24 +385,24 @@ class Project:
 
         filename = project_name.replace(' ', '_').lower() + '.yaml'
 
-        # TODO: fix
-        # if os.path.isfile(os.path.join(directory, filename)):
-        #     # this should be print, not logging
-        #     print("Project file already exists")
+        #TODO: fix
+        if os.path.isfile(os.path.join(directory, filename)):
+            # this should be print, not logging
+            print("Project file already exists")
 
-        #     while True:
-        #         answer = input('Should I overwrite it? (Y/n)')
+            while True:
+                answer = input('Should I overwrite it? (Y/n)')
 
-        #         try:
-        #             overwrite = distutils.util.strtobool(answer)
+                try:
+                    overwrite = answer.lower() in ('y', 'yes')
 
-        #             if not overwrite:
-        #                 logging.critical('Unable to save project file')
-        #                 return -1
+                    if not overwrite:
+                        logging.critical('Unable to save project file')
+                        return -1
 
-        #             break
-        #         except ValueError:
-        #             continue
+                    break
+                except ValueError:
+                    continue
 
         with open(os.path.join(root, filename), 'wt') as f:
             f.write(yaml.dump(data, default_flow_style=False))
