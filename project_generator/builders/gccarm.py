@@ -16,7 +16,7 @@ import subprocess
 import logging
 
 from .builder import Builder
-from os.path import relpath
+from os.path import dirname
 
 class MakefileGccArmBuilder(Builder):
     # http://www.gnu.org/software/make/manual/html_node/Running.html
@@ -28,10 +28,10 @@ class MakefileGccArmBuilder(Builder):
 
     SUCCESSVALUE = 0
 
-    def build_project(self, project_path, project, env_settings, root):
+    def build_project(self, project_name, project_files, env_settings):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
-        path = relpath(project_path)
+        path = dirname(project_files[0])
         logging.debug("Building GCC ARM project: %s" % path)
 
         args = ['make', 'all']

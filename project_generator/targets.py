@@ -16,7 +16,7 @@ from os import getcwd, listdir
 import yaml
 import logging
 
-class Targets():
+class Targets:
 
     def __init__(self, directory):
         self.definitions_directory = directory

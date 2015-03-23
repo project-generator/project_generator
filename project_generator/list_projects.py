@@ -11,13 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from .workspace import Workspace
 
 help = 'List all projects'
 
 
-def run(generator, settings, args, root):
-    generator.list_projects(generator.load_config(args))
+def run(args, root):
+	workspace = Workspace(args.file, root)
+   	workspace.list_projects()
 
 
 def setup(subparser):
-    subparser.add_argument("-f", "--file", help="YAML projects file")
+    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
