@@ -310,29 +310,29 @@ class Project:
             'target': self.target,
             'include_paths': self.include_paths + tool_specific_settings.include_paths,
             'source_paths': self.source_paths + tool_specific_settings.source_paths,
-            'source_files': merge_recursive(self.source_groups, 
+            'source_files': merge_recursive(self.source_groups,
                                             tool_specific_settings.source_groups,
                                             toolchain_specific_settings.source_groups),
             # for backwards compatibility
-            'source_files_c': [merge_recursive(self.source_of_type('c'), 
+            'source_files_c': [merge_recursive(self.source_of_type('c'),
                                                tool_specific_settings.source_of_type('c'),
                                                toolchain_specific_settings.source_of_type('c'))],
             'source_files_cpp': [merge_recursive(self.source_of_type('cpp'),
                                                  tool_specific_settings.source_of_type('cpp'),
                                                  toolchain_specific_settings.source_of_type('cpp'))],
-            'source_files_s': [merge_recursive(self.source_of_type('s'), 
+            'source_files_s': [merge_recursive(self.source_of_type('s'),
                                                tool_specific_settings.source_of_type('s'),
                                                toolchain_specific_settings.source_of_type('s'))],
-            'source_files_obj': self.all_sources_of_type('obj') + 
+            'source_files_obj': self.all_sources_of_type('obj') +
                                 tool_specific_settings.all_sources_of_type('obj') +
                                 toolchain_specific_settings.all_sources_of_type('obj'),
-            'source_files_lib': self.all_sources_of_type('lib') + 
+            'source_files_lib': self.all_sources_of_type('lib') +
                                 tool_specific_settings.all_sources_of_type('lib') +
                                 toolchain_specific_settings.all_sources_of_type('lib'),
             'linker_file': tool_specific_settings.linker_file
                         or toolchain_specific_settings.linker_file
                         or self.linker_file,
-            'macros': self.macros + 
+            'macros': self.macros +
                       tool_specific_settings.macros +
                       toolchain_specific_settings.macros,
             'misc': [merge_recursive(tool_specific_settings.misc, toolchain_specific_settings.misc)],
@@ -342,60 +342,62 @@ class Project:
         return d
 
     @staticmethod
-    def scrape_dir(directory, project_name, board):
+    def scrape_dir(root, directory, project_name, board, list_sources):
         data = {
             'common': {
                 'linker_file': [],
                 'source_files': [],
                 'include_paths': [],
-                'target': ''
+                'target': [],
             }
         }
 
-        linker_filetypes = ['sct', 'ld', 'lin']
+        linker_filetypes = ['sct', 'ld', 'lin', 'icf']
         source_filetypes = ['c', 'cpp', 'cc']
         include_filetypes = ['h', 'hpp', 'inc']
 
-        for dirpath, dirnames, files in os.path.walk(directory):
+        for dirpath, dirnames, files in os.walk(directory):
             for filename in files:
                 extension = filename.split('.')[-1]
-
-                reldir = os.path.relpath(dirpath, directory)
-                relpath = os.path.join(reldir, filename)
+                relpath = os.path.relpath(dirpath, root)
 
                 if extension in linker_filetypes:
-                    data['common']['linker_file'].append(relpath)
+                    data['common']['linker_file'].append(os.path.join(relpath, filename))
                 elif extension in source_filetypes:
                     data['common']['source_files'].append(relpath)
                 elif extension in include_filetypes:
-                    data['common']['include_paths'].append(reldir)
+                    data['common']['include_paths'].append(relpath)
+
+        data['common']['source_files'] = list(set(data['common']['source_files']))
+        data['common']['include_paths'] = list(set(data['common']['include_paths']))
 
         if len(data['common']['linker_file']) == 0:
             data['common']['linker_file'].append("No linker file found")
 
-        data['common']['target'] = board
+        data['common']['target'].append(board)
 
         logging.debug('Generating yaml file')
 
         filename = project_name.replace(' ', '_').lower() + '.yaml'
 
-        if os.path.isfile(filename):
-            # this should be print, not logging
-            print("Project file already exists")
+        # TODO: fix
+        # if os.path.isfile(os.path.join(directory, filename)):
+        #     # this should be print, not logging
+        #     print("Project file already exists")
 
-            while True:
-                answer = input('Should I overwrite it? (Y/n)')
+        #     while True:
+        #         answer = input('Should I overwrite it? (Y/n)')
 
-                try:
-                    overwrite = distutils.util.strtobool(answer)
+        #         try:
+        #             overwrite = distutils.util.strtobool(answer)
 
-                    if not overwrite:
-                        logging.critical('Unable to save project file')
-                        return -1
+        #             if not overwrite:
+        #                 logging.critical('Unable to save project file')
+        #                 return -1
 
-                    break
-                except ValueError:
-                    continue
+        #             break
+        #         except ValueError:
+        #             continue
 
-        with open(os.path.join(directory, filename), 'wt') as f:
+        with open(os.path.join(root, filename), 'wt') as f:
             f.write(yaml.dump(data, default_flow_style=False))

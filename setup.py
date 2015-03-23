@@ -16,7 +16,7 @@ import os
 from pip.req import parse_requirements
 from setuptools import setup, find_packages
 
-requirements = [str(requirement) for requirement in parse_requirements('requirements.txt')]
+requirements = [str(requirement.req) for requirement in parse_requirements('requirements.txt')]
 
 setup(
     name='project_generator',

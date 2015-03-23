@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import sys
 import logging
 
@@ -22,14 +23,15 @@ help = 'Create a project record'
 
 def run(args, root):
     logging.debug("Generating the records.")
-    Project.scrape_dir(root, args.name, args.board, args.sources)
+    directory = root if not args.directory else os.path.join(root, args.directory)
+    Project.scrape_dir(root, directory, args.name, args.target, args.sources)
 
 
 def setup(subparser):
     subparser.add_argument(
         'name', help='Project name')
     subparser.add_argument(
-        '-bd', '--board', action='store', help='Board definition')
+        '-tar', '--target', action='store', help='Target definition')
     subparser.add_argument(
         '-dir', '--directory', action='store', help='Directory selection', default=None)
     subparser.add_argument(

@@ -17,8 +17,8 @@ help = 'List all projects'
 
 
 def run(args, root):
-	workspace = Workspace(args.file, root)
-   	workspace.list_projects()
+    workspace = Workspace(args.file, root)
+    workspace.list_projects()
 
 
 def setup(subparser):
