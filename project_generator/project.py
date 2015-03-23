@@ -364,7 +364,7 @@ class Project:
                 if extension in linker_filetypes:
                     data['common']['linker_file'].append(os.path.join(relpath, filename))
                 elif extension in source_filetypes:
-                    data['common']['source_files'].append(relpath)
+                    data['common']['source_files'].append(os.path.join(relpath, filename) if list_sources else relpath)
                 elif extension in include_filetypes:
                     data['common']['include_paths'].append(relpath)
 
