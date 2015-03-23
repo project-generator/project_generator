@@ -127,7 +127,7 @@ class Project:
     """represents a project, which can be formed of many yaml files"""
 
     TOOLCHAINS = {
-        'iar': 'iar',
+        'iar_arm': 'iar',
         'uvision': 'uvision',
         'coide': 'gcc_arm',
         'make_gcc_arm': 'gcc_arm',
@@ -262,7 +262,7 @@ class Project:
 
     def build(self, tool):
         """build the project"""
-        build(self.project_path, self.project_files, tool, self.workspace.settings)
+        build(self.name, self.project_files, tool, self.workspace.settings)
 
     def export(self, tool):
         """export the project"""

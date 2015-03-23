@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import subprocess
 import logging
 
@@ -34,7 +35,7 @@ class UvisionBuilder(Builder):
 
     def build_project(self, project_name, project_files, env_settings):
         # > UV4 -b [project_path]
-        path = join(env_settings.generated_projects_folder, project_files[0])
+        path = join(os.getcwd(), project_files[0])
         logging.debug("Building uVision project: %s" % path)
 
         args = [env_settings.get_env_settings('uvision'), '-r', '-j0', path]

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import subprocess
 import logging
 
@@ -22,7 +23,7 @@ class IARBuilder(Builder):
 
     def build_project(self, project_name, project_files, env_settings):
         # > IarBuild [project_path] -build [project_name]
-        path = join(env_settings.generated_projects_folder, project_files[0])
+        path = join(os.getcwd(), project_files[0])
         logging.debug("Building IAR project: %s" % path)
 
         args = [env_settings.get_env_settings('iar'), path, '-build', project_name]

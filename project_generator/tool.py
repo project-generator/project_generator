@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # exporters
-from .exporters.iar import IARExporter
+from .exporters.iar import IAREWARMExporter
 from .exporters.coide import CoideExporter
 from .exporters.gccarm import MakefileGccArmExporter
 from .exporters.uvision import UvisionExporter
@@ -29,7 +29,7 @@ from .builders.uvision import UvisionBuilder
 EXPORTERS = {
     'uvision': UvisionExporter,
     'make_gcc_arm': MakefileGccArmExporter,
-    'iar': IARExporter,
+    'iar_arm': IAREWARMExporter,
     'coide': CoideExporter,
     'eclipse_make_gcc_arm': EclipseGnuARMExporter,
     'gdb' : GDBExporter,
@@ -39,7 +39,7 @@ EXPORTERS = {
 BUILDERS = {
     'uvision': UvisionBuilder,
     'make_gcc_arm': MakefileGccArmBuilder,
-    'iar': IARBuilder,
+    'iar_arm': IARBuilder,
 }
 
 def export(data, tool, env_settings):

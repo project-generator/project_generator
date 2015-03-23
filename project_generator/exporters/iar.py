@@ -21,7 +21,7 @@ from .exporter import Exporter
 from .iar_definitions import IARDefinitions
 from ..targets import Targets
 
-class IARExporter(Exporter):
+class IAREWARMExporter(Exporter):
 
     def __init__(self):
         self.definitions = IARDefinitions()
