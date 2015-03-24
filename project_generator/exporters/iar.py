@@ -15,8 +15,6 @@
 from os.path import basename, join, relpath
 import copy
 
-from . import board_definitions
-
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions
 from ..targets import Targets

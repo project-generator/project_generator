@@ -99,8 +99,8 @@ class MakefileGccArmExporter(Exporter):
         data['toolchain'] = 'arm-none-eabi-'
         data['toolchain_bin_path'] = env_settings.get_env_settings('gcc')
 
-        if not data['core']:
-            data['core'] = board_definitions.get_board_definition(data['target'], 'gcc')
+        # if not data['core']:
+        #     data['core'] = board_definitions.get_board_definition(data['target'], 'gcc')
         
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':
