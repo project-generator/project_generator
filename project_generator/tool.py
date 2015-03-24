@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import logging
+import subprocess
+
 # exporters
 from .exporters.iar import IAREWARMExporter
 from .exporters.coide import CoideExporter
@@ -69,3 +73,21 @@ def build(project_name, project_files, tool, env_settings):
     Builder = BUILDERS[tool]
     builder = Builder()
     builder.build_project(project_name, project_files, env_settings)
+
+def load_definitions(def_dir=None):
+    definitions_directory = def_dir
+    if not definitions_directory:
+        config_directory = os.path.expanduser('~/.pg')
+        definitions_directory = os.path.join(config_directory, 'definitions')
+
+        if not os.path.isdir(config_directory):
+            logging.debug("Config directory does not exist.")
+            logging.debug("Creating config directory: %s" % config_directory)
+            os.mkdir(config_directory)
+
+        if os.path.isdir(definitions_directory):
+            command = ['git', 'pull', '--rebase' ,'origin', 'master']
+            subprocess.call(command, cwd=definitions_directory)
+        else:
+            command = ['git', 'clone', 'https://github.com/0xc0170/project_generator_definitions.git', definitions_directory]
+            subprocess.call(command, cwd=config_directory)
