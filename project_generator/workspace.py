@@ -34,9 +34,11 @@ class Workspace:
         if 'settings' in projects_dict:
             self.settings.update(projects_dict['settings'])
 
-        self.projects = {name: Project(name, records, self) for name, records in projects_dict['projects'].items()}
+        # so that we can test things independently of eachother
+        if 'projects' in projects_dict:
+            self.projects = {name: Project(name, records, self) for name, records in projects_dict['projects'].items()}
 
-    def load_definitions(self, def_dir):
+    def load_definitions(self, def_dir=None):
         definitions_directory = def_dir
         if not definitions_directory:
             config_directory = os.path.expanduser('~/.pg')

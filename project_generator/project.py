@@ -97,7 +97,6 @@ class ToolSpecificSettings:
 
         return files
 
-
     def _process_source_files(self, files, group_name):
         extensions = ['cpp', 'c', 's', 'obj', 'lib']
 
@@ -263,7 +262,6 @@ class Project:
                 logging.info("Cleaning directory %s" % path)
 
                 shutil.rmtree(path)
-
 
     def build(self, tool):
         """build the project"""

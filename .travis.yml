@@ -8,4 +8,5 @@ python:
     - "pypy"
 install:
 	- pip install .
+	- ./tests/setup.sh
 script: nosetests
