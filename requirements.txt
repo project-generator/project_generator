@@ -1,3 +1,2 @@
 pyYAML
 Jinja2
-sh>=1.11

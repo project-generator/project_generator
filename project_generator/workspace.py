@@ -16,8 +16,6 @@ import yaml
 import logging
 import subprocess
 
-from sh import git
-
 from .project import Project
 from .settings import ProjectSettings
 
@@ -54,10 +52,11 @@ class Workspace:
                 os.mkdir(config_directory)
 
             if os.path.isdir(definitions_directory):
-                git.pull('--rebase', '--quiet', 'origin', 'master', _cwd=definitions_directory)
+                command = ['git', 'pull', '--rebase' ,'origin', 'master']
+                subprocess.call(command, cwd=definitions_directory)
             else:
-                git.clone('https://github.com/0xc0170/project_generator_definitions.git',
-                            definitions_directory, _cwd=config_directory)
+                command = ['git', 'clone', 'https://github.com/0xc0170/project_generator_definitions.git', definitions_directory]
+                subprocess.call(command, cwd=config_directory)
 
     def export_project(self, project_name, tool):
         if project_name not in self.projects:
