@@ -28,10 +28,10 @@ class TestWorkspace(TestCase):
         assert self.workspace.settings.paths['definitions'] == '~/.notpg'
         assert self.workspace.settings.generated_projects_folder == 'not_generated_projects'
 
-    def test_load_definitions(self):
-        self.workspace.load_definitions()
+    # def test_load_definitions(self):
+    #     self.workspace.load_definitions()
 
-        assert os.path.exists(os.path.expanduser(self.workspace.settings.paths['definitions']))
+    #     assert os.path.exists(os.path.expanduser(self.workspace.settings.paths['definitions']))
 
     def test_list_projects(self):
         assert self.workspace.list_projects('raw') == set()
