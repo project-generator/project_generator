@@ -10,6 +10,6 @@ install:
     - pip install .
     - pip install -r tests/requirements.txt
     - ./tests/setup.sh
-script: nosetests --with-coverage
+script: nosetests --with-coverage --cover-package=project_generator
 after_success: coveralls
 sudo: false
