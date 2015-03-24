@@ -16,8 +16,6 @@ import copy
 
 from os.path import basename, join, relpath
 
-from . import board_definitions
-
 from .exporter import Exporter
 from .coide_definitions import CoIDEdefinitions
 from ..targets import Targets

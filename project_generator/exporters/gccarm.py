@@ -14,8 +14,6 @@
 
 from os.path import basename, relpath, join
 
-from . import board_definitions
-
 from .exporter import Exporter
 
 
@@ -99,8 +97,9 @@ class MakefileGccArmExporter(Exporter):
         data['toolchain'] = 'arm-none-eabi-'
         data['toolchain_bin_path'] = env_settings.get_env_settings('gcc')
 
-        if not data['core']:
-            data['core'] = board_definitions.get_board_definition(data['target'], 'gcc')
+        target = Targets(env_settings.get_env_settings('definitions'))
+
+        data['core'] = target.get_tool_def(expanded_dic['target'], 'gcc_arm')
         
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':
