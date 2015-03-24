@@ -35,6 +35,8 @@ class Workspace:
             self.settings.update(projects_dict['settings'])
 
         # so that we can test things independently of eachother
+        self.projects = {}
+        
         if 'projects' in projects_dict:
             self.projects = {name: Project(name, records, self) for name, records in projects_dict['projects'].items()}
 
@@ -96,9 +98,21 @@ class Workspace:
 
         self.projects[project_name].build(tool)
 
-    def list_projects(self):
-        for name in self.projects:
-            logging.info(name)
+    def list_projects(self, format='logging', out=True):
+        if format == 'logging':
+            for project in self.projects:
+                logging.info(project)
+        elif format == 'yaml':
+            projects = list(self.projects)
+
+            if out:
+                print(yaml.dump(projects, default_flow_style=False))
+            else:
+                return yaml.dump(projects, default_flow_style=False)
+        elif format == 'raw':
+            return set(self.projects)
+        else:
+            raise NotImplementedError("Output format not supported.")
 
     def clean_project(self, project_name, tool):
         if project_name not in self.projects:
