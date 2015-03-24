@@ -8,5 +8,7 @@ python:
     - "pypy"
 install:
 	- pip install .
+	- pip install -r tests/requirements.txt
 	- ./tests/setup.sh
-script: nosetests
+script: nosetests --with-coverage
+after_success: coveralls
