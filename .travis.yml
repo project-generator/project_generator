@@ -12,3 +12,4 @@ install:
     - ./tests/setup.sh
 script: nosetests --with-coverage
 after_success: coveralls
+sudo: false
