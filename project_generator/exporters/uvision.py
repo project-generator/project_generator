@@ -153,6 +153,8 @@ class UvisionExporter(Exporter):
         target = Targets(env_settings.get_env_settings('definitions'))
 
         mcu_def_dic = target.get_tool_def(expanded_dic['target'], 'uvision')
+        if not mcu_def_dic:
+             raise RuntimeError("Mcu definitions were not found for %s" % expanded_dic['target'])
         self.normalize_mcu_def(mcu_def_dic)
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
