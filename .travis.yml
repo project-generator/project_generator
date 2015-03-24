@@ -7,8 +7,8 @@ python:
     - "3.4"
     - "pypy"
 install:
-	- pip install .
-	- pip install -r tests/requirements.txt
-	- ./tests/setup.sh
+    - pip install .
+    - pip install -r tests/requirements.txt
+    - ./tests/setup.sh
 script: nosetests --with-coverage
 after_success: coveralls
