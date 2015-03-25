@@ -23,22 +23,35 @@ class Targets:
         target_dir = join(self.definitions_directory, 'target')
         self.targets = [ splitext(f)[0] for f in listdir(target_dir) if isfile(join(target_dir,f)) ]
 
-    def load_record(self, file):
+    def _load_record(self, file):
         project_file = open(file)
         config = yaml.load(project_file)
         project_file.close()
         return config
 
-    def get_tool_def(self, target, tool):
-        if target not in self.targets:
-            return None
+    def get_mcu_record(self, target):
         target_path = join(self.definitions_directory, 'target', target + '.yaml')
-        target_record = self.load_record(target_path)
+        target_record = self._load_record(target_path)
         mcu_path = target_record['target']['mcu']
         mcu_path = normpath(mcu_path[0])
         mcu_path = join(self.definitions_directory, mcu_path) + '.yaml'
-        mcu_record = self.load_record(mcu_path)
+        return self._load_record(mcu_path)
+
+    def get_tool_def(self, target, tool):
+        if target not in self.targets:
+            return None
+        mcu_record = self.get_mcu_record(target)
         return mcu_record['tool_specific'][tool]
 
-    def is_supported(self, target):
-        return target in self.targets
+    def is_supported(self, target, tool):
+        if target not in self.targets:
+            return False
+        mcu_record = self.get_mcu_record(target)
+        # Look at tool specific options which define tools supported for mcu
+        try:
+            for k,v in mcu_record['tool_specific'].items():
+                if k == tool:
+                    return True
+        except KeyError:
+            pass
+        return False

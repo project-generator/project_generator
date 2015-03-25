@@ -24,7 +24,7 @@ from .exporters.uvision import UvisionExporter
 from .exporters.eclipse import EclipseGnuARMExporter
 from .exporters.gdb import GDBExporter
 from .exporters.gdb import ARMNoneEABIGDBExporter
-
+from .targets import Targets
 # builders
 from .builders.iar import IARBuilder
 from .builders.gccarm import MakefileGccArmBuilder
@@ -49,7 +49,7 @@ BUILDERS = {
 def export(data, tool, env_settings):
     """ Invokes tool generator. """
     if tool not in EXPORTERS:
-        raise RuntimeError("Exporter does not support specified tool.")
+        raise RuntimeError("Exporter does not support specified tool: %s" % tool)
 
     Exporter = EXPORTERS[tool]
     exporter = Exporter()
@@ -61,9 +61,9 @@ def fixup_executable(executable_path, tool):
     exporter = EXPORTERS[tool]()
     return exporter.fixup_executable(executable_path)
 
-def target_supported(target, tool):
-    exporter = EXPORTERS[tool]()
-    return exporter.supports_target(target)
+def target_supported(target, tool, env_settings):
+    Target = Targets(env_settings.get_env_settings('definitions'))
+    return Target.is_supported(target, tool)
 
 def build(project_name, project_files, tool, env_settings):
     """ Invokes builder for specified tool. """
