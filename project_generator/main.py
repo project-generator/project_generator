@@ -19,7 +19,6 @@ import logging
 import pkg_resources
 
 from . import init
-from . import load
 from . import clean
 from . import export
 from . import list_projects
