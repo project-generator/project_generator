@@ -16,8 +16,8 @@ from .workspace import Workspace
 help = 'List all projects'
 
 
-def run(args, root):
-    workspace = Workspace(args.file, root)
+def run(args):
+    workspace = Workspace(args.file, os.getcwd())
     workspace.list_projects()
 
 

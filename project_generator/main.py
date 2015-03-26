@@ -33,10 +33,6 @@ subcommands = {
 
 
 def main():
-    # Should be launched from project's root
-    root = os.path.normpath(os.getcwd())
-    os.chdir(root)
-
     # Parse Options
     parser = argparse.ArgumentParser()
 
@@ -66,7 +62,7 @@ def main():
 
     logging.debug('This should be the project root: %s', os.getcwd())
 
-    args.func(args, root)
+    args.func(args)
 
 if __name__ == '__main__':
     main()
