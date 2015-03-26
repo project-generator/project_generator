@@ -13,13 +13,13 @@
 # limitations under the License.
 import os
 from .workspace import Workspace
-
+from .tool import load_definitions
 help = 'Export a project record'
 
 
 def run(args):
     workspace = Workspace(args.file, os.getcwd())
-    workspace.load_definitions(args.defdirectory)
+    load_definitions(args.defdirectory)
 
     if args.project:
         workspace.export_project(args.project, args.tool)
