@@ -21,8 +21,11 @@ from .project import Project
 help = 'Create a project record'
 
 
-def run(args, root):
+def run(args):
     logging.debug("Generating the records.")
+
+    root = os.getcwd()
+
     directory = root if not args.directory else os.path.join(root, args.directory)
     Project.scrape_dir(root, directory, args.name, args.target, args.sources)
 

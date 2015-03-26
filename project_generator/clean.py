@@ -11,13 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 from .workspace import Workspace
 
 help = 'Clean generated projects'
 
 
-def run(args, root):
-    workspace = Workspace(args.file, root)
+def run(args):
+    workspace = Workspace(args.file, os.getcwd())
 
     if args.project:
         workspace.clean_project(args.project, args.tool)

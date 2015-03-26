@@ -11,13 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 from .workspace import Workspace
 
 help = 'Export a project record'
 
 
-def run(args, root):
-    workspace = Workspace(args.file, root)
+def run(args):
+    workspace = Workspace(args.file, os.getcwd())
     workspace.load_definitions(args.defdirectory)
 
     if args.project:
