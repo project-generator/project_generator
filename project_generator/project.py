@@ -162,6 +162,12 @@ class Project:
         self.core = ''
         self.target = ''
 
+        self.output_types = {
+            'executable': 'exe',
+            'library': 'lib'
+        }
+        self.output_type = self.output_types['executable']
+
         self.linker_file = None
         self.tool_specific = defaultdict(ToolSpecificSettings)
 
@@ -172,39 +178,46 @@ class Project:
             with open(project_file, 'rt') as f:
                 project_file_data = yaml.load(f)
 
-            group_name = 'default'
-            if 'group_name' in project_file_data['common']:
-                group_name = project_file_data['common']['group_name'][0]
+            if 'common' in project_file_data:
+                group_name = 'default'
+                if 'output_type' in project_file_data['common']:
+                    if project_file_data['common']['output_type'] not in self.output_types:
+                        raise RuntimeError("Invalid Output Type.")
 
-            if 'include_paths' in project_file_data['common']:
-                self.include_paths.extend(project_file_data['common']['include_paths'])
+                    self.output_type = self.output_types[project_file_data['common']['output_types']]
 
-            if 'source_paths' in project_file_data['common']:
-                self.source_paths.extend(
-                    project_file_data['common']['source_paths'])
+                if 'group_name' in project_file_data['common']:
+                    group_name = project_file_data['common']['group_name'][0]
 
-            if 'source_files' in project_file_data['common']:
-                self._process_source_files(
-                    project_file_data['common']['source_files'], group_name)
+                if 'include_paths' in project_file_data['common']:
+                    self.include_paths.extend(project_file_data['common']['include_paths'])
 
-            if 'macros' in project_file_data['common']:
-                self.macros.extend(project_file_data['common']['macros'])
+                if 'source_paths' in project_file_data['common']:
+                    self.source_paths.extend(
+                        project_file_data['common']['source_paths'])
 
-            if 'project_dir' in project_file_data['common']:
-                self.project_dir.update(
-                    project_file_data['common']['project_dir'])
+                if 'source_files' in project_file_data['common']:
+                    self._process_source_files(
+                        project_file_data['common']['source_files'], group_name)
 
-            if 'core' in project_file_data['common']:
-                self.core = project_file_data['common']['core'][0]
+                if 'macros' in project_file_data['common']:
+                    self.macros.extend(project_file_data['common']['macros'])
 
-            if 'target' in project_file_data['common']:
-                self.target = project_file_data['common']['target'][0]
+                if 'project_dir' in project_file_data['common']:
+                    self.project_dir.update(
+                        project_file_data['common']['project_dir'])
 
-            if 'name' in project_file_data['common']:
-                self.name = project_file_data['common']['name']
+                if 'core' in project_file_data['common']:
+                    self.core = project_file_data['common']['core'][0]
 
-            if 'mcu' in project_file_data['common']:
-                self.mcu = project_file_data['common']['mcu'][0]
+                if 'target' in project_file_data['common']:
+                    self.target = project_file_data['common']['target'][0]
+
+                if 'name' in project_file_data['common']:
+                    self.name = project_file_data['common']['name']
+
+                if 'mcu' in project_file_data['common']:
+                    self.mcu = project_file_data['common']['mcu'][0]
 
             if 'tool_specific' in project_file_data:
                 for tool_name, tool_settings in project_file_data['tool_specific'].items():
@@ -311,6 +324,7 @@ class Project:
             'mcu': self.mcu,
             'core': self.core,
             'target': self.target,
+            'output_type': self.output_type,
             'include_paths': self.include_paths + tool_specific_settings.include_paths,
             'source_paths': self.source_paths + tool_specific_settings.source_paths,
             'source_files': merge_recursive(self.source_groups,

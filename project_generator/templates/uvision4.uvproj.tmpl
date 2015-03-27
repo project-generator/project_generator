@@ -48,9 +48,9 @@
           </TargetStatus>
           <OutputDirectory>{{output_dir}}</OutputDirectory>
           <OutputName>{{name}}</OutputName>
-          <CreateExecutable>1</CreateExecutable>
-          <CreateLib>0</CreateLib>
-          <CreateHexFile>1</CreateHexFile>
+          <CreateExecutable>{% if output_type == 'exe' %}1{% else %}0{% endif %}</CreateExecutable>
+          <CreateLib>{% if output_type == 'lib' %}1{% else %}0{% endif %}</CreateLib>
+          <CreateHexFile>{% if output_type == 'exe' %}1{% else %}0{% endif %}</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>{{output_dir}}</ListingPath>
