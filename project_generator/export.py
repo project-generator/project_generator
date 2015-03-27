@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+from .update import update
 from .workspace import Workspace
 
 help = 'Export a project record'
@@ -19,7 +20,7 @@ help = 'Export a project record'
 
 def run(args):
     workspace = Workspace(args.file, os.getcwd())
-    workspace.load_definitions(args.defdirectory)
+    update(None, False, False, workspace.settings)
 
     if args.project:
         workspace.export_project(args.project, args.tool)

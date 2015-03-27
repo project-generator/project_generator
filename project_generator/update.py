@@ -19,49 +19,49 @@ from .util import rmtree_if_exists
 
 help = 'Update definitions source repository'
 
-def run(args):
-    config_directory = os.path.expanduser(os.path.join('~', '.pg'))
-    definitions_location = os.path.join(config_directory, 'definitions')
+def update(source=None, force=False, copy=False, settings=ProjectSettings()):
+    if not os.path.exists(settings.config_directory):
+        os.mkdir(settings.config_directory)
 
-    if not os.path.exists(config_directory):
-        os.mkdir(config_directory)
-
-    if args.source:
+    if source:
         # is source remote or local?
-        if args.force:
-            rmtree_if_exists(definitions_location)
-        elif os.path.exists(definitions_location):
+        if force:
+            rmtree_if_exists(settings.definitions_location)
+        elif os.path.exists(settings.definitions_location):
             logging.critical('Definitions location already exists.')
             return
 
-        if os.path.exists(args.source):
+        if os.path.exists(source):
             # local
-            if args.copy:
+            if copy:
                 # copy contents of directory
-                logging.debug('Copying contents of %s to %s' % (args.source, definitions_location))
-                shutil.copytree(args.source, definitions_location)
+                logging.debug('Copying contents of %s to %s' % (source, settings.definitions_location))
+                shutil.copytree(source, settings.definitions_location)
             else:
-                if os.name == 'nt' and not args.copy:
+                if os.name == 'nt' and not copy:
                     logging.warning('Symlink only supported on unix systems')
                     logging.info('Copying directory')
-                    shutil.copytree(args.source, definitions_location)
+                    shutil.copytree(source, settings.definitions_location)
 
                     return
 
-                os.symlink(source, definitions_location)
+                os.symlink(source, settings.definitions_location)
         else:
             # remote
-            cmd = ('git', 'clone', '--quiet', args.source, 'definitions')
+            cmd = ('git', 'clone', '--quiet', source, 'definitions')
 
-            subprocess.call(cmd, cwd=config_directory)
+            subprocess.call(cmd, cwd=settings.config_directory)
     else:
-        if not os.path.exists(definitions_location):
+        if not os.path.exists(settings.definitions_location):
             cmd = ('git', 'clone', '--quiet', 'https://github.com/0xc0170/project_generator_definitions.git', 'definitions')
-            subprocess.call(cmd, cwd=config_directory)
+            subprocess.call(cmd, cwd=settings.config_directory)
         else:
             cmd = ('git', 'pull', '--rebase', '--quiet', 'origin', 'master')
-            subprocess.call(cmd, cwd=definitions_location)
+            subprocess.call(cmd, cwd=settings.definitions_location)
 
+
+def run(args):
+    update(args.source, args.force, args.copy)
         
 
 def setup(subparser):
