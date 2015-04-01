@@ -16,18 +16,19 @@ import logging
 import subprocess
 
 from .util import rmtree_if_exists
+from .settings import ProjectSettings
 
 help = 'Update definitions source repository'
 
 def update(source=None, force=False, copy=False, settings=ProjectSettings()):
-    if not os.path.exists(settings.config_directory):
-        os.mkdir(settings.config_directory)
+    if not os.path.exists(settings.paths['definitions']):
+        os.mkdir(settings.paths['definitions'])
 
     if source:
         # is source remote or local?
         if force:
-            rmtree_if_exists(settings.definitions_location)
-        elif os.path.exists(settings.definitions_location):
+            rmtree_if_exists(settings.paths['definitions'])
+        elif os.path.exists(settings.paths['definitions']):
             logging.critical('Definitions location already exists.')
             return
 
@@ -35,29 +36,30 @@ def update(source=None, force=False, copy=False, settings=ProjectSettings()):
             # local
             if copy:
                 # copy contents of directory
-                logging.debug('Copying contents of %s to %s' % (source, settings.definitions_location))
-                shutil.copytree(source, settings.definitions_location)
+                logging.debug('Copying contents of %s to %s' % (source, settings.paths['definitions']))
+                shutil.copytree(source, settings.paths['definitions'])
             else:
                 if os.name == 'nt' and not copy:
                     logging.warning('Symlink only supported on unix systems')
                     logging.info('Copying directory')
-                    shutil.copytree(source, settings.definitions_location)
+                    shutil.copytree(source, settings.paths['definitions'])
 
                     return
 
-                os.symlink(source, settings.definitions_location)
+                os.symlink(source, settings.paths['definitions'])
         else:
             # remote
             cmd = ('git', 'clone', '--quiet', source, 'definitions')
 
-            subprocess.call(cmd, cwd=settings.config_directory)
+            subprocess.call(cmd, cwd=settings.paths['definitions'])
     else:
-        if not os.path.exists(settings.definitions_location):
+        if not os.path.exists(settings.paths['definitions']):
             cmd = ('git', 'clone', '--quiet', 'https://github.com/0xc0170/project_generator_definitions.git', 'definitions')
-            subprocess.call(cmd, cwd=settings.config_directory)
-        else:
+            subprocess.call(cmd, cwd=settings.paths['definitions'])
+        elif force:
+            # rebase only if force, otherwise use the current version
             cmd = ('git', 'pull', '--rebase', '--quiet', 'origin', 'master')
-            subprocess.call(cmd, cwd=settings.definitions_location)
+            subprocess.call(cmd, cwd=settings.paths['definitions'])
 
 
 def run(args):
