@@ -21,7 +21,9 @@ from .settings import ProjectSettings
 help = 'Update definitions source repository'
 
 def update(source=None, force=False, copy=False, settings=ProjectSettings()):
+    defdir_exists = True
     if not os.path.exists(settings.paths['definitions']):
+        defdir_exists = False
         os.mkdir(settings.paths['definitions'])
 
     if source:
@@ -53,8 +55,8 @@ def update(source=None, force=False, copy=False, settings=ProjectSettings()):
 
             subprocess.call(cmd, cwd=settings.paths['definitions'])
     else:
-        if not os.path.exists(settings.paths['definitions']):
-            cmd = ('git', 'clone', '--quiet', 'https://github.com/0xc0170/project_generator_definitions.git', 'definitions')
+        if not defdir_exists:
+            cmd = ('git', 'clone', '--quiet', 'https://github.com/0xc0170/project_generator_definitions.git', '.')
             subprocess.call(cmd, cwd=settings.paths['definitions'])
         elif force:
             # rebase only if force, otherwise use the current version
