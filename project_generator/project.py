@@ -180,11 +180,11 @@ class Project:
 
             if 'common' in project_file_data:
                 group_name = 'default'
-                if 'output_type' in project_file_data['common']:
-                    if project_file_data['common']['output_type'][0] not in self.output_types:
+                if 'output' in project_file_data['common']:
+                    if project_file_data['common']['output'][0] not in self.output_types:
                         raise RuntimeError("Invalid Output Type.")
 
-                    self.output_type = self.output_types[project_file_data['common']['output_type'][0]]
+                    self.output_type = self.output_types[project_file_data['common']['output'][0]]
 
                 if 'group_name' in project_file_data['common']:
                     group_name = project_file_data['common']['group_name'][0]
