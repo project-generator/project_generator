@@ -37,6 +37,8 @@ class Workspace:
         
         if 'projects' in projects_dict:
             self.projects = {name: Project(name, records, self) for name, records in projects_dict['projects'].items()}
+        else:
+            logging.debug("No projects found in the main record file.")
 
     def export_project(self, project_name, tool):
         if project_name not in self.projects:
