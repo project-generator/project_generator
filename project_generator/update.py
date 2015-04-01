@@ -67,7 +67,7 @@ def run(args):
         
 
 def setup(subparser):
-    subparser.add_argument('-f', '--force', action='store_true', help='Force update of the directory')
+    subparser.add_argument('-f', '--force', action='store_true', help='Force update of the directory', default=True)
     subparser.add_argument('-c', '--copy', action='store_true',
                             help='Copy contents directory instead of symlinking (only for local directories)')
     subparser.add_argument('source', help='Where to get the updates from', nargs='?')
