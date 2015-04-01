@@ -1,4 +1,4 @@
-# Copyright 2014 0xc0170
+# Copyright 2014-2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 from os.path import basename, relpath, join
 
 from .exporter import Exporter
-
+from ..targets import Targets
 
 class MakefileGccArmExporter(Exporter):
 
@@ -99,8 +99,8 @@ class MakefileGccArmExporter(Exporter):
 
         target = Targets(env_settings.get_env_settings('definitions'))
 
-        data['core'] = target.get_tool_def(expanded_dic['target'], 'gcc_arm')
-        
+        data['core'] = target.get_mcu_core(data['target'])[0]
+
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':
             data['core'] = 'cortex-m4'

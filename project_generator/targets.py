@@ -37,11 +37,23 @@ class Targets:
         mcu_path = join(self.definitions_directory, mcu_path) + '.yaml'
         return self._load_record(mcu_path)
 
+    def get_mcu_core(self, target):
+        if target not in self.targets:
+            return None
+        mcu_record = self.get_mcu_record(target)
+        try:
+            return mcu_record['mcu']['core']
+        except KeyError:
+            return None
+
     def get_tool_def(self, target, tool):
         if target not in self.targets:
             return None
         mcu_record = self.get_mcu_record(target)
-        return mcu_record['tool_specific'][tool]
+        try:
+            return mcu_record['tool_specific'][tool]
+        except KeyError:
+            return None
 
     def is_supported(self, target, tool):
         if target not in self.targets:
