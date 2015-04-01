@@ -21,6 +21,7 @@ import pkg_resources
 from . import init
 from . import clean
 from . import export
+from . import update
 from . import list_projects
 
 subcommands = {
@@ -28,6 +29,7 @@ subcommands = {
     'export': export,
     'clean': clean,
     'list': list_projects,
+    'update': update,
 }
 
 

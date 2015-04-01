@@ -162,6 +162,12 @@ class Project:
         self.core = ''
         self.target = ''
 
+        self.output_types = {
+            'executable': 'exe',
+            'library': 'lib'
+        }
+        self.output_type = self.output_types['executable']
+
         self.linker_file = None
         self.tool_specific = defaultdict(ToolSpecificSettings)
 
@@ -174,6 +180,12 @@ class Project:
 
             if 'common' in project_file_data:
                 group_name = 'default'
+                if 'output_type' in project_file_data['common']:
+                    if project_file_data['common']['output_type'] not in self.output_types:
+                        raise RuntimeError("Invalid Output Type.")
+
+                    self.output_type = self.output_types[project_file_data['common']['output_types']]
+
                 if 'group_name' in project_file_data['common']:
                     group_name = project_file_data['common']['group_name'][0]
 
@@ -312,6 +324,7 @@ class Project:
             'mcu': self.mcu,
             'core': self.core,
             'target': self.target,
+            'output_type': self.output_type,
             'include_paths': self.include_paths + tool_specific_settings.include_paths,
             'source_paths': self.source_paths + tool_specific_settings.source_paths,
             'source_files': merge_recursive(self.source_groups,
