@@ -42,6 +42,8 @@ class ProjectSettings:
             'common', 'bin', 'IarBuild.exe')
         self.paths['gcc'] = os.environ.get('ARM_GCC_PATH') or ''
         self.paths['definitions'] = join(expanduser('~/.pg'), 'definitions')
+        if not os.path.exists(join(expanduser('~/.pg'))):
+            os.mkdir(join(expanduser('~/.pg')))
         self.generated_projects_folder = 'generated_projects'
 
     def update(self, updates):
