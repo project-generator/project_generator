@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+from .update import update
 from .workspace import Workspace
-from .tool import load_definitions
+
 help = 'Export a project record'
 
 
 def run(args):
     workspace = Workspace(args.file, os.getcwd())
-    load_definitions(args.defdirectory)
+
+    update(None, False, False, workspace.settings)
 
     if args.project:
         workspace.export_project(args.project, args.tool)
@@ -32,8 +34,10 @@ def run(args):
         if args.build:
             workspace.build_projects(args.project, args.tool)
 
+
 def setup(subparser):
-    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
+    subparser.add_argument(
+        "-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-p", "--project", help="Project to be generated")
     subparser.add_argument(
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")

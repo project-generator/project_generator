@@ -172,40 +172,39 @@ class Project:
             with open(project_file, 'rt') as f:
                 project_file_data = yaml.load(f)
 
-            if 'common' in project_file_data:
-                group_name = 'default'
-                if 'group_name' in project_file_data['common']:
-                    group_name = project_file_data['common']['group_name'][0]
+            group_name = 'default'
+            if 'group_name' in project_file_data['common']:
+                group_name = project_file_data['common']['group_name'][0]
 
-                if 'include_paths' in project_file_data['common']:
-                    self.include_paths.extend(project_file_data['common']['include_paths'])
+            if 'include_paths' in project_file_data['common']:
+                self.include_paths.extend(project_file_data['common']['include_paths'])
 
-                if 'source_paths' in project_file_data['common']:
-                    self.source_paths.extend(
-                        project_file_data['common']['source_paths'])
+            if 'source_paths' in project_file_data['common']:
+                self.source_paths.extend(
+                    project_file_data['common']['source_paths'])
 
-                if 'source_files' in project_file_data['common']:
-                    self._process_source_files(
-                        project_file_data['common']['source_files'], group_name)
+            if 'source_files' in project_file_data['common']:
+                self._process_source_files(
+                    project_file_data['common']['source_files'], group_name)
 
-                if 'macros' in project_file_data['common']:
-                    self.macros.extend(project_file_data['common']['macros'])
+            if 'macros' in project_file_data['common']:
+                self.macros.extend(project_file_data['common']['macros'])
 
-                if 'project_dir' in project_file_data['common']:
-                    self.project_dir.update(
-                        project_file_data['common']['project_dir'])
+            if 'project_dir' in project_file_data['common']:
+                self.project_dir.update(
+                    project_file_data['common']['project_dir'])
 
-                if 'core' in project_file_data['common']:
-                    self.core = project_file_data['common']['core'][0]
+            if 'core' in project_file_data['common']:
+                self.core = project_file_data['common']['core'][0]
 
-                if 'target' in project_file_data['common']:
-                    self.target = project_file_data['common']['target'][0]
+            if 'target' in project_file_data['common']:
+                self.target = project_file_data['common']['target'][0]
 
-                if 'name' in project_file_data['common']:
-                    self.name = project_file_data['common']['name']
+            if 'name' in project_file_data['common']:
+                self.name = project_file_data['common']['name']
 
-                if 'mcu' in project_file_data['common']:
-                    self.mcu = project_file_data['common']['mcu'][0]
+            if 'mcu' in project_file_data['common']:
+                self.mcu = project_file_data['common']['mcu'][0]
 
             if 'tool_specific' in project_file_data:
                 for tool_name, tool_settings in project_file_data['tool_specific'].items():
