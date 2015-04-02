@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, 0xc0170
+# Copyright (c) 2014-2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,7 +32,12 @@ NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)nm
 # application specific
 INSTRUCTION_MODE = thumb
 TARGET = {{name}}
+{% if output_type == 'exe' %}
 TARGET_EXT = elf
+{% else %}
+TARGET_EXT = a
+{% endif %}
+
 LD_SCRIPT = {{rel_path_output}}{{linker_file}}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
@@ -115,18 +120,13 @@ all: create_outputdir $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) print_info
 create_outputdir:
 	$(shell mkdir $(OBJ_FOLDER) 2>/dev/null)
 
+{% if output_type == 'exe' %}
 # Tool invocations
 $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
 	$(LD) $(LD_OPTIONS) $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(LIBS) -o $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT)
 	@echo 'Finished building target: $@'
-	@echo ' '
-
-# Other Targets
-clean:
-	@echo 'Removing entire out directory'
-	$(RM) $(TARGET).$(TARGET_EXT) $(TARGET).bin $(TARGET).map $(OBJ_FOLDER)*.* $(OBJ_FOLDER)
 	@echo ' '
 
 print_info:
@@ -137,5 +137,26 @@ print_info:
 	$(OBJDUMP) -D $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET).lst
 	$(NM) $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
 	@echo ' '
+
+{% else %}
+$(OBJ_FOLDER)$(TARGET).$(TARGET_EXT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
+	@echo 'Building library: $@'
+	$(AR) rcs $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS)
+	@echo 'Finished building library: $@'
+	@echo ' '
+
+print_info:
+	@echo 'Printing size'
+	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT)
+	@echo ' '
+{% endif %}
+
+# Other Targets
+clean:
+	@echo 'Removing entire out directory'
+	$(RM) $(TARGET).$(TARGET_EXT) $(TARGET).bin $(TARGET).map $(OBJ_FOLDER)*.* $(OBJ_FOLDER)
+	@echo ' '
+
+
 
 .PHONY: all clean print_info

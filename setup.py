@@ -13,24 +13,35 @@
 # limitations under the License.
 
 import os
+import pip
+
 from pip.req import parse_requirements
 from setuptools import setup, find_packages
 
-requirements = [str(requirement) for requirement in parse_requirements('requirements.txt')]
+requirements = [str(requirement.req) for requirement in parse_requirements('requirements.txt', session=pip.download.PipSession())]
 
 setup(
     name='project_generator',
-    version='0.4.1',
+    version='0.5',
     description='Project generators for various embedded tools (IDE). IAR, uVision, Makefile and many more in the roadmap!',
     author='Martin Kojtal, Matthew Else',
     author_email='c0170@rocketmail.com, matthewelse1997@gmail.com',
     keywords="c cpp project generator embedded",
     url="https://github.com/0xc0170/project_generator",
+    classifiers= [
+        "Development Status :: 3 - Alpha",
+        "Environment :: Console",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Topic :: Software Development"
+    ],
 
     packages=find_packages(),
     entry_points={
         'console_scripts': [
             "project_generator=project_generator.main:main",
+            "pgen=project_generator.main:main",
         ]
     },
 

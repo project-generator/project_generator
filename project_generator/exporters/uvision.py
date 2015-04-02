@@ -17,11 +17,11 @@ import shutil
 
 from os.path import basename, join, relpath
 
-from . import board_definitions
+# from . import board_definitions
 
 from .exporter import Exporter
 from .uvision_definitions import uVisionDefinitions
-
+from ..targets import Targets
 
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
@@ -134,6 +134,10 @@ class UvisionExporter(Exporter):
             # does not exist, create it
             data['TargetOption'] = mcu_def['TargetOption']
 
+    def normalize_mcu_def(self, mcu_def):
+        for k,v in mcu_def['TargetOption'].items():
+            mcu_def['TargetOption'][k] = v[0]
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for uVision, and run generator """
         expanded_dic = data.copy()
@@ -146,10 +150,12 @@ class UvisionExporter(Exporter):
 
         self.parse_specific_options(expanded_dic)
 
-        if not expanded_dic['mcu']:
-            expanded_dic['mcu'] = board_definitions.get_board_definition(expanded_dic['target'], 'uvision')
-            
-        mcu_def_dic = self.definitions.get_mcu_definition(expanded_dic['mcu'])
+        target = Targets(env_settings.get_env_settings('definitions'))
+
+        mcu_def_dic = target.get_tool_def(expanded_dic['target'], 'uvision')
+        if not mcu_def_dic:
+             raise RuntimeError("Mcu definitions were not found for %s" % expanded_dic['target'])
+        self.normalize_mcu_def(mcu_def_dic)
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
         # set default build directory if unset

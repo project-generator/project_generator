@@ -19,30 +19,21 @@ import logging
 import pkg_resources
 
 from . import init
-from . import load
 from . import clean
 from . import export
-from . import settings
+from . import update
 from . import list_projects
-
-from .builder import ProjectBuilder
-from .generator import ProjectGenerator
-from .settings import ProjectSettings
 
 subcommands = {
     'init': init,
     'export': export,
     'clean': clean,
     'list': list_projects,
-    'load': load
+    'update': update,
 }
 
 
 def main():
-    # Should be launched from project's root
-    root = os.path.normpath(os.getcwd())
-    os.chdir(root)
-
     # Parse Options
     parser = argparse.ArgumentParser()
 
@@ -67,15 +58,12 @@ def main():
     # set the verbosity
     verbosity = args.verbosity - args.quietness
 
-    logging_level = max(logging.DEBUG - (10 * verbosity), 0)
+    logging_level = max(logging.INFO - (10 * verbosity), 0)
     logging.basicConfig(level=logging_level)
 
     logging.debug('This should be the project root: %s', os.getcwd())
 
-    settings = ProjectSettings()
-    generator = ProjectGenerator(settings)
-
-    args.func(generator, settings, args, root)
+    args.func(args)
 
 if __name__ == '__main__':
     main()

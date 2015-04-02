@@ -12,22 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import sys
 import logging
+
+from .project import Project
 
 help = 'Create a project record'
 
 
-def run(generator, settings, args, root):
+def run(args):
     logging.debug("Generating the records.")
-    generator.scrape_dir(args.board, args.directory, args.sources, root)
-    sys.exit()
+
+    root = os.getcwd()
+
+    directory = root if not args.directory else os.path.join(root, args.directory)
+    Project.scrape_dir(root, directory, args.name, args.target, args.sources)
 
 
 def setup(subparser):
     subparser.add_argument(
-        '-bd', '--board', action='store', help='Board definition')
+        'name', help='Project name')
     subparser.add_argument(
-        '-dir', '--directory', action='store', help='Directory selection')
+        '-tar', '--target', action='store', help='Target definition')
+    subparser.add_argument(
+        '-dir', '--directory', action='store', help='Directory selection', default=None)
     subparser.add_argument(
         '-s', '--sources', action='store_true', help='List all files, otherwise only folders for sources.')

@@ -58,7 +58,7 @@
         </option>
         <option>
           <name>GOutputBinary</name>
-          <state>{{iar_settings['GOutputBinary']['state']}}</state>
+          <state>{% if output_type == 'exe' %}0{% else %}1{% endif %}</state>
         </option>
         <option>
           <name>FPU</name>

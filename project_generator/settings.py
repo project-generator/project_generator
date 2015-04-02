@@ -21,10 +21,10 @@ GCC_BIN_PATH
 """
 
 import os
+from os.path import expanduser
 import yaml
 
 from os.path import join, pardir, sep
-from .yaml_parser import YAML_parser, _finditem
 
 class ProjectSettings:
     PROJECT_ROOT = os.environ.get('PROJECT_GENERATOR_ROOT') or join(pardir, pardir)
@@ -41,26 +41,21 @@ class ProjectSettings:
             'IAR Systems', 'Embedded Workbench 7.0',
             'common', 'bin', 'IarBuild.exe')
         self.paths['gcc'] = os.environ.get('ARM_GCC_PATH') or ''
+        self.paths['definitions'] = join(expanduser('~/.pg'), 'definitions')
+        if not os.path.exists(join(expanduser('~/.pg'))):
+            os.mkdir(join(expanduser('~/.pg')))
+        self.generated_projects_folder = 'generated_projects'
 
-    def load_env_settings(self, config_file):
-        """ Loads predefined settings if any, otherwise default used. """
-        settings = 0
-        try:
-            for k, v in config_file.items():
-                if k == 'settings':
-                    settings = v
-        except KeyError:
-            pass
-        if settings:
-            uvision = _finditem(settings, 'uvision')
-            if uvision:
-                self.paths['uvision'] = uvision
-            iar = _finditem(settings, 'iar')
-            if iar:
-                self.paths['iar'] = iar
-            gcc = _finditem(settings, 'gcc')
-            if gcc:
-                self.paths['gcc'] = gcc
+    def update(self, updates):
+        for k, v in updates['paths'].items():
+            if k in self.paths:
+                self.paths[k] = v
+
+        if 'generated_projects_folder' in updates:
+            self.generated_projects_folder = updates['generated_projects_folder']
+
+    def set_definitions_file(self, def_dir):
+        self.paths['definitions'] = def_dir
 
     def get_env_settings(self, env_set):
         return self.paths[env_set]

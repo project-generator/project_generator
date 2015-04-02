@@ -1,4 +1,4 @@
-# Copyright 2014 0xc0170
+# Copyright 2014-2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +14,8 @@
 
 from os.path import basename, relpath, join
 
-from . import board_definitions
-
 from .exporter import Exporter
-
+from ..targets import Targets
 
 class MakefileGccArmExporter(Exporter):
 
@@ -84,6 +82,8 @@ class MakefileGccArmExporter(Exporter):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.process_data_for_makefile(data, env_settings)
 
+        data['linker_options'] =[]
+
         project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "make_gcc_arm", data[
             'project_dir']['path'], data['project_dir']['name'])
         return project_path, [makefile]
@@ -97,9 +97,10 @@ class MakefileGccArmExporter(Exporter):
         data['toolchain'] = 'arm-none-eabi-'
         data['toolchain_bin_path'] = env_settings.get_env_settings('gcc')
 
-        if not data['core']:
-            data['core'] = board_definitions.get_board_definition(data['target'], 'gcc')
-        
+        target = Targets(env_settings.get_env_settings('definitions'))
+
+        data['core'] = target.get_mcu_core(data['target'])[0]
+
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':
             data['core'] = 'cortex-m4'

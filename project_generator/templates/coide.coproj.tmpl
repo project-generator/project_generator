@@ -42,7 +42,7 @@
         <LocateLinkFile path="{{rel_path_output}}{{linker_file}}" type="0"/>
       </Link>
       <Output>
-        <Option name="OutputFileType" value="{{coide_settings['Output']['OutputFileType']}}"/>
+        <Option name="OutputFileType" value="{% if output_type == 'exe' %}0{% else %}1{% endif %}"/>
         <Option name="Path" value="./"/>
         <Option name="Name" value="{{name}}"/>
         <Option name="HEX" value="{{coide_settings['Output']['HEX']}}"/>

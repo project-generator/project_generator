@@ -1,4 +1,3 @@
-# Copyright 2014 Matthew Else
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,17 +10,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import shutil
 
-from nose.tools import *
-from os.path import abspath
-import sys
-
-# Enable us to import all of the other code.
-from project_generator.builders.builder import Builder
-
-
-# Makes sure that exporting using generic builder will fail.
-@raises(NotImplementedError)
-def test_exporter_location():
-    b = Builder()
-    b.build_project('', '')
+def rmtree_if_exists(directory):
+    if os.path.exists(directory):
+        shutil.rmtree(directory)
