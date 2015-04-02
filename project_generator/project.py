@@ -63,10 +63,10 @@ class ToolSpecificSettings:
                 data_dictionary['source_files'], group_name)
 
         if 'include_paths' in data_dictionary:
-            self.include_paths += data_dictionary['include_paths']
+            self.include_paths.extend([x for x in data_dictionary['include_paths'] if x is not None])
 
         if 'macros' in data_dictionary:
-            self.macros.extend(data_dictionary['macros'])
+            self.macros.extend([x for x in data_dictionary['macros'] if x is not None])
 
         if 'project_dir' in data_dictionary:
             self.project_dir.update(data_dictionary['project_dir'])
@@ -174,6 +174,8 @@ class Project:
         self.project_path = None
         self.project_name = None
 
+        source_paths = []
+
         for project_file in project_files:
             with open(project_file, 'rt') as f:
                 project_file_data = yaml.load(f)
@@ -190,18 +192,20 @@ class Project:
                     group_name = project_file_data['common']['group_name'][0]
 
                 if 'include_paths' in project_file_data['common']:
-                    self.include_paths.extend(project_file_data['common']['include_paths'])
+                    self.include_paths.extend(
+                        [x for x in project_file_data['common']['include_paths'] if x is not None])
 
                 if 'source_paths' in project_file_data['common']:
                     self.source_paths.extend(
-                        project_file_data['common']['source_paths'])
+                        [x for x in project_file_data['common']['source_paths'] if x is not None])
 
                 if 'source_files' in project_file_data['common']:
-                    self._process_source_files(
+                    source_paths = self._process_source_files(
                         project_file_data['common']['source_files'], group_name)
 
                 if 'macros' in project_file_data['common']:
-                    self.macros.extend(project_file_data['common']['macros'])
+                    self.macros.extend(
+                        [x for x in project_file_data['common']['macros'] if x is not None])
 
                 if 'project_dir' in project_file_data['common']:
                     self.project_dir.update(
@@ -224,13 +228,15 @@ class Project:
                     self.tool_specific[tool_name].add_settings(
                         tool_settings, group_name)
 
+        # No include paths - take from source files dir
         if self.include_paths == []:
-            self.include_paths = self.source_paths
+            self.include_paths = source_paths
 
         if self.project_dir['path'] == '':
             self.project_dir['path'] = self.workspace.settings.generated_projects_folder
 
     def _process_source_files(self, files, group_name):
+        source_paths = []
         extensions = ['cpp', 'c', 's', 'obj', 'lib']
 
         mappings = defaultdict(lambda: None)
@@ -245,6 +251,7 @@ class Project:
 
         for source_file in files:
             if os.path.isdir(source_file):
+                source_paths.append(source_file)
                 self._process_source_files([os.path.join(source_file, f) for f in os.listdir(
                     source_file) if os.path.isfile(os.path.join(source_file, f))], group_name)
 
@@ -261,6 +268,8 @@ class Project:
 
             if os.path.dirname(source_file) not in self.source_paths:
                 self.source_paths.append(os.path.dirname(source_file))
+
+        return source_paths
 
     def clean(self, tool):
         if tool is None:
