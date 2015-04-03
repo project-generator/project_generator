@@ -1,0 +1,22 @@
+{
+    "folders":
+    [
+        {% for group_name,files in groups.items() %}
+        {
+            "path": {{group_name}},
+        },
+        {% endfor %}
+    ],
+    "settings":
+    {
+        "tab_size": 4,
+        "translate_tabs_to_spaces": true,
+    },
+    "build_systems":
+    [
+        {
+            "name": "List",
+            "cmd": ["ls"]
+        }
+    ]
+}

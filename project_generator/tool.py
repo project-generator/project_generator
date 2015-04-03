@@ -38,12 +38,14 @@ EXPORTERS = {
     'eclipse_make_gcc_arm': EclipseGnuARMExporter,
     'gdb' : GDBExporter,
     'arm_none_eabi_gdb' : ARMNoneEABIGDBExporter,
+    'sublime_gcc' : 
 }
 
 BUILDERS = {
     'uvision': UvisionBuilder,
     'make_gcc_arm': MakefileGccArmBuilder,
     'iar_arm': IARBuilder,
+    'sublime_gcc': MakefileGccArmBuilder,
 }
 
 def export(data, tool, env_settings):
