@@ -29,7 +29,7 @@
 	</natures>
 	<linkedResources> {% for group_name,files in groups.items() %} {% for file in files %}
 		<link>
-			<name>{{file.name}}</name>
+			<name>{{group_name}}/{{file.name}}</name>
 			<type>1</type>
 			<locationURI>{{file.path}}</locationURI>
 		</link> {% endfor %}{% endfor %}
