@@ -14,7 +14,7 @@
 
 import copy
 
-from os.path import basename, join, relpath
+from os.path import basename, join, relpath, normpath
 
 from .exporter import Exporter
 from .coide_definitions import CoIDEdefinitions
@@ -28,7 +28,7 @@ class CoideExporter(Exporter):
     def __init__(self):
         self.definitions = CoIDEdefinitions()
 
-    def expand_data(self, old_data, new_data, attribute, group):
+    def expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ data expansion - uvision needs filename and path separately. """
         if group == 'Sources':
             old_group = None
@@ -37,7 +37,7 @@ class CoideExporter(Exporter):
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
-                new_file = {"path": file, "name": basename(
+                new_file = {"path": rel_path + normpath(file), "name": basename(
                     file), "type": self.file_types[extension]}
                 new_data['groups'][group].append(new_file)
 
@@ -54,7 +54,7 @@ class CoideExporter(Exporter):
                             groups.append(k)
         return groups
 
-    def iterate(self, data, expanded_data):
+    def iterate(self, data, expanded_data, rel_path):
         """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
@@ -63,7 +63,7 @@ class CoideExporter(Exporter):
                         group = 'Sources'
                     else:
                         group = k
-                    self.expand_data(dic, expanded_data, attribute, group)
+                    self.expand_data(dic, expanded_data, attribute, group, rel_path)
 
     def parse_specific_options(self, data):
         """ Parse all CoIDE specific setttings. """
@@ -88,6 +88,20 @@ class CoideExporter(Exporter):
         for k,v in mcu_def['MemoryAreas']['IRAM2'].items():
             mcu_def['MemoryAreas']['IRAM2'][k] = v[0]
 
+    def fix_paths(self, data, rel_path):
+        fixed_paths = []
+        for path in data['include_paths']:
+            fixed_paths.append(join(rel_path, normpath(path)))
+        data['include_paths'] = fixed_paths
+        fixed_paths = []
+        for path in data['source_files_lib']:
+            fixed_paths.append(join(rel_path, normpath(path)))
+        data['source_files_lib'] = fixed_paths
+        fixed_paths = []
+        for path in data['source_files_obj']:
+            fixed_paths.append(join(rel_path, normpath(path)))
+        data['linker_file'] = join(rel_path, normpath(data['linker_file']))
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = data.copy()
@@ -96,7 +110,9 @@ class CoideExporter(Exporter):
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self.iterate(data, expanded_dic)
+        dest = self.get_dest_path(expanded_dic, "coide", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
+        self.iterate(data, expanded_dic, dest['rel_path'])
+        self.fix_paths(expanded_dic, dest['rel_path'])
 
         expanded_dic['coide_settings'] = {}
         self.parse_specific_options(expanded_dic)
@@ -110,5 +126,5 @@ class CoideExporter(Exporter):
 
         # Project file
         project_path, projfile = self.gen_file(
-            'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], "coide", data['project_dir']['path'], data['project_dir']['name'])
+            'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], dest['dest_path'])
         return project_path, [projfile]

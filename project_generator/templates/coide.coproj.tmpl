@@ -11,7 +11,7 @@
         <Option name="UseFPU" value="0"/>
         <Option name="UserEditCompiler" value="{% for flag in coide_settings['Compile']['UserEditCompiler'] %}-{{flag}};{% endfor%}"/>
         <Includepaths>
-          {% for path in include_paths %} <Includepath path="{{rel_path_output}}{{path}}"/>{% endfor %}
+          {% for path in include_paths %} <Includepath path="{{path}}"/>{% endfor %}
         </Includepaths>
         <DefinedSymbols>
           {% for s in macros %} <Define name="{{s}}"/>{% endfor %}
@@ -39,7 +39,7 @@
           <Memory name="IROM2" type="ReadOnly" size="{{coide_settings['MemoryAreas']['IROM2']['size']}}" startValue="{{coide_settings['MemoryAreas']['IROM2']['startValue']}}"/>
           <Memory name="IRAM2" type="ReadWrite" size="{{coide_settings['MemoryAreas']['IRAM2']['size']}}" startValue="{{coide_settings['MemoryAreas']['IRAM2']['startValue']}}"/>
         </MemoryAreas>
-        <LocateLinkFile path="{{rel_path_output}}{{linker_file}}" type="0"/>
+        <LocateLinkFile path="{{linker_file}}" type="0"/>
       </Link>
       <Output>
         <Option name="OutputFileType" value="{% if output_type == 'exe' %}0{% else %}1{% endif %}"/>
@@ -79,7 +79,7 @@
     {% for group_name, files in groups.items() %}
     <File name="{{group_name}}" path="" type="2"/>
     {% for file in files %}
-    <File name="{{group_name}}/{{file.name}}" path="{{rel_path_output}}{{file.path}}" type="{{file.type}}"/>
+    <File name="{{group_name}}/{{file.name}}" path="{{file.path}}" type="{{file.type}}"/>
     {% endfor %}
     {% endfor %}
   </Files>
