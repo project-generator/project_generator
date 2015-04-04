@@ -14,6 +14,7 @@
 
 from os.path import basename, relpath, join
 
+from .gccarm import MakefileGccArmExporter
 from .exporter import Exporter
 from ..targets import Targets
 
@@ -25,10 +26,10 @@ class SublimeTextExporter(MakefileGccArmExporter):
 
         data['linker_options'] =[]
 
-        project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'SublimeText', "sublime_gcc", data[
+        project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "sublime_gcc_arm", data[
             'project_dir']['path'], data['project_dir']['name'])
 
-        sublimeproject = self.gen_file('sublimetext.sublime-project.tmpl', data, 'SublimeText', "sublime_gcc", data[
+        sublimeproject = self.gen_file('sublimetext.sublime-project.tmpl', data, '%s.sublime-project' % data['name'], "sublime_gcc_arm", data[
             'project_dir']['path'], data['project_dir']['name'])
 
         return project_path, [makefile, sublimeproject]

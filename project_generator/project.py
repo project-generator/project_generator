@@ -136,6 +136,7 @@ class Project:
         'coide': 'gcc_arm',
         'make_gcc_arm': 'gcc_arm',
         'eclipse_make_gcc_arm': 'gcc_arm',
+        'sublime_gcc_arm' : 'gcc_arm',
     }
 
     def __init__(self, name, project_files, workspace):

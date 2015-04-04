@@ -24,6 +24,7 @@ from .exporters.uvision import UvisionExporter
 from .exporters.eclipse import EclipseGnuARMExporter
 from .exporters.gdb import GDBExporter
 from .exporters.gdb import ARMNoneEABIGDBExporter
+from .exporters.sublimetext import SublimeTextExporter
 from .targets import Targets
 # builders
 from .builders.iar import IARBuilder
@@ -38,14 +39,14 @@ EXPORTERS = {
     'eclipse_make_gcc_arm': EclipseGnuARMExporter,
     'gdb' : GDBExporter,
     'arm_none_eabi_gdb' : ARMNoneEABIGDBExporter,
-    'sublime_gcc' : 
+    'sublime_gcc_arm' : SublimeTextExporter,
 }
 
 BUILDERS = {
     'uvision': UvisionBuilder,
     'make_gcc_arm': MakefileGccArmBuilder,
     'iar_arm': IARBuilder,
-    'sublime_gcc': MakefileGccArmBuilder,
+    'sublime_gcc_arm': MakefileGccArmBuilder,
 }
 
 def export(data, tool, env_settings):
