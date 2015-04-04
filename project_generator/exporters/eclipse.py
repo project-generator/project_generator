@@ -14,7 +14,8 @@
 
 import copy
 
-from os.path import basename, join, relpath, normpath
+# eclipse works with linux paths
+from posixpath import normpath, join, basename, relpath
 
 from .exporter import Exporter
 from .gccarm import MakefileGccArmExporter
@@ -35,11 +36,13 @@ class EclipseGnuARMExporter(Exporter):
             old_group = None
         else:
             old_group = group
-        for file in old_data[old_group]:
-            if file:
-                extension = file.split(".")[-1]
-                new_file = {"path": join('PARENT-%s-PROJECT_LOC' % new_data['rel_count'], normpath(file)), "name": basename(
-                    file), "type": self.file_types[extension]}
+        for source in old_data[old_group]:
+            if source:
+                extension = source.split(".")[-1]
+                # TODO: fix - workaround for windows, seems posixpath does not work
+                source = source.replace('\\', '/')
+                new_file = {"path": join('PARENT-%s-PROJECT_LOC' % new_data['rel_count'], normpath(source)), "name": basename(
+                    source), "type": self.file_types[extension]}
                 new_data['groups'][group].append(new_file)
 
     def get_groups(self, data):
