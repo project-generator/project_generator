@@ -296,7 +296,7 @@
         <option>
           <name>CCIncludePath2</name>
         {% for path in include_paths %}
-          <state>$PROJ_DIR$\{{rel_path_output}}{{path}}</state>
+          <state>{{path}}</state>
         {% endfor %}
         </option>
         <option>
@@ -924,7 +924,7 @@
     <name>{{group_name}}</name>
     {% for file in files %}
       <file>
-        <name>$PROJ_DIR$\{{rel_path_output}}{{file}}</name>
+        <name>{{file}}</name>
       </file>
     {% endfor %}
   </group>
