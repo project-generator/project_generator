@@ -49,6 +49,7 @@ class Exporter:
         count = len(os.path.split(project_dir))
         rel_path_output = ''
 
+        dest['rel_count'] = count
         while count:
             rel_path_output = join('..', rel_path_output)
             count = count - 1
