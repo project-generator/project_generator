@@ -41,7 +41,7 @@ class UvisionExporter(Exporter):
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
-                new_file = {"path": rel_path + file, "name": basename(
+                new_file = {"path": rel_path + normpath(file), "name": basename(
                     file), "filetype": self.file_types[extension]}
                 new_data['groups'][group].append(new_file)
 
@@ -143,6 +143,14 @@ class UvisionExporter(Exporter):
         for path in data['include_paths']:
             fixed_paths.append(join(rel_path, normpath(path)))
         data['include_paths'] = fixed_paths
+        fixed_paths = []
+        for path in data['source_files_lib']:
+            fixed_paths.append(join(rel_path, normpath(path)))
+        data['source_files_lib'] = fixed_paths
+        fixed_paths = []
+        for path in data['source_files_obj']:
+            fixed_paths.append(join(rel_path, normpath(path)))
+        data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for uVision, and run generator """

@@ -23,12 +23,13 @@ class ARMNoneEABIGDBExporter(GDBExporter):
     def generate(self, data, env_settings):
         expanded_dic = data.copy()
         
-        # !!! TODO: store and read settings from gdb_definitions 
+        # !!! TODO: store and read settings from gdb_definitions
         expanded_dic['gdb_server_port'] = 3333
 
+        dest = self.get_dest_path(expanded_dic, "gdb", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
+
         project_path, startupfile = self.gen_file(
-            'gdb.tmpl', expanded_dic, '%s.gdbstartup' % data['name'], "gdb", data['project_dir']['path'], data['project_dir']['name']
-        )
+            'gdb.tmpl', expanded_dic, '%s.gdbstartup' % data['name'], dest['dest_path'])
         return project_path, [startupfile]
 
     def supports_target(self, target):
