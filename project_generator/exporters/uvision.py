@@ -15,7 +15,7 @@
 import copy
 import shutil
 
-from os.path import basename, join, relpath
+from os.path import basename, join, relpath, normpath
 
 # from . import board_definitions
 
@@ -32,7 +32,7 @@ class UvisionExporter(Exporter):
     def __init__(self):
         self.definitions = uVisionDefinitions()
 
-    def expand_data(self, old_data, new_data, attribute, group):
+    def expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ data expansion - uvision needs filename and path separately. """
         if group == 'Sources':
             old_group = None
@@ -41,11 +41,11 @@ class UvisionExporter(Exporter):
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
-                new_file = {"path": file, "name": basename(
+                new_file = {"path": rel_path + file, "name": basename(
                     file), "filetype": self.file_types[extension]}
                 new_data['groups'][group].append(new_file)
 
-    def iterate(self, data, expanded_data):
+    def iterate(self, data, expanded_data, rel_path):
         """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
@@ -54,7 +54,7 @@ class UvisionExporter(Exporter):
                         group = 'Sources'
                     else:
                         group = k
-                    self.expand_data(dic, expanded_data, attribute, group)
+                    self.expand_data(dic, expanded_data, attribute, group, rel_path)
 
     def parse_specific_options(self, data):
         """ Parse all uvision specific setttings. """
@@ -138,6 +138,12 @@ class UvisionExporter(Exporter):
         for k,v in mcu_def['TargetOption'].items():
             mcu_def['TargetOption'][k] = v[0]
 
+    def fix_paths(self, data, rel_path):
+        fixed_paths = []
+        for path in data['include_paths']:
+            fixed_paths.append(join(rel_path, normpath(path)))
+        data['include_paths'] = fixed_paths
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for uVision, and run generator """
         expanded_dic = data.copy()
@@ -146,7 +152,10 @@ class UvisionExporter(Exporter):
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self.iterate(data, expanded_dic)
+        # get relative path and fix all paths within a project
+        dest = self.get_dest_path(expanded_dic, "uvision", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
+        self.iterate(data, expanded_dic, dest['rel_path'])
+        self.fix_paths(expanded_dic, dest['rel_path'])
 
         self.parse_specific_options(expanded_dic)
 
@@ -167,9 +176,9 @@ class UvisionExporter(Exporter):
 
         # Project file
         project_path, projfile = self.gen_file(
-            'uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], "uvision", data['project_dir']['path'], data['project_dir']['name'])
+            'uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], dest['dest_path'])
         project_path, optfile = self.gen_file(
-            'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], "uvision", data['project_dir']['path'], data['project_dir']['name'])
+            'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], dest['dest_path'])
         return project_path, [projfile, optfile]
 
     def fixup_executable(self, exe_path):
