@@ -42,7 +42,7 @@ class IAREWARMExporter(Exporter):
             old_group = group
         for file in old_data[old_group]:
             if file:
-                new_data['groups'][group].append(join('$PROJ_DIR$', rel_path, file))
+                new_data['groups'][group].append(join('$PROJ_DIR$', rel_path, normpath(file)))
 
     def iterate(self, data, expanded_data, rel_path):
         """ Iterate through all data, store the result expansion in extended dictionary. """
@@ -103,6 +103,15 @@ class IAREWARMExporter(Exporter):
         for path in data['include_paths']:
             fixed_paths.append(join('$PROJ_DIR$', rel_path, normpath(path)))
         data['include_paths'] = fixed_paths
+        fixed_paths = []
+        for path in data['source_files_lib']:
+            fixed_paths.append(join('$PROJ_DIR$', rel_path, normpath(path)))
+        data['source_files_lib'] = fixed_paths
+        fixed_paths = []
+        for path in data['source_files_obj']:
+            fixed_paths.append(join('$PROJ_DIR$', rel_path, normpath(path)))
+        data['source_files_obj'] = fixed_paths
+        data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))
 
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for IAR, and run generator """
