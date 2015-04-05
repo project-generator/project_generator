@@ -139,6 +139,15 @@ class Project:
         'sublime_make_gcc_arm' : 'gcc_arm',
     }
 
+    TOOLS = {
+        'iar_arm': 'iar',
+        'uvision': 'uvision',
+        'coide': 'coide',
+        'make_gcc_arm': 'make_gcc_arm',
+        'eclipse_make_gcc_arm': 'make_gcc_arm',
+        'sublime_make_gcc_arm' : 'make_gcc_arm',
+    }
+
     def __init__(self, name, project_files, workspace):
         """initialise a project with a yaml file"""
 
@@ -322,8 +331,8 @@ class Project:
 
     def generate_dict_for_tool(self, tool):
         """for backwards compatibility"""
-        tool_specific_settings = self.tool_specific[self.TOOLCHAINS[tool]]
-        toolchain_specific_settings = self.tool_specific[tool]
+        toolchain_specific_settings = self.tool_specific[self.TOOLCHAINS[tool]]
+        tool_specific_settings = self.tool_specific[self.TOOLS[tool]]
 
         if tool == self.TOOLCHAINS[tool]:
             # make sure we don't get duplicates :)
