@@ -138,26 +138,39 @@ class Project:
 
     """represents a project, which can be formed of many yaml files"""
 
-    # tool - toolchain
-    TOOLCHAINS = {
-        'iar_arm': 'iar',
-        'uvision': 'uvision',
-        'coide': 'gcc_arm',
-        'make_gcc_arm': 'gcc_arm',
-        'eclipse_make_gcc_arm': 'gcc_arm',
-        'sublime_make_gcc_arm' : 'gcc_arm',
+    # Tools dictionary, defines toolchain and all tools used
+    TOOLS = {
+        'iar_arm': {
+            'toolchain' : 'iar',
+            'toolnames' : ['iar_arm'],
+        },
+        'uvision': {
+            'toolchain' : 'uvision',
+            'toolnames' : ['uvision'],
+        },
+        'coide': {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['coide'],
+        },
+        'make_gcc_arm': {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['make_gcc_arm'],
+        },
+        'eclipse_make_gcc_arm': {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['eclipse_make_gcc_arm', 'make_gcc_arm'],
+        },
+        'sublime_make_gcc_arm' : {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
+        },
+        'sublime' : {
+            'toolchain' : None,
+            'toolnames' : ['sublime'],
+        },
     }
 
-    # tool - can consists of multiple tools
-    TOOLS = {
-        'iar_arm': ['iar_arm'],
-        'uvision': ['uvision'],
-        'coide': ['coide'],
-        'make_gcc_arm': ['make_gcc_arm'],
-        'eclipse_make_gcc_arm': ['make_gcc_arm'],
-        'sublime' : ['sublime'],
-        'sublime_make_gcc_arm' : ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
-    }
+    TOOLCHAINS = list(set([v['toolchain'] for k,v in TOOLS.items() if v['toolchain'] is not None]))
 
     def __init__(self, name, project_files, workspace):
         """initialise a project with a yaml file"""
@@ -342,14 +355,13 @@ class Project:
 
     def generate_dict_for_tool(self, tool):
         """for backwards compatibility"""
-        toolchain_specific_settings = self.tool_specific[self.TOOLCHAINS[tool]]
-        tool_specific_settings = []
-        for tool_spec in self.TOOLS[tool]:
-            tool_specific_settings.append(self.tool_specific[self.TOOLS[tool_spec][0]])
-
-        if tool == self.TOOLCHAINS[tool]:
-            # make sure we don't get duplicates :)
-            tool_specific_settings = [ToolSpecificSettings()]
+        try:
+            toolchain_specific_settings = self.tool_specific[self.TOOLS[tool]['toolchain']]
+            tool_specific_settings = []
+        except KeyError:
+            raise RuntimeError("Tool: %s not recognized." % tool)
+        for tool_spec in self.TOOLS[tool]['toolnames']:
+            tool_specific_settings.append(self.tool_specific[tool_spec])
 
         d = {
             'name': self.name,
