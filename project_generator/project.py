@@ -39,6 +39,12 @@ def merge_recursive(*args):
     else:
         return reduce(operator.add, args)
 
+def add_to_list(destination, source):
+    for member in source:
+        if member:
+            destination.append(member)
+    return destination
+
 class ToolSpecificSettings:
 
     """represents the settings that are specifc to targets"""
@@ -130,6 +136,7 @@ class Project:
 
     """represents a project, which can be formed of many yaml files"""
 
+    # tool - toolchain
     TOOLCHAINS = {
         'iar_arm': 'iar',
         'uvision': 'uvision',
@@ -139,13 +146,15 @@ class Project:
         'sublime_make_gcc_arm' : 'gcc_arm',
     }
 
+    # tool - multiple tools support
     TOOLS = {
-        'iar_arm': 'iar',
-        'uvision': 'uvision',
-        'coide': 'coide',
-        'make_gcc_arm': 'make_gcc_arm',
-        'eclipse_make_gcc_arm': 'make_gcc_arm',
-        'sublime_make_gcc_arm' : 'make_gcc_arm',
+        'iar_arm': ['iar_arm'],
+        'uvision': ['uvision'],
+        'coide': ['coide'],
+        'make_gcc_arm': ['make_gcc_arm'],
+        'eclipse_make_gcc_arm': ['make_gcc_arm'],
+        'sublime' : ['sublime'],
+        'sublime_make_gcc_arm' : ['make_gcc_arm', 'sublime'],
     }
 
     def __init__(self, name, project_files, workspace):
@@ -332,11 +341,13 @@ class Project:
     def generate_dict_for_tool(self, tool):
         """for backwards compatibility"""
         toolchain_specific_settings = self.tool_specific[self.TOOLCHAINS[tool]]
-        tool_specific_settings = self.tool_specific[self.TOOLS[tool]]
+        tool_specific_settings = []
+        for tool_spec in self.TOOLS[tool]:
+            tool_specific_settings.append(self.tool_specific[self.TOOLS[tool_spec][0]])
 
         if tool == self.TOOLCHAINS[tool]:
             # make sure we don't get duplicates :)
-            tool_specific_settings = ToolSpecificSettings()
+            tool_specific_settings = [ToolSpecificSettings()]
 
         d = {
             'name': self.name,
@@ -344,37 +355,40 @@ class Project:
             'core': self.core,
             'target': self.target,
             'output_type': self.output_type,
-            'include_paths': self.include_paths + tool_specific_settings.include_paths,
-            'source_paths': self.source_paths + tool_specific_settings.source_paths,
+            'include_paths': add_to_list(self.include_paths, [settings.include_paths for settings in tool_specific_settings]),
+            'source_paths': add_to_list(self.source_paths, [settings.source_paths for settings in tool_specific_settings]),
             'source_files': merge_recursive(self.source_groups,
-                                            tool_specific_settings.source_groups,
+                                            { k: v for settings in tool_specific_settings for k, v in settings.source_groups.items() },
                                             toolchain_specific_settings.source_groups),
             # for backwards compatibility
             'source_files_c': [merge_recursive(self.source_of_type('c'),
-                                               tool_specific_settings.source_of_type('c'),
+                                               { k: v for settings in [settings.source_of_type('c') for settings in tool_specific_settings] for k, v in settings.items() },
                                                toolchain_specific_settings.source_of_type('c'))],
             'source_files_cpp': [merge_recursive(self.source_of_type('cpp'),
-                                                 tool_specific_settings.source_of_type('cpp'),
+                                                 { k: v for settings in [settings.source_of_type('cpp') for settings in tool_specific_settings] for k, v in settings.items() },
                                                  toolchain_specific_settings.source_of_type('cpp'))],
             'source_files_s': [merge_recursive(self.source_of_type('s'),
-                                               tool_specific_settings.source_of_type('s'),
+                                               { k: v for settings in [settings.source_of_type('s') for settings in tool_specific_settings] for k, v in settings.items() },
                                                toolchain_specific_settings.source_of_type('s'))],
             'source_files_obj': self.all_sources_of_type('obj') +
-                                tool_specific_settings.all_sources_of_type('obj') +
-                                toolchain_specific_settings.all_sources_of_type('obj'),
+                                               [list().append(settings.all_sources_of_type('obj') for settings in tool_specific_settings)] +
+                                               toolchain_specific_settings.all_sources_of_type('obj'),
             'source_files_lib': self.all_sources_of_type('lib') +
-                                tool_specific_settings.all_sources_of_type('lib') +
-                                toolchain_specific_settings.all_sources_of_type('lib'),
-            'linker_file': tool_specific_settings.linker_file
+                                               [list().append(settings.all_sources_of_type('lib') for settings in tool_specific_settings)] +
+                                               toolchain_specific_settings.all_sources_of_type('lib'),
+            'linker_file': tool_specific_settings[0].linker_file
                         or toolchain_specific_settings.linker_file
                         or self.linker_file,
             'macros': self.macros +
-                      tool_specific_settings.macros +
+                      list(set([macro for macro in settings.macros for settings in tool_specific_settings])) +
                       toolchain_specific_settings.macros,
-            'misc': [merge_recursive(tool_specific_settings.misc, toolchain_specific_settings.misc)],
+            'misc': [merge_recursive({ k: v for settings in tool_specific_settings for k, v in settings.misc.items() },
+                        toolchain_specific_settings.misc)],
             'project_dir': self.project_dir
         }
-
+        # TOOD - fix the above list().append and these 2
+        d['source_files_obj'] = [x for x in d['source_files_obj'] if x is not None]
+        d['source_files_lib'] = [x for x in d['source_files_lib'] if x is not None]
         return d
 
     @staticmethod
