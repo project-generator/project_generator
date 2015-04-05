@@ -39,11 +39,13 @@ def merge_recursive(*args):
     else:
         return reduce(operator.add, args)
 
-def add_to_list(destination, source):
-    for member in source:
-        if member:
-            destination.append(member)
-    return destination
+def flatten(*args):
+    for x in args:
+        if hasattr(x, '__iter__'):
+            for y in flatten(*x):
+                yield y
+        else:
+            yield x
 
 class ToolSpecificSettings:
 
@@ -146,7 +148,7 @@ class Project:
         'sublime_make_gcc_arm' : 'gcc_arm',
     }
 
-    # tool - multiple tools support
+    # tool - can consists of multiple tools
     TOOLS = {
         'iar_arm': ['iar_arm'],
         'uvision': ['uvision'],
@@ -154,7 +156,7 @@ class Project:
         'make_gcc_arm': ['make_gcc_arm'],
         'eclipse_make_gcc_arm': ['make_gcc_arm'],
         'sublime' : ['sublime'],
-        'sublime_make_gcc_arm' : ['make_gcc_arm', 'sublime'],
+        'sublime_make_gcc_arm' : ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
     }
 
     def __init__(self, name, project_files, workspace):
@@ -355,8 +357,8 @@ class Project:
             'core': self.core,
             'target': self.target,
             'output_type': self.output_type,
-            'include_paths': add_to_list(self.include_paths, [settings.include_paths for settings in tool_specific_settings]),
-            'source_paths': add_to_list(self.source_paths, [settings.source_paths for settings in tool_specific_settings]),
+            'include_paths': self.include_paths + list(flatten([settings.include_paths for settings in tool_specific_settings])),
+            'source_paths': self.source_paths + list(flatten([settings.source_paths for settings in tool_specific_settings])),
             'source_files': merge_recursive(self.source_groups,
                                             { k: v for settings in tool_specific_settings for k, v in settings.source_groups.items() },
                                             toolchain_specific_settings.source_groups),
@@ -371,24 +373,21 @@ class Project:
                                                { k: v for settings in [settings.source_of_type('s') for settings in tool_specific_settings] for k, v in settings.items() },
                                                toolchain_specific_settings.source_of_type('s'))],
             'source_files_obj': self.all_sources_of_type('obj') +
-                                               [list().append(settings.all_sources_of_type('obj') for settings in tool_specific_settings)] +
+                                               list(flatten([settings.all_sources_of_type('obj') for settings in tool_specific_settings])) +
                                                toolchain_specific_settings.all_sources_of_type('obj'),
             'source_files_lib': self.all_sources_of_type('lib') +
-                                               [list().append(settings.all_sources_of_type('lib') for settings in tool_specific_settings)] +
+                                               list(flatten([settings.all_sources_of_type('lib') for settings in tool_specific_settings])) +
                                                toolchain_specific_settings.all_sources_of_type('lib'),
             'linker_file': tool_specific_settings[0].linker_file
                         or toolchain_specific_settings.linker_file
                         or self.linker_file,
             'macros': self.macros +
-                      list(set([macro for macro in settings.macros for settings in tool_specific_settings])) +
+                      list(flatten([ settings.macros for settings in tool_specific_settings])) +
                       toolchain_specific_settings.macros,
             'misc': [merge_recursive({ k: v for settings in tool_specific_settings for k, v in settings.misc.items() },
                         toolchain_specific_settings.misc)],
             'project_dir': self.project_dir
         }
-        # TOOD - fix the above list().append and these 2
-        d['source_files_obj'] = [x for x in d['source_files_obj'] if x is not None]
-        d['source_files_lib'] = [x for x in d['source_files_lib'] if x is not None]
         return d
 
     @staticmethod
