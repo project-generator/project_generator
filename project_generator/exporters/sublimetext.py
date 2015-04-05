@@ -29,7 +29,7 @@ class SublimeTextExporter(MakefileGccArmExporter):
 
     def generate(self, data, env_settings):
         """ Processes misc options specific for GCC ARM, and run generator. """
-        self.process_data_for_makefile(data, env_settings, "sublime_gcc_arm")
+        self.process_data_for_makefile(data, env_settings, "sublime_make_gcc_arm")
         self.fix_sublime_paths(data)
         data['linker_options'] =[]
 
