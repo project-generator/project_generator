@@ -19,19 +19,7 @@ import operator
 
 from collections import defaultdict
 
-from .tool import build, export
-
-from .builders.iar import IARBuilder
-from .builders.gccarm import MakefileGccArmBuilder
-from .builders.uvision import UvisionBuilder
-from .exporters.iar import IAREWARMExporter
-from .exporters.coide import CoideExporter
-from .exporters.gccarm import MakefileGccArmExporter
-from .exporters.uvision import UvisionExporter
-from .exporters.eclipse import EclipseGnuARMExporter
-from .exporters.gdb import GDBExporter
-from .exporters.gdb import ARMNoneEABIGDBExporter
-from .exporters.sublimetext import SublimeTextMakeGccARMExporter
+from .tool import build, export, ToolsSupported
 
 try:
     input = raw_input
@@ -150,54 +138,6 @@ class Project:
 
     """represents a project, which can be formed of many yaml files"""
 
-    # Tools dictionary, defines toolchain and all tools used
-    TOOLS = {
-        'iar_arm': {
-            'toolchain' : 'iar',
-            'toolnames' : ['iar_arm'],
-            'exporter' : IAREWARMExporter,
-            'builder' : IARBuilder,
-        },
-        'uvision': {
-            'toolchain' : 'uvision',
-            'toolnames' : ['uvision'],
-            'exporter' : UvisionExporter,
-            'builder' : UvisionBuilder,
-        },
-        'coide': {
-            'toolchain' : 'gcc_arm',
-            'toolnames' : ['coide'],
-            'exporter' : CoideExporter,
-            'builder' : None,
-        },
-        'make_gcc_arm': {
-            'toolchain' : 'gcc_arm',
-            'toolnames' : ['make_gcc_arm'],
-            'exporter' : MakefileGccArmExporter,
-            'builder' : MakefileGccArmBuilder,
-        },
-        'eclipse_make_gcc_arm': {
-            'toolchain' : 'gcc_arm',
-            'toolnames' : ['eclipse_make_gcc_arm', 'make_gcc_arm'],
-            'exporter' : EclipseGnuARMExporter,
-            'builder' : None,
-        },
-        'sublime_make_gcc_arm' : {
-            'toolchain' : 'gcc_arm',
-            'toolnames' : ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
-            'exporter' : SublimeTextMakeGccARMExporter,
-            'builder' : MakefileGccArmBuilder,
-        },
-        'sublime' : {
-            'toolchain' : None,
-            'toolnames' : ['sublime'],
-            'exporter' : None,
-            'builder' : None,
-        },
-    }
-
-    TOOLCHAINS = list(set([v['toolchain'] for k,v in TOOLS.items() if v['toolchain'] is not None]))
-
     def __init__(self, name, project_files, workspace):
         """initialise a project with a yaml file"""
 
@@ -233,6 +173,7 @@ class Project:
 
         self.project_path = None
         self.project_name = None
+        self.tools = ToolsSupported()
 
         source_paths = []
 
@@ -347,19 +288,12 @@ class Project:
 
     def build(self, tool):
         """build the project"""
-        try:
-            builder = self.TOOLS[tool]['builder']()
-        except (KeyError, TypeError):
-            raise RuntimeError("Exporter does not support specified tool: %s" % tool)
-
+        builder = self.tools.get_value(tool, 'builder')
         build(builder, self.name, self.project_files, tool, self.workspace.settings)
 
     def export(self, tool):
         """export the project"""
-        try:
-            exporter = self.TOOLS[tool]['exporter']()
-        except (KeyError, TypeError):
-            raise RuntimeError("Exporter does not support specified tool: %s" % tool)
+        exporter = self.tools.get_value(tool, 'exporter')
 
         project_path, project_files = export(exporter,
             self.generate_dict_for_tool(tool), tool, self.workspace.settings)
@@ -391,12 +325,10 @@ class Project:
 
     def generate_dict_for_tool(self, tool):
         """for backwards compatibility"""
-        try:
-            toolchain_specific_settings = self.tool_specific[self.TOOLS[tool]['toolchain']]
-            tool_specific_settings = []
-        except (KeyError, TypeError):
-            raise RuntimeError("Tool: %s not recognized." % tool)
-        for tool_spec in self.TOOLS[tool]['toolnames']:
+        toolchain_specific_settings =  self.tool_specific[self.tools.get_value(tool, 'toolchain')]
+        tool_specific_settings = []
+        toolnames = self.tools.get_value(tool, 'toolnames')
+        for tool_spec in toolnames:
             tool_specific_settings.append(self.tool_specific[tool_spec])
 
         d = {
@@ -439,10 +371,7 @@ class Project:
         return d
 
     def fixup_executable(executable_path, tool):
-        try:
-            exporter = self.TOOLS[tool]['exporter']()
-        except (KeyError, TypeError):
-            raise RuntimeError("Exporter does not support specified tool: %s" % tool)
+        exporter =  self.tools.get_value(tool, 'exporter')
         fixup_executable(exporter, executable_path, tool)
 
     @staticmethod

@@ -18,16 +18,97 @@ import subprocess
 
 from .targets import Targets
 
-# TODO - these 4 functions below can be probbly removed completely
+from .builders.iar import IARBuilder
+from .builders.gccarm import MakefileGccArmBuilder
+from .builders.uvision import UvisionBuilder
+from .exporters.iar import IAREWARMExporter
+from .exporters.coide import CoideExporter
+from .exporters.gccarm import MakefileGccArmExporter
+from .exporters.uvision import UvisionExporter
+from .exporters.eclipse import EclipseGnuARMExporter
+from .exporters.gdb import GDBExporter
+from .exporters.gdb import ARMNoneEABIGDBExporter
+from .exporters.sublimetext import SublimeTextMakeGccARMExporter
+
+
+class ToolsSupported:
+    """ Represents all tools available """
+
+    # Tools dictionary, defines toolchain and all tools used
+    TOOLS = {
+        'iar_arm': {
+            'toolchain' : 'iar',
+            'toolnames' : ['iar_arm'],
+            'exporter' : IAREWARMExporter,
+            'builder' : IARBuilder,
+        },
+        'uvision': {
+            'toolchain' : 'uvision',
+            'toolnames' : ['uvision'],
+            'exporter' : UvisionExporter,
+            'builder' : UvisionBuilder,
+        },
+        'coide': {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['coide'],
+            'exporter' : CoideExporter,
+            'builder' : None,
+        },
+        'make_gcc_arm': {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['make_gcc_arm'],
+            'exporter' : MakefileGccArmExporter,
+            'builder' : MakefileGccArmBuilder,
+        },
+        'eclipse_make_gcc_arm': {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['eclipse_make_gcc_arm', 'make_gcc_arm'],
+            'exporter' : EclipseGnuARMExporter,
+            'builder' : None,
+        },
+        'sublime_make_gcc_arm' : {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
+            'exporter' : SublimeTextMakeGccARMExporter,
+            'builder' : MakefileGccArmBuilder,
+        },
+        'sublime' : {
+            'toolchain' : None,
+            'toolnames' : ['sublime'],
+            'exporter' : None,
+            'builder' : None,
+        },
+        'gdb' : {
+            'toolchain' : None,
+            'toolnames' : ['gdb'],
+            'exporter' : GDBExporter,
+            'builder' : None,
+        },
+        'arm_none_eabi_gdb' : {
+            'toolchain' : None,
+            'toolnames' : ['gdb'],
+            'exporter' : ARMNoneEABIGDBExporter,
+            'builder' : None,
+        },
+    }
+
+    TOOLCHAINS = list(set([v['toolchain'] for k,v in TOOLS.items() if v['toolchain'] is not None]))
+
+    def get_value(self, tool, key):
+        try:
+            value = self.TOOLS[tool][key]
+        except (KeyError, TypeError):
+            raise RuntimeError("%s does not support specified tool: %s" % (key, tool))
+        return value
 
 def export(exporter, data, tool, env_settings):
     """ Invokes tool generator. """
-    project_path, projectfiles = exporter.generate(data, env_settings)
+    project_path, projectfiles = exporter().generate(data, env_settings)
     return project_path, projectfiles
 
 def fixup_executable(exporter, executable_path, tool):
     """ Perform any munging of the executable necessary to debug it with the specified tool. """
-    return exporter.fixup_executable(executable_path)
+    return exporter().fixup_executable(executable_path)
 
 def target_supported(target, tool, env_settings):
     Target = Targets(env_settings.get_env_settings('definitions'))
@@ -35,7 +116,7 @@ def target_supported(target, tool, env_settings):
 
 def build(builder, project_name, project_files, tool, env_settings):
     """ Invokes builder for specified tool. """
-    builder.build_project(project_name, project_files, env_settings)
+    builder().build_project(project_name, project_files, env_settings)
 
 def load_definitions(def_dir=None):
     definitions_directory = def_dir
