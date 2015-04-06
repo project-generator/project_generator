@@ -18,7 +18,7 @@ from .gccarm import MakefileGccArmExporter
 from .exporter import Exporter
 from ..targets import Targets
 
-class SublimeTextExporter(MakefileGccArmExporter):
+class SublimeTextMakeGccARMExporter(MakefileGccArmExporter):
 
     def fix_sublime_paths(self, data):
         fixed_paths = []
