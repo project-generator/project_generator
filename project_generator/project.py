@@ -353,11 +353,11 @@ class Project:
                                                { k: v for settings in [settings.source_of_type('s') for settings in tool_specific_settings] for k, v in settings.items() },
                                                toolchain_specific_settings.source_of_type('s'))],
             'source_files_obj': self.all_sources_of_type('obj') +
-                                               list(flatten([settings.all_sources_of_type('obj') for settings in tool_specific_settings])) +
-                                               toolchain_specific_settings.all_sources_of_type('obj'),
+                                list(flatten([settings.all_sources_of_type('obj') for settings in tool_specific_settings])) +
+                                toolchain_specific_settings.all_sources_of_type('obj'),
             'source_files_lib': self.all_sources_of_type('lib') +
-                                               list(flatten([settings.all_sources_of_type('lib') for settings in tool_specific_settings])) +
-                                               toolchain_specific_settings.all_sources_of_type('lib'),
+                                list(flatten([settings.all_sources_of_type('lib') for settings in tool_specific_settings])) +
+                                toolchain_specific_settings.all_sources_of_type('lib'),
             'linker_file': tool_specific_settings[0].linker_file
                         or toolchain_specific_settings.linker_file
                         or self.linker_file,
@@ -365,7 +365,7 @@ class Project:
                       list(flatten([ settings.macros for settings in tool_specific_settings])) +
                       toolchain_specific_settings.macros,
             'misc': [merge_recursive({ k: v for settings in tool_specific_settings for k, v in settings.misc.items() },
-                        toolchain_specific_settings.misc)],
+                                     toolchain_specific_settings.misc)],
             'project_dir': self.project_dir
         }
         return d
