@@ -1,4 +1,5 @@
-# Copyright 2014-2015 0xc0170
+{#
+# Copyright 2015
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,16 +12,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
-from .workspace import Workspace
-
-help = 'List all projects'
-
-
-def run(args):
-    workspace = Workspace(args.file, os.getcwd())
-    workspace.list_projects()
-
-
-def setup(subparser):
-    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
+#}
+{
+    "folders":
+    [
+        {% for i in range(source_paths|length) %}
+        {
+            "path":"{{source_paths[i]}}"
+        {% if i == source_paths|length-1 %}
+        }
+        {% else %}
+        },
+        {% endif %}
+        {% endfor %}
+    ],
+    "build_systems":
+    [
+        {
+            "name": "{{buildsys_name}}",
+            "cmd": ["{{buildsys_cmd}}"]
+        }
+    ]
+}

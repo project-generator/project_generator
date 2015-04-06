@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, relpath, join
+from os.path import basename, relpath, join, normpath
 
 from .exporter import Exporter
 from ..targets import Targets
@@ -21,14 +21,14 @@ class MakefileGccArmExporter(Exporter):
 
     optimization_options = ['O0', 'O1', 'O2', 'O3', 'Os']
 
-    def list_files(self, data, attribute):
+    def list_files(self, data, attribute, rel_path):
         """ Creates a list of all files based on the attribute. """
         file_list = []
         for groups in data[attribute]:
             try:
                 for k, v in groups.items():
                     for file in v:
-                        file_list.append(file)
+                        file_list.append(join(rel_path, normpath(file)))
             except:
                 continue
         data[attribute] = file_list
@@ -78,20 +78,41 @@ class MakefileGccArmExporter(Exporter):
                 self.cc_standard(k, v, data)
                 self.c_standard(k, v, data)
 
+    def fix_paths(self, data, name):
+        # get relative path and fix all paths within a project
+        data.update(self.get_dest_path(data, name, data['project_dir']['path'], data['project_dir']['name']))
+        fixed_paths = []
+        for path in data['include_paths']:
+            fixed_paths.append(join(data['rel_path'], normpath(path)))
+        data['include_paths'] = fixed_paths
+        fixed_paths = []
+        for path in data['source_files_lib']:
+            fixed_paths.append(join(data['rel_path'], normpath(path)))
+        data['source_files_lib'] = fixed_paths
+        fixed_paths = []
+        for path in data['source_files_obj']:
+            fixed_paths.append(join(data['rel_path'], normpath(path)))
+        data['source_files_obj'] = fixed_paths
+        fixed_paths = []
+        for path in data['source_paths']:
+            fixed_paths.append(join(data['rel_path'], normpath(path)))
+        data['source_paths'] = fixed_paths
+        data['linker_file'] = join(data['rel_path'], normpath(data['linker_file']))
+
     def generate(self, data, env_settings):
         """ Processes misc options specific for GCC ARM, and run generator. """
-        self.process_data_for_makefile(data, env_settings)
+        self.process_data_for_makefile(data, env_settings, "make_gcc_arm")
 
         data['linker_options'] =[]
 
-        project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', "make_gcc_arm", data[
-            'project_dir']['path'], data['project_dir']['name'])
+        project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', data['dest_path'])
         return project_path, [makefile]
 
-    def process_data_for_makefile(self, data, env_settings):
-        self.list_files(data, 'source_files_c')
-        self.list_files(data, 'source_files_cpp')
-        self.list_files(data, 'source_files_s')
+    def process_data_for_makefile(self, data, env_settings, name):
+        self.fix_paths(data, name)
+        self.list_files(data, 'source_files_c', data['rel_path'])
+        self.list_files(data, 'source_files_cpp', data['rel_path'])
+        self.list_files(data, 'source_files_s', data['rel_path'])
 
         self.parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'

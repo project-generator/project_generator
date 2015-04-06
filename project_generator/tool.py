@@ -16,7 +16,11 @@ import os
 import logging
 import subprocess
 
-# exporters
+from .targets import Targets
+
+from .builders.iar import IARBuilder
+from .builders.gccarm import MakefileGccArmBuilder
+from .builders.uvision import UvisionBuilder
 from .exporters.iar import IAREWARMExporter
 from .exporters.coide import CoideExporter
 from .exporters.gccarm import MakefileGccArmExporter
@@ -24,55 +28,104 @@ from .exporters.uvision import UvisionExporter
 from .exporters.eclipse import EclipseGnuARMExporter
 from .exporters.gdb import GDBExporter
 from .exporters.gdb import ARMNoneEABIGDBExporter
-from .targets import Targets
-# builders
-from .builders.iar import IARBuilder
-from .builders.gccarm import MakefileGccArmBuilder
-from .builders.uvision import UvisionBuilder
+from .exporters.sublimetext import SublimeTextMakeGccARMExporter
 
-EXPORTERS = {
-    'uvision': UvisionExporter,
-    'make_gcc_arm': MakefileGccArmExporter,
-    'iar_arm': IAREWARMExporter,
-    'coide': CoideExporter,
-    'eclipse_make_gcc_arm': EclipseGnuARMExporter,
-    'gdb' : GDBExporter,
-    'arm_none_eabi_gdb' : ARMNoneEABIGDBExporter,
-}
 
-BUILDERS = {
-    'uvision': UvisionBuilder,
-    'make_gcc_arm': MakefileGccArmBuilder,
-    'iar_arm': IARBuilder,
-}
+class ToolsSupported:
+    """ Represents all tools available """
 
-def export(data, tool, env_settings):
+    # Tools dictionary, defines toolchain and all tools used
+    TOOLS = {
+        'iar_arm': {
+            'toolchain' : 'iar',
+            'toolnames' : ['iar_arm'],
+            'exporter' : IAREWARMExporter,
+            'builder' : IARBuilder,
+        },
+        'uvision': {
+            'toolchain' : 'uvision',
+            'toolnames' : ['uvision'],
+            'exporter' : UvisionExporter,
+            'builder' : UvisionBuilder,
+        },
+        'coide': {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['coide'],
+            'exporter' : CoideExporter,
+            'builder' : None,
+        },
+        'make_gcc_arm': {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['make_gcc_arm'],
+            'exporter' : MakefileGccArmExporter,
+            'builder' : MakefileGccArmBuilder,
+        },
+        'eclipse_make_gcc_arm': {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['eclipse_make_gcc_arm', 'make_gcc_arm'],
+            'exporter' : EclipseGnuARMExporter,
+            'builder' : None,
+        },
+        'sublime_make_gcc_arm' : {
+            'toolchain' : 'gcc_arm',
+            'toolnames' : ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
+            'exporter' : SublimeTextMakeGccARMExporter,
+            'builder' : MakefileGccArmBuilder,
+        },
+        'sublime' : {
+            'toolchain' : None,
+            'toolnames' : ['sublime'],
+            'exporter' : None,
+            'builder' : None,
+        },
+        'gdb' : {
+            'toolchain' : None,
+            'toolnames' : ['gdb'],
+            'exporter' : GDBExporter,
+            'builder' : None,
+        },
+        'arm_none_eabi_gdb' : {
+            'toolchain' : None,
+            'toolnames' : ['gdb'],
+            'exporter' : ARMNoneEABIGDBExporter,
+            'builder' : None,
+        },
+    }
+
+    TOOLCHAINS = list(set([v['toolchain'] for k,v in TOOLS.items() if v['toolchain'] is not None]))
+
+    def get_value(self, tool, key):
+        try:
+            value = self.TOOLS[tool][key]
+        except (KeyError, TypeError):
+            raise RuntimeError("%s does not support specified tool: %s" % (key, tool))
+        return value
+
+def export(exporter, data, tool, env_settings):
     """ Invokes tool generator. """
-    if tool not in EXPORTERS:
+    try:
+        project_path, projectfiles = exporter().generate(data, env_settings)
+    except TypeError:
         raise RuntimeError("Exporter does not support specified tool: %s" % tool)
-
-    Exporter = EXPORTERS[tool]
-    exporter = Exporter()
-    project_path, projectfiles = exporter.generate(data, env_settings)
     return project_path, projectfiles
 
-def fixup_executable(executable_path, tool):
+def fixup_executable(exporter, executable_path, tool):
     """ Perform any munging of the executable necessary to debug it with the specified tool. """
-    exporter = EXPORTERS[tool]()
-    return exporter.fixup_executable(executable_path)
+    try:
+        return exporter().fixup_executable(executable_path)
+    except TypeError:
+        raise RuntimeError("Exporter does not support specified tool: %s" % tool)
 
 def target_supported(target, tool, env_settings):
     Target = Targets(env_settings.get_env_settings('definitions'))
     return Target.is_supported(target, tool)
 
-def build(project_name, project_files, tool, env_settings):
+def build(builder, project_name, project_files, tool, env_settings):
     """ Invokes builder for specified tool. """
-    if tool not in BUILDERS:
-        raise RuntimeError("Builder does not support specified tool.")
-
-    Builder = BUILDERS[tool]
-    builder = Builder()
-    builder.build_project(project_name, project_files, env_settings)
+    try:
+        builder().build_project(project_name, project_files, env_settings)
+    except TypeError:
+        raise RuntimeError("Builder does not support specified tool: %s" % tool)
 
 def load_definitions(def_dir=None):
     definitions_directory = def_dir

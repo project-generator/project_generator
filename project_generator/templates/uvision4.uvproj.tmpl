@@ -346,7 +346,7 @@
               <MiscControls>{% for f in Cads['MiscControls'] %}{{f}} {% endfor %}</MiscControls>
               <Define>{% for s in macros %} {{s}}, {% endfor %}</Define>
               <Undefine></Undefine>
-              <IncludePath> {% for path in include_paths %} {{rel_path_output}}{{path}}; {% endfor %} </IncludePath>
+              <IncludePath> {% for path in include_paths %} {{path}}; {% endfor %} </IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -374,7 +374,7 @@
             <useFile>{{LDads['useFile']}}</useFile>
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x10000000</DataAddressRange>
-            <ScatterFile>{{rel_path_output}}{{linker_file}}</ScatterFile>
+            <ScatterFile>{{linker_file}}</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>
@@ -394,7 +394,7 @@
             <File>
               <FileName>{{file.name}}</FileName>
               <FileType>{{file.filetype}}</FileType>
-              <FilePath>{{rel_path_output}}{{file.path}}</FilePath>
+              <FilePath>{{file.path}}</FilePath>
             </File>
             {% endfor %}
             {% endif %}

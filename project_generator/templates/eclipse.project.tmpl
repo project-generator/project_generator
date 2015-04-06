@@ -29,9 +29,9 @@
 	</natures>
 	<linkedResources> {% for group_name,files in groups.items() %} {% for file in files %}
 		<link>
-			<name>{{file.name}}</name>
+			<name>{{group_name}}/{{file.name}}</name>
 			<type>1</type>
-			<locationURI>PARENT-{{rel_path_count}}-PROJECT_LOC/{{file.path}}</locationURI>
+			<locationURI>{{file.path}}</locationURI>
 		</link> {% endfor %}{% endfor %}
 	</linkedResources>
 </projectDescription>
