@@ -103,12 +103,18 @@ class ToolsSupported:
 
 def export(exporter, data, tool, env_settings):
     """ Invokes tool generator. """
-    project_path, projectfiles = exporter().generate(data, env_settings)
+    try:
+        project_path, projectfiles = exporter().generate(data, env_settings)
+    except TypeError:
+        raise RuntimeError("Exporter does not support specified tool: %s" % tool)
     return project_path, projectfiles
 
 def fixup_executable(exporter, executable_path, tool):
     """ Perform any munging of the executable necessary to debug it with the specified tool. """
-    return exporter().fixup_executable(executable_path)
+    try:
+        return exporter().fixup_executable(executable_path)
+    except TypeError:
+        raise RuntimeError("Exporter does not support specified tool: %s" % tool)
 
 def target_supported(target, tool, env_settings):
     Target = Targets(env_settings.get_env_settings('definitions'))
@@ -116,7 +122,10 @@ def target_supported(target, tool, env_settings):
 
 def build(builder, project_name, project_files, tool, env_settings):
     """ Invokes builder for specified tool. """
-    builder().build_project(project_name, project_files, env_settings)
+    try:
+        builder().build_project(project_name, project_files, env_settings)
+    except TypeError:
+        raise RuntimeError("Builder does not support specified tool: %s" % tool)
 
 def load_definitions(def_dir=None):
     definitions_directory = def_dir
