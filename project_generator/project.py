@@ -295,8 +295,10 @@ class Project:
         """export the project"""
         exporter = self.tools.get_value(tool, 'exporter')
 
+        proj_dic = self.generate_dict_for_tool(tool)
+        logging.debug("Project dict: %s" % proj_dic)
         project_path, project_files = export(exporter,
-            self.generate_dict_for_tool(tool), tool, self.workspace.settings)
+            proj_dic, tool, self.workspace.settings)
 
         self.project_path = project_path
         self.project_files = project_files
