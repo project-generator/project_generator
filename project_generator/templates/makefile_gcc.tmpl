@@ -76,8 +76,8 @@ ASFLAGS = $(COMPILER_OPTIONS) $(INC_DIRS_F) -c
 
 # Linker options
 LD_OPTIONS = -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -{{optimization_level}} -T $(LD_SCRIPT) $(INC_DIRS_F)
-LD_OPTIONS += -specs=nano.specs {% for option in linker_options %} -{{option}} {% endfor %}
-LD_OPTIONS += -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--gc-sections
+LD_OPTIONS += -specs=nano.specs {% for option in linker_options %}-{{option}} {% endfor %}
+LD_OPTIONS += -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map
 
 OBJCPFLAGS = -O ihex
 
@@ -134,7 +134,7 @@ $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJ
 print_info:
 	@echo 'Printing size'
 	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT)
-	$(OBJCOPY) -O srec $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(OBJ_FOLDER)$(TARGET).s19
+	$(OBJCOPY) -O ihex $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(OBJ_FOLDER)$(TARGET).hex
 	$(OBJCOPY) -O binary -v $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(OBJ_FOLDER)$(TARGET).bin
 	$(OBJDUMP) -D $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET).lst
 	$(NM) $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt

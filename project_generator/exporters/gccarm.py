@@ -78,6 +78,11 @@ class MakefileGccArmExporter(Exporter):
                 self.cc_standard(k, v, data)
                 self.c_standard(k, v, data)
 
+        data['linker_options'] = []
+        for dic in data['misc']:
+            for k, v in dic.items():
+                self.linker_options(k, v, data)
+
     def fix_paths(self, data, name):
         # get relative path and fix all paths within a project
         data.update(self.get_dest_path(data, name, data['project_dir']['path'], data['project_dir']['name']))
@@ -102,9 +107,6 @@ class MakefileGccArmExporter(Exporter):
     def generate(self, data, env_settings):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.process_data_for_makefile(data, env_settings, "make_gcc_arm")
-
-        data['linker_options'] =[]
-
         project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'Makefile', data['dest_path'])
         return project_path, [makefile]
 
