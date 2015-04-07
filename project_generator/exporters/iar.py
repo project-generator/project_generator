@@ -14,6 +14,7 @@
 
 from os.path import basename, join, relpath, normpath
 import copy
+import logging
 
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions
@@ -133,6 +134,7 @@ class IAREWARMExporter(Exporter):
         if not mcu_def_dic:
              raise RuntimeError("Mcu definitions were not found for %s" % expanded_dic['target'])
         self.normalize_mcu_def(mcu_def_dic)
+        logging.debug("Mcu definitions: %s" % mcu_def_dic)
         expanded_dic['iar_settings'].update(mcu_def_dic)
 
         project_path, ewp = self.gen_file('iar.ewp.tmpl', expanded_dic, '%s.ewp' %

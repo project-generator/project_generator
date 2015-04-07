@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import copy
+import logging
 
 from os.path import basename, join, relpath, normpath
 
@@ -122,6 +123,7 @@ class CoideExporter(Exporter):
         if not mcu_def_dic:
              raise RuntimeError("Mcu definitions were not found for %s" % expanded_dic['target'])
         self.normalize_mcu_def(mcu_def_dic)
+        logging.debug("Mcu definitions: %s" % mcu_def_dic)
         expanded_dic['coide_settings'].update(mcu_def_dic)
 
         # Project file
