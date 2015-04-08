@@ -56,7 +56,7 @@ class Targets:
             return None
 
     def is_supported(self, target, tool):
-        if target not in self.targets:
+        if target.lower() not in self.targets:
             return False
         mcu_record = self.get_mcu_record(target)
         # Look at tool specific options which define tools supported for mcu

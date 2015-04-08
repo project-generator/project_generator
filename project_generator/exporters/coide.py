@@ -119,9 +119,9 @@ class CoideExporter(Exporter):
         self.parse_specific_options(expanded_dic)
 
         target = Targets(env_settings.get_env_settings('definitions'))
-        mcu_def_dic = target.get_tool_def(expanded_dic['target'], 'coide')
+        mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'coide')
         if not mcu_def_dic:
-             raise RuntimeError("Mcu definitions were not found for %s" % expanded_dic['target'])
+             raise RuntimeError("Mcu definitions were not found for %s" % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         expanded_dic['coide_settings'].update(mcu_def_dic)
