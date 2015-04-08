@@ -62,6 +62,15 @@ def update(source=None, force=False, copy=False, settings=ProjectSettings()):
             # rebase only if force, otherwise use the current version
             cmd = ('git', 'pull', '--rebase', '--quiet', 'origin', 'master')
             subprocess.call(cmd, cwd=settings.paths['definitions'])
+        else:
+            # check if we are on top of origin/master
+            cmd = ('git', 'diff', 'master', 'origin/master', '--quiet')
+            p = subprocess.call(cmd, cwd=settings.paths['definitions'])
+            # any output means we are behind the master, update
+            if p:
+                logging.debug("Definitions are behind the origin/master, rebasing.")
+                cmd = ('git', 'pull', '--rebase', '--quiet', 'origin', 'master')
+                subprocess.call(cmd, cwd=settings.paths['definitions'])
 
 
 def run(args):
