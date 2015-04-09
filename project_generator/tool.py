@@ -116,9 +116,16 @@ def fixup_executable(exporter, executable_path, tool):
     except TypeError:
         raise RuntimeError("Exporter does not support specified tool: %s" % tool)
 
-def target_supported(target, tool, env_settings):
-    Target = Targets(env_settings.get_env_settings('definitions'))
-    return Target.is_supported(target, tool)
+def target_supported(exporter, target, tool, env_settings):
+    try:
+        supported = exporter().is_supported_by_default(target)
+    except TypeError:
+        raise RuntimeError("Target does not support specified tool: %s" % tool)
+    # target requires further definitions for exporter
+    if not supported:
+        Target = Targets(env_settings.get_env_settings('definitions'))
+        supported = Target.is_supported(target, tool)
+    return supported
 
 def build(builder, project_name, project_files, tool, env_settings):
     """ Invokes builder for specified tool. """

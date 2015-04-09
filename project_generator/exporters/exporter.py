@@ -72,3 +72,6 @@ class Exporter:
 
     def fixup_executable(self, exe_path):
         return exe_path
+
+    def is_supported_by_default(self, target):
+        return False

@@ -16,6 +16,9 @@ class GDBExporter(Exporter):
         # !!! TODO: should be yes for native targets
         return False
 
+    def is_supported_by_default(self, target):
+        # does not require additional information
+        return True
 
 class ARMNoneEABIGDBExporter(GDBExporter):
     SUPPORTED = gdb_definitions.SUPPORTED_MCUS
@@ -35,3 +38,6 @@ class ARMNoneEABIGDBExporter(GDBExporter):
     def supports_target(self, target):
         return target in self.SUPPORTED
 
+    def is_supported_by_default(self, target):
+        # does not require additional information
+        return True
