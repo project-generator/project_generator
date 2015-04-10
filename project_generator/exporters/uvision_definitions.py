@@ -49,9 +49,9 @@ class uVisionDefinitions():
             'DataAddressRange': 0,  # RW address range
             'IncludeLibs': 0,
             'IncludeLibsPath': 0,
-            'Misc': 0,              # Misc controls
+            'Misc': [],             # Misc controls
             'LinkerInputFile': 0,   # Scatter file
-            'DisabledWarnings': [],  # Disable warnings
+            'DisabledWarnings': [], # Disable warnings
         },
 
         # Assembly settings

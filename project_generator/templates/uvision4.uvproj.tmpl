@@ -372,13 +372,12 @@
             <noStLib>{{LDads['noStLib']}}</noStLib>
             <RepFail>{{LDads['RepFail']}}</RepFail>
             <useFile>{{LDads['useFile']}}</useFile>
-            <TextAddressRange>0x00000000</TextAddressRange>
-            <DataAddressRange>0x10000000</DataAddressRange>
+            <TextAddressRange>{{LDads['TextAddressRange']}}</TextAddressRange>
+            <DataAddressRange>{{LDads['DataAddressRange']}}</DataAddressRange>
             <ScatterFile>{{linker_file}}</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc>
-            </Misc>
+            <Misc>{% for misc in LDads['Misc'] %} {{misc}} {% endfor %}</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings>{% for diswarn in LDads['DisabledWarnings'] %} {{diswarn}} {% endfor %}</DisabledWarnings>
           </LDads>
