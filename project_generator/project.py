@@ -331,7 +331,8 @@ class Project:
         tool_specific_settings = []
         toolnames = self.tools.get_value(tool, 'toolnames')
         for tool_spec in toolnames:
-            tool_specific_settings.append(self.tool_specific[tool_spec])
+            if tool != tool_spec:
+                tool_specific_settings.append(self.tool_specific[tool_spec])
 
         d = {
             'name': self.name,
@@ -360,9 +361,8 @@ class Project:
             'source_files_lib': self.all_sources_of_type('lib') +
                                 list(flatten([settings.all_sources_of_type('lib') for settings in tool_specific_settings])) +
                                 toolchain_specific_settings.all_sources_of_type('lib'),
-            'linker_file': tool_specific_settings[0].linker_file
-                        or toolchain_specific_settings.linker_file
-                        or self.linker_file,
+            'linker_file': self.linker_file
+                        or toolchain_specific_settings.linker_file,
             'macros': self.macros +
                       list(flatten([ settings.macros for settings in tool_specific_settings])) +
                       toolchain_specific_settings.macros,

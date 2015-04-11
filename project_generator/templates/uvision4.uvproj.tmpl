@@ -359,10 +359,10 @@
             <NoWarn>{{Aads['NoWarn']}}</NoWarn>
             <uSurpInc>{{Aads['uSurpInc']}}</uSurpInc>
             <VariousControls>
-              <MiscControls></MiscControls>
-              <Define></Define>
+              <MiscControls>{% for f in Aads['MiscControls'] %}{{f}} {% endfor %}</MiscControls>
+              <Define>{% for s in macros %} {{s}}, {% endfor %}</Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>{% for path in Aads['IncludePath'] %} {{path}}; {% endfor %}</IncludePath>
             </VariousControls>
           </Aads>
           <LDads>
@@ -372,13 +372,12 @@
             <noStLib>{{LDads['noStLib']}}</noStLib>
             <RepFail>{{LDads['RepFail']}}</RepFail>
             <useFile>{{LDads['useFile']}}</useFile>
-            <TextAddressRange>0x00000000</TextAddressRange>
-            <DataAddressRange>0x10000000</DataAddressRange>
+            <TextAddressRange>{{LDads['TextAddressRange']}}</TextAddressRange>
+            <DataAddressRange>{{LDads['DataAddressRange']}}</DataAddressRange>
             <ScatterFile>{{linker_file}}</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc>
-            </Misc>
+            <Misc>{% for misc in LDads['Misc'] %} {{misc}} {% endfor %}</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings>{% for diswarn in LDads['DisabledWarnings'] %} {{diswarn}} {% endfor %}</DisabledWarnings>
           </LDads>

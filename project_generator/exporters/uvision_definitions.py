@@ -14,9 +14,6 @@
 
 
 class uVisionDefinitions():
-    # # alias mbed standard names to their CPUs:
-    # mcu_def['K64F'] = mcu_def['MK64FN1M0xxx12']
-
     uvision_settings = {
         # C/C++ settings
         'Cads': {
@@ -49,9 +46,9 @@ class uVisionDefinitions():
             'DataAddressRange': 0,  # RW address range
             'IncludeLibs': 0,
             'IncludeLibsPath': 0,
-            'Misc': 0,              # Misc controls
+            'Misc': [],             # Misc controls
             'LinkerInputFile': 0,   # Scatter file
-            'DisabledWarnings': [],  # Disable warnings
+            'DisabledWarnings': [], # Disable warnings
         },
 
         # Assembly settings
@@ -64,12 +61,10 @@ class uVisionDefinitions():
             'SwStkChk': 0,
             'NoWarn': 0,           # No warnings
             'uSurpInc': 0,         # No auto includes
-            'VariousControls': 0,
-            'MiscControls': 0,     # Misc controls
+            'MiscControls': [],    # Misc controls
             'Define': [],          # Define
             'Undefine': 0,         # Undefine
             'IncludePath': [],     # Include paths
-            'VariousControls': 0,
         },
 
         # User settings
