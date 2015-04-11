@@ -359,10 +359,10 @@
             <NoWarn>{{Aads['NoWarn']}}</NoWarn>
             <uSurpInc>{{Aads['uSurpInc']}}</uSurpInc>
             <VariousControls>
-              <MiscControls></MiscControls>
-              <Define></Define>
+              <MiscControls>{% for f in Aads['MiscControls'] %}{{f}} {% endfor %}</MiscControls>
+              <Define>{% for s in macros %} {{s}}, {% endfor %}</Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>{% for path in Aads['IncludePath'] %} {{path}}; {% endfor %}</IncludePath>
             </VariousControls>
           </Aads>
           <LDads>
