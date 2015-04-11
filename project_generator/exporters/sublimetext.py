@@ -43,4 +43,3 @@ class SublimeTextMakeGccARMExporter(MakefileGccArmExporter):
             '%s.sublime-project' % data['name'], data['dest_path'])
 
         return project_path, [makefile, sublimeproject]
-
