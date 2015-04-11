@@ -47,9 +47,9 @@ class ProjectSettings:
         self.generated_projects_folder = 'generated_projects'
 
     def update(self, updates):
-        for k, v in updates['paths'].items():
+        for k, v in updates['tools'].items():
             if k in self.paths:
-                self.paths[k] = v
+                self.paths[k] = v['path'][0]
 
         if 'generated_projects_folder' in updates:
             self.generated_projects_folder = updates['generated_projects_folder']

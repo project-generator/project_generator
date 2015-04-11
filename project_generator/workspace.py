@@ -29,14 +29,13 @@ class Workspace:
 
         self.settings = ProjectSettings()
 
+        proj_records = []
         if 'settings' in projects_dict:
             self.settings.update(projects_dict['settings'])
+            proj_records =[x for x in projects_dict['settings']['projects'] if 'projects' in projects_dict['settings']]
 
         # so that we can test things independently of eachother
         self.projects = {}
-        proj_records = []
-        if 'projects_settings' in projects_dict:
-            proj_records = projects_dict['projects_settings']
         
         if 'projects' in projects_dict:
             self.projects = {name: Project(name, records + [proj_set for proj_set in proj_records], self) for name, records in projects_dict['projects'].items()}
