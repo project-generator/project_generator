@@ -46,17 +46,16 @@ class ProjectSettings:
             os.mkdir(join(expanduser('~/.pg')))
         self.generated_projects_folder = 'generated_projects'
 
-    def update(self, updates):
-        for k, v in updates['paths'].items():
+    def update(self, settings):
+        for k, v in settings['tools'].items():
             if k in self.paths:
-                self.paths[k] = v
+                self.paths[k] = v['path'][0]
 
-        if 'generated_projects_folder' in updates:
-            self.generated_projects_folder = updates['generated_projects_folder']
+        if 'generated_projects_folder' in settings:
+            self.generated_projects_folder = settings['generated_projects_folder']
 
     def set_definitions_file(self, def_dir):
         self.paths['definitions'] = def_dir
 
     def get_env_settings(self, env_set):
         return self.paths[env_set]
-
