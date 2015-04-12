@@ -64,6 +64,8 @@ def update(source=None, force=False, copy=False, settings=ProjectSettings()):
             subprocess.call(cmd, cwd=settings.paths['definitions'])
         else:
             # check if we are on top of origin/master
+            cmd = ('git', 'fetch', 'origin','master', '--quiet')
+            subprocess.call(cmd, cwd=settings.paths['definitions'])
             cmd = ('git', 'diff', 'master', 'origin/master', '--quiet')
             p = subprocess.call(cmd, cwd=settings.paths['definitions'])
             # any output means we are behind the master, update
