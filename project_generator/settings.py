@@ -47,12 +47,15 @@ class ProjectSettings:
         self.generated_projects_folder = 'generated_projects'
 
     def update(self, settings):
-        for k, v in settings['tools'].items():
-            if k in self.paths:
-                self.paths[k] = v['path'][0]
+        if 'tools' in settings:
+            for k, v in settings['tools'].items():
+                if k in self.paths:
+                    self.paths[k] = v['path'][0]
+        if 'definitions_dir' in settings:
+            self.paths['definitions'] = settings['definitions_dir'][0]
 
         if 'generated_projects_folder' in settings:
-            self.generated_projects_folder = settings['generated_projects_folder']
+            self.generated_projects_folder = settings['generated_projects_folder'][0]
 
     def set_definitions_file(self, def_dir):
         self.paths['definitions'] = def_dir
