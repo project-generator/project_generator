@@ -122,7 +122,11 @@ class MakefileGccArmExporter(Exporter):
 
         target = Targets(env_settings.get_env_settings('definitions'))
 
-        data['core'] = target.get_mcu_core(data['target'])[0]
+        if target.get_mcu_core(data['target']):
+            data['core'] = target.get_mcu_core(data['target'])[0]
+        else:
+            raise RuntimeError(
+                "Target: %s not found, Please add them to https://github.com/0xc0170/project_generator_definitions" % data['target'].lower())
 
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':
