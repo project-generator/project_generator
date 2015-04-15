@@ -14,7 +14,7 @@
 import yaml
 import logging
 
-from .project import Project
+from .project import Project, flatten
 from .settings import ProjectSettings
 
 class Workspace:
@@ -34,9 +34,9 @@ class Workspace:
 
         # so that we can test things independently of eachother
         self.projects = {}
-        
+
         if 'projects' in projects_dict:
-            self.projects = {name: Project(name, records, self) for name, records in projects_dict['projects'].items()}
+            self.projects = {name: Project(name, flatten(records), self) for name, records in projects_dict['projects'].items()}
         else:
             logging.debug("No projects found in the main record file.")
 
