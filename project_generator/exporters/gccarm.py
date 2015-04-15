@@ -102,7 +102,8 @@ class MakefileGccArmExporter(Exporter):
         for path in data['source_paths']:
             fixed_paths.append(join(data['rel_path'], normpath(path)))
         data['source_paths'] = fixed_paths
-        data['linker_file'] = join(data['rel_path'], normpath(data['linker_file']))
+        if data['linker_file']:
+            data['linker_file'] = join(data['rel_path'], normpath(data['linker_file']))
 
     def generate(self, data, env_settings):
         """ Processes misc options specific for GCC ARM, and run generator. """

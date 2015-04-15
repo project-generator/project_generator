@@ -112,7 +112,8 @@ class IAREWARMExporter(Exporter):
         for path in data['source_files_obj']:
             fixed_paths.append(join('$PROJ_DIR$', rel_path, normpath(path)))
         data['source_files_obj'] = fixed_paths
-        data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))
+        if data['linker_file']:
+            data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))
 
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for IAR, and run generator """

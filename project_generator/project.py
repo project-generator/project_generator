@@ -164,7 +164,9 @@ class Project:
 
         self.output_types = {
             'executable': 'exe',
-            'library': 'lib'
+            'exe': 'exe',
+            'library': 'lib',
+            'lib': 'lib',
         }
         self.output_type = self.output_types['executable']
 

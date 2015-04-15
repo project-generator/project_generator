@@ -151,7 +151,8 @@ class UvisionExporter(Exporter):
         fixed_paths = []
         for path in data['source_files_obj']:
             fixed_paths.append(join(rel_path, normpath(path)))
-        data['linker_file'] = join(rel_path, normpath(data['linker_file']))
+        if data['linker_file']:
+            data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for uVision, and run generator """
