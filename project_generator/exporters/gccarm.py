@@ -102,7 +102,8 @@ class MakefileGccArmExporter(Exporter):
         for path in data['source_paths']:
             fixed_paths.append(join(data['rel_path'], normpath(path)))
         data['source_paths'] = fixed_paths
-        data['linker_file'] = join(data['rel_path'], normpath(data['linker_file']))
+        if data['linker_file']:
+            data['linker_file'] = join(data['rel_path'], normpath(data['linker_file']))
 
     def generate(self, data, env_settings):
         """ Processes misc options specific for GCC ARM, and run generator. """
@@ -122,7 +123,11 @@ class MakefileGccArmExporter(Exporter):
 
         target = Targets(env_settings.get_env_settings('definitions'))
 
-        data['core'] = target.get_mcu_core(data['target'])[0]
+        if target.get_mcu_core(data['target']):
+            data['core'] = target.get_mcu_core(data['target'])[0]
+        else:
+            raise RuntimeError(
+                "Target: %s not found, Please add them to https://github.com/0xc0170/project_generator_definitions" % data['target'].lower())
 
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':

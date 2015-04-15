@@ -101,7 +101,8 @@ class CoideExporter(Exporter):
         fixed_paths = []
         for path in data['source_files_obj']:
             fixed_paths.append(join(rel_path, normpath(path)))
-        data['linker_file'] = join(rel_path, normpath(data['linker_file']))
+        if data['linker_file']:
+            data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for CoIDE, and run generator """
@@ -121,7 +122,9 @@ class CoideExporter(Exporter):
         target = Targets(env_settings.get_env_settings('definitions'))
         mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'coide')
         if not mcu_def_dic:
-             raise RuntimeError("Mcu definitions were not found for %s" % expanded_dic['target'].lower())
+             raise RuntimeError(
+                "Mcu definitions were not found for %s. Please add them to https://github.com/0xc0170/project_generator_definitions"
+                % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         expanded_dic['coide_settings'].update(mcu_def_dic)

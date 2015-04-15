@@ -164,7 +164,9 @@ class Project:
 
         self.output_types = {
             'executable': 'exe',
-            'library': 'lib'
+            'exe': 'exe',
+            'library': 'lib',
+            'lib': 'lib',
         }
         self.output_type = self.output_types['executable']
 
@@ -370,7 +372,12 @@ class Project:
                                      toolchain_specific_settings.misc)],
             'project_dir': self.project_dir
         }
+        self.validate_generated_dic(d)
         return d
+
+    def validate_generated_dic(self, dic):
+        if dic['linker_file'] == None and dic['output_type'] == 'exe':
+            raise RuntimeError("Executable - no linker command found.")
 
     def fixup_executable(executable_path, tool):
         exporter =  self.tools.get_value(tool, 'exporter')
