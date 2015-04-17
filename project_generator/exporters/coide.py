@@ -112,7 +112,7 @@ class CoideExporter(Exporter):
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        dest = self.get_dest_path(expanded_dic, "coide", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
+        dest = self.get_dest_path(expanded_dic, env_settings, "coide", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
         self.iterate(data, expanded_dic, dest['rel_path'])
         self.fix_paths(expanded_dic, dest['rel_path'])
 

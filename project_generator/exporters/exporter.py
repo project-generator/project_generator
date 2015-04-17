@@ -17,7 +17,6 @@ import logging
 from os.path import join, dirname
 from jinja2 import Template, StrictUndefined
 
-
 class Exporter:
 
     """Just a template for subclassing"""
@@ -25,23 +24,31 @@ class Exporter:
     TEMPLATE_DIR = join(dirname(__file__), '..','templates')
     DOT_IN_RELATIVE_PATH = False
 
-    def get_dest_path(self, data, tool, destination, dir_name):
+    def get_dest_path(self, data, env_settings, tool, destination, dir_name):
         dest = {
             'dest_path' : '',
             'rel_path' : '',
         }
-        if destination is '':
-            destination = 'generated_projects'
-        if not os.path.exists(destination):
-            os.makedirs(destination)
-        if dir_name is '':
-            dir_name = tool + '_' + data['name']
-        project_dir = join(destination, dir_name)
-        # else:
-        #     project_dir=destination
+
+        # either output dir for all projects, or separate dir
+        if env_settings.generated_projects_dir != env_settings.generated_projects_dir_default:
+            # replace keywords
+            project_dir = env_settings.generated_projects_dir
+            project_dir = project_dir.replace('$tool$', tool)
+            project_dir = project_dir.replace('$project_name$', data['name'])
+            if data['target']:
+                project_dir = project_dir.replace('$target$', data['target'])
+        else:
+            if destination is '':
+                destination = 'generated_projects'
+            if not os.path.exists(destination):
+                os.makedirs(destination)
+            if dir_name is '':
+                dir_name = tool + '_' + data['name']
+            project_dir = join(destination, dir_name)
+
         if not os.path.exists(project_dir):
             os.makedirs(project_dir)
-        # target_path = join(project_dir, target_file)
 
         # Get number of how far we are from root, to set paths in the project
         # correctly

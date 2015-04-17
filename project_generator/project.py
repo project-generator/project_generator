@@ -236,7 +236,7 @@ class Project:
             self.include_paths = source_paths
 
         if self.project_dir['path'] == '':
-            self.project_dir['path'] = self.workspace.settings.generated_projects_folder
+            self.project_dir['path'] = self.workspace.settings.generated_projects_dir_default
 
     def _process_source_files(self, files, group_name):
         source_paths = []
