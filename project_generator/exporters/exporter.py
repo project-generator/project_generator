@@ -52,8 +52,11 @@ class Exporter:
 
         # Get number of how far we are from root, to set paths in the project
         # correctly
-        # path_from_root, filename = os.path.split(target_path)
-        count = len(os.path.split(project_dir))
+        count = 1
+        pdir = project_dir
+        while os.path.split(pdir)[0]:
+            pdir = os.path.split(pdir)[0]
+            count += 1
         rel_path_output = ''
 
         dest['rel_count'] = count
