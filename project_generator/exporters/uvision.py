@@ -163,7 +163,7 @@ class UvisionExporter(Exporter):
         for group in groups:
             expanded_dic['groups'][group] = []
         # get relative path and fix all paths within a project
-        dest = self.get_dest_path(expanded_dic, "uvision", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
+        dest = self.get_dest_path(expanded_dic, env_settings, "uvision", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
         self.iterate(data, expanded_dic, dest['rel_path'])
         self.fix_paths(expanded_dic, dest['rel_path'])
 

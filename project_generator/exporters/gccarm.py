@@ -83,9 +83,9 @@ class MakefileGccArmExporter(Exporter):
             for k, v in dic.items():
                 self.linker_options(k, v, data)
 
-    def fix_paths(self, data, name):
+    def fix_paths(self, data, name, env_settings):
         # get relative path and fix all paths within a project
-        data.update(self.get_dest_path(data, name, data['project_dir']['path'], data['project_dir']['name']))
+        data.update(self.get_dest_path(data, env_settings, name, data['project_dir']['path'], data['project_dir']['name']))
         fixed_paths = []
         for path in data['include_paths']:
             fixed_paths.append(join(data['rel_path'], normpath(path)))
@@ -112,7 +112,7 @@ class MakefileGccArmExporter(Exporter):
         return project_path, [makefile]
 
     def process_data_for_makefile(self, data, env_settings, name):
-        self.fix_paths(data, name)
+        self.fix_paths(data, name, env_settings)
         self.list_files(data, 'source_files_c', data['rel_path'])
         self.list_files(data, 'source_files_cpp', data['rel_path'])
         self.list_files(data, 'source_files_s', data['rel_path'])

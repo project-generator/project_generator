@@ -26,7 +26,7 @@ class TestWorkspace(TestCase):
     def test_settings(self):
         # only check things which are affected by projects.yaml
         assert self.workspace.settings.paths['definitions'] == '~/.notpg'
-        assert self.workspace.settings.generated_projects_folder == 'not_generated_projects'
+        assert self.workspace.settings.generated_projects_dir == 'not_generated_projects'
 
     # def test_load_definitions(self):
     #     self.workspace.load_definitions()

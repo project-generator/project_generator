@@ -236,7 +236,7 @@ class Project:
             self.include_paths = source_paths
 
         if self.project_dir['path'] == '':
-            self.project_dir['path'] = self.workspace.settings.generated_projects_folder
+            self.project_dir['path'] = self.workspace.settings.generated_projects_dir_default
 
     def _process_source_files(self, files, group_name):
         source_paths = []
@@ -333,7 +333,7 @@ class Project:
         tool_specific_settings = []
         toolnames = self.tools.get_value(tool, 'toolnames')
         for tool_spec in toolnames:
-            if tool != tool_spec:
+            if self.tools.get_value(tool, 'toolchain') != tool_spec:
                 tool_specific_settings.append(self.tool_specific[tool_spec])
 
         d = {
@@ -364,7 +364,7 @@ class Project:
                                 list(flatten([settings.all_sources_of_type('lib') for settings in tool_specific_settings])) +
                                 toolchain_specific_settings.all_sources_of_type('lib'),
             'linker_file': self.linker_file
-                        or toolchain_specific_settings.linker_file,
+                        or toolchain_specific_settings.linker_file or [tool_settings.linker_file for tool_settings in tool_specific_settings if tool_settings.linker_file][0],
             'macros': self.macros +
                       list(flatten([ settings.macros for settings in tool_specific_settings])) +
                       toolchain_specific_settings.macros,

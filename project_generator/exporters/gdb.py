@@ -29,7 +29,7 @@ class ARMNoneEABIGDBExporter(GDBExporter):
         # !!! TODO: store and read settings from gdb_definitions
         expanded_dic['gdb_server_port'] = 3333
 
-        dest = self.get_dest_path(expanded_dic, "gdb", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
+        dest = self.get_dest_path(expanded_dic, env_settings, "gdb", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
 
         project_path, startupfile = self.gen_file(
             'gdb.tmpl', expanded_dic, '%s.gdbstartup' % data['name'], dest['dest_path'])
