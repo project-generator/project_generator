@@ -364,7 +364,7 @@ class Project:
                                 list(flatten([settings.all_sources_of_type('lib') for settings in tool_specific_settings])) +
                                 toolchain_specific_settings.all_sources_of_type('lib'),
             'linker_file': self.linker_file
-                        or toolchain_specific_settings.linker_file or [tool_settings.linker_file for tool_settings in tool_specific_settings if tool_settings][0],
+                        or toolchain_specific_settings.linker_file or [tool_settings.linker_file for tool_settings in tool_specific_settings if tool_settings.linker_file][0],
             'macros': self.macros +
                       list(flatten([ settings.macros for settings in tool_specific_settings])) +
                       toolchain_specific_settings.macros,
