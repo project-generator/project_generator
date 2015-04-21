@@ -34,9 +34,9 @@ There are two options, how to use it. Either you download [pypi package](https:/
 Once installed, test if project_generator is recognized:
 
 ```
-project_generator --version
+pgen --version
 ```
-This should print the current installed version.
+This should print the current installed version. You can use pgen or project_generator as a command.
 
 ##### Using directly the repository
 In case of using this repository directly, be aware, the project generator is using relative paths. To solve this, create a simple run.py script and place there:
@@ -49,9 +49,9 @@ main()
 
 Then just invoke run.py with arguments as you would if using the package. Something like: python run.py --version
 
-There are examples in c0170 github, so check them out!
+An example how to use pgen [here](https://github.com/project-generator/project_generator_mbed_examples).
 
-To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/0xc0170/project_generator/wiki/Getting_started). There are other sections which describe the each blocks of the project generator.
+To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/project-generator/project_generator/wiki/Getting_started). There are other sections which describe the each blocks of the project generator.
 
 Dependencies for Project generator
 -------------------------
