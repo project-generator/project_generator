@@ -56,7 +56,7 @@ def update(source=None, force=False, copy=False, settings=ProjectSettings()):
             subprocess.call(cmd, cwd=settings.paths['definitions'])
     else:
         if not defdir_exists:
-            cmd = ('git', 'clone', '--quiet', 'https://github.com/0xc0170/project_generator_definitions.git', '.')
+            cmd = ('git', 'clone', '--quiet', 'https://github.com/project-generator/project_generator_definitions.git', '.')
             subprocess.call(cmd, cwd=settings.paths['definitions'])
         elif force:
             # rebase only if force, otherwise use the current version
