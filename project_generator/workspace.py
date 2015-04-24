@@ -100,7 +100,7 @@ class Workspace:
         if project_name not in self.projects:
             raise RuntimeError("Invalid Project Name")
 
-        self.projects[project_name].clean(tool)
+        self.projects[project_name].clean(project_name, tool)
 
     def clean_projects(self, tool):
         for name, project in self.projects.items():

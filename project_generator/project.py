@@ -274,15 +274,22 @@ class Project:
 
         return source_paths
 
-    def clean(self, tool):
+    def clean(self, project_name, tool):
         if tool is None:
             tools = list(self.TOOLCHAINS)
         else:
             tools = [tool]
 
         for current_tool in tools:
-            path = os.path.join(self.project_dir['path'], "%s_%s" % (current_tool, self.name))
-
+            if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
+                # TODO: same as in exporters.py - create keyword parser
+                path = self.workspace.settings.generated_projects_dir
+                path = path.replace('$tool$', tool)
+                path = path.replace('$project_name$', project_name)
+                if self.target:
+                    path = path.replace('$target$', self.target)
+            else:
+                 path = os.path.join(self.project_dir['path'], "%s_%s" % (current_tool, self.name))
             if os.path.isdir(path):
                 logging.info("Cleaning directory %s" % path)
 
