@@ -300,11 +300,16 @@ class Project:
         builder = self.tools.get_value(tool, 'builder')
         build(builder, self.name, self.project_files, tool, self.workspace.settings)
 
-    def export(self, tool):
+    def export(self, tool, copy):
         """export the project"""
         exporter = self.tools.get_value(tool, 'exporter')
 
         proj_dic = self.generate_dict_for_tool(tool)
+        proj_dic['copy_sources'] = False
+        if copy:
+            self.copy_files(proj_dic, tool)
+            # TODO: fixme
+            proj_dic['copy_sources'] = True
         logging.debug("Project dict: %s" % proj_dic)
         project_path, project_files = export(exporter,
             proj_dic, tool, self.workspace.settings)
@@ -389,6 +394,63 @@ class Project:
     def fixup_executable(executable_path, tool):
         exporter =  self.tools.get_value(tool, 'exporter')
         fixup_executable(exporter, executable_path, tool)
+
+    def copy_files(self, proj_dic, tool):
+        if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
+            # TODO: same as in exporters.py - create keyword parser and in clean method above
+            output_dir = self.workspace.settings.generated_projects_dir
+            output_dir = output_dir.replace('$tool$', tool)
+            output_dir = output_dir.replace('$project_name$', proj_dic['name'])
+            if self.target:
+                output_dir = output_dir.replace('$target$', self.target)
+        else:
+             output_dir = os.path.join(self.project_dir['path'], "%s_%s" % (tool, self.name))
+        output_dir = os.path.normpath(output_dir)
+
+        # create list of all files to copy
+
+        for path in proj_dic['include_paths']:
+            path = os.path.normpath(path)
+            files = os.listdir(path)
+            dest_dir = os.path.join(os.getcwd(), output_dir, path)
+            if not os.path.exists(dest_dir) and len(files):
+                os.makedirs(dest_dir)
+            for filename in files:
+                if os.path.splitext(filename)[1] == '.h':
+                    shutil.copy2(os.path.join(os.getcwd(), path, filename), os.path.join(os.getcwd(), output_dir, path))
+
+        for k,v in proj_dic['source_files_c'][0].items():
+                for file in v:
+                    file = os.path.normpath(file)
+                    dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
+                    if not os.path.exists(dest_dir):
+                        os.makedirs(dest_dir)
+                    if os.path.splitext(file)[1] == '.c':
+                        shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+
+        for k,v in proj_dic['source_files_cpp'][0].items():
+                for file in v:
+                    file = os.path.normpath(file)
+                    dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
+                    if not os.path.exists(dest_dir):
+                        os.makedirs(dest_dir)
+                    if os.path.splitext(file)[1] == '.cpp':
+                        shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+
+        for k,v in proj_dic['source_files_s'][0].items():
+                for file in v:
+                    file = os.path.normpath(file)
+                    dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
+                    if not os.path.exists(dest_dir):
+                        os.makedirs(dest_dir)
+                    if os.path.splitext(file)[1] == '.s':
+                        shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+
+        linker = os.path.normpath(proj_dic['linker_file'])
+        dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(linker))
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        shutil.copy2(os.path.join(os.getcwd(), linker), os.path.join(os.getcwd(), output_dir, linker))
 
     @staticmethod
     def scrape_dir(root, directory, project_name, board, list_sources):

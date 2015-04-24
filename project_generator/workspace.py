@@ -40,7 +40,7 @@ class Workspace:
         else:
             logging.debug("No projects found in the main record file.")
 
-    def export_project(self, project_name, tool):
+    def export_project(self, project_name, tool, copy):
         if project_name not in self.projects:
             raise RuntimeError("Invalid Project Name")
 
@@ -49,16 +49,16 @@ class Workspace:
         if tool is None:
             tool = self.settings.DEFAULT_TOOL
 
-        self.projects[project_name].export(tool)
+        self.projects[project_name].export(tool, copy)
 
-    def export_projects(self, tool):
+    def export_projects(self, tool, copy):
         if tool is None:
             tool = self.settings.DEFAULT_TOOL
         
         for name, project in self.projects.items():
             logging.debug("Exporting Project %s" % name)
 
-            project.export(tool)
+            project.export(tool, copy)
 
     def build_projects(self, tool):
         if tool is None:

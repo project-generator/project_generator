@@ -24,12 +24,12 @@ def run(args):
     update(None, False, False, workspace.settings)
 
     if args.project:
-        workspace.export_project(args.project, args.tool)
+        workspace.export_project(args.project, args.tool, args.copy)
 
         if args.build:
             workspace.build_project(args.project, args.tool)
     else:
-        workspace.export_projects(args.tool)
+        workspace.export_projects(args.tool, arg.copy)
 
         if args.build:
             workspace.build_projects(args.project, args.tool)
@@ -46,3 +46,5 @@ def setup(subparser):
     subparser.add_argument(
         "-defdir", "--defdirectory",
         help="Path to the definitions, otherwise default (~/.pg/definitions) is used")
+    subparser.add_argument(
+        "-c", "--copy", action="store_true", help="Copy all files to the exported directory")
