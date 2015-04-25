@@ -416,7 +416,7 @@ class Project:
             if not os.path.exists(dest_dir) and len(files):
                 os.makedirs(dest_dir)
             for filename in files:
-                if os.path.splitext(filename)[1] == '.h':
+                if filename.split('.')[-1] in ['h', 'hpp', 'inc']:
                     shutil.copy2(os.path.join(os.getcwd(), path, filename), os.path.join(os.getcwd(), output_dir, path))
 
         for k,v in proj_dic['source_files_c'][0].items():
@@ -425,7 +425,7 @@ class Project:
                     dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
                     if not os.path.exists(dest_dir):
                         os.makedirs(dest_dir)
-                    if os.path.splitext(file)[1] == '.c':
+                    if file.split('.')[-1] == 'c':
                         shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
 
         for k,v in proj_dic['source_files_cpp'][0].items():
@@ -434,7 +434,7 @@ class Project:
                     dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
                     if not os.path.exists(dest_dir):
                         os.makedirs(dest_dir)
-                    if os.path.splitext(file)[1] == '.cpp':
+                    if file.split('.')[-1] in ['cpp', 'cc']:
                         shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
 
         for k,v in proj_dic['source_files_s'][0].items():
@@ -443,8 +443,24 @@ class Project:
                     dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
                     if not os.path.exists(dest_dir):
                         os.makedirs(dest_dir)
-                    if os.path.splitext(file)[1] == '.s':
+                    if file.split('.')[-1] in ['s']:
                         shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+
+        for file in proj_dic['source_files_obj']:
+                file = os.path.normpath(file)
+                dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
+                if not os.path.exists(dest_dir):
+                    os.makedirs(dest_dir)
+                if file.split('.')[-1] in ['obj', 'o']:
+                    shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+
+        for file in proj_dic['source_files_lib']:
+                file = os.path.normpath(file)
+                dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
+                if not os.path.exists(dest_dir):
+                    os.makedirs(dest_dir)
+                if file.split('.')[-1] in ['lib', 'ar', 'a']:
+                    shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
 
         linker = os.path.normpath(proj_dic['linker_file'])
         dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(linker))
