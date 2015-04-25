@@ -395,6 +395,14 @@ class Project:
         exporter =  self.tools.get_value(tool, 'exporter')
         fixup_executable(exporter, executable_path, tool)
 
+    def _copy_files(self, file, output_dir, valid_files_group):
+        file = os.path.normpath(file)
+        dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+        if file.split('.')[-1] in valid_files_group:
+            shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+
     def copy_files(self, proj_dic, tool):
         if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
             # TODO: same as in exporters.py - create keyword parser and in clean method above
@@ -407,8 +415,6 @@ class Project:
              output_dir = os.path.join(self.project_dir['path'], "%s_%s" % (tool, self.name))
         output_dir = os.path.normpath(output_dir)
 
-        # create list of all files to copy
-
         for path in proj_dic['include_paths']:
             path = os.path.normpath(path)
             files = os.listdir(path)
@@ -420,47 +426,22 @@ class Project:
                     shutil.copy2(os.path.join(os.getcwd(), path, filename), os.path.join(os.getcwd(), output_dir, path))
 
         for k,v in proj_dic['source_files_c'][0].items():
-                for file in v:
-                    file = os.path.normpath(file)
-                    dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
-                    if not os.path.exists(dest_dir):
-                        os.makedirs(dest_dir)
-                    if file.split('.')[-1] == 'c':
-                        shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+            for file in v:
+                self._copy_files(file, output_dir, ['c'])
 
         for k,v in proj_dic['source_files_cpp'][0].items():
-                for file in v:
-                    file = os.path.normpath(file)
-                    dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
-                    if not os.path.exists(dest_dir):
-                        os.makedirs(dest_dir)
-                    if file.split('.')[-1] in ['cpp', 'cc']:
-                        shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+            for file in v:
+                self._copy_files(file, output_dir, ['cpp', 'cc'])
 
         for k,v in proj_dic['source_files_s'][0].items():
-                for file in v:
-                    file = os.path.normpath(file)
-                    dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
-                    if not os.path.exists(dest_dir):
-                        os.makedirs(dest_dir)
-                    if file.split('.')[-1] in ['s']:
-                        shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+            for file in v:
+                self._copy_files(file, output_dir, ['s'])
 
         for file in proj_dic['source_files_obj']:
-                file = os.path.normpath(file)
-                dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
-                if not os.path.exists(dest_dir):
-                    os.makedirs(dest_dir)
-                if file.split('.')[-1] in ['obj', 'o']:
-                    shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+            self._copy_files(file, output_dir, ['obj', 'o'])
 
         for file in proj_dic['source_files_lib']:
-                file = os.path.normpath(file)
-                dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
-                if not os.path.exists(dest_dir):
-                    os.makedirs(dest_dir)
-                if file.split('.')[-1] in ['lib', 'ar', 'a']:
-                    shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
+            self._copy_files(file, output_dir, ['lib', 'ar', 'a'])
 
         linker = os.path.normpath(proj_dic['linker_file'])
         dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(linker))
