@@ -50,19 +50,21 @@ class Exporter:
         if not os.path.exists(project_dir):
             os.makedirs(project_dir)
 
-        # Get number of how far we are from root, to set paths in the project
-        # correctly
-        count = 1
-        pdir = project_dir
-        while os.path.split(pdir)[0]:
-            pdir = os.path.split(pdir)[0]
-            count += 1
-        rel_path_output = ''
+        rel_path_output= ''
+        if data['copy_sources'] == False:
+            # Get number of how far we are from root, to set paths in the project
+            # correctly
+            count = 1
+            pdir = project_dir
+            while os.path.split(pdir)[0]:
+                pdir = os.path.split(pdir)[0]
+                count += 1
+            rel_path_output = ''
 
-        dest['rel_count'] = count
-        while count:
-            rel_path_output = join('..', rel_path_output)
-            count = count - 1
+            dest['rel_count'] = count
+            while count:
+                rel_path_output = join('..', rel_path_output)
+                count = count - 1
         dest['dest_path'] = project_dir
         dest['rel_path'] = rel_path_output
         return dest
