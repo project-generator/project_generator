@@ -47,6 +47,16 @@ def flatten(*args):
         else:
             yield x
 
+FILES_EXTENSIONS = {
+    'include_paths' : ['h', 'hpp', 'inc'],
+    'source_files_s' : ['s'],
+    'source_files_c' : ['c'],
+    'source_files_cpp' : ['cpp', 'cc'],
+    'source_files_lib' : ['lib', 'ar', 'a'],
+    'source_files_obj' : ['o'],
+    'linker_file' : ['sct', 'ld', 'lin', 'icf'],
+}
+
 class ToolSpecificSettings:
 
     """represents the settings that are specifc to targets"""
@@ -422,26 +432,26 @@ class Project:
             if not os.path.exists(dest_dir) and len(files):
                 os.makedirs(dest_dir)
             for filename in files:
-                if filename.split('.')[-1] in ['h', 'hpp', 'inc']:
+                if filename.split('.')[-1] in FILES_EXTENSIONS['include_paths']:
                     shutil.copy2(os.path.join(os.getcwd(), path, filename), os.path.join(os.getcwd(), output_dir, path))
 
         for k,v in proj_dic['source_files_c'][0].items():
             for file in v:
-                self._copy_files(file, output_dir, ['c'])
+                self._copy_files(file, output_dir, FILES_EXTENSIONS['source_files_c'])
 
         for k,v in proj_dic['source_files_cpp'][0].items():
             for file in v:
-                self._copy_files(file, output_dir, ['cpp', 'cc'])
+                self._copy_files(file, output_dir, FILES_EXTENSIONS['source_files_cpp'])
 
         for k,v in proj_dic['source_files_s'][0].items():
             for file in v:
-                self._copy_files(file, output_dir, ['s'])
+                self._copy_files(file, output_dir, FILES_EXTENSIONS['source_files_s'])
 
         for file in proj_dic['source_files_obj']:
-            self._copy_files(file, output_dir, ['obj', 'o'])
+            self._copy_files(file, output_dir, FILES_EXTENSIONS['source_files_obj'])
 
         for file in proj_dic['source_files_lib']:
-            self._copy_files(file, output_dir, ['lib', 'ar', 'a'])
+            self._copy_files(file, output_dir, FILES_EXTENSIONS['source_files_lib'])
 
         linker = os.path.normpath(proj_dic['linker_file'])
         dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(linker))
@@ -460,9 +470,9 @@ class Project:
             }
         }
 
-        linker_filetypes = ['sct', 'ld', 'lin', 'icf']
-        source_filetypes = ['c', 'cpp', 'cc']
-        include_filetypes = ['h', 'hpp', 'inc']
+        linker_filetypes = FILES_EXTENSIONS['linker_file']
+        source_filetypes = FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] + FILES_EXTENSIONS['source_files_s']
+        include_filetypes = FILES_EXTENSIONS['include_paths']
 
         for dirpath, dirnames, files in os.walk(directory):
             for filename in files:
