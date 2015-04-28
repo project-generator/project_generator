@@ -13,6 +13,7 @@
 # limitations under the License.
 import os
 from .tool import build
+from .workspace import Workspace
 
 help = 'Build a project'
 
@@ -23,7 +24,7 @@ def run(args):
         if args.project:
             workspace.build_project(args.project, args.tool)
         else:
-            workspace.build_projects(args.project, args.tool)
+            workspace.build_projects(args.tool)
     else:
         # not project known to pgen
         project_settings = ProjectSettings()
@@ -34,5 +35,7 @@ def setup(subparser):
     subparser.add_argument(
         "-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-p", "--project", help="Project to be built")
+    subparser.add_argument(
+        "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     subparser.add_argument(
         "-dir", "--directory", help="The projects directory", default='projects.yaml')

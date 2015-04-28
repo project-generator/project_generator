@@ -167,7 +167,7 @@ class Project:
             'name': '',
             'path': ''
         }
-
+        self.build_dir = 'build'
         self.mcu = ''
         self.core = ''
         self.target = ''
@@ -235,6 +235,9 @@ class Project:
 
                 if 'mcu' in project_file_data['common']:
                     self.mcu = project_file_data['common']['mcu'][0]
+
+                if 'build_dir' in project_file_data['common']:
+                    self.build_dir = project_file_data['common']['build_dir'][0]
 
             if 'tool_specific' in project_file_data:
                 for tool_name, tool_settings in project_file_data['tool_specific'].items():
@@ -364,6 +367,7 @@ class Project:
             'core': self.core,
             'target': self.target,
             'output_type': self.output_type,
+            'build_dir' : self.build_dir,
             'include_paths': self.include_paths + list(flatten([settings.include_paths for settings in tool_specific_settings])),
             'source_paths': self.source_paths + list(flatten([settings.source_paths for settings in tool_specific_settings])),
             'source_files': merge_recursive(self.source_groups,

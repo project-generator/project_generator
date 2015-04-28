@@ -46,14 +46,14 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>{{output_dir}}</OutputDirectory>
+          <OutputDirectory>{{build_dir}}</OutputDirectory>
           <OutputName>{{name}}</OutputName>
           <CreateExecutable>{% if output_type == 'exe' %}1{% else %}0{% endif %}</CreateExecutable>
           <CreateLib>{% if output_type == 'lib' %}1{% else %}0{% endif %}</CreateLib>
           <CreateHexFile>{% if output_type == 'exe' %}1{% else %}0{% endif %}</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
-          <ListingPath>{{output_dir}}</ListingPath>
+          <ListingPath>{{build_dir}}</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
