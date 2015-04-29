@@ -316,7 +316,12 @@ class Project:
     def build(self, tool):
         """build the project"""
         builder = self.tools.get_value(tool, 'builder')
-        build(builder, self.name, self.project_files, tool, self.workspace.settings)
+        proj_dic = self.generate_dict_for_tool(tool)
+        if proj_dic['project_dir']['name'] and proj_dic['project_dir']['path']:
+            project_files = [os.path.join(proj_dic['project_dir']['path'], proj_dic['project_dir']['name'])]
+        else:
+            project_files = [os.path.join(proj_dic['output_dir']['path'], proj_dic['name'])]
+        build(builder, self.name, project_files, tool, self.workspace.settings)
 
     def export(self, tool, copy):
         """export the project"""

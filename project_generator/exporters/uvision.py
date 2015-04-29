@@ -18,8 +18,6 @@ import logging
 
 from os.path import basename, join, relpath, normpath
 
-# from . import board_definitions
-
 from .exporter import Exporter
 from .uvision_definitions import uVisionDefinitions
 from ..targets import Targets
@@ -182,7 +180,8 @@ class UvisionExporter(Exporter):
         # TODO fixme - define this in yaml, and set this bny default in the export, not here
         # correct all templates
         # set default build directory if unset
-        expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
+        if expanded_dic['build_dir'] == '':
+            expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
 
         # optimization set to correct value, default not used
         expanded_dic['Cads']['Optim'][0] += 1

@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-from .tool import build
+from .tool import build, ToolsSupported
 from .workspace import Workspace
+from .settings import ProjectSettings
 
 help = 'Build a project'
 
@@ -22,20 +23,22 @@ def run(args):
     if args.file:
         workspace = Workspace(args.file, os.getcwd())
         if args.project:
+            #project_files = [os.path.join(args.directory, args.project)]
             workspace.build_project(args.project, args.tool)
         else:
             workspace.build_projects(args.tool)
     else:
         # not project known to pgen
         project_settings = ProjectSettings()
-        builder = tool.ToolsSupported().get_value(tool, 'builder')
-        build(builder, args.project, args.dir, args.tool, project_settings)
+        project_files = [os.path.join(args.directory, args.project)]
+        builder = ToolsSupported().get_value(args.tool, 'builder')
+        build(builder, args.project, project_files, args.tool, project_settings)
 
 def setup(subparser):
     subparser.add_argument(
-        "-f", "--file", help="YAML projects file", default='projects.yaml')
-    subparser.add_argument("-p", "--project", help="Project to be built")
+        "-f", "--file", help="YAML projects file")
+    subparser.add_argument("-p", "--project", help="Name of the project to build")
     subparser.add_argument(
-        "-t", "--tool", help="Create project files for provided tool (uvision by default)")
+        "-t", "--tool", help="Create project files for provided tool (uvision by default)", default='uvision')
     subparser.add_argument(
-        "-dir", "--directory", help="The projects directory", default='projects.yaml')
+        "-dir", "--directory", help="The projects directory")
