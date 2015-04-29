@@ -41,7 +41,7 @@ class EclipseGnuARMExporter(Exporter):
                 extension = source.split(".")[-1]
                 # TODO: fix - workaround for windows, seems posixpath does not work
                 source = source.replace('\\', '/')
-                new_file = {"path": join('PARENT-%s-PROJECT_LOC' % new_data['rel_count'], normpath(source)), "name": basename(
+                new_file = {"path": join('PARENT-%s-PROJECT_LOC' % new_data['output_dir']['rel_path'], normpath(source)), "name": basename(
                     source), "type": self.file_types[extension]}
                 new_data['groups'][group].append(new_file)
 
@@ -74,10 +74,10 @@ class EclipseGnuARMExporter(Exporter):
         data_for_make = data.copy()
 
         self.exporter.process_data_for_makefile(data_for_make, settings, "eclipse_makefile")
-        project_path, makefile = self.gen_file('makefile_gcc.tmpl', data_for_make, 'Makefile', data_for_make['dest_path'])
+        project_path, makefile = self.gen_file('makefile_gcc.tmpl', data_for_make, 'Makefile', data_for_make['output_dir']['path'])
 
         expanded_dic = data.copy()
-        expanded_dic['rel_count'] = data_for_make['rel_count']
+        expanded_dic['rel_path'] = data_for_make['output_dir']['rel_path']
         groups = self.get_groups(expanded_dic)
         expanded_dic['groups'] = {}
         for group in groups:
@@ -86,7 +86,7 @@ class EclipseGnuARMExporter(Exporter):
 
         # Project file
         project_path, cproj = self.gen_file(
-            'eclipse_makefile.cproject.tmpl', expanded_dic, '.cproject', data_for_make['dest_path'])
+            'eclipse_makefile.cproject.tmpl', expanded_dic, '.cproject', data_for_make['output_dir']['path'])
         project_path, projfile = self.gen_file(
-            'eclipse.project.tmpl', expanded_dic, '.project', data_for_make['dest_path'])
+            'eclipse.project.tmpl', expanded_dic, '.project', data_for_make['output_dir']['path'])
         return project_path, [projfile, cproj, makefile]

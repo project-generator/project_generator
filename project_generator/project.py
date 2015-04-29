@@ -165,9 +165,14 @@ class Project:
         self.macros = []
         self.project_dir = {
             'name': '',
-            'path': ''
+            'path': '',
         }
         self.build_dir = 'build'
+        self.output_dir = {
+            'path' : '',
+            'rel_path' : '',
+            'rel_count' : '',
+        }
         self.mcu = ''
         self.core = ''
         self.target = ''
@@ -319,10 +324,27 @@ class Project:
 
         proj_dic = self.generate_dict_for_tool(tool)
         proj_dic['copy_sources'] = False
+        proj_dic['output_dir']['rel_path'] = ''
+
         if copy:
             self.copy_files(proj_dic, tool)
             # TODO: fixme
             proj_dic['copy_sources'] = True
+        else:
+            # Get number of how far we are from root, to set paths in the project
+            # correctly
+            count = 1
+            pdir = proj_dic['output_dir']['path']
+            while os.path.split(pdir)[0]:
+                pdir = os.path.split(pdir)[0]
+                count += 1
+            rel_path_output = ''
+
+            proj_dic['output_dir']['rel_count'] = count
+            while count:
+                rel_path_output = os.path.join('..', rel_path_output)
+                count = count - 1
+            proj_dic['output_dir']['rel_path'] = rel_path_output
         logging.debug("Project dict: %s" % proj_dic)
         project_path, project_files = export(exporter,
             proj_dic, tool, self.workspace.settings)
@@ -368,6 +390,7 @@ class Project:
             'target': self.target,
             'output_type': self.output_type,
             'build_dir' : self.build_dir,
+            'output_dir' : self.output_dir,
             'include_paths': self.include_paths + list(flatten([settings.include_paths for settings in tool_specific_settings])),
             'source_paths': self.source_paths + list(flatten([settings.source_paths for settings in tool_specific_settings])),
             'source_files': merge_recursive(self.source_groups,
@@ -399,6 +422,17 @@ class Project:
             'project_dir': self.project_dir
         }
         self.validate_generated_dic(d)
+
+        if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
+            output_dir = self.workspace.settings.generated_projects_dir
+            output_dir = output_dir.replace('$tool$', tool)
+            output_dir = output_dir.replace('$project_name$', self.name)
+            if self.target:
+                output_dir = output_dir.replace('$target$', self.target)
+        else:
+             output_dir = os.path.join(self.project_dir['path'], "%s_%s" % (tool, self.name))
+        d['output_dir']['path'] = os.path.normpath(output_dir)
+
         return d
 
     def validate_generated_dic(self, dic):
@@ -418,50 +452,40 @@ class Project:
             shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
 
     def copy_files(self, proj_dic, tool):
-        if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
-            # TODO: same as in exporters.py - create keyword parser and in clean method above
-            output_dir = self.workspace.settings.generated_projects_dir
-            output_dir = output_dir.replace('$tool$', tool)
-            output_dir = output_dir.replace('$project_name$', proj_dic['name'])
-            if self.target:
-                output_dir = output_dir.replace('$target$', self.target)
-        else:
-             output_dir = os.path.join(self.project_dir['path'], "%s_%s" % (tool, self.name))
-        output_dir = os.path.normpath(output_dir)
 
         for path in proj_dic['include_paths']:
             path = os.path.normpath(path)
             files = os.listdir(path)
-            dest_dir = os.path.join(os.getcwd(), output_dir, path)
+            dest_dir = os.path.join(os.getcwd(), proj_dic['output_dir']['path'], path)
             if not os.path.exists(dest_dir) and len(files):
                 os.makedirs(dest_dir)
             for filename in files:
                 if filename.split('.')[-1] in FILES_EXTENSIONS['include_paths']:
-                    shutil.copy2(os.path.join(os.getcwd(), path, filename), os.path.join(os.getcwd(), output_dir, path))
+                    shutil.copy2(os.path.join(os.getcwd(), path, filename), os.path.join(os.getcwd(), proj_dic['output_dir']['path'], path))
 
         for k,v in proj_dic['source_files_c'][0].items():
             for file in v:
-                self._copy_files(file, output_dir, FILES_EXTENSIONS['source_files_c'])
+                self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_c'])
 
         for k,v in proj_dic['source_files_cpp'][0].items():
             for file in v:
-                self._copy_files(file, output_dir, FILES_EXTENSIONS['source_files_cpp'])
+                self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_cpp'])
 
         for k,v in proj_dic['source_files_s'][0].items():
             for file in v:
-                self._copy_files(file, output_dir, FILES_EXTENSIONS['source_files_s'])
+                self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_s'])
 
         for file in proj_dic['source_files_obj']:
-            self._copy_files(file, output_dir, FILES_EXTENSIONS['source_files_obj'])
+            self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_obj'])
 
         for file in proj_dic['source_files_lib']:
-            self._copy_files(file, output_dir, FILES_EXTENSIONS['source_files_lib'])
+            self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_lib'])
 
         linker = os.path.normpath(proj_dic['linker_file'])
-        dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(linker))
+        dest_dir = os.path.join(os.getcwd(), proj_dic['output_dir']['path'], os.path.dirname(linker))
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
-        shutil.copy2(os.path.join(os.getcwd(), linker), os.path.join(os.getcwd(), output_dir, linker))
+        shutil.copy2(os.path.join(os.getcwd(), linker), os.path.join(os.getcwd(), proj_dic['output_dir']['path'], linker))
 
     @staticmethod
     def scrape_dir(root, directory, project_name, board, list_sources):
