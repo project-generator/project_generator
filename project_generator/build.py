@@ -19,16 +19,15 @@ from .settings import ProjectSettings
 help = 'Build a project'
 
 def run(args):
-    # either known project from a project file or any uknown project
     if args.file:
+        # known project from records
         workspace = Workspace(args.file, os.getcwd())
         if args.project:
-            #project_files = [os.path.join(args.directory, args.project)]
             workspace.build_project(args.project, args.tool)
         else:
             workspace.build_projects(args.tool)
     else:
-        # not project known to pgen
+        # not project known by pgen
         project_settings = ProjectSettings()
         project_files = [os.path.join(args.directory, args.project)]
         builder = ToolsSupported().get_value(args.tool, 'builder')
