@@ -38,6 +38,6 @@ def setup(subparser):
         "-f", "--file", help="YAML projects file")
     subparser.add_argument("-p", "--project", help="Name of the project to build")
     subparser.add_argument(
-        "-t", "--tool", help="Create project files for provided tool (uvision by default)", default='uvision')
+        "-t", "--tool", help="Build a project files for provided tool")
     subparser.add_argument(
         "-dir", "--directory", help="The projects directory")
