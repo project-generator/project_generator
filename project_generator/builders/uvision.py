@@ -1,4 +1,4 @@
-# Copyright 2014 0xc0170
+# Copyright 2014-2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,6 +36,8 @@ class UvisionBuilder(Builder):
     def build_project(self, project_name, project_files, env_settings):
         # > UV4 -b [project_path]
         path = join(os.getcwd(), project_files[0])
+        if path.split('.')[-1] != '.uvproj':
+            path = path + '.uvproj'
         logging.debug("Building uVision project: %s" % path)
 
         args = [env_settings.get_env_settings('uvision'), '-r', '-j0', path]

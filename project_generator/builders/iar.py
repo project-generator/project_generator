@@ -24,6 +24,8 @@ class IARBuilder(Builder):
     def build_project(self, project_name, project_files, env_settings):
         # > IarBuild [project_path] -build [project_name]
         path = join(os.getcwd(), project_files[0])
+        if path.split('.')[-1] != '.ewp':
+            path = path + '.ewp'
         logging.debug("Building IAR project: %s" % path)
 
         args = [env_settings.get_env_settings('iar'), path, '-build', project_name]

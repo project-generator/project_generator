@@ -18,8 +18,6 @@ import logging
 
 from os.path import basename, join, relpath, normpath
 
-# from . import board_definitions
-
 from .exporter import Exporter
 from .uvision_definitions import uVisionDefinitions
 from ..targets import Targets
@@ -163,9 +161,8 @@ class UvisionExporter(Exporter):
         for group in groups:
             expanded_dic['groups'][group] = []
         # get relative path and fix all paths within a project
-        dest = self.get_dest_path(expanded_dic, env_settings, "uvision", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
-        self.iterate(data, expanded_dic, dest['rel_path'])
-        self.fix_paths(expanded_dic, dest['rel_path'])
+        self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         self.parse_specific_options(expanded_dic)
 
@@ -180,18 +177,20 @@ class UvisionExporter(Exporter):
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
+        # TODO fixme - define this in yaml, and set this bny default in the export, not here
+        # correct all templates
         # set default build directory if unset
-        if not 'output_dir' in expanded_dic:
-            expanded_dic['output_dir'] = '.\\build\\' + data['name'] + '\\'
+        if expanded_dic['build_dir'] == '':
+            expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
 
         # optimization set to correct value, default not used
         expanded_dic['Cads']['Optim'][0] += 1
 
         # Project file
         project_path, projfile = self.gen_file(
-            'uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], dest['dest_path'])
+            'uvision4.uvproj.tmpl', expanded_dic, '%s.uvproj' % data['name'], expanded_dic['output_dir']['path'])
         project_path, optfile = self.gen_file(
-            'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], dest['dest_path'])
+            'uvision4.uvopt.tmpl', expanded_dic, '%s.uvopt' % data['name'], expanded_dic['output_dir']['path'])
         return project_path, [projfile, optfile]
 
     def fixup_executable(self, exe_path):
