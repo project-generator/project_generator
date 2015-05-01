@@ -19,7 +19,7 @@ import operator
 
 from collections import defaultdict
 
-from .tool import build, export, ToolsSupported
+from .tool import build, export, flash, ToolsSupported
 
 try:
     input = raw_input
@@ -153,7 +153,7 @@ class Project:
 
         self.workspace = workspace
 
-        logging.debug("Initialising project %s" % name)
+        #logging.debug("Initialising project %s" % name)
 
         self.name = name
 
@@ -322,6 +322,16 @@ class Project:
         else:
             project_files = [os.path.join(proj_dic['output_dir']['path'], proj_dic['name'])]
         build(builder, self.name, project_files, tool, self.workspace.settings)
+
+    def flash(self, tool):
+        """flash the project"""
+        flasher = self.tools.get_value(tool, 'flasher')
+        proj_dic = self.generate_dict_for_tool(tool)
+        if proj_dic['project_dir']['name'] and proj_dic['project_dir']['path']:
+            project_files = [os.path.join(proj_dic['project_dir']['path'], proj_dic['project_dir']['name'])]
+        else:
+            project_files = [os.path.join(proj_dic['output_dir']['path'], proj_dic['name'])]
+        flash(flasher, self.name, project_files, tool, self.workspace.settings)
 
     def export(self, tool, copy):
         """export the project"""

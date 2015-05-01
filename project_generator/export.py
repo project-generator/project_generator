@@ -27,13 +27,12 @@ def run(args):
         workspace.export_project(args.project, args.tool, args.copy)
 
         if args.build:
-            workspace.build_project(args.project, args.tool)
+            workspace.build_project(args.project, args.tool, args.flash)
     else:
         workspace.export_projects(args.tool, arg.copy)
 
         if args.build:
-            workspace.build_projects(args.project, args.tool)
-
+            workspace.build_projects(args.project, args.tool, args.flash)
 
 def setup(subparser):
     subparser.add_argument(
@@ -43,6 +42,8 @@ def setup(subparser):
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     subparser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects")
+    subparser.add_argument(
+        "-fl", "--flash", action="store_true", help="Flash defined projects")
     subparser.add_argument(
         "-defdir", "--defdirectory",
         help="Path to the definitions, otherwise default (~/.pg/definitions) is used")
