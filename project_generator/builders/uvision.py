@@ -38,6 +38,10 @@ class UvisionBuilder(Builder):
         path = join(os.getcwd(), project_files[0])
         if path.split('.')[-1] != '.uvproj':
             path = path + '.uvproj'
+        if not os.path.exists(path):
+            logging.debug("The file: %s does not exists, exported prior building?" % path)
+            return
+
         logging.debug("Building uVision project: %s" % path)
 
         args = [env_settings.get_env_settings('uvision'), '-r', '-j0', path]
