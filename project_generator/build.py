@@ -15,10 +15,21 @@ import os
 from .tool import build, ToolsSupported
 from .workspace import Workspace
 from .settings import ProjectSettings
+import export
 
 help = 'Build a project'
 
 def run(args):
+    # Export if we know how, otherwise return
+    if args.file:
+        args.copy = False
+        args.build = False
+        export.run(args)
+    else:
+        if not os.path.exists(os.path.join(args.directory, args.project)):
+            logging.debug("The project: %s does not exist." % os.path.join(args.directory, args.project))
+            return
+
     if args.file:
         # known project from records
         workspace = Workspace(args.file, os.getcwd())
