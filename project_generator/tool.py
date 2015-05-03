@@ -41,54 +41,63 @@ class ToolsSupported:
             'toolnames' : ['iar_arm'],
             'exporter' : IAREWARMExporter,
             'builder' : IARBuilder,
+            'flasher' : IARBuilder,
         },
         'uvision': {
             'toolchain' : 'uvision',
             'toolnames' : ['uvision'],
             'exporter' : UvisionExporter,
             'builder' : UvisionBuilder,
+            'flasher' : UvisionBuilder,
         },
         'coide': {
             'toolchain' : 'gcc_arm',
             'toolnames' : ['coide'],
             'exporter' : CoideExporter,
             'builder' : None,
+            'flasher' : None,
         },
         'make_gcc_arm': {
             'toolchain' : 'gcc_arm',
             'toolnames' : ['make_gcc_arm'],
             'exporter' : MakefileGccArmExporter,
             'builder' : MakefileGccArmBuilder,
+            'flasher' : None,
         },
         'eclipse_make_gcc_arm': {
             'toolchain' : 'gcc_arm',
             'toolnames' : ['eclipse_make_gcc_arm', 'make_gcc_arm'],
             'exporter' : EclipseGnuARMExporter,
             'builder' : None,
+            'flasher' : None,
         },
         'sublime_make_gcc_arm' : {
             'toolchain' : 'gcc_arm',
             'toolnames' : ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
             'exporter' : SublimeTextMakeGccARMExporter,
             'builder' : MakefileGccArmBuilder,
+            'flasher' : None,
         },
         'sublime' : {
             'toolchain' : None,
             'toolnames' : ['sublime'],
             'exporter' : None,
             'builder' : None,
+            'flasher' : None,
         },
         'gdb' : {
             'toolchain' : None,
             'toolnames' : ['gdb'],
             'exporter' : GDBExporter,
             'builder' : None,
+            'flasher' : None,
         },
         'arm_none_eabi_gdb' : {
             'toolchain' : None,
             'toolnames' : ['gdb'],
             'exporter' : ARMNoneEABIGDBExporter,
             'builder' : None,
+            'flasher' : None,
         },
     }
 
@@ -133,6 +142,13 @@ def build(builder, project_name, project_files, tool, env_settings):
         builder().build_project(project_name, project_files, env_settings)
     except TypeError:
         raise RuntimeError("Builder does not support specified tool: %s" % tool)
+
+def flash(flasher, project_name, project_files, tool, env_settings):
+    """ Invokes flasher for specified tool. """
+    try:
+        flasher().flash_project(project_name, project_files, env_settings)
+    except TypeError:
+        raise RuntimeError("Flasher does not support specified tool: %s" % tool)
 
 def load_definitions(def_dir=None):
     definitions_directory = def_dir

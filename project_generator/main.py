@@ -24,6 +24,7 @@ from . import export
 from . import update
 from . import list_projects
 from . import build
+from . import flash
 
 subcommands = {
     'init': init,
@@ -32,6 +33,7 @@ subcommands = {
     'list': list_projects,
     'update': update,
     'build' : build,
+    'flash' : flash,
 }
 
 

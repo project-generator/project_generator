@@ -12,43 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-from .tool import build, ToolsSupported
+from .tool import ToolsSupported
 from .workspace import Workspace
 from .settings import ProjectSettings
-import export
+import build
 
-help = 'Build a project'
+help = 'Flash a project'
 
 def run(args):
-    # Export if we know how, otherwise return
-    if args.file:
-        args.copy = False
-        args.build = False
-        export.run(args)
-    else:
-        if not os.path.exists(os.path.join(args.directory, args.project)):
-            logging.debug("The project: %s does not exist." % os.path.join(args.directory, args.project))
-            return
-
+    #first build a project then flash it
+    build.run(args)
+    # time to flash
     if args.file:
         # known project from records
         workspace = Workspace(args.file, os.getcwd())
         if args.project:
-            workspace.build_project(args.project, args.tool)
+            workspace.flash_project(args.project, args.tool)
         else:
-            workspace.build_projects(args.tool)
+            workspace.flash_projects(args.tool)
     else:
         # not project known by pgen
         project_settings = ProjectSettings()
         project_files = [os.path.join(args.directory, args.project)]
-        builder = ToolsSupported().get_value(args.tool, 'builder')
-        build(builder, args.project, project_files, args.tool, project_settings)
+        flasher = ToolsSupported().get_value(args.tool, 'flasher')
+        build(flasher, args.project, project_files, args.tool, project_settings)
 
 def setup(subparser):
     subparser.add_argument(
         "-f", "--file", help="YAML projects file")
-    subparser.add_argument("-p", "--project", help="Name of the project to build")
+    subparser.add_argument("-p", "--project", help="Name of the project to flash")
     subparser.add_argument(
-        "-t", "--tool", help="Build a project files for provided tool")
+        "-t", "--tool", help="Flash a project files for provided tool")
     subparser.add_argument(
         "-dir", "--directory", help="The projects directory")
