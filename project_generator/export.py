@@ -21,7 +21,10 @@ help = 'Export a project record'
 def run(args):
     workspace = Workspace(args.file, os.getcwd())
 
-    update(None, False, False, workspace.settings)
+    if args.defdirectory:
+        workspace.settings.update_definitions_dir(args.defdirectory)
+    else:
+        update(False, workspace.settings)
 
     if args.project:
         workspace.export_project(args.project, args.tool, args.copy)

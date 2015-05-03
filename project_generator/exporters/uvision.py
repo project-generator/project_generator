@@ -167,7 +167,8 @@ class UvisionExporter(Exporter):
         self.parse_specific_options(expanded_dic)
 
         target = Targets(env_settings.get_env_settings('definitions'))
-
+        if not target.is_supported(expanded_dic['target'].lower(), 'uvision'):
+            raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
         mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'uvision')
         if not mcu_def_dic:
              raise RuntimeError(
