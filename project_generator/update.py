@@ -20,41 +20,14 @@ from .settings import ProjectSettings
 
 help = 'Update definitions source repository'
 
-def update(source=None, force=False, copy=False, settings=ProjectSettings()):
+def update(force=False, settings=ProjectSettings()):
     defdir_exists = True
     if not os.path.exists(settings.paths['definitions']):
         defdir_exists = False
         os.mkdir(settings.paths['definitions'])
 
-    if source:
-        # is source remote or local?
-        if force:
-            rmtree_if_exists(settings.paths['definitions'])
-        elif os.path.exists(settings.paths['definitions']):
-            logging.critical('Definitions location already exists.')
-            return
-
-        if os.path.exists(source):
-            # local
-            if copy:
-                # copy contents of directory
-                logging.debug('Copying contents of %s to %s' % (source, settings.paths['definitions']))
-                shutil.copytree(source, settings.paths['definitions'])
-            else:
-                if os.name == 'nt' and not copy:
-                    logging.warning('Symlink only supported on unix systems')
-                    logging.info('Copying directory')
-                    shutil.copytree(source, settings.paths['definitions'])
-
-                    return
-
-                os.symlink(source, settings.paths['definitions'])
-        else:
-            # remote
-            cmd = ('git', 'clone', '--quiet', source, 'definitions')
-
-            subprocess.call(cmd, cwd=settings.paths['definitions'])
-    else:
+    # For default, use up to date repo from github
+    if settings.get_env_settings('definitions') == settings.get_env_settings('definitions_default'):
         if not defdir_exists:
             cmd = ('git', 'clone', '--quiet', 'https://github.com/project-generator/project_generator_definitions.git', '.')
             subprocess.call(cmd, cwd=settings.paths['definitions'])
@@ -74,13 +47,8 @@ def update(source=None, force=False, copy=False, settings=ProjectSettings()):
                 cmd = ('git', 'pull', '--rebase', '--quiet', 'origin', 'master')
                 subprocess.call(cmd, cwd=settings.paths['definitions'])
 
-
 def run(args):
     update(args.source, args.force, args.copy)
-        
 
 def setup(subparser):
-    subparser.add_argument('-f', '--force', action='store_true', help='Force update of the directory', default=True)
-    subparser.add_argument('-c', '--copy', action='store_true',
-                            help='Copy contents directory instead of symlinking (only for local directories)')
-    subparser.add_argument('source', help='Where to get the updates from', nargs='?')
+    subparser.add_argument('-f', '--force', action='store_true', help='Force update of the remote directory', default=True)
