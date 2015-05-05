@@ -46,32 +46,21 @@ class Workspace:
 
         logging.debug("Exporting Project %s" % project_name)
 
-        if tool is None:
-            tool = self.settings.DEFAULT_TOOL
-
         self.projects[project_name].export(tool, copy)
 
     def export_projects(self, tool, copy):
-        if tool is None:
-            tool = self.settings.DEFAULT_TOOL
-        
         for name, project in self.projects.items():
             logging.debug("Exporting Project %s" % name)
 
             project.export(tool, copy)
 
     def build_projects(self, tool):
-        if tool is None:
-            tool = self.settings.DEFAULT_TOOL
-
         for name, project in self.projects.items():
             logging.debug("Building Project %s" % name)
 
             project.build(tool)
 
     def flash_projects(self, tool):
-        if tool is None:
-            tool = self.settings.DEFAULT_TOOL
 
         for name, project in self.projects.items():
             logging.debug("Flashing Project %s" % name)
@@ -83,10 +72,6 @@ class Workspace:
             raise RuntimeError("Invalid Project Name")
 
         logging.debug("Building Project %s" % project_name)
-
-        if tool is None:
-            tool = self.settings.DEFAULT_TOOL
-
         self.projects[project_name].build(tool)
 
     def flash_project(self, project_name, tool):
@@ -94,10 +79,6 @@ class Workspace:
             raise RuntimeError("Invalid Project Name")
 
         logging.debug("Flashing Project %s" % project_name)
-
-        if tool is None:
-            tool = self.settings.DEFAULT_TOOL
-
         self.projects[project_name].flash(tool)
 
     def list_projects(self, format='logging', out=True):

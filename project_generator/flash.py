@@ -21,7 +21,7 @@ help = 'Flash a project'
 
 def run(args):
     #first build a project then flash it
-    build.run(args)
+    # build.run(args)
     # time to flash
     if args.file:
         # known project from records
@@ -45,3 +45,6 @@ def setup(subparser):
         "-t", "--tool", help="Flash a project files for provided tool")
     subparser.add_argument(
         "-dir", "--directory", help="The projects directory")
+    subparser.add_argument(
+        "-defdir", "--defdirectory",
+        help="Path to the definitions, otherwise default (~/.pg/definitions) is used")

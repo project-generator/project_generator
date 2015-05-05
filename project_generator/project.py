@@ -176,6 +176,7 @@ class Project:
         self.mcu = ''
         self.core = ''
         self.target = ''
+        self.tools_supported = []
 
         self.output_types = {
             'executable': 'exe',
@@ -188,7 +189,8 @@ class Project:
         self.linker_file = None
         self.tool_specific = defaultdict(ToolSpecificSettings)
 
-        self.project_path = None
+        self.project_path = {}
+        self.project_files = {}
         self.project_name = None
         self.tools = ToolsSupported()
 
@@ -244,6 +246,10 @@ class Project:
                 if 'build_dir' in project_file_data['common']:
                     self.build_dir = project_file_data['common']['build_dir'][0]
 
+                if 'tools_supported' in project_file_data['common']:
+                    self.tools_supported.extend(
+                        [x for x in project_file_data['common']['tools_supported'] if x is not None])
+
             if 'tool_specific' in project_file_data:
                 for tool_name, tool_settings in project_file_data['tool_specific'].items():
                     self.tool_specific[tool_name].add_settings(
@@ -255,6 +261,9 @@ class Project:
 
         if self.project_dir['path'] == '':
             self.project_dir['path'] = self.workspace.settings.generated_projects_dir_default
+
+        if len(self.tools_supported) == 0:
+            self.tools_supported = [self.workspace.settings.DEFAULT_TOOL]
 
     def _process_source_files(self, files, group_name):
         source_paths = []
@@ -315,57 +324,75 @@ class Project:
 
     def build(self, tool):
         """build the project"""
-        builder = self.tools.get_value(tool, 'builder')
-        proj_dic = self.generate_dict_for_tool(tool)
-        if proj_dic['project_dir']['name'] and proj_dic['project_dir']['path']:
-            project_files = [os.path.join(proj_dic['project_dir']['path'], proj_dic['project_dir']['name'])]
+        tools = []
+        if not tool:
+            tools = self.tools_supported
         else:
-            project_files = [os.path.join(proj_dic['output_dir']['path'], proj_dic['name'])]
-        build(builder, self.name, project_files, tool, self.workspace.settings)
+            tools = [tool]
+
+        for build_tool in tools:
+            builder = self.tools.get_value(build_tool, 'builder')
+            proj_dic = self.generate_dict_for_tool(build_tool)
+            if proj_dic['project_dir']['name'] and proj_dic['project_dir']['path']:
+                project_files = [os.path.join(proj_dic['project_dir']['path'], proj_dic['project_dir']['name'])]
+            else:
+                project_files = [os.path.join(proj_dic['output_dir']['path'], proj_dic['name'])]
+            build(builder, self.name, project_files, build_tool, self.workspace.settings)
 
     def flash(self, tool):
         """flash the project"""
+        # flashing via various tools does not make much usefulness?
+        if not tool:
+            tool = self.workspace.settings.DEFAULT_TOOL
+
         flasher = self.tools.get_value(tool, 'flasher')
         proj_dic = self.generate_dict_for_tool(tool)
         if proj_dic['project_dir']['name'] and proj_dic['project_dir']['path']:
             project_files = [os.path.join(proj_dic['project_dir']['path'], proj_dic['project_dir']['name'])]
         else:
             project_files = [os.path.join(proj_dic['output_dir']['path'], proj_dic['name'])]
-        flash(flasher, self.name, project_files, tool, self.workspace.settings)
+        flash(flasher, proj_dic, self.name, project_files, tool, self.workspace.settings)
 
     def export(self, tool, copy):
         """export the project"""
-        exporter = self.tools.get_value(tool, 'exporter')
-
-        proj_dic = self.generate_dict_for_tool(tool)
-        proj_dic['copy_sources'] = False
-        proj_dic['output_dir']['rel_path'] = ''
-
-        if copy:
-            self.copy_files(proj_dic, tool)
-            # TODO: fixme
-            proj_dic['copy_sources'] = True
+        tools = []
+        if not tool:
+            tools = self.tools_supported
         else:
-            # Get number of how far we are from root, to set paths in the project
-            # correctly
-            count = 1
-            pdir = proj_dic['output_dir']['path']
-            while os.path.split(pdir)[0]:
-                pdir = os.path.split(pdir)[0]
-                count += 1
-            rel_path_output = ''
+            tools = [tool]
 
-            proj_dic['output_dir']['rel_count'] = count
-            while count:
-                rel_path_output = os.path.join('..', rel_path_output)
-                count = count - 1
-            proj_dic['output_dir']['rel_path'] = rel_path_output
-        logging.debug("Project dict: %s" % proj_dic)
-        project_path, project_files = export(exporter,
-            proj_dic, tool, self.workspace.settings)
+        for export_tool in tools:
+            exporter = self.tools.get_value(export_tool, 'exporter')
 
-        self.project_path = project_path
-        self.project_files = project_files
+            proj_dic = self.generate_dict_for_tool(export_tool)
+            proj_dic['copy_sources'] = False
+            proj_dic['output_dir']['rel_path'] = ''
+
+            if copy:
+                self.copy_files(proj_dic, export_tool)
+                # TODO: fixme
+                proj_dic['copy_sources'] = True
+            else:
+                # Get number of how far we are from root, to set paths in the project
+                # correctly
+                count = 1
+                pdir = proj_dic['output_dir']['path']
+                while os.path.split(pdir)[0]:
+                    pdir = os.path.split(pdir)[0]
+                    count += 1
+                rel_path_output = ''
+
+                proj_dic['output_dir']['rel_count'] = count
+                while count:
+                    rel_path_output = os.path.join('..', rel_path_output)
+                    count = count - 1
+                proj_dic['output_dir']['rel_path'] = rel_path_output
+            logging.debug("Project dict: %s" % proj_dic)
+            project_path, project_files = export(exporter,
+                proj_dic, export_tool, self.workspace.settings)
+
+            self.project_path[export_tool] = project_path
+            self.project_files[export_tool] = project_files
 
         return project_path, project_files
 
@@ -405,6 +432,7 @@ class Project:
             'target': self.target,
             'output_type': self.output_type,
             'build_dir' : self.build_dir,
+            'tools_supported' : self.tools_supported,
             'output_dir' : self.output_dir,
             'include_paths': self.include_paths + list(flatten([settings.include_paths for settings in tool_specific_settings])),
             'source_paths': self.source_paths + list(flatten([settings.source_paths for settings in tool_specific_settings])),

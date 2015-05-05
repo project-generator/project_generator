@@ -15,6 +15,7 @@
 import os
 import subprocess
 import logging
+import time
 
 from .builder import Builder
 from os.path import join
@@ -31,7 +32,7 @@ class IARBuilder(Builder):
             return
         logging.debug("Building IAR project: %s" % path)
 
-        args = [env_settings.get_env_settings('iar'), path, '-build', project_name]
+        args = [join(env_settings.get_env_settings('iar'), 'IarBuild.exe'), path, '-build', project_name]
 
         try:
             ret_code = None
@@ -42,13 +43,19 @@ class IARBuilder(Builder):
             # no IAR doc describes errors from IarBuild
             logging.info("Build completed.")
 
-    def flash_project(self, project_name, project_files, env_settings):
+    def flash_project(self, proj_dic, project_name, project_files, env_settings):
         # > [project_path]/settings/[project_name].[project_name].bat
-        path = join(os.getcwd(), os.path.dirname(project_files[0]), 'settings')
-        path = path + project_name + '.' + project_name + '.cspy.bat'
+        path = join(os.getcwd(), project_files[0])
+        if path.split('.')[-1] != '.eww':
+            path = path + '.eww'
+        # to be able to flash, open and close IAR, to generate .bat - is there other way around this? IAR help
+        child = subprocess.Popen([join(env_settings.get_env_settings('iar'), 'IarIdePm.exe'), path])
+        time.sleep(5)
+        child.terminate()
+        path = join(os.path.dirname(path), 'settings', project_name) + '.' + project_name + '.cspy.bat'
         logging.debug("Flashing IAR project: %s" % path)
 
-        args = [env_settings.get_env_settings('iar'), path]
+        args = [path, join('.', proj_dic['build_dir'], 'Exe', project_name + '.out')]
 
         try:
             ret_code = None

@@ -61,7 +61,7 @@ class UvisionBuilder(Builder):
                 logging.info("Build succeeded with the status: %s" %
                              self.ERRORLEVEL[ret_code])
 
-    def flash_project(self, project_name, project_files, env_settings):
+    def flash_project(self, proj_dic, project_name, project_files, env_settings):
         # > UV4 -f [project_path]
         path = join(os.getcwd(), project_files[0])
         if path.split('.')[-1] != '.uvproj':

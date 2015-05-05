@@ -40,7 +40,7 @@ class ProjectSettings:
         self.paths['iar'] = os.environ.get('IARBUILD') or join(
             'C:', sep, 'Program Files (x86)',
             'IAR Systems', 'Embedded Workbench 7.0',
-            'common', 'bin', 'IarBuild.exe')
+            'common', 'bin')
         self.paths['gcc'] = os.environ.get('ARM_GCC_PATH') or ''
         self.paths['definitions_default'] = join(expanduser('~/.pg'), 'definitions')
         self.paths['definitions'] = self.paths['definitions_default']
@@ -50,15 +50,16 @@ class ProjectSettings:
         self.generated_projects_dir = self.generated_projects_dir_default
 
     def update(self, settings):
-        if 'tools' in settings:
-            for k, v in settings['tools'].items():
-                if k in self.paths:
-                    self.paths[k] = v['path'][0]
-        if 'definitions_dir' in settings:
-            self.paths['definitions'] = normpath(settings['definitions_dir'][0])
+        if settings:
+            if 'tools' in settings:
+                for k, v in settings['tools'].items():
+                    if k in self.paths:
+                        self.paths[k] = v['path'][0]
+            if 'definitions_dir' in settings:
+                self.paths['definitions'] = normpath(settings['definitions_dir'][0])
 
-        if 'export_dir' in settings:
-            self.generated_projects_dir = normpath(settings['export_dir'][0])
+            if 'export_dir' in settings:
+                self.generated_projects_dir = normpath(settings['export_dir'][0])
 
     def update_definitions_dir(self, def_dir):
         self.generated_projects_dir = normpath(def_dir)
