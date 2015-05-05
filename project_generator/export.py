@@ -32,7 +32,7 @@ def run(args):
         if args.build:
             workspace.build_project(args.project, args.tool, args.flash)
     else:
-        workspace.export_projects(args.tool, arg.copy)
+        workspace.export_projects(args.tool, args.copy)
 
         if args.build:
             workspace.build_projects(args.project, args.tool, args.flash)
