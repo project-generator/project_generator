@@ -21,7 +21,7 @@ help = 'Flash a project'
 
 def run(args):
     #first build a project then flash it
-    # build.run(args)
+    build.run(args)
     # time to flash
     if args.file:
         # known project from records
