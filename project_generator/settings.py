@@ -40,7 +40,7 @@ class ProjectSettings:
         self.paths['iar'] = os.environ.get('IARBUILD') or join(
             'C:', sep, 'Program Files (x86)',
             'IAR Systems', 'Embedded Workbench 7.0',
-            'common', 'bin', 'IarBuild.exe')
+            'common', 'bin')
         self.paths['gcc'] = os.environ.get('ARM_GCC_PATH') or ''
         self.paths['definitions_default'] = join(expanduser('~/.pg'), 'definitions')
         self.paths['definitions'] = self.paths['definitions_default']

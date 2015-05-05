@@ -351,7 +351,7 @@ class Project:
             project_files = [os.path.join(proj_dic['project_dir']['path'], proj_dic['project_dir']['name'])]
         else:
             project_files = [os.path.join(proj_dic['output_dir']['path'], proj_dic['name'])]
-        flash(flasher, self.name, project_files, tool, self.workspace.settings)
+        flash(flasher, proj_dic, self.name, project_files, tool, self.workspace.settings)
 
     def export(self, tool, copy):
         """export the project"""

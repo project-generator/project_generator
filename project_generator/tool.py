@@ -143,10 +143,10 @@ def build(builder, project_name, project_files, tool, env_settings):
     except TypeError:
         raise RuntimeError("Builder does not support specified tool: %s" % tool)
 
-def flash(flasher, project_name, project_files, tool, env_settings):
+def flash(flasher, proj_dic, project_name, project_files, tool, env_settings):
     """ Invokes flasher for specified tool. """
     try:
-        flasher().flash_project(project_name, project_files, env_settings)
+        flasher().flash_project(proj_dic, project_name, project_files, env_settings)
     except TypeError:
         raise RuntimeError("Flasher does not support specified tool: %s" % tool)
 
