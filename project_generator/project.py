@@ -537,6 +537,8 @@ class Project:
                 'linker_file': [],
                 'source_files': [],
                 'include_paths': [],
+                'source_files_obj' : [],
+                'source_files_lib' : [],
                 'target': [],
             }
         }
@@ -544,6 +546,8 @@ class Project:
         linker_filetypes = FILES_EXTENSIONS['linker_file']
         source_filetypes = FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] + FILES_EXTENSIONS['source_files_s']
         include_filetypes = FILES_EXTENSIONS['include_paths']
+        lib_filetypes = FILES_EXTENSIONS['source_files_lib']
+        obj_filetypes = FILES_EXTENSIONS['source_files_obj']
 
         for dirpath, dirnames, files in os.walk(directory):
             for filename in files:
@@ -556,6 +560,10 @@ class Project:
                     data['common']['source_files'].append(os.path.join(relpath, filename) if list_sources else relpath)
                 elif extension in include_filetypes:
                     data['common']['include_paths'].append(relpath)
+                elif extension in lib_filetypes:
+                    data['common']['source_files_lib'].append(os.path.join(relpath, filename))
+                elif extension in obj_filetypes:
+                    data['common']['source_files_obj'].append(os.path.join(relpath, filename))
 
         data['common']['source_files'] = list(set(data['common']['source_files']))
         data['common']['include_paths'] = list(set(data['common']['include_paths']))
