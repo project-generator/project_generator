@@ -15,7 +15,6 @@ import shutil
 import logging
 import subprocess
 
-from .util import rmtree_if_exists
 from .settings import ProjectSettings
 
 help = 'Update definitions source repository'

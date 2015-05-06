@@ -178,11 +178,7 @@ class UvisionExporter(Exporter):
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
-        # TODO fixme - define this in yaml, and set this bny default in the export, not here
-        # correct all templates
-        # set default build directory if unset
-        if expanded_dic['build_dir'] == '':
-            expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
+        expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
 
         # optimization set to correct value, default not used
         expanded_dic['Cads']['Optim'][0] += 1
