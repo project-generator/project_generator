@@ -30,12 +30,16 @@ def run(args):
         workspace.export_project(args.project, args.tool, args.copy)
 
         if args.build:
-            workspace.build_project(args.project, args.tool, args.flash)
+            workspace.build_project(args.project, args.tool)
+        if args.flash:
+            workspace.flash_project(args.project, args.tool)
     else:
         workspace.export_projects(args.tool, args.copy)
 
         if args.build:
-            workspace.build_projects(args.project, args.tool, args.flash)
+            workspace.build_projects(args.tool)
+        if args.flash:
+            workspace.flash_projects(args.tool)
 
 def setup(subparser):
     subparser.add_argument(
