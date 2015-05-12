@@ -194,8 +194,6 @@ class Project:
         self.project_name = None
         self.tools = ToolsSupported()
 
-        source_paths = []
-
         for project_file in project_files:
             with open(project_file, 'rt') as f:
                 project_file_data = yaml.load(f)
@@ -216,12 +214,12 @@ class Project:
                         [x for x in project_file_data['common']['include_paths'] if x is not None])
 
                 if 'source_paths' in project_file_data['common']:
-                    self.source_paths.extend(
+                    self.include_paths.extend(
                         [x for x in project_file_data['common']['source_paths'] if x is not None])
 
                 if 'source_files' in project_file_data['common']:
-                    source_paths = self._process_source_files(
-                        project_file_data['common']['source_files'], group_name)
+                    self.include_paths.extend(
+                        self._process_source_files(project_file_data['common']['source_files'], group_name))
 
                 if 'macros' in project_file_data['common']:
                     self.macros.extend(
@@ -255,9 +253,9 @@ class Project:
                     self.tool_specific[tool_name].add_settings(
                         tool_settings, group_name)
 
-        # No include paths - take from source files dir
-        if self.include_paths == []:
-            self.include_paths = source_paths
+        # added source paths to include paths. still need remove duplicate entries
+        # from self.include_paths if they exist. Not sure why a source path and include path
+        # are both maintained
 
         if self.project_dir['path'] == '':
             self.project_dir['path'] = self.workspace.settings.generated_projects_dir_default
