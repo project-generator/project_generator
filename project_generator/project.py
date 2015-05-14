@@ -211,15 +211,13 @@ class Project:
 
                 if 'include_paths' in project_file_data['common']:
                     self.include_paths.extend(
-                        [x for x in project_file_data['common']['include_paths'] if x is not None])
-
-                if 'source_paths' in project_file_data['common']:
-                    self.include_paths.extend(
-                        [x for x in project_file_data['common']['source_paths'] if x is not None])
+                        [os.path.normpath(x) for x in project_file_data['common']['include_paths'] if x is not None])
 
                 if 'source_files' in project_file_data['common']:
-                    self.include_paths.extend(
-                        self._process_source_files(project_file_data['common']['source_files'], group_name))
+                    source_paths = self._process_source_files(project_file_data['common']['source_files'], group_name)
+                    for source_path in source_paths:
+                        if os.path.normpath(source_path) not in self.include_paths:
+                            self.include_paths.extend(source_path)
 
                 if 'macros' in project_file_data['common']:
                     self.macros.extend(
@@ -252,10 +250,6 @@ class Project:
                 for tool_name, tool_settings in project_file_data['tool_specific'].items():
                     self.tool_specific[tool_name].add_settings(
                         tool_settings, group_name)
-
-        # added source paths to include paths. still need remove duplicate entries
-        # from self.include_paths if they exist. Not sure why a source path and include path
-        # are both maintained
 
         if self.project_dir['path'] == '':
             self.project_dir['path'] = self.workspace.settings.generated_projects_dir_default
