@@ -377,7 +377,8 @@
             <ScatterFile>{{linker_file}}</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc>{% for misc in LDads['Misc'] %} {{misc}} {% endfor %}</Misc>
+            <Misc>{% for lib in source_files_lib %} {{lib}} {% endfor %}
+                  {% for obj in source_files_obj %} {{obj}} {% endfor %}</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings>{% for diswarn in LDads['DisabledWarnings'] %} {{diswarn}} {% endfor %}</DisabledWarnings>
           </LDads>
