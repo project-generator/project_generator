@@ -217,7 +217,7 @@ class Project:
                     source_paths = self._process_source_files(project_file_data['common']['source_files'], group_name)
                     for source_path in source_paths:
                         if os.path.normpath(source_path) not in self.include_paths:
-                            self.include_paths.extend(source_path)
+                            self.include_paths.extend([source_path])
 
                 if 'macros' in project_file_data['common']:
                     self.macros.extend(
