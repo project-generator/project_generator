@@ -11,7 +11,7 @@
         <Option name="UseFPU" value="0"/>
         <Option name="UserEditCompiler" value="{% for flag in coide_settings['Compile']['UserEditCompiler'] %}-{{flag}};{% endfor%}"/>
         <Includepaths>
-          {% for path in include_paths %} <Includepath path="{{path}}"/>{% endfor %}
+          {% for path in includes %} <Includepath path="{{path}}"/>{% endfor %}
         </Includepaths>
         <DefinedSymbols>
           {% for s in macros %} <Define name="{{s}}"/>{% endfor %}

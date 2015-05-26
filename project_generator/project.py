@@ -76,12 +76,12 @@ class ToolSpecificSettings:
         if 'source_paths' in data_dictionary:
             self.source_paths.extend(data_dictionary['source_paths'])
 
-        if 'source_files' in data_dictionary:
+        if 'sources' in data_dictionary:
             self._process_source_files(
-                data_dictionary['source_files'], group_name)
+                data_dictionary['sources'], group_name)
 
-        if 'include_paths' in data_dictionary:
-            self.include_paths.extend([x for x in data_dictionary['include_paths'] if x is not None])
+        if 'includes' in data_dictionary:
+            self.include_paths.extend([x for x in data_dictionary['includes'] if x is not None])
 
         if 'macros' in data_dictionary:
             self.macros.extend([x for x in data_dictionary['macros'] if x is not None])
@@ -209,12 +209,12 @@ class Project:
                 if 'group_name' in project_file_data['common']:
                     group_name = project_file_data['common']['group_name'][0]
 
-                if 'include_paths' in project_file_data['common']:
+                if 'includes' in project_file_data['common']:
                     self.include_paths.extend(
-                        [os.path.normpath(x) for x in project_file_data['common']['include_paths'] if x is not None])
+                        [os.path.normpath(x) for x in project_file_data['common']['includes'] if x is not None])
 
-                if 'source_files' in project_file_data['common']:
-                    source_paths = self._process_source_files(project_file_data['common']['source_files'], group_name)
+                if 'sources' in project_file_data['common']:
+                    source_paths = self._process_source_files(project_file_data['common']['sources'], group_name)
                     for source_path in source_paths:
                         if os.path.normpath(source_path) not in self.include_paths:
                             self.include_paths.extend([source_path])
@@ -426,7 +426,7 @@ class Project:
             'build_dir' : self.build_dir,
             'tools_supported' : self.tools_supported,
             'output_dir' : self.output_dir,
-            'include_paths': self.include_paths + list(flatten([settings.include_paths for settings in tool_specific_settings])),
+            'includes': self.include_paths + list(flatten([settings.include_paths for settings in tool_specific_settings])),
             'source_paths': self.source_paths + list(flatten([settings.source_paths for settings in tool_specific_settings])),
             'source_files': merge_recursive(self.source_groups,
                                             { k: v for settings in tool_specific_settings for k, v in settings.source_groups.items() },
@@ -527,8 +527,8 @@ class Project:
         data = {
             'common': {
                 'linker_file': [],
-                'source_files': [],
-                'include_paths': [],
+                'sources': [],
+                'includes': [],
                 'source_files_obj' : [],
                 'source_files_lib' : [],
                 'target': [],
@@ -549,7 +549,7 @@ class Project:
                 if extension in linker_filetypes:
                     data['common']['linker_file'].append(os.path.join(relpath, filename))
                 elif extension in source_filetypes:
-                    data['common']['source_files'].append(os.path.join(relpath, filename) if list_sources else relpath)
+                    data['common']['sources'].append(os.path.join(relpath, filename) if list_sources else relpath)
                 elif extension in include_filetypes:
                     data['common']['include_paths'].append(relpath)
                 elif extension in lib_filetypes:
@@ -557,8 +557,8 @@ class Project:
                 elif extension in obj_filetypes:
                     data['common']['source_files_obj'].append(os.path.join(relpath, filename))
 
-        data['common']['source_files'] = list(set(data['common']['source_files']))
-        data['common']['include_paths'] = list(set(data['common']['include_paths']))
+        data['common']['sources'] = list(set(data['common']['sources']))
+        data['common']['includes'] = list(set(data['common']['includes']))
 
         if len(data['common']['linker_file']) == 0:
             data['common']['linker_file'].append("No linker file found")

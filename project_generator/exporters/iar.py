@@ -101,9 +101,9 @@ class IAREWARMExporter(Exporter):
 
     def fix_paths(self, data, rel_path):
         fixed_paths = []
-        for path in data['include_paths']:
+        for path in data['includes']:
             fixed_paths.append(join('$PROJ_DIR$', rel_path, normpath(path)))
-        data['include_paths'] = fixed_paths
+        data['includes'] = fixed_paths
         fixed_paths = []
         for path in data['source_files_lib']:
             fixed_paths.append(join('$PROJ_DIR$', rel_path, normpath(path)))
