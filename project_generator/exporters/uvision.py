@@ -58,7 +58,7 @@ class UvisionExporter(Exporter):
     def parse_specific_options(self, data):
         """ Parse all uvision specific setttings. """
         default_set = copy.deepcopy(self.definitions.uvision_settings)
-        data.update(default_set)  # set specific options to default values
+        data['uvision_settings'].update(default_set)  # set specific options to default values
         for dic in data['misc']:
             for k, v in dic.items():
                 if k == 'ArmAdsMisc':
@@ -78,7 +78,7 @@ class UvisionExporter(Exporter):
                 value_list[option] = 1
             elif value_list[option][0] == 'disable':
                 value_list[option] = 0
-            data[uvision_dic][option] = value_list[option]
+            data['uvision_settings'][uvision_dic][option] = value_list[option]
 
     def set_target_options(self, value_list, data, uvision_dic):
         for option in value_list:
@@ -128,10 +128,10 @@ class UvisionExporter(Exporter):
     def append_mcu_def(self, data, mcu_def):
         """ Get MCU definitons as Flash algo, RAM, ROM size , etc. """
         try:
-            data['TargetOption'].update(mcu_def['TargetOption'])
+            data['uvision_settings'].update(mcu_def['TargetOption'])
         except KeyError:
             # does not exist, create it
-            data['TargetOption'] = mcu_def['TargetOption']
+            data['uvision_settings'] = mcu_def['TargetOption']
 
     def normalize_mcu_def(self, mcu_def):
         for k,v in mcu_def['TargetOption'].items():
@@ -164,6 +164,7 @@ class UvisionExporter(Exporter):
         self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
         self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
+        expanded_dic['uvision_settings'] = {}
         self.parse_specific_options(expanded_dic)
 
         target = Targets(env_settings.get_env_settings('definitions'))
@@ -178,10 +179,13 @@ class UvisionExporter(Exporter):
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
+        # load debugger
+        # TODO: check if debugger exists for uvision, print error if not !
+        expanded_dic['uvision_settings']['TargetDlls']['Driver'] = self.definitions.debuggers[expanded_dic['debugger']]['TargetDlls']['Driver']
         expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
 
         # optimization set to correct value, default not used
-        expanded_dic['Cads']['Optim'][0] += 1
+        expanded_dic['uvision_settings']['Cads']['Optim'][0] += 1
 
         # Project file
         project_path, projfile = self.gen_file(
