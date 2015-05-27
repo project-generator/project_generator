@@ -86,9 +86,9 @@ class MakefileGccArmExporter(Exporter):
     def fix_paths(self, data, name, env_settings):
         # get relative path and fix all paths within a project
         fixed_paths = []
-        for path in data['include_paths']:
+        for path in data['includes']:
             fixed_paths.append(join(data['output_dir']['rel_path'], normpath(path)))
-        data['include_paths'] = fixed_paths
+        data['includes'] = fixed_paths
         fixed_paths = []
         for path in data['source_files_lib']:
             fixed_paths.append(join(data['output_dir']['rel_path'], normpath(path)))

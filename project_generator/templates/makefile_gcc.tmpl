@@ -47,7 +47,7 @@ CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 LIBS = {% for library in source_files_lib %} -l{{library}} {% endfor %}
 
 # directories
-INC_DIRS = {% for path in include_paths %} {{path}} {% endfor %}
+INC_DIRS = {% for path in includes %} {{path}} {% endfor %}
 
 OUT_DIR = {{build_dir}}
 
