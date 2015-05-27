@@ -32,7 +32,7 @@ def run(args):
 
 def setup(subparser):
     subparser.add_argument(
-        'name', help='Project name')
+        '-name', help='Project name')
     subparser.add_argument(
         '-tar', '--target', action='store', help='Target definition')
     subparser.add_argument(

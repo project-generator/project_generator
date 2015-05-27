@@ -563,7 +563,8 @@ class Project:
         if len(data['common']['linker_file']) == 0:
             data['common']['linker_file'].append("No linker file found")
 
-        data['common']['target'].append(board)
+        if board:
+            data['common']['target'].append(board)
 
         logging.debug('Generating yaml file')
 
@@ -587,6 +588,8 @@ class Project:
                     break
                 except ValueError:
                     continue
+        valid_dic = {}
+        valid_dic['common'] = {k:v for k,v in data['common'].items() if v}
 
         with open(os.path.join(root, filename), 'wt') as f:
-            f.write(yaml.dump(data, default_flow_style=False))
+            f.write(yaml.dump(valid_dic, default_flow_style=False))
