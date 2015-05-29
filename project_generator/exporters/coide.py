@@ -130,6 +130,9 @@ class CoideExporter(Exporter):
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         expanded_dic['coide_settings'].update(mcu_def_dic)
 
+        # get debugger definitions
+        expanded_dic['coide_settings'].update(self.definitions.debuggers[expanded_dic['debugger']])
+
         # Project file
         project_path, projfile = self.gen_file(
             'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
