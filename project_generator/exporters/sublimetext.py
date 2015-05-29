@@ -34,12 +34,12 @@ class SublimeTextMakeGccARMExporter(MakefileGccArmExporter):
         data['linker_options'] =[]
 
         project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'Makefile',
-            data['dest_path'])
+            data['output_dir']['path'])
 
         data['buildsys_name'] = 'Make'
         data['buildsys_cmd'] = 'make all'
 
         sublimeproject = self.gen_file('sublimetext.sublime-project.tmpl', data,
-            '%s.sublime-project' % data['name'], data['dest_path'])
+            '%s.sublime-project' % data['name'], data['output_dir']['path'])
 
         return project_path, [makefile, sublimeproject]

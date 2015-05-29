@@ -1,4 +1,4 @@
-# Copyright 2014 0xc0170
+# Copyright 2014-2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,6 +36,12 @@ class UvisionBuilder(Builder):
     def build_project(self, project_name, project_files, env_settings):
         # > UV4 -b [project_path]
         path = join(os.getcwd(), project_files[0])
+        if path.split('.')[-1] != '.uvproj':
+            path = path + '.uvproj'
+        if not os.path.exists(path):
+            logging.debug("The file: %s does not exists, exported prior building?" % path)
+            return
+
         logging.debug("Building uVision project: %s" % path)
 
         args = [env_settings.get_env_settings('uvision'), '-r', '-j0', path]
@@ -53,4 +59,28 @@ class UvisionBuilder(Builder):
                               self.ERRORLEVEL[ret_code])
             else:
                 logging.info("Build succeeded with the status: %s" %
+                             self.ERRORLEVEL[ret_code])
+
+    def flash_project(self, proj_dic, project_name, project_files, env_settings):
+        # > UV4 -f [project_path]
+        path = join(os.getcwd(), project_files[0])
+        if path.split('.')[-1] != '.uvproj':
+            path = path + '.uvproj'
+        logging.debug("Building uVision project: %s" % path)
+
+        args = [env_settings.get_env_settings('uvision'), '-f', '-j0', path]
+
+        try:
+            ret_code = None
+            ret_code = subprocess.call(args)
+        except:
+            logging.error(
+                "Error whilst calling UV4: '%s'. Please set uvision path in the projects.yaml file." % env_settings.get_env_settings('uvision'))
+        else:
+            if ret_code != self.SUCCESSVALUE:
+                # Seems like something went wrong.
+                logging.error("Flashing failed with the status: %s" %
+                              self.ERRORLEVEL[ret_code])
+            else:
+                logging.info("Flashing succeeded with the status: %s" %
                              self.ERRORLEVEL[ret_code])

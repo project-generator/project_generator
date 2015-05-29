@@ -21,19 +21,25 @@ help = 'Export a project record'
 def run(args):
     workspace = Workspace(args.file, os.getcwd())
 
-    update(None, False, False, workspace.settings)
+    if args.defdirectory:
+        workspace.settings.update_definitions_dir(args.defdirectory)
+    else:
+        update(False, workspace.settings)
 
     if args.project:
         workspace.export_project(args.project, args.tool, args.copy)
 
         if args.build:
             workspace.build_project(args.project, args.tool)
+        if args.flash:
+            workspace.flash_project(args.project, args.tool)
     else:
-        workspace.export_projects(args.tool, arg.copy)
+        workspace.export_projects(args.tool, args.copy)
 
         if args.build:
-            workspace.build_projects(args.project, args.tool)
-
+            workspace.build_projects(args.tool)
+        if args.flash:
+            workspace.flash_projects(args.tool)
 
 def setup(subparser):
     subparser.add_argument(
@@ -43,6 +49,8 @@ def setup(subparser):
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     subparser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects")
+    subparser.add_argument(
+        "-fl", "--flash", action="store_true", help="Flash defined projects")
     subparser.add_argument(
         "-defdir", "--defdirectory",
         help="Path to the definitions, otherwise default (~/.pg/definitions) is used")

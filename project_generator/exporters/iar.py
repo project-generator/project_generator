@@ -123,14 +123,15 @@ class IAREWARMExporter(Exporter):
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        dest = self.get_dest_path(expanded_dic, env_settings, "iar_arm", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
-        self.iterate(data, expanded_dic, dest['rel_path'])
-        self.fix_paths(expanded_dic, dest['rel_path'])
+        self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         expanded_dic['iar_settings'] = {}
         self.parse_specific_options(expanded_dic)
 
         target = Targets(env_settings.get_env_settings('definitions'))
+        if not target.is_supported(expanded_dic['target'].lower(), 'iar'):
+            raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
         mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'iar')
         if not mcu_def_dic:
              raise RuntimeError(
@@ -141,7 +142,7 @@ class IAREWARMExporter(Exporter):
         expanded_dic['iar_settings'].update(mcu_def_dic)
 
         project_path, ewp = self.gen_file('iar.ewp.tmpl', expanded_dic, '%s.ewp' %
-            data['name'], dest['dest_path'])
+            data['name'], expanded_dic['output_dir']['path'])
         project_path, eww = self.gen_file('iar.eww.tmpl', expanded_dic, '%s.eww' %
-            data['name'], dest['dest_path'])
+            data['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww]

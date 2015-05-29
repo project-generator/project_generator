@@ -112,14 +112,15 @@ class CoideExporter(Exporter):
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        dest = self.get_dest_path(expanded_dic, env_settings, "coide", expanded_dic['project_dir']['path'], expanded_dic['project_dir']['name'])
-        self.iterate(data, expanded_dic, dest['rel_path'])
-        self.fix_paths(expanded_dic, dest['rel_path'])
+        self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         expanded_dic['coide_settings'] = {}
         self.parse_specific_options(expanded_dic)
 
         target = Targets(env_settings.get_env_settings('definitions'))
+        if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
+            raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
         mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'coide')
         if not mcu_def_dic:
              raise RuntimeError(
@@ -131,5 +132,5 @@ class CoideExporter(Exporter):
 
         # Project file
         project_path, projfile = self.gen_file(
-            'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], dest['dest_path'])
+            'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
         return project_path, [projfile]
