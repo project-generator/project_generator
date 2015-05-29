@@ -129,6 +129,7 @@ class IAREWARMExporter(Exporter):
         expanded_dic['iar_settings'] = {}
         self.parse_specific_options(expanded_dic)
 
+        # get target definition (target + mcu)
         target = Targets(env_settings.get_env_settings('definitions'))
         if not target.is_supported(expanded_dic['target'].lower(), 'iar'):
             raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
@@ -141,8 +142,13 @@ class IAREWARMExporter(Exporter):
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         expanded_dic['iar_settings'].update(mcu_def_dic)
 
+        # get debugger definitions
+        expanded_dic['iar_settings'].update(self.definitions.debuggers[expanded_dic['debugger']])
+
         project_path, ewp = self.gen_file('iar.ewp.tmpl', expanded_dic, '%s.ewp' %
             data['name'], expanded_dic['output_dir']['path'])
         project_path, eww = self.gen_file('iar.eww.tmpl', expanded_dic, '%s.eww' %
             data['name'], expanded_dic['output_dir']['path'])
-        return project_path, [ewp, eww]
+        project_path, ewd = self.gen_file('iar.ewd.tmpl', expanded_dic, '%s.ewd' %
+                    data['name'], expanded_dic['output_dir']['path'])
+        return project_path, [ewp, eww, ewd]

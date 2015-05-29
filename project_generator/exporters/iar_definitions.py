@@ -474,3 +474,16 @@ class IARDefinitions():
             'state': 0,
         },
     }
+
+    debuggers = {
+        'cmsis-dap': {
+            'OCDynDriverList': {
+                'state' : 'CMSISDAP_ID',
+            },
+        },
+        'j-link': {
+            'OCDynDriverList': {
+                'state' : 'JLINK_ID',
+            },
+        }
+    }
