@@ -68,37 +68,35 @@ class uVisionDefinitions():
         },
 
         # User settings
-        'TargetOption': {
-            'CreateExecutable': 0,     # Create executable
-            'CreateLib': 0,            # Create library
-            'CreateHexFile': 0,        # Create hex file
-            'DebugInformation': 0,     # Debug information
-            'BrowseInformation': 0,    # Browse information
-            'CreateBatchFile': 0,      # Create batch file
-            'BeforeCompile': {         # Run user program before compilation
-                'RunUserProg1': 0,     # Run #1
-                'UserProg1Name': 0,    # Program #1 name
-                'RunUserProg2': 0,     # Run #2
-                'UserProg2Name': 0,    # Program #2 name
-                'UserProg1Dos16Mode': 0,   # Dos16 mode for #1
-                'UserProg2Dos16Mode': 0,   # Dos16 mode for #2
-            },
-            'BeforeMake': {                # User programs before build
-                'RunUserProg1': 0,         # Run #1
-                'UserProg1Name': 0,        # Program #1 name
-                'RunUserProg2': 0,         # Run #2
-                'UserProg2Name': 0,        # Program #2 name
-                'UserProg1Dos16Mode': 0,   # Dos16 mode for #1
-                'UserProg2Dos16Mode': 0,   # Dos16 mode for #2
-            },
-            'AfterMake': {
-                'RunUserProg1': 0,         # Run #2
-                'UserProg1Name': 0,        # Program #1 name
-                'RunUserProg2': 0,         # Run #2
-                'UserProg2Name': 0,        # Program #2 name
-                'UserProg1Dos16Mode': 0,   # Dos16 mode for #1
-                'UserProg2Dos16Mode': 0,   # Dos16 mode for #2
-            }
+        'CreateExecutable': 0,     # Create executable
+        'CreateLib': 0,            # Create library
+        'CreateHexFile': 0,        # Create hex file
+        'DebugInformation': 0,     # Debug information
+        'BrowseInformation': 0,    # Browse information
+        'CreateBatchFile': 0,      # Create batch file
+        'BeforeCompile': {         # Run user program before compilation
+            'RunUserProg1': 0,     # Run #1
+            'UserProg1Name': 0,    # Program #1 name
+            'RunUserProg2': 0,     # Run #2
+            'UserProg2Name': 0,    # Program #2 name
+            'UserProg1Dos16Mode': 0,   # Dos16 mode for #1
+            'UserProg2Dos16Mode': 0,   # Dos16 mode for #2
+        },
+        'BeforeMake': {                # User programs before build
+            'RunUserProg1': 0,         # Run #1
+            'UserProg1Name': 0,        # Program #1 name
+            'RunUserProg2': 0,         # Run #2
+            'UserProg2Name': 0,        # Program #2 name
+            'UserProg1Dos16Mode': 0,   # Dos16 mode for #1
+            'UserProg2Dos16Mode': 0,   # Dos16 mode for #2
+        },
+        'AfterMake': {
+            'RunUserProg1': 0,         # Run #2
+            'UserProg1Name': 0,        # Program #1 name
+            'RunUserProg2': 0,         # Run #2
+            'UserProg2Name': 0,        # Program #2 name
+            'UserProg1Dos16Mode': 0,   # Dos16 mode for #1
+            'UserProg2Dos16Mode': 0,   # Dos16 mode for #2
         },
 
         # Target settings
@@ -203,7 +201,7 @@ class uVisionDefinitions():
                 'RestoreTracepoints': 1,
             },
             'RunDebugAfterBuild': 0,
-            'TargetSelection': 0,
+            'TargetSelection': 12,
         },
 
         'Utilities': {
@@ -223,5 +221,21 @@ class uVisionDefinitions():
             'pFcarmGrp': 0,
             'pFcArmRoot': 0,
             'FcArmLst': 0,
+        },
+        'TargetDlls': {
+        
+        },
+    }
+
+    debuggers = {
+        'cmsis-dap': {
+            'TargetDlls': {
+                'Driver' : 'BIN\CMSIS_AGDI.dll',
+            },
+        },
+        'j-link': {
+            'TargetDlls': {
+                'Driver' : 'Segger\JL2CM3.dll',
+            },
         }
     }

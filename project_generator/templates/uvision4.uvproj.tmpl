@@ -15,13 +15,13 @@
       <ToolsetName>ARM-ADS</ToolsetName>
       <TargetOption>
         <TargetCommonOption>
-        <Device>{{TargetOption['Device']}}</Device>
-          <Vendor>{{TargetOption['Vendor']}}</Vendor>
-          <Cpu>{{TargetOption['Cpu']}}</Cpu>
+        <Device>{{uvision_settings['Device']}}</Device>
+          <Vendor>{{uvision_settings['Vendor']}}</Vendor>
+          <Cpu>{{uvision_settings['Cpu']}}</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>{{TargetOption['FlashDriverDll']}}</FlashDriverDll>
-          <DeviceId>{{TargetOption['DeviceId']}}</DeviceId>
+          <FlashDriverDll>{{uvision_settings['FlashDriverDll']}}</FlashDriverDll>
+          <DeviceId>{{uvision_settings['DeviceId']}}</DeviceId>
           <RegisterFile></RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
@@ -32,7 +32,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>{{TargetOption['SFDFile']}}</SFDFile>
+          <SFDFile>{{uvision_settings['SFDFile']}}</SFDFile>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
           <IncludePath></IncludePath>
@@ -58,48 +58,48 @@
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
           <BeforeCompile>
-            <RunUserProg1>{{TargetOption['BeforeCompile']['RunUserProg1']}}</RunUserProg1>
-            <RunUserProg2>{{TargetOption['BeforeCompile']['RunUserProg2']}}</RunUserProg2>
-            <UserProg1Name>{{TargetOption['BeforeCompile']['UserProg1Name'][0]}}</UserProg1Name>
-            <UserProg2Name>{{TargetOption['BeforeCompile']['UserProg2Name'][0]}}</UserProg2Name>
-            <UserProg1Dos16Mode>{{TargetOption['BeforeCompile']['UserProg1Dos16Mode']}}</UserProg1Dos16Mode>
-            <UserProg2Dos16Mode>{{TargetOption['BeforeCompile']['UserProg2Dos16Mode']}}</UserProg2Dos16Mode>
+            <RunUserProg1>{{uvision_settings['BeforeCompile']['RunUserProg1']}}</RunUserProg1>
+            <RunUserProg2>{{uvision_settings['BeforeCompile']['RunUserProg2']}}</RunUserProg2>
+            <UserProg1Name>{{uvision_settings['BeforeCompile']['UserProg1Name'][0]}}</UserProg1Name>
+            <UserProg2Name>{{uvision_settings['BeforeCompile']['UserProg2Name'][0]}}</UserProg2Name>
+            <UserProg1Dos16Mode>{{uvision_settings['BeforeCompile']['UserProg1Dos16Mode']}}</UserProg1Dos16Mode>
+            <UserProg2Dos16Mode>{{uvision_settings['BeforeCompile']['UserProg2Dos16Mode']}}</UserProg2Dos16Mode>
             <nStopU1X>0</nStopU1X>
             <nStopU2X>0</nStopU2X>
           </BeforeCompile>
           <BeforeMake>
-            <RunUserProg1>{{TargetOption['BeforeMake']['RunUserProg1']}}</RunUserProg1>
-            <RunUserProg2>{{TargetOption['BeforeMake']['RunUserProg2']}}</RunUserProg2>
-            <UserProg1Name>{{TargetOption['BeforeMake']['UserProg1Name'][0]}}</UserProg1Name>
-            <UserProg2Name>{{TargetOption['BeforeMake']['UserProg2Name'][0]}}</UserProg2Name>
-            <UserProg1Dos16Mode>{{TargetOption['BeforeMake']['UserProg1Dos16Mode']}}</UserProg1Dos16Mode>
-            <UserProg2Dos16Mode>{{TargetOption['BeforeMake']['UserProg2Dos16Mode']}}</UserProg2Dos16Mode>
+            <RunUserProg1>{{uvision_settings['BeforeMake']['RunUserProg1']}}</RunUserProg1>
+            <RunUserProg2>{{uvision_settings['BeforeMake']['RunUserProg2']}}</RunUserProg2>
+            <UserProg1Name>{{uvision_settings['BeforeMake']['UserProg1Name'][0]}}</UserProg1Name>
+            <UserProg2Name>{{uvision_settings['BeforeMake']['UserProg2Name'][0]}}</UserProg2Name>
+            <UserProg1Dos16Mode>{{uvision_settings['BeforeMake']['UserProg1Dos16Mode']}}</UserProg1Dos16Mode>
+            <UserProg2Dos16Mode>{{uvision_settings['BeforeMake']['UserProg2Dos16Mode']}}</UserProg2Dos16Mode>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>{{TargetOption['AfterMake']['RunUserProg1']}}</RunUserProg1>
-            <RunUserProg2>{{TargetOption['AfterMake']['RunUserProg2']}}</RunUserProg2>
-            <UserProg1Name>{{TargetOption['AfterMake']['UserProg1Name'][0]}}</UserProg1Name>
-            <UserProg2Name>{{TargetOption['AfterMake']['UserProg2Name'][0]}}</UserProg2Name>
-            <UserProg1Dos16Mode>{{TargetOption['AfterMake']['UserProg1Dos16Mode']}}</UserProg1Dos16Mode>
-            <UserProg2Dos16Mode>{{TargetOption['AfterMake']['UserProg2Dos16Mode']}}</UserProg2Dos16Mode>
+            <RunUserProg1>{{uvision_settings['AfterMake']['RunUserProg1']}}</RunUserProg1>
+            <RunUserProg2>{{uvision_settings['AfterMake']['RunUserProg2']}}</RunUserProg2>
+            <UserProg1Name>{{uvision_settings['AfterMake']['UserProg1Name'][0]}}</UserProg1Name>
+            <UserProg2Name>{{uvision_settings['AfterMake']['UserProg2Name'][0]}}</UserProg2Name>
+            <UserProg1Dos16Mode>{{uvision_settings['AfterMake']['UserProg1Dos16Mode']}}</UserProg1Dos16Mode>
+            <UserProg2Dos16Mode>{{uvision_settings['AfterMake']['UserProg2Dos16Mode']}}</UserProg2Dos16Mode>
           </AfterMake>
           <SelectedForBatchBuild>0</SelectedForBatchBuild>
           <SVCSIdString></SVCSIdString>
         </TargetCommonOption>
         <CommonProperty>
-          <UseCPPCompiler>{{CommonProperty['UseCPPCompile'][0]}}</UseCPPCompiler>
-          <RVCTCodeConst>{{CommonProperty['RVCTCodeConst'][0]}}</RVCTCodeConst>
-          <RVCTZI>{{CommonProperty['RVCTZI'][0]}}</RVCTZI>
-          <RVCTOtherData>{{CommonProperty['RVCTOtherData'][0]}}</RVCTOtherData>
-          <ModuleSelection>{{CommonProperty['ModuleSelection'][0]}}</ModuleSelection>
-          <IncludeInBuild>{{CommonProperty['IncludeInBuild'][0]}}</IncludeInBuild>
-          <AlwaysBuild>{{CommonProperty['AlwaysBuild'][0]}}</AlwaysBuild>
-          <GenerateAssemblyFile>{{CommonProperty['GenerateAssemblyFile'][0]}}</GenerateAssemblyFile>
-          <AssembleAssemblyFile>{{CommonProperty['AssembleAssemblyFile'][0]}}</AssembleAssemblyFile>
-          <PublicsOnly>{{CommonProperty['PublicsOnly'][0]}}</PublicsOnly>
-          <StopOnExitCode>{{CommonProperty['StopOnExitCode'][0]}}</StopOnExitCode>
-          <CustomArgument>{{CommonProperty['CustomArgument'][0]}}</CustomArgument>
-          <IncludeLibraryModules>{{CommonProperty['IncludeLibraryModules'][0]}}</IncludeLibraryModules>
+          <UseCPPCompiler>{{uvision_settings['CommonProperty']['UseCPPCompile'][0]}}</UseCPPCompiler>
+          <RVCTCodeConst>{{uvision_settings['CommonProperty']['RVCTCodeConst'][0]}}</RVCTCodeConst>
+          <RVCTZI>{{uvision_settings['CommonProperty']['RVCTZI'][0]}}</RVCTZI>
+          <RVCTOtherData>{{uvision_settings['CommonProperty']['RVCTOtherData'][0]}}</RVCTOtherData>
+          <ModuleSelection>{{uvision_settings['CommonProperty']['ModuleSelection'][0]}}</ModuleSelection>
+          <IncludeInBuild>{{uvision_settings['CommonProperty']['IncludeInBuild'][0]}}</IncludeInBuild>
+          <AlwaysBuild>{{uvision_settings['CommonProperty']['AlwaysBuild'][0]}}</AlwaysBuild>
+          <GenerateAssemblyFile>{{uvision_settings['CommonProperty']['GenerateAssemblyFile'][0]}}</GenerateAssemblyFile>
+          <AssembleAssemblyFile>{{uvision_settings['CommonProperty']['AssembleAssemblyFile'][0]}}</AssembleAssemblyFile>
+          <PublicsOnly>{{uvision_settings['CommonProperty']['PublicsOnly'][0]}}</PublicsOnly>
+          <StopOnExitCode>{{uvision_settings['CommonProperty']['StopOnExitCode'][0]}}</StopOnExitCode>
+          <CustomArgument>{{uvision_settings['CommonProperty']['CustomArgument'][0]}}</CustomArgument>
+          <IncludeLibraryModules>{{uvision_settings['CommonProperty']['IncludeLibraryModules'][0]}}</IncludeLibraryModules>
         </CommonProperty>
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
@@ -113,28 +113,28 @@
         </DllOption>
         <DebugOption>
           <Simulator>
-            <UseSimulator>{{DebugOption['Simulator']['UseSimulator'][0]}}</UseSimulator>
-            <LoadApplicationAtStartup>{{DebugOption['Simulator']['LoadApplicationAtStartup'][0]}}</LoadApplicationAtStartup>
-            <RunToMain>{{DebugOption['Simulator']['RunToMain'][0]}}</RunToMain>
-            <RestoreBreakpoints>{{DebugOption['Simulator']['RestoreBreakpoints'][0]}}</RestoreBreakpoints>
-            <RestoreWatchpoints>{{DebugOption['Simulator']['RestoreWatchpoints'][0]}}</RestoreWatchpoints>
-            <RestoreMemoryDisplay>{{DebugOption['Simulator']['RestoreMemoryDisplay'][0]}}</RestoreMemoryDisplay>
-            <RestoreFunctions>{{DebugOption['Simulator']['RestoreFunctions'][0]}}</RestoreFunctions>
-            <RestoreToolbox>{{DebugOption['Simulator']['RestoreToolbox'][0]}}</RestoreToolbox>
-            <LimitSpeedToRealTime>{{DebugOption['Simulator']['LimitSpeedToRealTime'][0]}}</LimitSpeedToRealTime>
+            <UseSimulator>{{uvision_settings['DebugOption']['Simulator']['UseSimulator'][0]}}</UseSimulator>
+            <LoadApplicationAtStartup>{{uvision_settings['DebugOption']['Simulator']['LoadApplicationAtStartup'][0]}}</LoadApplicationAtStartup>
+            <RunToMain>{{uvision_settings['DebugOption']['Simulator']['RunToMain'][0]}}</RunToMain>
+            <RestoreBreakpoints>{{uvision_settings['DebugOption']['Simulator']['RestoreBreakpoints'][0]}}</RestoreBreakpoints>
+            <RestoreWatchpoints>{{uvision_settings['DebugOption']['Simulator']['RestoreWatchpoints'][0]}}</RestoreWatchpoints>
+            <RestoreMemoryDisplay>{{uvision_settings['DebugOption']['Simulator']['RestoreMemoryDisplay'][0]}}</RestoreMemoryDisplay>
+            <RestoreFunctions>{{uvision_settings['DebugOption']['Simulator']['RestoreFunctions'][0]}}</RestoreFunctions>
+            <RestoreToolbox>{{uvision_settings['DebugOption']['Simulator']['RestoreToolbox'][0]}}</RestoreToolbox>
+            <LimitSpeedToRealTime>{{uvision_settings['DebugOption']['Simulator']['LimitSpeedToRealTime'][0]}}</LimitSpeedToRealTime>
           </Simulator>
           <Target>
-            <UseTarget>{{DebugOption['Target']['UseTarget'][0]}}</UseTarget>
-            <LoadApplicationAtStartup>{{DebugOption['Target']['LoadApplicationAtStartup'][0]}}</LoadApplicationAtStartup>
-            <RunToMain>{{DebugOption['Target']['RunToMain'][0]}}</RunToMain>
-            <RestoreBreakpoints>{{DebugOption['Target']['RestoreBreakpoints'][0]}}</RestoreBreakpoints>
-            <RestoreWatchpoints>{{DebugOption['Target']['RestoreWatchpoints'][0]}}</RestoreWatchpoints>
-            <RestoreMemoryDisplay>{{DebugOption['Target']['RestoreMemoryDisplay'][0]}}</RestoreMemoryDisplay>
-            <RestoreFunctions>{{DebugOption['Target']['RestoreFunctions'][0]}}</RestoreFunctions>
-            <RestoreToolbox>{{DebugOption['Target']['RestoreToolbox'][0]}}</RestoreToolbox>
+            <UseTarget>{{uvision_settings['DebugOption']['Target']['UseTarget'][0]}}</UseTarget>
+            <LoadApplicationAtStartup>{{uvision_settings['DebugOption']['Target']['LoadApplicationAtStartup'][0]}}</LoadApplicationAtStartup>
+            <RunToMain>{{uvision_settings['DebugOption']['Target']['RunToMain'][0]}}</RunToMain>
+            <RestoreBreakpoints>{{uvision_settings['DebugOption']['Target']['RestoreBreakpoints'][0]}}</RestoreBreakpoints>
+            <RestoreWatchpoints>{{uvision_settings['DebugOption']['Target']['RestoreWatchpoints'][0]}}</RestoreWatchpoints>
+            <RestoreMemoryDisplay>{{uvision_settings['DebugOption']['Target']['RestoreMemoryDisplay'][0]}}</RestoreMemoryDisplay>
+            <RestoreFunctions>{{uvision_settings['DebugOption']['Target']['RestoreFunctions'][0]}}</RestoreFunctions>
+            <RestoreToolbox>{{uvision_settings['DebugOption']['Target']['RestoreToolbox'][0]}}</RestoreToolbox>
           </Target>
-          <RunDebugAfterBuild>{{DebugOption['RunDebugAfterBuild'][0]}}</RunDebugAfterBuild>
-          <TargetSelection>{{DebugOption['TargetSelection'][0]}}</TargetSelection>
+          <RunDebugAfterBuild>{{uvision_settings['DebugOption']['RunDebugAfterBuild'][0]}}</RunDebugAfterBuild>
+          <TargetSelection></TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -148,7 +148,7 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>BIN\CMSIS_AGDI.dll</Driver>
+            <Driver>{{uvision_settings['TargetDlls']['Driver']}}</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
@@ -160,8 +160,8 @@
             <Capability>1</Capability>
             <DriverSelection>4105</DriverSelection>
           </Flash1>
-          <Flash2>BIN\CMSIS_AGDI.dll</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash2></Flash2>
+          <Flash3></Flash3>
           <Flash4></Flash4>
         </Utilities>
         <TargetArmAds>
@@ -206,18 +206,18 @@
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>{{ArmAdsMisc['useUlib']}}</useUlib>
+            <useUlib>{{uvision_settings['ArmAdsMisc']['useUlib']}}</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <RoSelD>3</RoSelD>
             <RwSelD>3</RwSelD>
             <CodeSel>0</CodeSel>
             <OptFeed>0</OptFeed>
-            <NoZi1>{{ArmAdsMisc['NoZi1']}}</NoZi1>
-            <NoZi2>{{ArmAdsMisc['NoZi2']}}</NoZi2>
-            <NoZi3>{{ArmAdsMisc['NoZi3']}}</NoZi3>
-            <NoZi4>{{ArmAdsMisc['NoZi4']}}</NoZi4>
-            <NoZi5>{{ArmAdsMisc['NoZi5']}}</NoZi5>
+            <NoZi1>{{uvision_settings['ArmAdsMisc']['NoZi1']}}</NoZi1>
+            <NoZi2>{{uvision_settings['ArmAdsMisc']['NoZi2']}}</NoZi2>
+            <NoZi3>{{uvision_settings['ArmAdsMisc']['NoZi3']}}</NoZi3>
+            <NoZi4>{{uvision_settings['ArmAdsMisc']['NoZi4']}}</NoZi4>
+            <NoZi5>{{uvision_settings['ArmAdsMisc']['NoZi5']}}</NoZi5>
             <Ro1Chk>0</Ro1Chk>
             <Ro2Chk>0</Ro2Chk>
             <Ro3Chk>0</Ro3Chk>
@@ -275,112 +275,112 @@
                 <Size>0x0</Size>
               </XRAM>
               <OCR_RVCT1>
-                <Type>{{ArmAdsMisc['OCR_RVCT1']['Type'][0]}}</Type>
-                <StartAddress>{{ArmAdsMisc['OCR_RVCT1']['StartAddress']}}</StartAddress>
-                <Size>{{ArmAdsMisc['OCR_RVCT1']['Size'][0]}}</Size>
+                <Type>{{uvision_settings['ArmAdsMisc']['OCR_RVCT1']['Type'][0]}}</Type>
+                <StartAddress>{{uvision_settings['ArmAdsMisc']['OCR_RVCT1']['StartAddress']}}</StartAddress>
+                <Size>{{uvision_settings['ArmAdsMisc']['OCR_RVCT1']['Size'][0]}}</Size>
               </OCR_RVCT1>
               <OCR_RVCT2>
-                <Type>{{ArmAdsMisc['OCR_RVCT2']['Type'][0]}}</Type>
-                <StartAddress>{{ArmAdsMisc['OCR_RVCT2']['StartAddress']}}</StartAddress>
-                <Size>{{ArmAdsMisc['OCR_RVCT2']['Size'][0]}}</Size>
+                <Type>{{uvision_settings['ArmAdsMisc']['OCR_RVCT2']['Type'][0]}}</Type>
+                <StartAddress>{{uvision_settings['ArmAdsMisc']['OCR_RVCT2']['StartAddress']}}</StartAddress>
+                <Size>{{uvision_settings['ArmAdsMisc']['OCR_RVCT2']['Size'][0]}}</Size>
               </OCR_RVCT2>
               <OCR_RVCT3>
-                <Type>{{ArmAdsMisc['OCR_RVCT3']['Type'][0]}}</Type>
-                <StartAddress>{{ArmAdsMisc['OCR_RVCT3']['StartAddress']}}</StartAddress>
-                <Size>{{ArmAdsMisc['OCR_RVCT3']['Size'][0]}}</Size>
+                <Type>{{uvision_settings['ArmAdsMisc']['OCR_RVCT3']['Type'][0]}}</Type>
+                <StartAddress>{{uvision_settings['ArmAdsMisc']['OCR_RVCT3']['StartAddress']}}</StartAddress>
+                <Size>{{uvision_settings['ArmAdsMisc']['OCR_RVCT3']['Size'][0]}}</Size>
               </OCR_RVCT3>
               <OCR_RVCT4>
-                <Type>{{ArmAdsMisc['OCR_RVCT4']['Type'][0]}}</Type>
-                <StartAddress>{{ArmAdsMisc['OCR_RVCT4']['StartAddress']}}</StartAddress>
-                <Size>{{ArmAdsMisc['OCR_RVCT4']['Size'][0]}}</Size>
+                <Type>{{uvision_settings['ArmAdsMisc']['OCR_RVCT4']['Type'][0]}}</Type>
+                <StartAddress>{{uvision_settings['ArmAdsMisc']['OCR_RVCT4']['StartAddress']}}</StartAddress>
+                <Size>{{uvision_settings['ArmAdsMisc']['OCR_RVCT4']['Size'][0]}}</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
-                <Type>{{ArmAdsMisc['OCR_RVCT5']['Type'][0]}}</Type>
-                <StartAddress>{{ArmAdsMisc['OCR_RVCT5']['StartAddress']}}</StartAddress>
-                <Size>{{ArmAdsMisc['OCR_RVCT5']['Size'][0]}}</Size>
+                <Type>{{uvision_settings['ArmAdsMisc']['OCR_RVCT5']['Type'][0]}}</Type>
+                <StartAddress>{{uvision_settings['ArmAdsMisc']['OCR_RVCT5']['StartAddress']}}</StartAddress>
+                <Size>{{uvision_settings['ArmAdsMisc']['OCR_RVCT5']['Size'][0]}}</Size>
               </OCR_RVCT5>
               <OCR_RVCT6>
-                <Type>{{ArmAdsMisc['OCR_RVCT6']['Type'][0]}}</Type>
-                <StartAddress>{{ArmAdsMisc['OCR_RVCT6']['StartAddress']}}</StartAddress>
-                <Size>{{ArmAdsMisc['OCR_RVCT6']['Size'][0]}}</Size>
+                <Type>{{uvision_settings['ArmAdsMisc']['OCR_RVCT6']['Type'][0]}}</Type>
+                <StartAddress>{{uvision_settings['ArmAdsMisc']['OCR_RVCT6']['StartAddress']}}</StartAddress>
+                <Size>{{uvision_settings['ArmAdsMisc']['OCR_RVCT6']['Size'][0]}}</Size>
               </OCR_RVCT6>
               <OCR_RVCT7>
-                <Type>{{ArmAdsMisc['OCR_RVCT7']['Type'][0]}}</Type>
-                <StartAddress>{{ArmAdsMisc['OCR_RVCT7']['StartAddress']}}</StartAddress>
-                <Size>{{ArmAdsMisc['OCR_RVCT7']['Size'][0]}}</Size>
+                <Type>{{uvision_settings['ArmAdsMisc']['OCR_RVCT7']['Type'][0]}}</Type>
+                <StartAddress>{{uvision_settings['ArmAdsMisc']['OCR_RVCT7']['StartAddress']}}</StartAddress>
+                <Size>{{uvision_settings['ArmAdsMisc']['OCR_RVCT7']['Size'][0]}}</Size>
               </OCR_RVCT7>
               <OCR_RVCT8>
-                <Type>{{ArmAdsMisc['OCR_RVCT8']['Type'][0]}}</Type>
-                <StartAddress>{{ArmAdsMisc['OCR_RVCT8']['StartAddress']}}</StartAddress>
-                <Size>{{ArmAdsMisc['OCR_RVCT8']['Size'][0]}}</Size>
+                <Type>{{uvision_settings['ArmAdsMisc']['OCR_RVCT8']['Type'][0]}}</Type>
+                <StartAddress>{{uvision_settings['ArmAdsMisc']['OCR_RVCT8']['StartAddress']}}</StartAddress>
+                <Size>{{uvision_settings['ArmAdsMisc']['OCR_RVCT8']['Size'][0]}}</Size>
               </OCR_RVCT8>
               <OCR_RVCT9>
-                <Type>{{ArmAdsMisc['OCR_RVCT9']['Type'][0]}}</Type>
-                <StartAddress>{{ArmAdsMisc['OCR_RVCT9']['StartAddress']}}</StartAddress>
-                <Size>{{ArmAdsMisc['OCR_RVCT9']['Size'][0]}}</Size>
+                <Type>{{uvision_settings['ArmAdsMisc']['OCR_RVCT9']['Type'][0]}}</Type>
+                <StartAddress>{{uvision_settings['ArmAdsMisc']['OCR_RVCT9']['StartAddress']}}</StartAddress>
+                <Size>{{uvision_settings['ArmAdsMisc']['OCR_RVCT9']['Size'][0]}}</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
-                <Type>{{ArmAdsMisc['OCR_RVCT10']['Type'][0]}}</Type>
-                <StartAddress>{{ArmAdsMisc['OCR_RVCT10']['StartAddress']}}</StartAddress>
-                <Size>{{ArmAdsMisc['OCR_RVCT10']['Size'][0]}}</Size>
+                <Type>{{uvision_settings['ArmAdsMisc']['OCR_RVCT10']['Type'][0]}}</Type>
+                <StartAddress>{{uvision_settings['ArmAdsMisc']['OCR_RVCT10']['StartAddress']}}</StartAddress>
+                <Size>{{uvision_settings['ArmAdsMisc']['OCR_RVCT10']['Size'][0]}}</Size>
               </OCR_RVCT10>
             </OnChipMemories>
             <RvctStartVector></RvctStartVector>
           </ArmAdsMisc>
           <Cads>
-            <interw>{{Cads['interw']}}</interw>
-            <Optim>{{Cads['Optim'][0]}}</Optim>
-            <oTime>{{Cads['oTime']}}</oTime>
-            <SplitLS>{{Cads['SplitLS']}}</SplitLS>
-            <OneElfS>{{Cads['OneElfS']}}</OneElfS>
-            <Strict>{{Cads['Strict']}}</Strict>
-            <EnumInt>{{Cads['EnumInt']}}</EnumInt>
-            <PlainCh>{{Cads['PlainCh']}}</PlainCh>
-            <Ropi>{{Cads['Ropi']}}</Ropi>
-            <Rwpi>{{Cads['Rwpi']}}</Rwpi>
-            <wLevel>{{Cads['wLevel']}}</wLevel>
-            <uThumb>{{Cads['uThumb']}}</uThumb>
-            <uSurpInc>{{Cads['uSurpInc']}}</uSurpInc>
-            <uC99>{{Cads['uC99']}}</uC99>
+            <interw>{{uvision_settings['Cads']['interw']}}</interw>
+            <Optim>{{uvision_settings['Cads']['Optim'][0]}}</Optim>
+            <oTime>{{uvision_settings['Cads']['oTime']}}</oTime>
+            <SplitLS>{{uvision_settings['Cads']['SplitLS']}}</SplitLS>
+            <OneElfS>{{uvision_settings['Cads']['OneElfS']}}</OneElfS>
+            <Strict>{{uvision_settings['Cads']['Strict']}}</Strict>
+            <EnumInt>{{uvision_settings['Cads']['EnumInt']}}</EnumInt>
+            <PlainCh>{{uvision_settings['Cads']['PlainCh']}}</PlainCh>
+            <Ropi>{{uvision_settings['Cads']['Ropi']}}</Ropi>
+            <Rwpi>{{uvision_settings['Cads']['Rwpi']}}</Rwpi>
+            <wLevel>{{uvision_settings['Cads']['wLevel']}}</wLevel>
+            <uThumb>{{uvision_settings['Cads']['uThumb']}}</uThumb>
+            <uSurpInc>{{uvision_settings['Cads']['uSurpInc']}}</uSurpInc>
+            <uC99>{{uvision_settings['Cads']['uC99']}}</uC99>
             <VariousControls>
-              <MiscControls>{% for f in Cads['MiscControls'] %}{{f}} {% endfor %}</MiscControls>
+              <MiscControls>{% for f in uvision_settings['Cads']['MiscControls'] %}{{f}} {% endfor %}</MiscControls>
               <Define>{% for s in macros %} {{s}}, {% endfor %}</Define>
               <Undefine></Undefine>
               <IncludePath> {% for path in includes %} {{path}}; {% endfor %} </IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
-            <interw>{{Aads['interw']}}</interw>
-            <Ropi>{{Aads['Ropi']}}</Ropi>
-            <Rwpi>{{Aads['Rwpi']}}</Rwpi>
-            <thumb>{{Aads['thumb']}}</thumb>
-            <SplitLS>{{Aads['SplitLS']}}</SplitLS>
-            <SwStkChk>{{Aads['SwStkChk']}}</SwStkChk>
-            <NoWarn>{{Aads['NoWarn']}}</NoWarn>
-            <uSurpInc>{{Aads['uSurpInc']}}</uSurpInc>
+            <interw>{{uvision_settings['Aads']['interw']}}</interw>
+            <Ropi>{{uvision_settings['Aads']['Ropi']}}</Ropi>
+            <Rwpi>{{uvision_settings['Aads']['Rwpi']}}</Rwpi>
+            <thumb>{{uvision_settings['Aads']['thumb']}}</thumb>
+            <SplitLS>{{uvision_settings['Aads']['SplitLS']}}</SplitLS>
+            <SwStkChk>{{uvision_settings['Aads']['SwStkChk']}}</SwStkChk>
+            <NoWarn>{{uvision_settings['Aads']['NoWarn']}}</NoWarn>
+            <uSurpInc>{{uvision_settings['Aads']['uSurpInc']}}</uSurpInc>
             <VariousControls>
-              <MiscControls>{% for f in Aads['MiscControls'] %}{{f}} {% endfor %}</MiscControls>
+              <MiscControls>{% for f in uvision_settings['Aads']['MiscControls'] %}{{f}} {% endfor %}</MiscControls>
               <Define>{% for s in macros %} {{s}}, {% endfor %}</Define>
               <Undefine></Undefine>
-              <IncludePath>{% for path in Aads['IncludePath'] %} {{path}}; {% endfor %}</IncludePath>
+              <IncludePath>{% for path in uvision_settings['Aads']['IncludePath'] %} {{path}}; {% endfor %}</IncludePath>
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>{{LDads['umfTarg']}}</umfTarg>
-            <Ropi>{{LDads['Ropi']}}</Ropi>
-            <Rwpi>{{LDads['Rwpi']}}</Rwpi>
-            <noStLib>{{LDads['noStLib']}}</noStLib>
-            <RepFail>{{LDads['RepFail']}}</RepFail>
-            <useFile>{{LDads['useFile']}}</useFile>
-            <TextAddressRange>{{LDads['TextAddressRange']}}</TextAddressRange>
-            <DataAddressRange>{{LDads['DataAddressRange']}}</DataAddressRange>
+            <umfTarg>{{uvision_settings['LDads']['umfTarg']}}</umfTarg>
+            <Ropi>{{uvision_settings['LDads']['Ropi']}}</Ropi>
+            <Rwpi>{{uvision_settings['LDads']['Rwpi']}}</Rwpi>
+            <noStLib>{{uvision_settings['LDads']['noStLib']}}</noStLib>
+            <RepFail>{{uvision_settings['LDads']['RepFail']}}</RepFail>
+            <useFile>{{uvision_settings['LDads']['useFile']}}</useFile>
+            <TextAddressRange>{{uvision_settings['LDads']['TextAddressRange']}}</TextAddressRange>
+            <DataAddressRange>{{uvision_settings['LDads']['DataAddressRange']}}</DataAddressRange>
             <ScatterFile>{{linker_file}}</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>{% for lib in source_files_lib %} {{lib}} {% endfor %}
                   {% for obj in source_files_obj %} {{obj}} {% endfor %}</Misc>
             <LinkerInputFile></LinkerInputFile>
-            <DisabledWarnings>{% for diswarn in LDads['DisabledWarnings'] %} {{diswarn}} {% endfor %}</DisabledWarnings>
+            <DisabledWarnings>{% for diswarn in uvision_settings['LDads']['DisabledWarnings'] %} {{diswarn}} {% endfor %}</DisabledWarnings>
           </LDads>
         </TargetArmAds>
       </TargetOption>

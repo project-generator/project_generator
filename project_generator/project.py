@@ -182,6 +182,8 @@ class Project:
         }
         self.output_type = self.output_types['executable']
 
+        self.debugger = 'cmsis-dap'
+
         self.linker_file = None
         self.tool_specific = defaultdict(ToolSpecificSettings)
 
@@ -237,6 +239,9 @@ class Project:
 
                 if 'build_dir' in project_file_data['common']:
                     self.build_dir = project_file_data['common']['build_dir'][0]
+
+                if 'debugger' in project_file_data['common']:
+                    self.debugger = project_file_data['common']['debugger'][0]
 
                 if 'tools_supported' in project_file_data['common']:
                     self.tools_supported.extend(
@@ -421,6 +426,7 @@ class Project:
             'output_type': self.output_type,
             'build_dir' : self.build_dir,
             'tools_supported' : self.tools_supported,
+            'debugger' : self.debugger,
             'output_dir' : self.output_dir,
             'includes': self.include_paths + list(flatten([settings.include_paths for settings in tool_specific_settings])),
             'source_paths': self.source_paths + list(flatten([settings.source_paths for settings in tool_specific_settings])),

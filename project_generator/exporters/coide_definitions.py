@@ -39,3 +39,16 @@ class CoIDEdefinitions():
             'BIN': 1,
         }
     }
+
+    debuggers = {
+        'cmsis-dap' : {
+            'DebugOption' : {
+                'org.coocox.codebugger.gdbjtag.core.adapter' : 'CMSIS-DAP',
+            }
+        },
+        'j-link' : {
+            'DebugOption' : {
+                'org.coocox.codebugger.gdbjtag.core.adapter' : 'J-Link',
+            }
+        },
+    }
