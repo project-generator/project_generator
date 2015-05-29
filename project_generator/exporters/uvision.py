@@ -180,8 +180,10 @@ class UvisionExporter(Exporter):
         self.append_mcu_def(expanded_dic, mcu_def_dic)
 
         # load debugger
-        # TODO: check if debugger exists for uvision, print error if not !
-        expanded_dic['uvision_settings']['TargetDlls']['Driver'] = self.definitions.debuggers[expanded_dic['debugger']]['TargetDlls']['Driver']
+        try:
+            expanded_dic['uvision_settings']['TargetDlls']['Driver'] = self.definitions.debuggers[expanded_dic['debugger']]['TargetDlls']['Driver']
+        except KeyError:
+            raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
         expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
 
         # optimization set to correct value, default not used

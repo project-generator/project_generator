@@ -131,7 +131,10 @@ class CoideExporter(Exporter):
         expanded_dic['coide_settings'].update(mcu_def_dic)
 
         # get debugger definitions
-        expanded_dic['coide_settings'].update(self.definitions.debuggers[expanded_dic['debugger']])
+        try:
+            expanded_dic['coide_settings'].update(self.definitions.debuggers[expanded_dic['debugger']])
+        except KeyError:
+            raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
         # Project file
         project_path, projfile = self.gen_file(
