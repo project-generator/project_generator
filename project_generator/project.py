@@ -64,9 +64,7 @@ class ToolSpecificSettings:
     def __init__(self):
         self.include_paths = []
         self.source_paths = []
-        self.source_groups = {
-            'default': {}
-        }
+        self.source_groups = {}
         self.macros = []
         self.misc = {}
 
@@ -159,9 +157,7 @@ class Project:
 
         self.include_paths = []
         self.source_paths = []
-        self.source_groups = {
-            'default': {}
-        }
+        self.source_groups = {}
         self.macros = []
         self.project_dir = {
             'name': '',
