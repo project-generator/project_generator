@@ -104,7 +104,10 @@ class UvisionExporter(Exporter):
                         value_list[option][k] = 1
                     elif v[0] == 'disable':
                         value_list[option][k] = 0
-                    data[uvision_dic][option][k] = value_list[option][k]
+                    try:
+                        data[uvision_dic][option][k] = value_list[option][k]
+                    except KeyError:
+                        logging.info("Tool specific option: %s not recognized" % uvision_dic)
             else:
                 if value_list[option][0] == 'enable':
                     value_list[option] = 1
