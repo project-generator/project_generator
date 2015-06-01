@@ -15,9 +15,9 @@
 import copy
 import shutil
 import logging
-import yaml
 
 from os.path import basename, join, relpath, normpath
+from os import getcwd
 
 from .exporter import Exporter
 from .uvision_definitions import uVisionDefinitions
@@ -67,8 +67,10 @@ class UvisionExporter(Exporter):
                 elif k == 'TargetOption':
                     self.set_user_options(v, data, k)
                 elif k == 'DebugOption':
+                    # TODO implement
                     raise RuntimeError("Option not supported yet.")
                 elif k == 'Utilities':
+                    # TODO implement
                     raise RuntimeError("Option not supported yet.")
                 else:
                     self.set_specific_settings(v, data, k)
@@ -194,8 +196,23 @@ class UvisionExporter(Exporter):
             raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
         expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
 
-        # optimization set to correct value, default not used
-        expanded_dic['uvision_settings']['Cads']['Optim'][0] += 1
+
+        # if there's template parse + use it
+        # TODO add project, which would overwrite parents template
+        if 'uvision' in env_settings.templates.keys():
+            project_file = join(getcwd(), env_settings.templates['uvision']['path'][0], env_settings.templates['uvision']['name'][0] + '.uvproj')
+            proj_dic = xmltodict.parse(file(project_file))
+            TargetOption = proj_dic['Project']['Targets']['Target']['TargetOption']
+            # we need to inject only attributes we know are relevant (not overwrite mcu for example)
+            expanded_dic['uvision_settings']['CommonProperty'] = TargetOption['CommonProperty']
+            # fix default dic is wronG !
+            expanded_dic['uvision_settings']['BeforeCompile'] = TargetOption['TargetCommonOption']['BeforeCompile']
+            expanded_dic['uvision_settings']['BeforeMake'] = TargetOption['TargetCommonOption']['BeforeMake']
+            expanded_dic['uvision_settings']['AfterMake'] = TargetOption['TargetCommonOption']['AfterMake']
+            expanded_dic['uvision_settings']['Cads'] = TargetOption['TargetArmAds']['Cads']
+        else:
+            # optimization set to correct value, default not used
+            expanded_dic['uvision_settings']['Cads']['Optim'][0] += 1
 
         # Project file
         project_path, projfile = self.gen_file(

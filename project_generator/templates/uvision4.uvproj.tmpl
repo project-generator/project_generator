@@ -87,7 +87,7 @@
           <SVCSIdString></SVCSIdString>
         </TargetCommonOption>
         <CommonProperty>
-          <UseCPPCompiler>{{uvision_settings['CommonProperty']['UseCPPCompile'][0]}}</UseCPPCompiler>
+          <UseCPPCompiler>{{uvision_settings['CommonProperty']['UseCPPCompile']}}</UseCPPCompiler>
           <RVCTCodeConst>{{uvision_settings['CommonProperty']['RVCTCodeConst'][0]}}</RVCTCodeConst>
           <RVCTZI>{{uvision_settings['CommonProperty']['RVCTZI'][0]}}</RVCTZI>
           <RVCTOtherData>{{uvision_settings['CommonProperty']['RVCTOtherData'][0]}}</RVCTOtherData>
@@ -343,7 +343,7 @@
             <uSurpInc>{{uvision_settings['Cads']['uSurpInc']}}</uSurpInc>
             <uC99>{{uvision_settings['Cads']['uC99']}}</uC99>
             <VariousControls>
-              <MiscControls>{% for f in uvision_settings['Cads']['MiscControls'] %}{{f}} {% endfor %}</MiscControls>
+              <MiscControls>{{uvision_settings['Cads']['VariousControls']['MiscControls']}}</MiscControls>
               <Define>{% for s in macros %} {{s}}, {% endfor %}</Define>
               <Undefine></Undefine>
               <IncludePath> {% for path in includes %} {{path}}; {% endfor %} </IncludePath>
