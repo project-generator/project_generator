@@ -67,7 +67,7 @@ class ProjectSettings:
                 self.generated_projects_dir = normpath(settings['export_dir'][0])
 
     def update_definitions_dir(self, def_dir):
-        self.generated_projects_dir = normpath(def_dir)
+        self.paths['definitions'] = normpath(def_dir)
 
     def get_env_settings(self, env_set):
         return self.paths[env_set]

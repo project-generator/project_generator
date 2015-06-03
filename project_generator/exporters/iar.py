@@ -13,8 +13,11 @@
 # limitations under the License.
 
 from os.path import basename, join, relpath, normpath
+from os import getcwd
+
 import copy
 import logging
+import xmltodict
 
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions
@@ -85,19 +88,18 @@ class IAREWARMExporter(Exporter):
 
     def set_specific_settings(self, value_list, data):
         for k, v in value_list.items():
-            if v[0] == 'enable':
-                v[0] = 1
-            elif v[0] == 'disable':
-                v[0] = 0
-            data['iar_settings'][k]['state'] = v[0]
+            for option in v.items():
+                for key,value in v['data']['option'].items():
+                    if value[0] == 'enable':
+                        option[key][value][0] = 1
+                    elif value[0] == 'disable':
+                        option[key][value][0] = 0
+                    data['iar_settings'][k]['data']['option'] = option[key][value][0]
 
     def normalize_mcu_def(self, mcu_def):
-        for k,v in mcu_def['OGChipSelectEditMenu'].items():
-            # hack to insert tab as IAR using tab for MCU definitions
-            v[0] = v[0].replace(' ', '\t', 1)
-            mcu_def['OGChipSelectEditMenu'][k] = v[0]
-        for k,v in mcu_def['OGCoreOrChip'].items():
-            mcu_def['OGCoreOrChip'][k] = v[0]
+        # hack to insert tab as IAR using tab for MCU definitions
+        mcu_def['General']['data']['option']['OGChipSelectEditMenu']['state'] = mcu_def['General']['data']['option']['OGChipSelectEditMenu']['state'][0].replace(' ', '\t', 1)
+        mcu_def['General']['data']['option']['OGCoreOrChip']['state'] = mcu_def['General']['data']['option']['OGCoreOrChip']['state'][0]
 
     def fix_paths(self, data, rel_path):
         fixed_paths = []
@@ -115,6 +117,13 @@ class IAREWARMExporter(Exporter):
         if data['linker_file']:
             data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))
 
+    def _iar_option_dictionarize(self, option_group , iar_settings):
+        dictionarized = {}
+        for option in iar_settings[option_group]['data']['option']:
+            dictionarized[option['name']] = {}
+            dictionarized[option['name']].update(option)
+        return dictionarized
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for IAR, and run generator """
         expanded_dic = data.copy()
@@ -127,7 +136,39 @@ class IAREWARMExporter(Exporter):
         self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         expanded_dic['iar_settings'] = {}
-        self.parse_specific_options(expanded_dic)
+
+        if 'iar' in env_settings.templates.keys():
+            # template overrides what is set in the yaml files
+            project_file = join(getcwd(), env_settings.templates['iar']['path'][0], env_settings.templates['uvision']['name'][0] + '.ewp')
+            proj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            # form valid iar settings dictionary
+            iar_settings = {
+                'General' : {},
+                'ICCARM' : {},
+                'AARM' : {},
+                'OBJCOPY' : {},
+                'CUSTOM' : {},
+                'BICOMP' : {},
+                'BUILDACTION' : {},
+                'ILINK' : {},
+                'IARCHIVE' : {},
+                'BILINK' : {},
+            }
+            for settings in proj_dic['project']['configuration']['settings']:
+                iar_settings[settings['name']].update(settings)
+            # TODO: convert option[list] to option[dic based on name inside that list] - easier to parse and targets will do follow the same syntax
+            iar_settings['AARM']['data']['option'] = self._iar_option_dictionarize('AARM', iar_settings)
+            iar_settings['General']['data']['option'] = self._iar_option_dictionarize('General', iar_settings)
+            iar_settings['IARCHIVE']['data']['option'] = self._iar_option_dictionarize('IARCHIVE', iar_settings)
+            iar_settings['ICCARM']['data']['option'] = self._iar_option_dictionarize('ICCARM', iar_settings)
+            iar_settings['ILINK']['data']['option'] = self._iar_option_dictionarize('ILINK', iar_settings)
+            iar_settings['OBJCOPY']['data']['option'] = self._iar_option_dictionarize('OBJCOPY', iar_settings)
+            # iar_settings['AARM']['data']['option'] = {k: name for settings in iar_settings['AARM']['data']['option'] for k,v in settings.items()}
+            expanded_dic['iar_settings'] = iar_settings
+
+        else:
+            # setting values from the yaml files
+            self.parse_specific_options(expanded_dic)
 
         # get target definition (target + mcu)
         target = Targets(env_settings.get_env_settings('definitions'))
@@ -140,7 +181,8 @@ class IAREWARMExporter(Exporter):
                 % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        expanded_dic['iar_settings'].update(mcu_def_dic)
+        expanded_dic['iar_settings']['General']['data']['option']['OGChipSelectEditMenu'] = mcu_def_dic['General']['data']['option']['OGChipSelectEditMenu']
+        expanded_dic['iar_settings']['General']['data']['option']['OGCoreOrChip'] = mcu_def_dic['General']['data']['option']['OGCoreOrChip']
 
         # get debugger definitions
         try:
