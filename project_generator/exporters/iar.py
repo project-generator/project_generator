@@ -90,11 +90,10 @@ class IAREWARMExporter(Exporter):
         for k, v in value_list.items():
             for option in v.items():
                 for key,value in v['data']['option'].items():
+                    result = 0
                     if value[0] == 'enable':
-                        option[key][value][0] = 1
-                    elif value[0] == 'disable':
-                        option[key][value][0] = 0
-                    data['iar_settings'][k]['data']['option'] = option[key][value][0]
+                        result = 1
+                    data['iar_settings'][k]['data']['option'][key]['state'] = result
 
     def normalize_mcu_def(self, mcu_def):
         # hack to insert tab as IAR using tab for MCU definitions
