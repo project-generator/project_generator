@@ -88,13 +88,13 @@ class UvisionExporter(Exporter):
                         value_list[option][k] = 1
                     elif v[0] == 'disable':
                         value_list[option][k] = 0
-                    data[uvision_dic][option][k] = value_list[option][k]
+                    data['uvision_settings'][uvision_dic][option][k] = value_list[option][k]
             else:
                 if value_list[option][0] == 'enable':
                     value_list[option] = 1
                 elif value_list[option][0] == 'disable':
                     value_list[option] = 0
-                data[uvision_dic][option] = value_list[option]
+                data['uvision_settings'][uvision_dic][option] = value_list[option]
 
     def set_user_options(self, value_list, data, uvision_dic):
         for option in value_list:
