@@ -134,8 +134,11 @@ class IAREWARMExporter(Exporter):
         self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
         self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
-        expanded_dic['iar_settings'] = {}
+        expanded_dic['iar_settings'] = {
+            'toolchain' : 'ARM',
+        }
 
+        # generic tool template specified or project
         if 'iar' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
             project_file = join(getcwd(), env_settings.templates['iar']['path'][0], env_settings.templates['uvision']['name'][0] + '.ewp')
@@ -155,16 +158,13 @@ class IAREWARMExporter(Exporter):
             }
             for settings in proj_dic['project']['configuration']['settings']:
                 iar_settings[settings['name']].update(settings)
-            # TODO: convert option[list] to option[dic based on name inside that list] - easier to parse and targets will do follow the same syntax
             iar_settings['AARM']['data']['option'] = self._iar_option_dictionarize('AARM', iar_settings)
             iar_settings['General']['data']['option'] = self._iar_option_dictionarize('General', iar_settings)
             iar_settings['IARCHIVE']['data']['option'] = self._iar_option_dictionarize('IARCHIVE', iar_settings)
             iar_settings['ICCARM']['data']['option'] = self._iar_option_dictionarize('ICCARM', iar_settings)
             iar_settings['ILINK']['data']['option'] = self._iar_option_dictionarize('ILINK', iar_settings)
             iar_settings['OBJCOPY']['data']['option'] = self._iar_option_dictionarize('OBJCOPY', iar_settings)
-            # iar_settings['AARM']['data']['option'] = {k: name for settings in iar_settings['AARM']['data']['option'] for k,v in settings.items()}
             expanded_dic['iar_settings'] = iar_settings
-
         else:
             # setting values from the yaml files
             self.parse_specific_options(expanded_dic)
