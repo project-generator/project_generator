@@ -16,39 +16,47 @@
 class CoIDEdefinitions():
 
     coide_settings = {
-        'Compile': {
-            'OptimizationLevel': 0,
-            'UserEditCompiler': [],
-        },
-        'Link': {
-            'DiscardUnusedSection': 0,
-            'UseMemoryLayout': 0,
-            'LTO': 0,
-            'IsNewStartupCode': 1,
-            'nostartfiles': 0,
-        },
-        'User': {
-            'UserRun': {
-                'Before': '',
-                'After': '',
+        'Target': {
+            'BuildOption' : {
+                'Compile': {
+                    'OptimizationLevel': 0,
+                    'UserEditCompiler': [],
+                },
+                'Link': {
+                    'DiscardUnusedSection': 0,
+                    'UseMemoryLayout': 0,
+                    'LTO': 0,
+                    'IsNewStartupCode': 1,
+                    'nostartfiles': 0,
+                },
+                'User': {
+                    'UserRun': {
+                        'Before': '',
+                        'After': '',
+                    }
+                },
+                'Output': {
+                    'OutputFileType': 0,
+                    'HEX': 1,
+                    'BIN': 1,
+                }
             }
-        },
-        'Output': {
-            'OutputFileType': 0,
-            'HEX': 1,
-            'BIN': 1,
         }
     }
 
     debuggers = {
         'cmsis-dap' : {
-            'DebugOption' : {
-                'org.coocox.codebugger.gdbjtag.core.adapter' : 'CMSIS-DAP',
+            'Target': {
+                'DebugOption' : {
+                    'org.coocox.codebugger.gdbjtag.core.adapter' : 'CMSIS-DAP',
+                }
             }
         },
         'j-link' : {
-            'DebugOption' : {
-                'org.coocox.codebugger.gdbjtag.core.adapter' : 'J-Link',
+            'Target': {
+                'DebugOption' : {
+                    'org.coocox.codebugger.gdbjtag.core.adapter' : 'J-Link',
+                }
             }
         },
     }

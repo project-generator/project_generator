@@ -16,6 +16,8 @@ import copy
 import logging
 
 from os.path import basename, join, relpath, normpath
+from os import getcwd
+import xmltodict
 
 from .exporter import Exporter
 from .coide_definitions import CoIDEdefinitions
@@ -76,18 +78,18 @@ class CoideExporter(Exporter):
                     data['coide_settings'][k][option] = v[option]
 
     def normalize_mcu_def(self, mcu_def):
-        for k,v in mcu_def['Device'].items():
-            mcu_def['Device'][k] = v[0]
-        for k,v in mcu_def['DebugOption'].items():
-            mcu_def['DebugOption'][k] = v[0]
-        for k,v in mcu_def['MemoryAreas']['IROM1'].items():
-            mcu_def['MemoryAreas']['IROM1'][k] = v[0]
-        for k,v in mcu_def['MemoryAreas']['IROM2'].items():
-            mcu_def['MemoryAreas']['IROM2'][k] = v[0]
-        for k,v in mcu_def['MemoryAreas']['IRAM1'].items():
-            mcu_def['MemoryAreas']['IRAM1'][k] = v[0]
-        for k,v in mcu_def['MemoryAreas']['IRAM2'].items():
-            mcu_def['MemoryAreas']['IRAM2'][k] = v[0]
+        for k,v in mcu_def['Target']['Device'].items():
+            mcu_def['Target']['Device'][k] = v[0]
+        for k,v in mcu_def['Target']['DebugOption'].items():
+            mcu_def['Target']['DebugOption'][k] = v[0]
+        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IROM1'].items():
+            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IROM1'][k] = v[0]
+        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IROM2'].items():
+            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IROM2'][k] = v[0]
+        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IRAM1'].items():
+            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IRAM1'][k] = v[0]
+        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IRAM2'].items():
+            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IRAM2'][k] = v[0]
 
     def fix_paths(self, data, rel_path):
         fixed_paths = []
@@ -104,6 +106,13 @@ class CoideExporter(Exporter):
         if data['linker_file']:
             data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
+    def _coide_option_dictionarize(self, key, coide_settings):
+        dictionarized = {}
+        for option in coide_settings[key]:
+            dictionarized[option['@name']] = {}
+            dictionarized[option['@name']].update(option)
+        return dictionarized
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = data.copy()
@@ -116,7 +125,6 @@ class CoideExporter(Exporter):
         self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         expanded_dic['coide_settings'] = {}
-        self.parse_specific_options(expanded_dic)
 
         target = Targets(env_settings.get_env_settings('definitions'))
         if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
@@ -130,9 +138,44 @@ class CoideExporter(Exporter):
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         expanded_dic['coide_settings'].update(mcu_def_dic)
 
+        # generic tool template specified or project
+        if 'coide' in env_settings.templates.keys():
+            # template overrides what is set in the yaml files
+            project_file = join(getcwd(), env_settings.templates['coide']['path'][0], env_settings.templates['coide']['name'][0] + '.coproj')
+            proj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            expanded_dic['coide_settings'] = {
+                    'Target' : {
+                        'BuildOption' : {
+                            'Compile' : {
+                                'Option' : {}
+                            },
+                            'Link' : {
+                                'Option' : {}
+                            },
+                            'Output' : {
+                                'Option' : {}
+                            }
+                        },
+                        'DebugOption' : {
+                            'Option' : {}
+                        }
+                    }
+            }
+            expanded_dic['coide_settings']['Target']['BuildOption']['Compile']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Compile'])
+            expanded_dic['coide_settings']['Target']['BuildOption']['Link'].update(proj_dic['Project']['Target']['BuildOption']['Link'])
+            expanded_dic['coide_settings']['Target']['BuildOption']['Link']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Link'])
+            expanded_dic['coide_settings']['Target']['BuildOption']['Output'].update(proj_dic['Project']['Target']['BuildOption']['Output'])
+            expanded_dic['coide_settings']['Target']['BuildOption']['Output']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Output'])
+            expanded_dic['coide_settings']['Target']['DebugOption'].update(proj_dic['Project']['Target']['DebugOption'])
+            expanded_dic['coide_settings']['Target']['DebugOption']['Option'] = {}
+            expanded_dic['coide_settings']['Target']['DebugOption']['Option'].update(self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['DebugOption']))
+        else:
+            # setting values from the yaml files
+            self.parse_specific_options(expanded_dic)
+
         # get debugger definitions
         try:
-            expanded_dic['coide_settings'].update(self.definitions.debuggers[expanded_dic['debugger']])
+            expanded_dic['coide_settings']['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter'] = self.definitions.debuggers[expanded_dic['debugger']]['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']
         except KeyError:
             raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 

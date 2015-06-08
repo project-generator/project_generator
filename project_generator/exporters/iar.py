@@ -141,7 +141,7 @@ class IAREWARMExporter(Exporter):
         # generic tool template specified or project
         if 'iar' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
-            project_file = join(getcwd(), env_settings.templates['iar']['path'][0], env_settings.templates['uvision']['name'][0] + '.ewp')
+            project_file = join(getcwd(), env_settings.templates['iar']['path'][0], env_settings.templates['iar']['name'][0] + '.ewp')
             proj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
             # form valid iar settings dictionary
             iar_settings = {
