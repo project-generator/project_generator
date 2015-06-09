@@ -29,15 +29,15 @@
         {{option}}; {% endfor %} {% for file in object_files %}
         ${project.path}/{{file}}; {% endfor %} {% for p in library_paths %}-L${project.path}/{{p}}; {% endfor %}"/>
         <LinkedLibraries>
-          {% for lib in coide_settings['Link']['LinkedLibraries'] %}
+          {% for lib in coide_settings['Target']['BuildOption']['Link']['LinkedLibraries']['Libset']['libs'] %}
           <Libset dir="" libs="{{lib}}"/>
           {% endfor %}
         </LinkedLibraries>
         <MemoryAreas debugInFlashNotRAM="1">
-          <Memory name="IROM1" type="ReadOnly" size="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['IROM1']['size']}}" startValue="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['IROM1']['startValue']}}"/>
-          <Memory name="IRAM1" type="ReadWrite" size="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['IRAM1']['size']}}" startValue="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['IRAM1']['startValue']}}"/>
-          <Memory name="IROM2" type="ReadOnly" size="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['IROM2']['size']}}" startValue="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['IROM2']['startValue']}}"/>
-          <Memory name="IRAM2" type="ReadWrite" size="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['IRAM2']['size']}}" startValue="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['IRAM2']['startValue']}}"/>
+          <Memory name="IROM1" type="ReadOnly" size="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM1']['size']}}" startValue="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM1']['startValue']}}"/>
+          <Memory name="IRAM1" type="ReadWrite" size="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM1']['size']}}" startValue="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM1']['startValue']}}"/>
+          <Memory name="IROM2" type="ReadOnly" size="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM2']['size']}}" startValue="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM2']['startValue']}}"/>
+          <Memory name="IRAM2" type="ReadWrite" size="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM2']['size']}}" startValue="{{coide_settings['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM2']['startValue']}}"/>
         </MemoryAreas>
         <LocateLinkFile path="{{linker_file}}" type="0"/>
       </Link>
@@ -49,8 +49,8 @@
         <Option name="BIN" value="{{coide_settings['Target']['BuildOption']['Output']['BIN']}}"/>
       </Output>
       <User>
-        <UserRun name="Run#1" type="Before" checked="0" value="{{coide_settings['Target']['BuildOption']['User']['UserRun']['Before']}}"/>
-        <UserRun name="Run#1" type="After" checked="0" value="{{coide_settings['Target']['BuildOption']['User']['UserRun']['After']}}"/>
+        <UserRun name="Run#1" type="Before" checked="0" value="{{coide_settings['Target']['BuildOption']['User']['UserRun']['Run#1']['Before']}}"/>
+        <UserRun name="Run#1" type="After" checked="0" value="{{coide_settings['Target']['BuildOption']['User']['UserRun']['Run#1']['After']}}"/>
       </User>
     </BuildOption>
     <DebugOption>

@@ -82,14 +82,14 @@ class CoideExporter(Exporter):
             mcu_def['Target']['Device'][k] = v[0]
         for k,v in mcu_def['Target']['DebugOption'].items():
             mcu_def['Target']['DebugOption'][k] = v[0]
-        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IROM1'].items():
-            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IROM1'][k] = v[0]
-        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IROM2'].items():
-            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IROM2'][k] = v[0]
-        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IRAM1'].items():
-            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IRAM1'][k] = v[0]
-        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IRAM2'].items():
-            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['IRAM2'][k] = v[0]
+        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM1'].items():
+            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM1'][k] = v[0]
+        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM2'].items():
+            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM2'][k] = v[0]
+        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM1'].items():
+            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM1'][k] = v[0]
+        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM2'].items():
+            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM2'][k] = v[0]
 
     def fix_paths(self, data, rel_path):
         fixed_paths = []
@@ -126,6 +126,57 @@ class CoideExporter(Exporter):
 
         expanded_dic['coide_settings'] = {}
 
+        # generic tool template specified or project
+        if 'coide' in env_settings.templates.keys():
+            # template overrides what is set in the yaml files
+            project_file = join(getcwd(), env_settings.templates['coide']['path'][0], env_settings.templates['coide']['name'][0] + '.coproj')
+            proj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            coide_settings = {
+                    'Target' : {
+                        'Device' : {},
+                        'BuildOption' : {
+                            'Compile' : {
+                                'Option' : {}
+                            },
+                            'Link' : {
+                                'Option' : {}
+                            },
+                            'Output' : {
+                                'Option' : {}
+                            },
+                            'User': {
+                                'UserRun' : {}
+                            }
+                        },
+                        'DebugOption' : {
+                            'Option' : {}
+                        },
+                    }
+            }
+            coide_settings['Target']['BuildOption']['Compile']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Compile'])
+            coide_settings['Target']['BuildOption']['Link'].update(proj_dic['Project']['Target']['BuildOption']['Link'])
+            coide_settings['Target']['BuildOption']['Link']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Link'])
+            coide_settings['Target']['BuildOption']['Output'].update(proj_dic['Project']['Target']['BuildOption']['Output'])
+            coide_settings['Target']['BuildOption']['Output']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Output'])
+            coide_settings['Target']['BuildOption']['User'].update(proj_dic['Project']['Target']['BuildOption']['User'])
+            # Run#1 is an exception, oh
+            dictionarized = {}
+            dictionarized[proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0]['@name']] = {
+                proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0]['@type'] : {},
+                proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][1]['@type'] : {}
+            }
+            dictionarized[proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0]['@name']][proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0]['@type']].update(proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0])
+            dictionarized[proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0]['@name']][proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][1]['@type']].update(proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][1])
+            coide_settings['Target']['BuildOption']['User']['UserRun'] = dictionarized
+
+            coide_settings['Target']['DebugOption'].update(proj_dic['Project']['Target']['DebugOption'])
+            coide_settings['Target']['DebugOption']['Option'] = {}
+            coide_settings['Target']['DebugOption']['Option'].update(self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['DebugOption']))
+            expanded_dic['coide_settings'] = {key: dict(expanded_dic['coide_settings'].get(key, {}).items() + coide_settings.get(key, {}).items()) for key in expanded_dic['coide_settings'].keys() + coide_settings.keys()}
+        else:
+            # setting values from the yaml files
+            self.parse_specific_options(expanded_dic)
+
         target = Targets(env_settings.get_env_settings('definitions'))
         if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
             raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
@@ -136,42 +187,9 @@ class CoideExporter(Exporter):
                 % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        expanded_dic['coide_settings'].update(mcu_def_dic)
-
-        # generic tool template specified or project
-        if 'coide' in env_settings.templates.keys():
-            # template overrides what is set in the yaml files
-            project_file = join(getcwd(), env_settings.templates['coide']['path'][0], env_settings.templates['coide']['name'][0] + '.coproj')
-            proj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-            expanded_dic['coide_settings'] = {
-                    'Target' : {
-                        'BuildOption' : {
-                            'Compile' : {
-                                'Option' : {}
-                            },
-                            'Link' : {
-                                'Option' : {}
-                            },
-                            'Output' : {
-                                'Option' : {}
-                            }
-                        },
-                        'DebugOption' : {
-                            'Option' : {}
-                        }
-                    }
-            }
-            expanded_dic['coide_settings']['Target']['BuildOption']['Compile']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Compile'])
-            expanded_dic['coide_settings']['Target']['BuildOption']['Link'].update(proj_dic['Project']['Target']['BuildOption']['Link'])
-            expanded_dic['coide_settings']['Target']['BuildOption']['Link']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Link'])
-            expanded_dic['coide_settings']['Target']['BuildOption']['Output'].update(proj_dic['Project']['Target']['BuildOption']['Output'])
-            expanded_dic['coide_settings']['Target']['BuildOption']['Output']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Output'])
-            expanded_dic['coide_settings']['Target']['DebugOption'].update(proj_dic['Project']['Target']['DebugOption'])
-            expanded_dic['coide_settings']['Target']['DebugOption']['Option'] = {}
-            expanded_dic['coide_settings']['Target']['DebugOption']['Option'].update(self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['DebugOption']))
-        else:
-            # setting values from the yaml files
-            self.parse_specific_options(expanded_dic)
+        expanded_dic['coide_settings']['Target']['Device'].update(mcu_def_dic['Target']['Device'])
+        expanded_dic['coide_settings']['Target']['DebugOption'].update(mcu_def_dic['Target']['DebugOption'])
+        expanded_dic['coide_settings']['Target']['BuildOption']['Link']['MemoryAreas'].update(mcu_def_dic['Target']['BuildOption']['Link']['MemoryAreas'])
 
         # get debugger definitions
         try:
