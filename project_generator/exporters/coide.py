@@ -75,7 +75,7 @@ class CoideExporter(Exporter):
         for dic in data['misc']:
             for k, v in dic.items():
                 for option in v:
-                    data['coide_settings'][k][option] = v[option]
+                    data['coide_settings'][k][option].update(v[option])
 
     def normalize_mcu_def(self, mcu_def):
         for k,v in mcu_def['Target']['Device'].items():
@@ -172,6 +172,7 @@ class CoideExporter(Exporter):
             coide_settings['Target']['DebugOption'].update(proj_dic['Project']['Target']['DebugOption'])
             coide_settings['Target']['DebugOption']['Option'] = {}
             coide_settings['Target']['DebugOption']['Option'].update(self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['DebugOption']))
+            # merge in current settings with the parser one
             expanded_dic['coide_settings'] = {key: dict(expanded_dic['coide_settings'].get(key, {}).items() + coide_settings.get(key, {}).items()) for key in expanded_dic['coide_settings'].keys() + coide_settings.keys()}
         else:
             # setting values from the yaml files

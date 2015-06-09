@@ -28,6 +28,7 @@ class CoIDEdefinitions():
                     'LTO': 0,
                     'IsNewStartupCode': 1,
                     'nostartfiles': 0,
+                    'MemoryAreas' : {},
                 },
                 'User': {
                     'UserRun': {
@@ -39,8 +40,10 @@ class CoIDEdefinitions():
                     'OutputFileType': 0,
                     'HEX': 1,
                     'BIN': 1,
-                }
-            }
+                },
+            },
+            'Device' : {},
+            'DebugOption':{},
         }
     }
 
