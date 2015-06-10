@@ -106,11 +106,11 @@ class CoideExporter(Exporter):
         if data['linker_file']:
             data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
-    def _coide_option_dictionarize(self, key, coide_settings):
+    def _coide_option_dictionarize(self, option, key, coide_settings):
         dictionarized = {}
-        for option in coide_settings[key]:
-            dictionarized[option['@name']] = {}
-            dictionarized[option['@name']].update(option)
+        for option in coide_settings[option]:
+            dictionarized[option[key]] = {}
+            dictionarized[option[key]].update(option)
         return dictionarized
 
     def generate(self, data, env_settings):
@@ -139,7 +139,8 @@ class CoideExporter(Exporter):
                                 'Option' : {}
                             },
                             'Link' : {
-                                'Option' : {}
+                                'Option' : {},
+                                'LinkedLibraries' : {}
                             },
                             'Output' : {
                                 'Option' : {}
@@ -153,11 +154,11 @@ class CoideExporter(Exporter):
                         },
                     }
             }
-            coide_settings['Target']['BuildOption']['Compile']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Compile'])
+            coide_settings['Target']['BuildOption']['Compile']['Option'] = self._coide_option_dictionarize('Option', '@name', proj_dic['Project']['Target']['BuildOption']['Compile'])
             coide_settings['Target']['BuildOption']['Link'].update(proj_dic['Project']['Target']['BuildOption']['Link'])
-            coide_settings['Target']['BuildOption']['Link']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Link'])
+            coide_settings['Target']['BuildOption']['Link']['Option'] = self._coide_option_dictionarize('Option', '@name', proj_dic['Project']['Target']['BuildOption']['Link'])
             coide_settings['Target']['BuildOption']['Output'].update(proj_dic['Project']['Target']['BuildOption']['Output'])
-            coide_settings['Target']['BuildOption']['Output']['Option'] = self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['BuildOption']['Output'])
+            coide_settings['Target']['BuildOption']['Output']['Option'] = self._coide_option_dictionarize('Option', '@name', proj_dic['Project']['Target']['BuildOption']['Output'])
             coide_settings['Target']['BuildOption']['User'].update(proj_dic['Project']['Target']['BuildOption']['User'])
             # Run#1 is an exception, oh
             dictionarized = {}
@@ -171,7 +172,7 @@ class CoideExporter(Exporter):
 
             coide_settings['Target']['DebugOption'].update(proj_dic['Project']['Target']['DebugOption'])
             coide_settings['Target']['DebugOption']['Option'] = {}
-            coide_settings['Target']['DebugOption']['Option'].update(self._coide_option_dictionarize('Option', proj_dic['Project']['Target']['DebugOption']))
+            coide_settings['Target']['DebugOption']['Option'].update(self._coide_option_dictionarize('Option', '@name', proj_dic['Project']['Target']['DebugOption']))
             # merge in current settings with the parser one
             expanded_dic['coide_settings'] = {key: dict(expanded_dic['coide_settings'].get(key, {}).items() + coide_settings.get(key, {}).items()) for key in expanded_dic['coide_settings'].keys() + coide_settings.keys()}
         else:

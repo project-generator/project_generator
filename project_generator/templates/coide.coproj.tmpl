@@ -18,19 +18,20 @@
         </DefinedSymbols>
       </Compile>
       <Link useDefault="0">
-        <Option name="DiscardUnusedSection" value="{{coide_settings['Target']['BuildOption']['Link']['DiscardUnusedSection']}}"/>
+        <Option name="DiscardUnusedSection" value="{{coide_settings['Target']['BuildOption']['Link']['Option']['DiscardUnusedSection']['@value']}}"/>
         <Option name="UserEditLinkder" value=""/>
-        <Option name="UseMemoryLayout" value="{{coide_settings['Target']['BuildOption']['Link']['UseMemoryLayout']}}"/>
-        <Option name="LTO" value="coide_settings['Target']['BuildOption']['Link']['LTO']"/>
-        <Option name="IsNewStartupCode" value="{{coide_settings['Target']['BuildOption']['Link']['IsNewStartupCode']}}"/>
-        <Option name="Library" value="Not use C Library"/>
-        <Option name="nostartfiles" value="{{coide_settings['Target']['BuildOption']['Link']['nostartfiles']}}"/>
-        <Option name="UserEditLinker" value=" {% for option in coide_settings['Target']['BuildOption']['Link']['UserEditLinker'] %}
-        {{option}}; {% endfor %} {% for file in object_files %}
+        <Option name="UseMemoryLayout" value="{{coide_settings['Target']['BuildOption']['Link']['Option']['UseMemoryLayout']['@value']}}"/>
+        <Option name="LTO" value="{{coide_settings['Target']['BuildOption']['Link']['Option']['LTO']['@value']}}"/>
+        <Option name="IsNewStartupCode" value="{{coide_settings['Target']['BuildOption']['Link']['Option']['IsNewStartupCode']['@value']}}"/>
+        <Option name="Library" value="{{coide_settings['Target']['BuildOption']['Link']['Option']['Library']['@value']}}"/>
+        <Option name="nostartfiles" value="{{coide_settings['Target']['BuildOption']['Link']['Option']['nostartfiles']['@value']}}"/>
+        <Option name="Printf" value="{{coide_settings['Target']['BuildOption']['Link']['Option']['Printf']['@value']}}"/>
+        <Option name="Scanf" value="{{coide_settings['Target']['BuildOption']['Link']['Option']['Scanf']['@value']}}"/>
+        <Option name="UserEditLinker" value=" {{coide_settings['Target']['BuildOption']['Link']['Option']['UserEditLinker']['@value'] }} {% for file in object_files %}
         ${project.path}/{{file}}; {% endfor %} {% for p in library_paths %}-L${project.path}/{{p}}; {% endfor %}"/>
         <LinkedLibraries>
-          {% for lib in coide_settings['Target']['BuildOption']['Link']['LinkedLibraries']['Libset']['libs'] %}
-          <Libset dir="" libs="{{lib}}"/>
+          {% for lib in coide_settings['Target']['BuildOption']['Link']['LinkedLibraries']['Libset'] %}
+          <Libset dir="" libs="{{lib['@libs']}}"/>
           {% endfor %}
         </LinkedLibraries>
         <MemoryAreas debugInFlashNotRAM="1">
@@ -49,8 +50,8 @@
         <Option name="BIN" value="{{coide_settings['Target']['BuildOption']['Output']['BIN']}}"/>
       </Output>
       <User>
-        <UserRun name="Run#1" type="Before" checked="0" value="{{coide_settings['Target']['BuildOption']['User']['UserRun']['Run#1']['Before']}}"/>
-        <UserRun name="Run#1" type="After" checked="0" value="{{coide_settings['Target']['BuildOption']['User']['UserRun']['Run#1']['After']}}"/>
+        <UserRun name="Run#1" type="Before" checked="0" value="{{coide_settings['Target']['BuildOption']['User']['UserRun']['Run#1']['Before']['value']}}"/>
+        <UserRun name="Run#1" type="After" checked="0" value="{{coide_settings['Target']['BuildOption']['User']['UserRun']['Run#1']['After']['value']}}"/>
       </User>
     </BuildOption>
     <DebugOption>
