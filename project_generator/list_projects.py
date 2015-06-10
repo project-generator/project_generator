@@ -19,8 +19,9 @@ help = 'List all projects'
 
 def run(args):
     workspace = Workspace(args.file, os.getcwd())
-    workspace.list_projects()
+    workspace.list(args.section.lower())
 
 
 def setup(subparser):
+    subparser.add_argument("section", help="What section you would like listed", default='projects')
     subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')

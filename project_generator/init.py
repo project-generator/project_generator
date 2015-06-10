@@ -27,7 +27,8 @@ def run(args):
     root = os.getcwd()
 
     directory = root if not args.directory else os.path.join(root, args.directory)
-    Project.scrape_dir(root, directory, args.name, args.target, args.sources)
+    #Project.scrape_dir(root, directory, args.name, args.target, args.sources)
+    Project.test_yaml_gen(root, directory, args.name, args.target, args.sources)
 
 
 def setup(subparser):

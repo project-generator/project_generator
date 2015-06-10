@@ -191,12 +191,27 @@ class Project:
         self.project_files = {}
         self.project_name = None
         self.tools = ToolsSupported()
-
+        done = False
         for project_file in project_files:
-            with open(project_file, 'rt') as f:
+            try:
+                f = open(project_file, 'rt')
                 project_file_data = yaml.load(f)
+                done = True
+            except IOError:
+                project_file_data = project_files
+                break
+            self.set_attributes(project_file_data)
+        if not done:
+            self.set_attributes(project_file_data)
+        if self.project_dir['path'] == '':
+            self.project_dir['path'] = self.workspace.settings.generated_projects_dir_default
 
-            if 'common' in project_file_data:
+        if len(self.tools_supported) == 0:
+            self.tools_supported = [self.workspace.settings.DEFAULT_TOOL]
+
+
+    def set_attributes(self,project_file_data):
+        if 'common' in project_file_data:
                 group_name = 'default'
                 if 'output' in project_file_data['common']:
                     if project_file_data['common']['output'][0] not in self.output_types:
@@ -232,7 +247,7 @@ class Project:
                     self.target = project_file_data['common']['target'][0]
 
                 if 'name' in project_file_data['common']:
-                    self.name = project_file_data['common']['name']
+                    self.name = project_file_data['common'][0]
 
                 if 'mcu' in project_file_data['common']:
                     self.mcu = project_file_data['common']['mcu'][0]
@@ -247,17 +262,10 @@ class Project:
                     self.tools_supported.extend(
                         [x for x in project_file_data['common']['tools_supported'] if x is not None])
 
-            if 'tool_specific' in project_file_data:
-                for tool_name, tool_settings in project_file_data['tool_specific'].items():
-                    self.tool_specific[tool_name].add_settings(
-                        tool_settings, group_name)
-
-        if self.project_dir['path'] == '':
-            self.project_dir['path'] = self.workspace.settings.generated_projects_dir_default
-
-        if len(self.tools_supported) == 0:
-            self.tools_supported = [self.workspace.settings.DEFAULT_TOOL]
-
+        if 'tool_specific' in project_file_data:
+            for tool_name, tool_settings in project_file_data['tool_specific'].items():
+                self.tool_specific[tool_name].add_settings(
+                    tool_settings, group_name)
     def _process_source_files(self, files, group_name):
         source_paths = []
         extensions = ['cpp', 'c', 's', 'obj', 'lib']
@@ -523,6 +531,96 @@ class Project:
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
         shutil.copy2(os.path.join(os.getcwd(), linker), os.path.join(os.getcwd(), proj_dic['output_dir']['path'], linker))
+
+    @staticmethod
+    def determine_tool(linker_ext):
+        if "sct" in linker_ext or "lin" in linker_ext:
+            return "uvision"
+        elif "ld" in linker_ext:
+            return "make_gcc_arm"
+        elif "icf" in linker_ext:
+            return "IAR"
+##################IN PROGRESS##########################################################
+    @staticmethod
+    def scan(section, root, directory, extensions, is_path):
+        if section == "sources":
+            data_dict = {}
+        else:
+            data_dict = []
+        for dirpath, dirnames, files in os.walk(directory):
+            for filename in files:
+                ext = filename.split('.')[-1]
+                relpath = os.path.relpath(dirpath, root)
+                if ext in extensions:
+                    if section == "sources":
+                        dir = dirpath.split(os.path.sep)[-1]
+                        if dir in data_dict:
+                            data_dict[dir].append(os.path.join(relpath,filename))
+                        else:
+                            data_dict[dir] = [(os.path.join(relpath,filename))]
+                    else:
+                        data_dict.append(relpath if is_path else os.path.join(relpath,filename))
+        if section == "sources":
+            return data_dict
+        return list(set(data_dict))
+
+    @staticmethod
+    def create_yaml(root, directory, project_name, board, common_section):
+
+        data = {'projects':{
+                   project_name:{
+                        'common':{},
+                         'tool_specific':{}
+                         }
+                    }
+                }
+        for section in common_section:
+            if(len(common_section[section][1]) > 0):
+                data['projects'][project_name]['common'][section]=Project.scan(section, root, directory,common_section[section][1],common_section[section][0])
+
+        data['projects'][project_name]['common']['target'] = []
+        data['projects'][project_name]['common']['target'].append(board)
+        tool = Project.determine_tool(str(data['projects'][project_name]['common']['linker_file']).split('.')[-1])
+        data['projects'][project_name]['tool_specific'] = {tool : {'linker_file':data['projects'][project_name]['common']['linker_file']}}
+
+        logging.debug('Generating yaml file')
+
+        filename = 'projects.yaml'
+
+        #TODO: fix
+        if os.path.isfile(os.path.join(directory, filename)):
+            # this should be print, not logging
+            print("Project file already exists")
+
+            while True:
+                answer = input('Should I overwrite it? (Y/n)')
+
+                try:
+                    overwrite = answer.lower() in ('y', 'yes')
+
+                    if not overwrite:
+                        logging.critical('Unable to save project file')
+                        return -1
+
+                    break
+                except ValueError:
+                    continue
+        with open(os.path.join(root, filename), 'wt') as f:
+            f.write(yaml.dump(data, default_flow_style=False))
+
+    @staticmethod
+    def test_yaml_gen(root, directory, project_name, board, list_sources):
+        #common structure for each section. [bool of whether this section is a path, [extention types for this section]]
+        common = {
+                'linker_file': [False, FILES_EXTENSIONS['linker_file']],
+                'sources': [False,FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] + FILES_EXTENSIONS['source_files_s']],
+                'includes': [True,FILES_EXTENSIONS['include_paths']],
+                'source_files_obj' : [False,FILES_EXTENSIONS['source_files_obj']],
+                'source_files_lib' : [False,FILES_EXTENSIONS['source_files_lib']],
+                'target': [False,[]],
+        }
+        Project.create_yaml(root, directory, project_name, board, common)
+##################IN PROGRESS##########################################################
 
     @staticmethod
     def scrape_dir(root, directory, project_name, board, list_sources):
