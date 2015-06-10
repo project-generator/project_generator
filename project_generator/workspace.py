@@ -16,6 +16,8 @@ import logging
 
 from .project import Project, flatten
 from .settings import ProjectSettings
+from .tool import ToolsSupported
+from .targets import Targets
 
 class Workspace:
 
@@ -82,6 +84,16 @@ class Workspace:
 
         logging.debug("Flashing Project %s" % project_name)
         self.projects[project_name].flash(tool)
+
+    @staticmethod
+    def pgen_list(type):
+        if type == 'tools':
+            print "pgen supports the following tools:"
+            print(yaml.dump(ToolsSupported().get_supported(), default_flow_style=False))
+        elif type == 'targets':
+            target = Targets(ProjectSettings().get_env_settings('definitions'))
+            print "pgen supports the following targets:"
+            print(yaml.dump(target.targets, default_flow_style=False))
 
     def list(self, type, format='logging', out=True):
         output = []

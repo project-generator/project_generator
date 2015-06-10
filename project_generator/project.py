@@ -540,7 +540,7 @@ class Project:
             return "make_gcc_arm"
         elif "icf" in linker_ext:
             return "IAR"
-##################IN PROGRESS##########################################################
+
     @staticmethod
     def scan(section, root, directory, extensions, is_path):
         if section == "sources":
@@ -565,8 +565,15 @@ class Project:
         return list(set(data_dict))
 
     @staticmethod
-    def create_yaml(root, directory, project_name, board, common_section):
-
+    def create_yaml(root, directory, project_name, board, list_sources):
+        common_section = {
+                'linker_file': [False, FILES_EXTENSIONS['linker_file']],
+                'sources': [False,FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] + FILES_EXTENSIONS['source_files_s']],
+                'includes': [True,FILES_EXTENSIONS['include_paths']],
+                'source_files_obj' : [False,FILES_EXTENSIONS['source_files_obj']],
+                'source_files_lib' : [False,FILES_EXTENSIONS['source_files_lib']],
+                'target': [False,[]],
+        }
         data = {'projects':{
                    project_name:{
                         'common':{},
@@ -607,89 +614,3 @@ class Project:
                     continue
         with open(os.path.join(root, filename), 'wt') as f:
             f.write(yaml.dump(data, default_flow_style=False))
-
-    @staticmethod
-    def test_yaml_gen(root, directory, project_name, board, list_sources):
-        #common structure for each section. [bool of whether this section is a path, [extention types for this section]]
-        common = {
-                'linker_file': [False, FILES_EXTENSIONS['linker_file']],
-                'sources': [False,FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] + FILES_EXTENSIONS['source_files_s']],
-                'includes': [True,FILES_EXTENSIONS['include_paths']],
-                'source_files_obj' : [False,FILES_EXTENSIONS['source_files_obj']],
-                'source_files_lib' : [False,FILES_EXTENSIONS['source_files_lib']],
-                'target': [False,[]],
-        }
-        Project.create_yaml(root, directory, project_name, board, common)
-##################IN PROGRESS##########################################################
-
-    @staticmethod
-    def scrape_dir(root, directory, project_name, board, list_sources):
-        data = {
-            'common': {
-                'linker_file': [],
-                'sources': [],
-                'includes': [],
-                'source_files_obj' : [],
-                'source_files_lib' : [],
-                'target': [],
-            }
-        }
-
-        linker_filetypes = FILES_EXTENSIONS['linker_file']
-        source_filetypes = FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] + FILES_EXTENSIONS['source_files_s']
-        include_filetypes = FILES_EXTENSIONS['include_paths']
-        lib_filetypes = FILES_EXTENSIONS['source_files_lib']
-        obj_filetypes = FILES_EXTENSIONS['source_files_obj']
-
-        for dirpath, dirnames, files in os.walk(directory):
-            for filename in files:
-                extension = filename.split('.')[-1]
-                relpath = os.path.relpath(dirpath, root)
-
-                if extension in linker_filetypes:
-                    data['common']['linker_file'].append(os.path.join(relpath, filename))
-                elif extension in source_filetypes:
-                    data['common']['sources'].append(os.path.join(relpath, filename) if list_sources else relpath)
-                elif extension in include_filetypes:
-                    data['common']['include_paths'].append(relpath)
-                elif extension in lib_filetypes:
-                    data['common']['source_files_lib'].append(os.path.join(relpath, filename))
-                elif extension in obj_filetypes:
-                    data['common']['source_files_obj'].append(os.path.join(relpath, filename))
-
-        data['common']['sources'] = list(set(data['common']['sources']))
-        data['common']['includes'] = list(set(data['common']['includes']))
-
-        if len(data['common']['linker_file']) == 0:
-            data['common']['linker_file'].append("No linker file found")
-
-        if board:
-            data['common']['target'].append(board)
-
-        logging.debug('Generating yaml file')
-
-        filename = project_name.replace(' ', '_').lower() + '.yaml'
-
-        #TODO: fix
-        if os.path.isfile(os.path.join(directory, filename)):
-            # this should be print, not logging
-            print("Project file already exists")
-
-            while True:
-                answer = input('Should I overwrite it? (Y/n)')
-
-                try:
-                    overwrite = answer.lower() in ('y', 'yes')
-
-                    if not overwrite:
-                        logging.critical('Unable to save project file')
-                        return -1
-
-                    break
-                except ValueError:
-                    continue
-        valid_dic = {}
-        valid_dic['common'] = {k:v for k,v in data['common'].items() if v}
-
-        with open(os.path.join(root, filename), 'wt') as f:
-            f.write(yaml.dump(valid_dic, default_flow_style=False))

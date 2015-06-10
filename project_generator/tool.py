@@ -109,6 +109,8 @@ class ToolsSupported:
         except (KeyError, TypeError):
             raise RuntimeError("%s does not support specified tool: %s" % (key, tool))
         return value
+    def get_supported(self):
+        return self.TOOLS.keys()
 
 def export(exporter, data, tool, env_settings):
     """ Invokes tool generator. """
