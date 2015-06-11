@@ -53,7 +53,7 @@ FILES_EXTENSIONS = {
     'source_files_c' : ['c'],
     'source_files_cpp' : ['cpp', 'cc'],
     'source_files_lib' : ['lib', 'ar', 'a'],
-    'source_files_obj' : ['o'],
+    'source_files_obj' : ['o','obj'],
     'linker_file' : ['sct', 'ld', 'lin', 'icf'],
 }
 
@@ -209,7 +209,6 @@ class Project:
         if len(self.tools_supported) == 0:
             self.tools_supported = [self.workspace.settings.DEFAULT_TOOL]
 
-
     def set_attributes(self,project_file_data):
         if 'common' in project_file_data:
                 group_name = 'default'
@@ -263,9 +262,11 @@ class Project:
                         [x for x in project_file_data['common']['tools_supported'] if x is not None])
 
         if 'tool_specific' in project_file_data:
+            group_name = "1" #FIX!!
             for tool_name, tool_settings in project_file_data['tool_specific'].items():
                 self.tool_specific[tool_name].add_settings(
                     tool_settings, group_name)
+
     def _process_source_files(self, files, group_name):
         source_paths = []
         extensions = ['cpp', 'c', 's', 'obj', 'lib']
