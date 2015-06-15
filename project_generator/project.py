@@ -211,7 +211,6 @@ class Project:
 
     def set_attributes(self,project_file_data):
         if 'common' in project_file_data:
-                group_name = 'default'
                 if 'output' in project_file_data['common']:
                     if project_file_data['common']['output'][0] not in self.output_types:
                         raise RuntimeError("Invalid Output Type.")
@@ -219,15 +218,16 @@ class Project:
                     self.output_type = self.output_types[project_file_data['common']['output'][0]]
 
                 if 'group_name' in project_file_data['common']:
-                    group_name = project_file_data['common']['group_name'][0]
+                    group_name = project_file_data['common']['group_name']
 
                 if 'includes' in project_file_data['common']:
                     self.include_paths.extend(
                         [os.path.normpath(x) for x in project_file_data['common']['includes'] if x is not None])
 
                 if 'sources' in project_file_data['common']:
-                    source_paths = self._process_source_files(project_file_data['common']['sources'], group_name)
-                    for source_path in source_paths:
+                    group_names = project_file_data['common']['sources'].keys()
+                    source_paths = [self._process_source_files(project_file_data['common']['sources'][group_name], group_name) for group_name in group_names]
+                    for source_path in self.source_paths:
                         if os.path.normpath(source_path) not in self.include_paths:
                             self.include_paths.extend([source_path])
 
@@ -283,7 +283,7 @@ class Project:
 
         for source_file in files:
             if os.path.isdir(source_file):
-                source_paths.append(source_file)
+                self.source_paths.append(source_file)
                 self._process_source_files([os.path.join(os.path.normpath(source_file), f) for f in os.listdir(
                     source_file) if os.path.isfile(os.path.join(os.path.normpath(source_file), f))], group_name)
 
@@ -554,7 +554,7 @@ class Project:
                 relpath = os.path.relpath(dirpath, root)
                 if ext in extensions:
                     if section == "sources":
-                        dir = dirpath.split(os.path.sep)[-1]
+                        dir = directory.split(os.path.sep)[-1] if dirpath == directory else dirpath.replace(directory,'').split(os.path.sep)[1]
                         if dir in data_dict:
                             data_dict[dir].append(os.path.join(relpath,filename))
                         else:
@@ -569,10 +569,9 @@ class Project:
     def create_yaml(root, directory, project_name, board, list_sources):
         common_section = {
                 'linker_file': [False, FILES_EXTENSIONS['linker_file']],
-                'sources': [False,FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] + FILES_EXTENSIONS['source_files_s']],
+                'sources': [False,FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] +
+                            FILES_EXTENSIONS['source_files_s'] + FILES_EXTENSIONS['source_files_obj'] + FILES_EXTENSIONS['source_files_lib']],
                 'includes': [True,FILES_EXTENSIONS['include_paths']],
-                'source_files_obj' : [False,FILES_EXTENSIONS['source_files_obj']],
-                'source_files_lib' : [False,FILES_EXTENSIONS['source_files_lib']],
                 'target': [False,[]],
         }
         data = {'projects':{
@@ -582,6 +581,7 @@ class Project:
                          }
                     }
                 }
+
         for section in common_section:
             if(len(common_section[section][1]) > 0):
                 data['projects'][project_name]['common'][section]=Project.scan(section, root, directory,common_section[section][1],common_section[section][0])
