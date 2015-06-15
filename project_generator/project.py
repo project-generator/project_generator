@@ -262,7 +262,7 @@ class Project:
                         [x for x in project_file_data['common']['tools_supported'] if x is not None])
 
         if 'tool_specific' in project_file_data:
-            group_name = "1" #FIX!!
+            group_name = {}
             for tool_name, tool_settings in project_file_data['tool_specific'].items():
                 self.tool_specific[tool_name].add_settings(
                     tool_settings, group_name)
@@ -298,7 +298,7 @@ class Project:
 
             self.source_groups[group_name][extension].append(os.path.normpath(source_file))
 
-            if os.path.dirname(source_file) not in self.source_paths:
+            if not os.path.dirname(source_file) in self.source_paths:
                 self.source_paths.append(os.path.dirname(source_file))
 
         return source_paths
@@ -538,9 +538,9 @@ class Project:
         if "sct" in linker_ext or "lin" in linker_ext:
             return "uvision"
         elif "ld" in linker_ext:
-            return "make_gcc_arm"
+            return "gcc"
         elif "icf" in linker_ext:
-            return "IAR"
+            return "iar"
 
     @staticmethod
     def scan(section, root, directory, extensions, is_path):
