@@ -405,17 +405,14 @@ class Project:
             files[group] = []
             if filetype in group_contents:
                 files[group].extend(group_contents[filetype])
-
         return files
 
     def all_sources_of_type(self, filetype):
         """return a list of the sources of a specified type"""
         files = []
-
         for group, group_contents in self.source_groups.items():
             if filetype in group_contents:
                 files.extend(group_contents[filetype])
-
         return files
 
     def generate_dict_for_tool(self, tool):
@@ -452,12 +449,15 @@ class Project:
             'source_files_s': [merge_recursive(self.source_of_type('s'),
                                                { k: v for settings in [settings.source_of_type('s') for settings in tool_specific_settings] for k, v in settings.items() },
                                                toolchain_specific_settings.source_of_type('s'))],
-            'source_files_obj': self.all_sources_of_type('obj') +
-                                list(flatten([settings.all_sources_of_type('obj') for settings in tool_specific_settings])) +
-                                toolchain_specific_settings.all_sources_of_type('obj'),
-            'source_files_lib': self.all_sources_of_type('lib') +
-                                list(flatten([settings.all_sources_of_type('lib') for settings in tool_specific_settings])) +
-                                toolchain_specific_settings.all_sources_of_type('lib'),
+            'source_files_obj': [merge_recursive(self.source_of_type('obj'),
+                                               { k: v for settings in [settings.source_of_type('obj') for settings in tool_specific_settings] for k, v in settings.items() },
+                                               toolchain_specific_settings.source_of_type('obj')),
+                                                self.source_of_type('o'),
+                                               { k: v for settings in [settings.source_of_type('o') for settings in tool_specific_settings] for k, v in settings.items() },
+                                               toolchain_specific_settings.source_of_type('o')],
+             'source_files_lib': [merge_recursive(self.source_of_type('lib'),
+                                               { k: v for settings in [settings.source_of_type('lib') for settings in tool_specific_settings] for k, v in settings.items() },
+                                               toolchain_specific_settings.source_of_type('lib'))],
             'linker_file': self.linker_file
                         or toolchain_specific_settings.linker_file or [tool_settings.linker_file for tool_settings in tool_specific_settings if tool_settings.linker_file][0],
             'macros': self.macros +
@@ -478,7 +478,6 @@ class Project:
         else:
              output_dir = os.path.join(self.project_dir['path'], "%s_%s" % (tool, self.name))
         d['output_dir']['path'] = os.path.normpath(output_dir)
-
         return d
 
     def validate_generated_dic(self, dic):
@@ -559,6 +558,10 @@ class Project:
                             data_dict[dir].append(os.path.join(relpath,filename))
                         else:
                             data_dict[dir] = [(os.path.join(relpath,filename))]
+                    elif section == 'includes':
+                        dirs = relpath.split(os.path.sep)
+                        for i in range(1,len(dirs)+1):
+                            data_dict.append(os.path.sep.join(dirs[:i]))
                     else:
                         data_dict.append(relpath if is_path else os.path.join(relpath,filename))
         if section == "sources":

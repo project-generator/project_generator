@@ -109,6 +109,7 @@ class ToolsSupported:
         except (KeyError, TypeError):
             raise RuntimeError("%s does not support specified tool: %s" % (key, tool))
         return value
+
     def get_supported(self):
         return self.TOOLS.keys()
 
