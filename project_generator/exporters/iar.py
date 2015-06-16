@@ -139,35 +139,42 @@ class IAREWARMExporter(Exporter):
         }
 
         # generic tool template specified or project
-        if 'iar' in env_settings.templates.keys():
+        if expanded_dic['template']:
+            project_file = join(getcwd(), expanded_dic['template'])
+            proj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+        elif 'iar' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
             project_file = join(getcwd(), env_settings.templates['iar']['path'][0], env_settings.templates['iar']['name'][0] + '.ewp')
             proj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-            # form valid iar settings dictionary
-            iar_settings = {
-                'General' : {},
-                'ICCARM' : {},
-                'AARM' : {},
-                'OBJCOPY' : {},
-                'CUSTOM' : {},
-                'BICOMP' : {},
-                'BUILDACTION' : {},
-                'ILINK' : {},
-                'IARCHIVE' : {},
-                'BILINK' : {},
-            }
-            for settings in proj_dic['project']['configuration']['settings']:
-                iar_settings[settings['name']].update(settings)
-            iar_settings['AARM']['data']['option'] = self._iar_option_dictionarize('AARM', iar_settings)
-            iar_settings['General']['data']['option'] = self._iar_option_dictionarize('General', iar_settings)
-            iar_settings['IARCHIVE']['data']['option'] = self._iar_option_dictionarize('IARCHIVE', iar_settings)
-            iar_settings['ICCARM']['data']['option'] = self._iar_option_dictionarize('ICCARM', iar_settings)
-            iar_settings['ILINK']['data']['option'] = self._iar_option_dictionarize('ILINK', iar_settings)
-            iar_settings['OBJCOPY']['data']['option'] = self._iar_option_dictionarize('OBJCOPY', iar_settings)
-            expanded_dic['iar_settings'] = iar_settings
         else:
+            # TODO 0xc0170:implement there's no template, using generic template from definitions
+            raise RuntimeError("Not supported yet, template must be defined for IAR.")
+
+        # form valid iar settings dictionary
+        iar_settings = {
+            'General' : {},
+            'ICCARM' : {},
+            'AARM' : {},
+            'OBJCOPY' : {},
+            'CUSTOM' : {},
+            'BICOMP' : {},
+            'BUILDACTION' : {},
+            'ILINK' : {},
+            'IARCHIVE' : {},
+            'BILINK' : {},
+        }
+        for settings in proj_dic['project']['configuration']['settings']:
+            iar_settings[settings['name']].update(settings)
+        iar_settings['AARM']['data']['option'] = self._iar_option_dictionarize('AARM', iar_settings)
+        iar_settings['General']['data']['option'] = self._iar_option_dictionarize('General', iar_settings)
+        iar_settings['IARCHIVE']['data']['option'] = self._iar_option_dictionarize('IARCHIVE', iar_settings)
+        iar_settings['ICCARM']['data']['option'] = self._iar_option_dictionarize('ICCARM', iar_settings)
+        iar_settings['ILINK']['data']['option'] = self._iar_option_dictionarize('ILINK', iar_settings)
+        iar_settings['OBJCOPY']['data']['option'] = self._iar_option_dictionarize('OBJCOPY', iar_settings)
+        expanded_dic['iar_settings'] = iar_settings
+        #else:
             # setting values from the yaml files
-            self.parse_specific_options(expanded_dic)
+         #   self.parse_specific_options(expanded_dic)
 
         # get target definition (target + mcu)
         target = Targets(env_settings.get_env_settings('definitions'))

@@ -69,6 +69,7 @@ class ToolSpecificSettings:
         self.misc = {}
 
         self.linker_file = None
+        self.template = None
 
     def add_settings(self, data_dictionary, group_name):
         if 'source_paths' in data_dictionary:
@@ -92,6 +93,9 @@ class ToolSpecificSettings:
 
         if 'misc' in data_dictionary:
             self.misc.update(data_dictionary['misc'])
+
+        if 'template' in data_dictionary:
+            self.template = data_dictionary['template']
 
     def source_of_type(self, filetype):
         """return a dictionary of groups and the sources of a specified type within them"""
@@ -465,7 +469,8 @@ class Project:
                       toolchain_specific_settings.macros,
             'misc': [merge_recursive({ k: v for settings in tool_specific_settings for k, v in settings.misc.items() },
                                      toolchain_specific_settings.misc)],
-            'project_dir': self.project_dir
+            'project_dir': self.project_dir,
+            'template' : toolchain_specific_settings.template[0] or [tool_settings.template for tool_settings in tool_specific_settings][0],
         }
         self.validate_generated_dic(d)
 
