@@ -225,8 +225,11 @@ class Project:
                         [os.path.normpath(x) for x in project_file_data['common']['includes'] if x is not None])
 
                 if 'sources' in project_file_data['common']:
-                    group_names = project_file_data['common']['sources'].keys() if type(project_file_data['common']['sources']) == type(dict()) else {}
-                    source_paths = [self._process_source_files(project_file_data['common']['sources'][group_name], group_name) for group_name in group_names]
+                    if type(project_file_data['common']['sources']) == type(dict()):
+                        group_names = project_file_data['common']['sources'].keys()
+                        source_paths = [self._process_source_files(project_file_data['common']['sources'][group_name], group_name) for group_name in group_names]
+                    else:
+                        self._process_source_files(project_file_data['common']['sources'], 'default')
                     for source_path in self.source_paths:
                         if os.path.normpath(source_path) not in self.include_paths:
                             self.include_paths.extend([source_path])
@@ -262,7 +265,7 @@ class Project:
                         [x for x in project_file_data['common']['tools_supported'] if x is not None])
 
         if 'tool_specific' in project_file_data:
-            group_name = {}
+            group_name = 'default'
             for tool_name, tool_settings in project_file_data['tool_specific'].items():
                 self.tool_specific[tool_name].add_settings(
                     tool_settings, group_name)
@@ -270,7 +273,6 @@ class Project:
     def _process_source_files(self, files, group_name):
         source_paths = []
         extensions = ['cpp', 'c', 's', 'obj', 'lib']
-
         mappings = defaultdict(lambda: None)
 
         mappings['o'] = 'obj'
@@ -282,8 +284,9 @@ class Project:
             self.source_groups[group_name] = {}
 
         for source_file in files:
+            source_file.replace('/',os.path.sep)
+            source_file = os.path.join(os.getcwd(),source_file)
             if os.path.isdir(source_file):
-                self.source_paths.append(source_file)
                 self._process_source_files([os.path.join(os.path.normpath(source_file), f) for f in os.listdir(
                     source_file) if os.path.isfile(os.path.join(os.path.normpath(source_file), f))], group_name)
 
@@ -300,7 +303,6 @@ class Project:
 
             if not os.path.dirname(source_file) in self.source_paths:
                 self.source_paths.append(os.path.dirname(source_file))
-
         return source_paths
 
     def clean(self, project_name, tool):
