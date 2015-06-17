@@ -178,7 +178,7 @@ class IAREWARMExporter(Exporter):
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ListPath')
         self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'] ,'List'))
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'GOutputBinary')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], 1 if project_dic['output_type'] == 'exe' else 0 )
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], 0 if project_dic['output_type'] == 'exe' else 1 )
 
     def _ewp_iccarm_set(self, ewp_dic, project_dic):
         index_iccarm = self._get_option(ewp_dic['project']['configuration']['settings'], 'ICCARM')
@@ -261,9 +261,9 @@ class IAREWARMExporter(Exporter):
         #expanded_dic['iar_settings']['General']['data']['option']['OGCoreOrChip'] = mcu_def_dic['General']['data']['option']['OGCoreOrChip']
         index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['General']['data']['option']['OGChipSelectEditMenu'])
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['General']['data']['option']['OGChipSelectEditMenu']['state'])
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGCoreOrChip')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['General']['data']['option']['OGCoreOrChip'])
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['General']['data']['option']['OGCoreOrChip']['state'])
 
         try:
             debugger = self.definitions.debuggers[expanded_dic['debugger']]
