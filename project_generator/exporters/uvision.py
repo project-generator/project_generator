@@ -147,13 +147,14 @@ class UvisionExporter(Exporter):
             fixed_paths.append(join(rel_path, normpath(path)))
         data['includes'] = fixed_paths
         fixed_paths = []
-        for k in data['source_files_lib'][0].keys():
-            for path in data['source_files_lib'][0][k]:
+
+        for k in (data['source_files_lib'][0].keys() or data['source_files_lib'][0]):
+            for path in (data['source_files_lib'][0][k] or k):
                 fixed_paths.append(join(rel_path, normpath(path)))
             data['source_files_lib'][0][k] = fixed_paths
             fixed_paths = []
-        for k in data['source_files_obj'][0].keys():
-            for path in data['source_files_obj'][0][k]:
+        for k in (data['source_files_obj'][0].keys() or data['source_files_obj'][0]):
+            for path in (data['source_files_obj'][0][k] or k):
                 fixed_paths.append(join(rel_path, normpath(path)))
             data['source_files_obj'][0][k] = fixed_paths
             fixed_paths = []

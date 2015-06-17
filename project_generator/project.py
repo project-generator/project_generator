@@ -225,7 +225,7 @@ class Project:
                         [os.path.normpath(x) for x in project_file_data['common']['includes'] if x is not None])
 
                 if 'sources' in project_file_data['common']:
-                    group_names = project_file_data['common']['sources'].keys()
+                    group_names = project_file_data['common']['sources'].keys() if type(project_file_data['common']['sources']) == type(dict()) else {}
                     source_paths = [self._process_source_files(project_file_data['common']['sources'][group_name], group_name) for group_name in group_names]
                     for source_path in self.source_paths:
                         if os.path.normpath(source_path) not in self.include_paths:
