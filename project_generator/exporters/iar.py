@@ -18,11 +18,51 @@ from os import getcwd
 import copy
 import logging
 import xmltodict
+from xml.dom.minidom import Document
 
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions
 from ..targets import Targets
 
+# credits to https://gist.github.com/jaux/1478881
+class dict2xml(object):
+    doc     = Document()
+
+    def __init__(self, structure):
+        if len(structure) == 1:
+            rootName    = str(structure.keys()[0])
+            self.root   = self.doc.createElement(rootName)
+
+            self.doc.appendChild(self.root)
+            self.build(self.root, structure[rootName])
+
+    def build(self, father, structure):
+        if type(structure) == dict:
+            for k in structure:
+                tag = self.doc.createElement(k)
+                father.appendChild(tag)
+                self.build(tag, structure[k])
+
+        elif type(structure) == list:
+            grandFather = father.parentNode
+            tagName     = father.tagName
+            grandFather.removeChild(father)
+            for l in structure:
+                tag = self.doc.createElement(tagName)
+                self.build(tag, l)
+                grandFather.appendChild(tag)
+
+        else:
+            data    = str(structure)
+            tag     = self.doc.createTextNode(data)
+            father.appendChild(tag)
+
+    def display(self):
+        print self.prettyxml()
+
+    def prettyxml(self):
+        return self.doc.toprettyxml(indent="  ")
+ 
 class IAREWARMExporter(Exporter):
 
     def __init__(self):
@@ -116,12 +156,61 @@ class IAREWARMExporter(Exporter):
         if data['linker_file']:
             data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))
 
-    def _iar_option_dictionarize(self, option_group , iar_settings):
-        dictionarized = {}
-        for option in iar_settings[option_group]['data']['option']:
-            dictionarized[option['name']] = {}
-            dictionarized[option['name']].update(option)
-        return dictionarized
+    # def _iar_option_dictionarize(self, option_group , iar_settings):
+    #     dictionarized = {}
+    #     for option in iar_settings[option_group]['data']['option']:
+    #         dictionarized[option['name']] = {}
+    #         dictionarized[option['name']].update(option)
+    #     return dictionarized
+
+    def _get_option(self, settings, find_key):
+        for option in settings:
+            if option['name'] == find_key:
+                return settings.index(option)
+
+    def _set_option(self, settings, value):
+        settings['state'] = value
+
+    def _set_multiple_option(self, settings, value_list):
+        settings['state'] = []
+        for value in value_list:
+            settings['state'].append(value)
+
+    def _ewp_general_set(self, ewp_dic, project_dic):
+        index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
+        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ExePath')
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'] ,'Exe'))
+        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ObjPath')
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'] ,'Obj'))
+        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ListPath')
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'] ,'List'))
+        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'GOutputBinary')
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], 1 if project_dic['output_type'] == 'exe' else 0 )
+
+    def _ewp_iccarm_set(self, ewp_dic, project_dic):
+        index_iccarm = self._get_option(ewp_dic['project']['configuration']['settings'], 'ICCARM')
+        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'], 'CCDefines')
+        self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'][index_option], project_dic['macros'])
+        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'], 'CCIncludePath2')
+        self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'][index_option], project_dic['includes'])
+
+    def _ewp_aarm_set(self, ewp_dic, project_dic):
+        # not used yet
+        pass
+
+    def _ewp_ilink_set(self, ewp_dic, project_dic):
+        index_ilink = self._get_option(ewp_dic['project']['configuration']['settings'], 'ILINK')
+        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkIcfFile')
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], project_dic['linker_file'])
+        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkAdditionalLibs')
+        self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], project_dic['source_files_lib'])
+        self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], project_dic['source_files_obj'])
+
+    def _ewp_files_set(self, ewp_dic, project_dic):
+        ewp_dic['project']['group'] = []
+        for group_name, files in project_dic['groups'].items():
+            for file in files:
+                ewp_dic['project']['group'].append({'name': group_name, 'file' : { 'name' : file}})
 
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for IAR, and run generator """
@@ -134,47 +223,32 @@ class IAREWARMExporter(Exporter):
         self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
         self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
-        expanded_dic['iar_settings'] = {
-            'toolchain' : 'ARM',
-        }
-
         # generic tool template specified or project
         if expanded_dic['template']:
-            project_file = join(getcwd(), expanded_dic['template'])
-            proj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            project_file = join(getcwd(), expanded_dic['template'][0]) #TODO 0xc0170: template list !
+            ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
         elif 'iar' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
             project_file = join(getcwd(), env_settings.templates['iar']['path'][0], env_settings.templates['iar']['name'][0] + '.ewp')
-            proj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
         else:
-            # TODO 0xc0170:implement there's no template, using generic template from definitions
-            raise RuntimeError("Not supported yet, template must be defined for IAR.")
+            ewp_dic = self.definitions.ewp_file
 
-        # form valid iar settings dictionary
-        iar_settings = {
-            'General' : {},
-            'ICCARM' : {},
-            'AARM' : {},
-            'OBJCOPY' : {},
-            'CUSTOM' : {},
-            'BICOMP' : {},
-            'BUILDACTION' : {},
-            'ILINK' : {},
-            'IARCHIVE' : {},
-            'BILINK' : {},
-        }
-        for settings in proj_dic['project']['configuration']['settings']:
-            iar_settings[settings['name']].update(settings)
-        iar_settings['AARM']['data']['option'] = self._iar_option_dictionarize('AARM', iar_settings)
-        iar_settings['General']['data']['option'] = self._iar_option_dictionarize('General', iar_settings)
-        iar_settings['IARCHIVE']['data']['option'] = self._iar_option_dictionarize('IARCHIVE', iar_settings)
-        iar_settings['ICCARM']['data']['option'] = self._iar_option_dictionarize('ICCARM', iar_settings)
-        iar_settings['ILINK']['data']['option'] = self._iar_option_dictionarize('ILINK', iar_settings)
-        iar_settings['OBJCOPY']['data']['option'] = self._iar_option_dictionarize('OBJCOPY', iar_settings)
-        expanded_dic['iar_settings'] = iar_settings
-        #else:
-            # setting values from the yaml files
-         #   self.parse_specific_options(expanded_dic)
+        ewd_dic = self.definitions.ewd_file
+        eww_dic = self.definitions.eww_file
+
+        # set ARM toolchain
+        ewp_dic['project']['configuration']['toolchain']['name'] = 'ARM'
+
+        # set eww
+        eww_dic['workspace']['project']['path'] = join('$WS_DIR$', expanded_dic['name'] + '.ewp')
+
+        # set common things we have for IAR
+        self._ewp_general_set(ewp_dic, expanded_dic)
+        self._ewp_iccarm_set(ewp_dic, expanded_dic)
+        self._ewp_aarm_set(ewp_dic, expanded_dic)
+        self._ewp_ilink_set(ewp_dic, expanded_dic)
+        self._ewp_files_set(ewp_dic, expanded_dic)
 
         # get target definition (target + mcu)
         target = Targets(env_settings.get_env_settings('definitions'))
@@ -187,19 +261,31 @@ class IAREWARMExporter(Exporter):
                 % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        expanded_dic['iar_settings']['General']['data']['option']['OGChipSelectEditMenu'] = mcu_def_dic['General']['data']['option']['OGChipSelectEditMenu']
-        expanded_dic['iar_settings']['General']['data']['option']['OGCoreOrChip'] = mcu_def_dic['General']['data']['option']['OGCoreOrChip']
+        #expanded_dic['iar_settings']['General']['data']['option']['OGChipSelectEditMenu'] = mcu_def_dic['General']['data']['option']['OGChipSelectEditMenu']
+        #expanded_dic['iar_settings']['General']['data']['option']['OGCoreOrChip'] = mcu_def_dic['General']['data']['option']['OGCoreOrChip']
+        index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
+        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['General']['data']['option']['OGChipSelectEditMenu'])
+        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGCoreOrChip')
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['General']['data']['option']['OGCoreOrChip'])
 
-        # get debugger definitions
         try:
-            expanded_dic['iar_settings'].update(self.definitions.debuggers[expanded_dic['debugger']])
+            debugger = self.definitions.debuggers[expanded_dic['debugger']]
+            index_cspy = self._get_option(ewd_dic['project']['configuration']['settings'], 'C-SPY')
+            index_option = self._get_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OCDynDriverList')
+            self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], debugger['OCDynDriverList']['state'])
         except KeyError:
             raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
-        project_path, ewp = self.gen_file('iar.ewp.tmpl', expanded_dic, '%s.ewp' %
-            data['name'], expanded_dic['output_dir']['path'])
-        project_path, eww = self.gen_file('iar.eww.tmpl', expanded_dic, '%s.eww' %
-            data['name'], expanded_dic['output_dir']['path'])
-        project_path, ewd = self.gen_file('iar.ewd.tmpl', expanded_dic, '%s.ewd' %
-                    data['name'], expanded_dic['output_dir']['path'])
+        ewp_xml = dict2xml(ewp_dic)
+        project_path, ewp = self.gen_file(ewp_xml.prettyxml(), expanded_dic, '%s.ewp' %
+            expanded_dic['name'], expanded_dic['output_dir']['path'])
+
+        eww_xml = dict2xml(eww_dic)
+        project_path, eww = self.gen_file(eww_xml, expanded_dic, '%s.eww' %
+            expanded_dic['name'], expanded_dic['output_dir']['path'])
+
+        ewd_xml = dict2xml(ewd_dic)
+        project_path, ewd = self.gen_file(ewd_xml, expanded_dic, '%s.ewd' %
+                    expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww, ewd]
