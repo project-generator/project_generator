@@ -115,10 +115,10 @@ class ToolSpecificSettings:
 
     def _process_source_files(self, files, group_name):
         extensions = ['cpp', 'c', 's', 'obj', 'lib']
-
         mappings = defaultdict(lambda: None)
 
         mappings['o'] = 'obj'
+
         mappings['a'] = 'lib'
         mappings['ar'] = 'lib'
         mappings['cc'] = 'cpp'
@@ -217,9 +217,6 @@ class Project:
 
                     self.output_type = self.output_types[project_file_data['common']['output'][0]]
 
-                if 'group_name' in project_file_data['common']:
-                    group_name = project_file_data['common']['group_name']
-
                 if 'includes' in project_file_data['common']:
                     self.include_paths.extend(
                         [os.path.normpath(x) for x in project_file_data['common']['includes'] if x is not None])
@@ -229,7 +226,11 @@ class Project:
                         group_names = project_file_data['common']['sources'].keys()
                         source_paths = [self._process_source_files(project_file_data['common']['sources'][group_name], group_name) for group_name in group_names]
                     else:
-                        self._process_source_files(project_file_data['common']['sources'], 'default')
+                        if 'group_name' in project_file_data['common']:
+                             group_name = project_file_data['common']['group_name'][0]
+                        else:
+                            group_name = 'default'
+                        self._process_source_files(project_file_data['common']['sources'], group_name)
                     for source_path in self.source_paths:
                         if os.path.normpath(source_path) not in self.include_paths:
                             self.include_paths.extend([source_path])
@@ -274,19 +275,16 @@ class Project:
         source_paths = []
         extensions = ['cpp', 'c', 's', 'obj', 'lib']
         mappings = defaultdict(lambda: None)
-
         mappings['o'] = 'obj'
         mappings['a'] = 'lib'
         mappings['ar'] = 'lib'
         mappings['cc'] = 'cpp'
-
         if group_name not in self.source_groups:
             self.source_groups[group_name] = {}
 
         for source_file in files:
-            source_file.replace('/',os.path.sep)
-            source_file = os.path.join(os.getcwd(),source_file)
             if os.path.isdir(source_file):
+                self.source_paths.append(source_file)
                 self._process_source_files([os.path.join(os.path.normpath(source_file), f) for f in os.listdir(
                     source_file) if os.path.isfile(os.path.join(os.path.normpath(source_file), f))], group_name)
 
