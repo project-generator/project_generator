@@ -26,10 +26,10 @@ from ..targets import Targets
 
 # credits to https://gist.github.com/jaux/1478881
 class dict2xml(object):
-    doc     = Document()
 
     def __init__(self, structure):
         if len(structure) == 1:
+            self.doc     = Document()
             rootName    = str(structure.keys()[0])
             self.root   = self.doc.createElement(rootName)
 
@@ -156,13 +156,6 @@ class IAREWARMExporter(Exporter):
         if data['linker_file']:
             data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))
 
-    # def _iar_option_dictionarize(self, option_group , iar_settings):
-    #     dictionarized = {}
-    #     for option in iar_settings[option_group]['data']['option']:
-    #         dictionarized[option['name']] = {}
-    #         dictionarized[option['name']].update(option)
-    #     return dictionarized
-
     def _get_option(self, settings, find_key):
         for option in settings:
             if option['name'] == find_key:
@@ -208,9 +201,12 @@ class IAREWARMExporter(Exporter):
 
     def _ewp_files_set(self, ewp_dic, project_dic):
         ewp_dic['project']['group'] = []
+        i = 0
         for group_name, files in project_dic['groups'].items():
+            ewp_dic['project']['group'].append({'name': group_name, 'file' : []})
             for file in files:
-                ewp_dic['project']['group'].append({'name': group_name, 'file' : { 'name' : file}})
+                ewp_dic['project']['group'][i]['file'].append({ 'name' : file})
+            i = i + 1
 
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for IAR, and run generator """
@@ -282,10 +278,10 @@ class IAREWARMExporter(Exporter):
             expanded_dic['name'], expanded_dic['output_dir']['path'])
 
         eww_xml = dict2xml(eww_dic)
-        project_path, eww = self.gen_file(eww_xml, expanded_dic, '%s.eww' %
+        project_path, eww = self.gen_file(eww_xml.prettyxml(), expanded_dic, '%s.eww' %
             expanded_dic['name'], expanded_dic['output_dir']['path'])
 
         ewd_xml = dict2xml(ewd_dic)
-        project_path, ewd = self.gen_file(ewd_xml, expanded_dic, '%s.ewd' %
+        project_path, ewd = self.gen_file(ewd_xml.prettyxml(), expanded_dic, '%s.ewd' %
                     expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww, ewd]
