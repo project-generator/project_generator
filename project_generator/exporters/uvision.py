@@ -142,22 +142,20 @@ class UvisionExporter(Exporter):
             mcu_def['TargetOption'][k] = v[0]
 
     def fix_paths(self, data, rel_path):
-        fixed_paths = []
-        for path in data['includes']:
-            fixed_paths.append(join(rel_path, normpath(path)))
-        data['includes'] = fixed_paths
-        fixed_paths = []
+        data['includes'] = [join(rel_path, normpath(path)) for path in data['includes']]
 
-        for k in (data['source_files_lib'][0].keys() or data['source_files_lib'][0]):
-            for path in (data['source_files_lib'][0][k] or k):
-                fixed_paths.append(join(rel_path, normpath(path)))
-            data['source_files_lib'][0][k] = fixed_paths
-            fixed_paths = []
-        for k in (data['source_files_obj'][0].keys() or data['source_files_obj'][0]):
-            for path in (data['source_files_obj'][0][k] or k):
-                fixed_paths.append(join(rel_path, normpath(path)))
-            data['source_files_obj'][0][k] = fixed_paths
-            fixed_paths = []
+        if type(data['source_files_lib'][0]) == type(dict()):
+            for k in (data['source_files_lib'][0].keys() or data['source_files_lib'][0]):
+                data['source_files_lib'][0][k] = [join(rel_path,normpath(path)) for path in data['source_files_lib'][0][k]]
+        else:
+            data['source_files_lib'][0] = [join(rel_path,normpath(path)) for path in data['source_files_lib'][0]]
+
+        if type(data['source_files_obj'][0]) == type(dict()):
+            for k in (data['source_files_obj'][0].keys() or data['source_files_obj'][0]):
+                data['source_files_obj'][0][k] = [join(rel_path,normpath(path)) for path in data['source_files_obj'][0][k]]
+        else:
+            data['source_files_obj'][0] = [join(rel_path,normpath(path)) for path in data['source_files_obj'][0]]
+
         if data['linker_file']:
             data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
