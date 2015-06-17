@@ -145,13 +145,13 @@ class UvisionExporter(Exporter):
         data['includes'] = [join(rel_path, normpath(path)) for path in data['includes']]
 
         if type(data['source_files_lib'][0]) == type(dict()):
-            for k in (data['source_files_lib'][0].keys() or data['source_files_lib'][0]):
+            for k in data['source_files_lib'][0].keys():
                 data['source_files_lib'][0][k] = [join(rel_path,normpath(path)) for path in data['source_files_lib'][0][k]]
         else:
             data['source_files_lib'][0] = [join(rel_path,normpath(path)) for path in data['source_files_lib'][0]]
 
         if type(data['source_files_obj'][0]) == type(dict()):
-            for k in (data['source_files_obj'][0].keys() or data['source_files_obj'][0]):
+            for k in data['source_files_obj'][0].keys():
                 data['source_files_obj'][0][k] = [join(rel_path,normpath(path)) for path in data['source_files_obj'][0][k]]
         else:
             data['source_files_obj'][0] = [join(rel_path,normpath(path)) for path in data['source_files_obj'][0]]
