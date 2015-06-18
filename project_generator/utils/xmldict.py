@@ -48,6 +48,6 @@ class dict2xml(object):
     def display(self):
         print self.prettyxml()
 
-    def prettyxml(self):
-        return self.doc.toprettyxml(indent="  ")
+    def prettyxml(self, encode=None):
+        return self.doc.toprettyxml(indent="  ", encoding=encode)
  

@@ -58,68 +58,6 @@ class UvisionExporter(Exporter):
                         group = k
                     self.expand_data(dic, expanded_data, attribute, group, rel_path)
 
-    # def parse_specific_options(self, data):
-    #     """ Parse all uvision specific setttings. """
-    #     default_set = copy.deepcopy(self.definitions.uvision_settings)
-    #     data['uvision_settings'].update(default_set)  # set specific options to default values
-    #     for dic in data['misc']:
-    #         for k, v in dic.items():
-    #             if k == 'ArmAdsMisc':
-    #                 self.set_target_options(v, data, k)
-    #             elif k == 'TargetOption':
-    #                 self.set_user_options(v, data, k)
-    #             elif k == 'DebugOption':
-    #                 # TODO implement
-    #                 raise RuntimeError("Option not supported yet.")
-    #             elif k == 'Utilities':
-    #                 # TODO implement
-    #                 raise RuntimeError("Option not supported yet.")
-    #             else:
-    #                 self.set_specific_settings(v, data, k)
-
-    # def set_specific_settings(self, value_list, data, uvision_dic):
-    #     for option in value_list:
-    #         if value_list[option][0] == 'enable':
-    #             value_list[option] = 1
-    #         elif value_list[option][0] == 'disable':
-    #             value_list[option] = 0
-    #         data['uvision_settings'][uvision_dic][option] = value_list[option]
-
-    # def set_target_options(self, value_list, data, uvision_dic):
-    #     for option in value_list:
-    #         if option.startswith('OCR_'):
-    #             for k, v in value_list[option].items():
-    #                 if v[0] == 'enable':
-    #                     value_list[option][k] = 1
-    #                 elif v[0] == 'disable':
-    #                     value_list[option][k] = 0
-    #                 data[uvision_dic][option][k] = value_list[option][k]
-    #         else:
-    #             if value_list[option][0] == 'enable':
-    #                 value_list[option] = 1
-    #             elif value_list[option][0] == 'disable':
-    #                 value_list[option] = 0
-    #             data[uvision_dic][option] = value_list[option]
-
-    # def set_user_options(self, value_list, data, uvision_dic):
-    #     for option in value_list:
-    #         if option.startswith('Before') or option.startswith('After'):
-    #             for k, v in value_list[option].items():
-    #                 if v[0] == 'enable':
-    #                     value_list[option][k] = 1
-    #                 elif v[0] == 'disable':
-    #                     value_list[option][k] = 0
-    #                 try:
-    #                     data[uvision_dic][option][k] = value_list[option][k]
-    #                 except KeyError:
-    #                     logging.info("Tool specific option: %s not recognized" % uvision_dic)
-    #         else:
-    #             if value_list[option][0] == 'enable':
-    #                 value_list[option] = 1
-    #             elif value_list[option][0] == 'disable':
-    #                 value_list[option] = 0
-    #             data[uvision_dic][option] = value_list[option]
-
     def get_groups(self, data):
         """ Get all groups defined. """
         groups = []
@@ -132,14 +70,6 @@ class UvisionExporter(Exporter):
                         if k not in groups:
                             groups.append(k)
         return groups
-
-    def append_mcu_def(self, data, mcu_def):
-        """ Get MCU definitons as Flash algo, RAM, ROM size , etc. """
-        try:
-            data['uvision_settings'].update(mcu_def['TargetOption'])
-        except KeyError:
-            # does not exist, create it
-            data['uvision_settings'] = mcu_def['TargetOption']
 
     def normalize_mcu_def(self, mcu_def):
         for k,v in mcu_def['TargetOption'].items():
@@ -173,14 +103,20 @@ class UvisionExporter(Exporter):
 
     def _uvproj_set_DebugOption(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)
+        self._uvproj_clean_xmldict(uvproj_dic['SimDlls'])
+        self._uvproj_clean_xmldict(uvproj_dic['Simulator'])
+        self._uvproj_clean_xmldict(uvproj_dic['Target'])
+        self._uvproj_clean_xmldict(uvproj_dic['TargetDlls'])
 
     def _uvproj_set_DllOption(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)
 
     def _uvproj_set_TargetArmAds(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic['Aads'])
+        self._uvproj_clean_xmldict(uvproj_dic['Aads']['VariousControls'])
         self._uvproj_clean_xmldict(uvproj_dic['ArmAdsMisc'])
         self._uvproj_clean_xmldict(uvproj_dic['Cads'])
+        self._uvproj_clean_xmldict(uvproj_dic['Cads']['VariousControls'])
         self._uvproj_clean_xmldict(uvproj_dic['LDads'])
         uvproj_dic['LDads']['ScatterFile'] = project_dic['linker_file']
 
@@ -191,7 +127,11 @@ class UvisionExporter(Exporter):
 
     def _uvproj_set_TargetCommonOption(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)
-        uvproj_dic['OutputDirectory'] = project_dic['output_dir']
+        self._uvproj_clean_xmldict(uvproj_dic['AfterMake'])
+        self._uvproj_clean_xmldict(uvproj_dic['BeforeCompile'])
+        self._uvproj_clean_xmldict(uvproj_dic['BeforeMake'])
+        self._uvproj_clean_xmldict(uvproj_dic['TargetStatus'])
+        uvproj_dic['OutputDirectory'] = project_dic['build_dir']
         uvproj_dic['OutputName'] = project_dic['name']
         uvproj_dic['CreateExecutable'] = 1 if project_dic['output_type'] == 'exe' else 0
         uvproj_dic['CreateLib'] = 1 if project_dic['output_type'] == 'lib' else 0
@@ -204,10 +144,11 @@ class UvisionExporter(Exporter):
         uvproj_dic['Project']['Targets']['Target']['Groups']['Group'] = []
         i = 0
         for group_name, files in project_dic['groups'].items():
-            uvproj_dic['Project']['Targets']['Target']['Groups']['Group'].append({'GroupName' : group_name})
-            uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files'] = []
+            uvproj_dic['Project']['Targets']['Target']['Groups']['Group'].append({'GroupName' : group_name, 'Files' : {'File' : []}})
+            #uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i] =
+            #uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'] = []
             for file in files:
-                uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files'].append(file)
+                uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'].append(file)
             i = i + 1
 
     def generate(self, data, env_settings):
@@ -229,11 +170,11 @@ class UvisionExporter(Exporter):
         # generic tool template specified or project
         if expanded_dic['template']:
             project_file = join(getcwd(), expanded_dic['template'][0]) #TODO 0xc0170: template list !
-            uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict, process_namespaces=True)
         elif 'uvision' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
             project_file = join(getcwd(), env_settings.templates['uvision']['path'][0], env_settings.templates['uvision']['name'][0] + '.ewp')
-            uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict, process_namespaces=True)
         else:
             uvproj_dic = self.definitions.uvproj_file
 
@@ -243,7 +184,7 @@ class UvisionExporter(Exporter):
 
         self._uvproj_files_set(uvproj_dic, expanded_dic)
         self._uvproj_set_CommonProperty(uvproj_dic['Project']['Targets']['Target']['TargetOption']['CommonProperty'], expanded_dic)
-        self._uvproj_set_DebugOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['CommonProperty'], expanded_dic)
+        self._uvproj_set_DebugOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption'], expanded_dic)
         self._uvproj_set_DllOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['DllOption'], expanded_dic)
         self._uvproj_set_TargetArmAds(uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetArmAds'], expanded_dic)
         self._uvproj_set_TargetCommonOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption'], expanded_dic)
@@ -260,35 +201,27 @@ class UvisionExporter(Exporter):
         # self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         # self.append_mcu_def(expanded_dic, mcu_def_dic)
+        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
+        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
+        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
+        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
+        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = mcu_def_dic['TargetOption']['FlashDriverDll'][0].encode('utf-8')
+        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
 
         # load debugger
         if expanded_dic['debugger']:
             try:
-                expanded_dic['uvision_settings']['TargetDlls']['Driver'] = self.definitions.debuggers[expanded_dic['debugger']]['TargetDlls']['Driver']
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[expanded_dic['debugger']]['TargetDlls']['Driver']
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
-        # if there's template parse + use it
-        # TODO add project, which would overwrite parents template
-        if 'uvision' in env_settings.templates.keys():
-            project_file = join(getcwd(), env_settings.templates['uvision']['path'][0], env_settings.templates['uvision']['name'][0] + '.uvproj')
-            proj_dic = xmltodict.parse(file(project_file))
-            TargetOption = proj_dic['Project']['Targets']['Target']['TargetOption']
-            # we need to inject only attributes we know are relevant (not overwrite mcu for example)
-            expanded_dic['uvision_settings']['CommonProperty'] = TargetOption['CommonProperty']
-            # fix default dic is wronG !
-            expanded_dic['uvision_settings']['BeforeCompile'] = TargetOption['TargetCommonOption']['BeforeCompile']
-            expanded_dic['uvision_settings']['BeforeMake'] = TargetOption['TargetCommonOption']['BeforeMake']
-            expanded_dic['uvision_settings']['AfterMake'] = TargetOption['TargetCommonOption']['AfterMake']
-            expanded_dic['uvision_settings']['Cads'] = TargetOption['TargetArmAds']['Cads']
-        else:
-            # optimization set to correct value, default not used
-            expanded_dic['uvision_settings']['Cads']['Optim'][0] += 1
+        # This will need to be fixed, probably using ElementTree
+        del uvproj_dic['Project'][u'@http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation']
 
         # Project file
         uvproj_xml = xmldict.dict2xml(uvproj_dic)
         project_path, projfile = self.gen_file(
-            uvproj_xml.prettyxml(), expanded_dic, '%s.uvproj' % data['name'], expanded_dic['output_dir']['path'])
+            uvproj_xml.prettyxml('UTF-8'), expanded_dic, '%s.uvproj' % data['name'], expanded_dic['output_dir']['path'])
 
         uvopt_xml = xmldict.dict2xml(uvopt_dic)
         project_path, optfile = self.gen_file(
