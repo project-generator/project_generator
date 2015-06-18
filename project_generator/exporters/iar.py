@@ -18,51 +18,12 @@ from os import getcwd
 import copy
 import logging
 import xmltodict
-from xml.dom.minidom import Document
 
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions
 from ..targets import Targets
+from ..utils import xmldict
 
-# credits to https://gist.github.com/jaux/1478881
-class dict2xml(object):
-
-    def __init__(self, structure):
-        if len(structure) == 1:
-            self.doc     = Document()
-            rootName    = str(structure.keys()[0])
-            self.root   = self.doc.createElement(rootName)
-
-            self.doc.appendChild(self.root)
-            self.build(self.root, structure[rootName])
-
-    def build(self, father, structure):
-        if type(structure) == dict:
-            for k in structure:
-                tag = self.doc.createElement(k)
-                father.appendChild(tag)
-                self.build(tag, structure[k])
-
-        elif type(structure) == list:
-            grandFather = father.parentNode
-            tagName     = father.tagName
-            grandFather.removeChild(father)
-            for l in structure:
-                tag = self.doc.createElement(tagName)
-                self.build(tag, l)
-                grandFather.appendChild(tag)
-
-        else:
-            data    = str(structure)
-            tag     = self.doc.createTextNode(data)
-            father.appendChild(tag)
-
-    def display(self):
-        print self.prettyxml()
-
-    def prettyxml(self):
-        return self.doc.toprettyxml(indent="  ")
- 
 class IAREWARMExporter(Exporter):
 
     def __init__(self):
@@ -257,8 +218,9 @@ class IAREWARMExporter(Exporter):
         self._clean_xmldict_ewp(ewp_dic)
         #self._clean_xmldict_ewd(ewd_dic)
 
-        # set ARM toolchain
+        # set ARM toolchain and project name
         ewp_dic['project']['configuration']['toolchain']['name'] = 'ARM'
+        ewp_dic['project']['configuration']['name'] = expanded_dic['name']
 
         # set eww
         eww_dic['workspace']['project']['path'] = join('$WS_DIR$', expanded_dic['name'] + '.ewp')
@@ -293,19 +255,19 @@ class IAREWARMExporter(Exporter):
                 debugger = self.definitions.debuggers[expanded_dic['debugger']]
                 index_cspy = self._get_option(ewd_dic['project']['configuration']['settings'], 'C-SPY')
                 index_option = self._get_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OCDynDriverList')
-                self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], debugger['OCDynDriverList']['state'])
+                self._set_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], debugger['OCDynDriverList']['state'])
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
-        ewp_xml = dict2xml(ewp_dic)
+        ewp_xml = xmldict.dict2xml(ewp_dic)
         project_path, ewp = self.gen_file(ewp_xml.prettyxml(), expanded_dic, '%s.ewp' %
             expanded_dic['name'], expanded_dic['output_dir']['path'])
 
-        eww_xml = dict2xml(eww_dic)
+        eww_xml = xmldict.dict2xml(eww_dic)
         project_path, eww = self.gen_file(eww_xml.prettyxml(), expanded_dic, '%s.eww' %
             expanded_dic['name'], expanded_dic['output_dir']['path'])
 
-        ewd_xml = dict2xml(ewd_dic)
+        ewd_xml = xmldict.dict2xml(ewd_dic)
         project_path, ewd = self.gen_file(ewd_xml.prettyxml(), expanded_dic, '%s.ewd' %
                     expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww, ewd]
