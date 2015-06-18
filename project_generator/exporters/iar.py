@@ -208,6 +208,26 @@ class IAREWARMExporter(Exporter):
                 ewp_dic['project']['group'][i]['file'].append({ 'name' : file})
             i = i + 1
 
+    def _clean_xmldict_option(self, dictionary):
+            for option in dictionary['data']['option']:
+                if option['state'] is None:
+                    option['state'] = ''
+
+    def _clean_xmldict_single_dic(self, dictionary):
+            for k,v in dictionary.items():
+                if v is None:
+                    dictionary[k] = ''
+
+    def _clean_xmldict_ewp(self, ewp_dic):
+        for setting in ewp_dic['project']['configuration']['settings']:
+            if setting['name'] == 'BICOMP' or setting['name'] == 'BILINK':
+                self._clean_xmldict_single_dic(setting)
+            elif setting['name'] == 'BUILDACTION' or setting['name'] == 'CUSTOM':
+                self._clean_xmldict_single_dic(setting['data'])
+            elif 'option' in setting['data']:
+                self._clean_xmldict_option(setting)
+
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for IAR, and run generator """
         expanded_dic = data.copy()
@@ -233,6 +253,10 @@ class IAREWARMExporter(Exporter):
         ewd_dic = self.definitions.ewd_file
         eww_dic = self.definitions.eww_file
 
+        # replace all None with empty strings ''
+        self._clean_xmldict_ewp(ewp_dic)
+        #self._clean_xmldict_ewd(ewd_dic)
+
         # set ARM toolchain
         ewp_dic['project']['configuration']['toolchain']['name'] = 'ARM'
 
@@ -257,21 +281,21 @@ class IAREWARMExporter(Exporter):
                 % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        #expanded_dic['iar_settings']['General']['data']['option']['OGChipSelectEditMenu'] = mcu_def_dic['General']['data']['option']['OGChipSelectEditMenu']
-        #expanded_dic['iar_settings']['General']['data']['option']['OGCoreOrChip'] = mcu_def_dic['General']['data']['option']['OGCoreOrChip']
         index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
         self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['General']['data']['option']['OGChipSelectEditMenu']['state'])
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGCoreOrChip')
         self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['General']['data']['option']['OGCoreOrChip']['state'])
 
-        try:
-            debugger = self.definitions.debuggers[expanded_dic['debugger']]
-            index_cspy = self._get_option(ewd_dic['project']['configuration']['settings'], 'C-SPY')
-            index_option = self._get_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OCDynDriverList')
-            self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], debugger['OCDynDriverList']['state'])
-        except KeyError:
-            raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
+        # overwrite debugger only if defined in the project file, otherwise use either default or from template
+        if expanded_dic['debugger']:
+            try:
+                debugger = self.definitions.debuggers[expanded_dic['debugger']]
+                index_cspy = self._get_option(ewd_dic['project']['configuration']['settings'], 'C-SPY')
+                index_option = self._get_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OCDynDriverList')
+                self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], debugger['OCDynDriverList']['state'])
+            except KeyError:
+                raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
         ewp_xml = dict2xml(ewp_dic)
         project_path, ewp = self.gen_file(ewp_xml.prettyxml(), expanded_dic, '%s.ewp' %
