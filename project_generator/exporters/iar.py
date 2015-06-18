@@ -211,6 +211,7 @@ class IAREWARMExporter(Exporter):
         else:
             ewp_dic = self.definitions.ewp_file
 
+        # TODO 0xc0170: add ewd file parsing and support
         ewd_dic = self.definitions.ewd_file
         eww_dic = self.definitions.eww_file
 
