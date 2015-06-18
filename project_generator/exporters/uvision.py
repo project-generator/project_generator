@@ -120,9 +120,9 @@ class UvisionExporter(Exporter):
         self._uvproj_clean_xmldict(uvproj_dic['LDads'])
         uvproj_dic['LDads']['ScatterFile'] = project_dic['linker_file']
 
-        uvproj_dic['Cads']['VariousControls']['IncludePath'] = ';'.join(project_dic['includes']).encode('utf-8')
-        uvproj_dic['Cads']['VariousControls']['Define'] = ';'.join(project_dic['macros']).encode('utf-8')
-        uvproj_dic['Aads']['VariousControls']['Define'] = ','.join(project_dic['macros']).encode('utf-8')
+        uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['includes']).encode('utf-8')
+        uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
+        uvproj_dic['Aads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
 
 
     def _uvproj_set_TargetCommonOption(self, uvproj_dic, project_dic):
@@ -145,8 +145,6 @@ class UvisionExporter(Exporter):
         i = 0
         for group_name, files in project_dic['groups'].items():
             uvproj_dic['Project']['Targets']['Target']['Groups']['Group'].append({'GroupName' : group_name, 'Files' : {'File' : []}})
-            #uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i] =
-            #uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'] = []
             for file in files:
                 uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'].append(file)
             i = i + 1
@@ -170,11 +168,11 @@ class UvisionExporter(Exporter):
         # generic tool template specified or project
         if expanded_dic['template']:
             project_file = join(getcwd(), expanded_dic['template'][0]) #TODO 0xc0170: template list !
-            uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict, process_namespaces=True)
+            uvproj_dic = xmltodict.parse(file(project_file), process_namespaces=True)
         elif 'uvision' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
             project_file = join(getcwd(), env_settings.templates['uvision']['path'][0], env_settings.templates['uvision']['name'][0] + '.ewp')
-            uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict, process_namespaces=True)
+            uvproj_dic = xmltodict.parse(file(project_file), process_namespaces=True)
         else:
             uvproj_dic = self.definitions.uvproj_file
 
@@ -216,7 +214,8 @@ class UvisionExporter(Exporter):
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
         # This will need to be fixed, probably using ElementTree
-        del uvproj_dic['Project'][u'@http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation']
+        if u'@http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation' in uvproj_dic['Project']:
+            del uvproj_dic['Project'][u'@http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation']
 
         # Project file
         uvproj_xml = xmldict.dict2xml(uvproj_dic)
