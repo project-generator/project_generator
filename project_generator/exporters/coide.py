@@ -128,11 +128,11 @@ class CoideExporter(Exporter):
         # generic tool template specified or project
         if expanded_dic['template']:
             project_file = join(getcwd(), expanded_dic['template'][0])
-            coproj_dic = xmltodict.parse(file(project_file), process_namespaces=False)
+            coproj_dic = xmltodict.parse(file(project_file))
         elif 'coide' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
             project_file = join(getcwd(), env_settings.templates['coide']['path'][0], env_settings.templates['coide']['name'][0] + '.coproj')
-            coproj_dic = xmltodict.parse(file(project_file), process_namespaces=False)
+            coproj_dic = xmltodict.parse(file(project_file))
         else:
             # setting values from the yaml files
             coproj_dic = self.definitions.coproj_file
@@ -168,7 +168,14 @@ class CoideExporter(Exporter):
         # get debugger definitions
         if expanded_dic['debugger']:
             try:
-                coproj_dic['Project']['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter'] = self.definitions.debuggers[expanded_dic['debugger']]['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']
+                index = 0
+                for option in coproj_dic['Project']['Target']['DebugOption']['Option']:
+                    for k,v in option.items():
+                        if option['@name'] == 'org.coocox.codebugger.gdbjtag.core.adapter':
+                            found = index
+                index = index + 1
+
+                coproj_dic['Project']['Target']['DebugOption']['Option'][found]['@value'] = self.definitions.debuggers[expanded_dic['debugger']]['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
