@@ -145,6 +145,9 @@ class UvisionExporter(Exporter):
         uvproj_dic['Project']['Targets']['Target']['Groups']['Group'] = []
         i = 0
         for group_name, files in project_dic['groups'].items():
+            # Why OrderedDict() - uvision project requires an order. GroupName must be before Files,
+            # otherwise it does not sense any file. Same applies for other attributes, like VariousControl.
+            # Therefore be aware that order matters in this exporter
             group = OrderedDict()
             group['GroupName'] = group_name
             # group['Files'] = {}
@@ -218,7 +221,8 @@ class UvisionExporter(Exporter):
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
-        # This will need to be fixed, probably using ElementTree
+        # This will need to be fixed, probably using ElementTree. Without this removal, uvision failes to
+        # open a project.
         if u'@http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation' in uvproj_dic['Project']:
             del uvproj_dic['Project'][u'@http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation']
 

@@ -22,6 +22,7 @@ import xmltodict
 from .exporter import Exporter
 from .coide_definitions import CoIDEdefinitions
 from ..targets import Targets
+from ..utils import xmldict
 
 class CoideExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',
@@ -68,15 +69,6 @@ class CoideExporter(Exporter):
                         group = k
                     self.expand_data(dic, expanded_data, attribute, group, rel_path)
 
-    def parse_specific_options(self, data):
-        """ Parse all CoIDE specific setttings. """
-        data['coide_settings'].update(copy.deepcopy(
-            self.definitions.coide_settings))  # set specific options to default values
-        for dic in data['misc']:
-            for k, v in dic.items():
-                for option in v:
-                    data['coide_settings'][k][option].update(v[option])
-
     def normalize_mcu_def(self, mcu_def):
         for k,v in mcu_def['Target']['Device'].items():
             mcu_def['Target']['Device'][k] = v[0]
@@ -113,6 +105,16 @@ class CoideExporter(Exporter):
             dictionarized[option[key]].update(option)
         return dictionarized
 
+    def _coproj_set_files(self, coproj_dic, project_dic):
+        coproj_dic['Project']['Files'] = {}
+        coproj_dic['Project']['Files']['File'] = []
+        for group,files in project_dic['groups'].items():
+            coproj_dic['Project']['Files']['File'].append({'name': group,'path': '', 'type' : 2 })
+            for file in files:
+                if group:
+                    file['name'] = group + '/' + file['name']
+                coproj_dic['Project']['Files']['File'].append(file)
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = data.copy()
@@ -124,60 +126,19 @@ class CoideExporter(Exporter):
         self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
         self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
-        expanded_dic['coide_settings'] = {}
-
         # generic tool template specified or project
-        if 'coide' in env_settings.templates.keys():
+        if expanded_dic['template']:
+            project_file = join(getcwd(), expanded_dic['template'][0])
+            coproj_dic = xmltodict.parse(file(project_file), process_namespaces=False)
+        elif 'coide' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
             project_file = join(getcwd(), env_settings.templates['coide']['path'][0], env_settings.templates['coide']['name'][0] + '.coproj')
-            proj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-            coide_settings = {
-                    'Target' : {
-                        'Device' : {},
-                        'BuildOption' : {
-                            'Compile' : {
-                                'Option' : {}
-                            },
-                            'Link' : {
-                                'Option' : {},
-                                'LinkedLibraries' : {}
-                            },
-                            'Output' : {
-                                'Option' : {}
-                            },
-                            'User': {
-                                'UserRun' : {}
-                            }
-                        },
-                        'DebugOption' : {
-                            'Option' : {}
-                        },
-                    }
-            }
-            coide_settings['Target']['BuildOption']['Compile']['Option'] = self._coide_option_dictionarize('Option', '@name', proj_dic['Project']['Target']['BuildOption']['Compile'])
-            coide_settings['Target']['BuildOption']['Link'].update(proj_dic['Project']['Target']['BuildOption']['Link'])
-            coide_settings['Target']['BuildOption']['Link']['Option'] = self._coide_option_dictionarize('Option', '@name', proj_dic['Project']['Target']['BuildOption']['Link'])
-            coide_settings['Target']['BuildOption']['Output'].update(proj_dic['Project']['Target']['BuildOption']['Output'])
-            coide_settings['Target']['BuildOption']['Output']['Option'] = self._coide_option_dictionarize('Option', '@name', proj_dic['Project']['Target']['BuildOption']['Output'])
-            coide_settings['Target']['BuildOption']['User'].update(proj_dic['Project']['Target']['BuildOption']['User'])
-            # Run#1 is an exception, oh
-            dictionarized = {}
-            dictionarized[proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0]['@name']] = {
-                proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0]['@type'] : {},
-                proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][1]['@type'] : {}
-            }
-            dictionarized[proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0]['@name']][proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0]['@type']].update(proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0])
-            dictionarized[proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][0]['@name']][proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][1]['@type']].update(proj_dic['Project']['Target']['BuildOption']['User']['UserRun'][1])
-            coide_settings['Target']['BuildOption']['User']['UserRun'] = dictionarized
-
-            coide_settings['Target']['DebugOption'].update(proj_dic['Project']['Target']['DebugOption'])
-            coide_settings['Target']['DebugOption']['Option'] = {}
-            coide_settings['Target']['DebugOption']['Option'].update(self._coide_option_dictionarize('Option', '@name', proj_dic['Project']['Target']['DebugOption']))
-            # merge in current settings with the parser one
-            expanded_dic['coide_settings'] = {key: dict(expanded_dic['coide_settings'].get(key, {}).items() + coide_settings.get(key, {}).items()) for key in expanded_dic['coide_settings'].keys() + coide_settings.keys()}
+            coproj_dic = xmltodict.parse(file(project_file), process_namespaces=False)
         else:
             # setting values from the yaml files
-            self.parse_specific_options(expanded_dic)
+            coproj_dic = self.definitions.coproj_file
+
+        self._coproj_set_files(coproj_dic, expanded_dic)
 
         target = Targets(env_settings.get_env_settings('definitions'))
         if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
@@ -189,17 +150,19 @@ class CoideExporter(Exporter):
                 % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        expanded_dic['coide_settings']['Target']['Device'].update(mcu_def_dic['Target']['Device'])
-        expanded_dic['coide_settings']['Target']['DebugOption'].update(mcu_def_dic['Target']['DebugOption'])
-        expanded_dic['coide_settings']['Target']['BuildOption']['Link']['MemoryAreas'].update(mcu_def_dic['Target']['BuildOption']['Link']['MemoryAreas'])
+        coproj_dic['Project']['Target']['Device'].update(mcu_def_dic['Target']['Device'])
+        coproj_dic['Project']['Target']['DebugOption'].update(mcu_def_dic['Target']['DebugOption'])
+        coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas'].update(mcu_def_dic['Target']['BuildOption']['Link']['MemoryAreas'])
 
         # get debugger definitions
-        try:
-            expanded_dic['coide_settings']['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter'] = self.definitions.debuggers[expanded_dic['debugger']]['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']
-        except KeyError:
-            raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
+        if expanded_dic['debugger']:
+            try:
+                coproj_dic['Project']['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter'] = self.definitions.debuggers[expanded_dic['debugger']]['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']
+            except KeyError:
+                raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
         # Project file
+        coproj_xml = xmldict.dict2xml(coproj_dic)
         project_path, projfile = self.gen_file(
-            'coide.coproj.tmpl', expanded_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
+            coproj_xml.prettyxml(), expanded_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
         return project_path, [projfile]

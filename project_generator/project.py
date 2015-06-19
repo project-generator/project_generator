@@ -470,7 +470,7 @@ class Project:
             'misc': [merge_recursive({ k: v for settings in tool_specific_settings for k, v in settings.misc.items() },
                                      toolchain_specific_settings.misc)],
             'project_dir': self.project_dir,
-            'template' : toolchain_specific_settings.template or [tool_settings.template for tool_settings in tool_specific_settings],
+            'template' : toolchain_specific_settings.template or [tool_settings.template for tool_settings in tool_specific_settings if tool_settings.template],
         }
         self.validate_generated_dic(d)
 
