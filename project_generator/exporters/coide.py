@@ -162,7 +162,7 @@ class CoideExporter(Exporter):
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
         # Project file
-        coproj_xml = xmldict.dict2xml(coproj_dic)
+        coproj_xml = xmltodict.unparse(coproj_dic)
         project_path, projfile = self.gen_file(
-            coproj_xml.prettyxml(), expanded_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
+            coproj_xml, expanded_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
         return project_path, [projfile]

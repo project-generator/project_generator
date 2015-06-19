@@ -260,15 +260,15 @@ class IAREWARMExporter(Exporter):
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
-        ewp_xml = xmldict.dict2xml(ewp_dic)
-        project_path, ewp = self.gen_file(ewp_xml.prettyxml(), expanded_dic, '%s.ewp' %
+        ewp_xml = xmltodict.unparse(ewp_dic)
+        project_path, ewp = self.gen_file(ewp_xml, expanded_dic, '%s.ewp' %
             expanded_dic['name'], expanded_dic['output_dir']['path'])
 
-        eww_xml = xmldict.dict2xml(eww_dic)
-        project_path, eww = self.gen_file(eww_xml.prettyxml(), expanded_dic, '%s.eww' %
+        eww_xml = xmltodict.unparse(eww_dic)
+        project_path, eww = self.gen_file(eww_xml, expanded_dic, '%s.eww' %
             expanded_dic['name'], expanded_dic['output_dir']['path'])
 
-        ewd_xml = xmldict.dict2xml(ewd_dic)
-        project_path, ewd = self.gen_file(ewd_xml.prettyxml(), expanded_dic, '%s.ewd' %
+        ewd_xml = xmltodict.unparse(ewd_dic)
+        project_path, ewd = self.gen_file(ewd_xml, expanded_dic, '%s.ewd' %
                     expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww, ewd]
