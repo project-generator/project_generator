@@ -40,13 +40,12 @@ class Workspace:
         if 'projects' in self.projects_dict:
             for name,records in self.projects_dict['projects'].items():
                 if "common" in records:
-                    self.projects = {name: Project(name, records, self)}
+                    self.projects[name] = Project(name, records, self)
                 else:
                     x = set([item if len(item)>1 else sublist for sublist in records for item in sublist])
-                    self.projects = {name: Project(name, list(x), self)}
+                    self.projects[name] = Project(name, list(x), self)
         else:
             logging.debug("No projects found in the main record file.")
-
     def export_project(self, project_name, tool, copy):
         if project_name not in self.projects:
             raise RuntimeError("Invalid Project Name")

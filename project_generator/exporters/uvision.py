@@ -15,6 +15,7 @@
 import copy
 import shutil
 import logging
+import yaml
 
 from os.path import basename, join, relpath, normpath
 
@@ -25,8 +26,8 @@ from ..targets import Targets
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
     source_files_dic = ['source_files_c', 'source_files_s',
-                        'source_files_cpp']
-    file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3, 'lib': 4}
+                        'source_files_cpp','source_files_lib','source_files_obj']
+    file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3,'o':3, 'lib': 4, 'ar': 4}
 
     def __init__(self):
         self.definitions = uVisionDefinitions()
@@ -141,17 +142,20 @@ class UvisionExporter(Exporter):
             mcu_def['TargetOption'][k] = v[0]
 
     def fix_paths(self, data, rel_path):
-        fixed_paths = []
-        for path in data['includes']:
-            fixed_paths.append(join(rel_path, normpath(path)))
-        data['includes'] = fixed_paths
-        fixed_paths = []
-        for path in data['source_files_lib']:
-            fixed_paths.append(join(rel_path, normpath(path)))
-        data['source_files_lib'] = fixed_paths
-        fixed_paths = []
-        for path in data['source_files_obj']:
-            fixed_paths.append(join(rel_path, normpath(path)))
+        data['includes'] = [join(rel_path, normpath(path)) for path in data['includes']]
+
+        if type(data['source_files_lib'][0]) == type(dict()):
+            for k in data['source_files_lib'][0].keys():
+                data['source_files_lib'][0][k] = [join(rel_path,normpath(path)) for path in data['source_files_lib'][0][k]]
+        else:
+            data['source_files_lib'][0] = [join(rel_path,normpath(path)) for path in data['source_files_lib'][0]]
+
+        if type(data['source_files_obj'][0]) == type(dict()):
+            for k in data['source_files_obj'][0].keys():
+                data['source_files_obj'][0][k] = [join(rel_path,normpath(path)) for path in data['source_files_obj'][0][k]]
+        else:
+            data['source_files_obj'][0] = [join(rel_path,normpath(path)) for path in data['source_files_obj'][0]]
+
         if data['linker_file']:
             data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
@@ -163,10 +167,11 @@ class UvisionExporter(Exporter):
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
+
+
         # get relative path and fix all paths within a project
         self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
         self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
-
         expanded_dic['uvision_settings'] = {}
         self.parse_specific_options(expanded_dic)
 

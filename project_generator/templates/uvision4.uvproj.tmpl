@@ -377,8 +377,7 @@
             <ScatterFile>{{linker_file}}</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc>{% for lib in source_files_lib %} {{lib}} {% endfor %}
-                  {% for obj in source_files_obj %} {{obj}} {% endfor %}</Misc>
+            <Misc></Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings>{% for diswarn in uvision_settings['LDads']['DisabledWarnings'] %} {{diswarn}} {% endfor %}</DisabledWarnings>
           </LDads>
