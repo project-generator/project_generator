@@ -11,6 +11,7 @@
 # limitations under the License.
 
 from xml.dom.minidom import Document
+from collections import OrderedDict
 
 # credits to https://gist.github.com/jaux/1478881
 class dict2xml(object):
@@ -26,6 +27,11 @@ class dict2xml(object):
 
     def build(self, father, structure):
         if type(structure) == dict:
+            for k in structure:
+                tag = self.doc.createElement(k)
+                father.appendChild(tag)
+                self.build(tag, structure[k])
+        elif type(structure) == OrderedDict:
             for k in structure:
                 tag = self.doc.createElement(k)
                 father.appendChild(tag)
