@@ -19,6 +19,7 @@ import logging
 from os.path import basename, join, relpath, normpath
 from os import getcwd
 import xmltodict
+from collections import OrderedDict
 
 from .exporter import Exporter
 from .uvision_definitions import uVisionDefinitions
@@ -140,11 +141,15 @@ class UvisionExporter(Exporter):
         self._uvproj_clean_xmldict(uvproj_dic)
 
     def _uvproj_files_set(self, uvproj_dic, project_dic):
-        uvproj_dic['Project']['Targets']['Target']['Groups'] = {}
+        uvproj_dic['Project']['Targets']['Target']['Groups'] = OrderedDict()
         uvproj_dic['Project']['Targets']['Target']['Groups']['Group'] = []
         i = 0
         for group_name, files in project_dic['groups'].items():
-            uvproj_dic['Project']['Targets']['Target']['Groups']['Group'].append({'GroupName' : group_name, 'Files' : {'File' : []}})
+            group = OrderedDict()
+            group['GroupName'] = group_name
+            # group['Files'] = {}
+            group['Files'] = {'File' : []}
+            uvproj_dic['Project']['Targets']['Target']['Groups']['Group'].append(group)
             for file in files:
                 uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'].append(file)
             i = i + 1
