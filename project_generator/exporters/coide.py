@@ -70,18 +70,18 @@ class CoideExporter(Exporter):
                     self.expand_data(dic, expanded_data, attribute, group, rel_path)
 
     def normalize_mcu_def(self, mcu_def):
-        for k,v in mcu_def['Target']['Device'].items():
-            mcu_def['Target']['Device'][k] = v[0]
-        for k,v in mcu_def['Target']['DebugOption'].items():
-            mcu_def['Target']['DebugOption'][k] = v[0]
-        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM1'].items():
-            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM1'][k] = v[0]
-        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM2'].items():
-            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IROM2'][k] = v[0]
-        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM1'].items():
-            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM1'][k] = v[0]
-        for k,v in mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM2'].items():
-            mcu_def['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['IRAM2'][k] = v[0]
+        for k,v in mcu_def['Device'].items():
+            mcu_def['Device'][k] = v[0]
+        for k,v in mcu_def['DebugOption'].items():
+            mcu_def['DebugOption'][k] = v[0]
+        for k,v in mcu_def['MemoryAreas']['IROM1'].items():
+            mcu_def['MemoryAreas']['IROM1'][k] = v[0]
+        for k,v in mcu_def['MemoryAreas']['IROM2'].items():
+            mcu_def['MemoryAreas']['IROM2'][k] = v[0]
+        for k,v in mcu_def['MemoryAreas']['IRAM1'].items():
+            mcu_def['MemoryAreas']['IRAM1'][k] = v[0]
+        for k,v in mcu_def['MemoryAreas']['IRAM2'].items():
+            mcu_def['MemoryAreas']['IRAM2'][k] = v[0]
 
     def fix_paths(self, data, rel_path):
         fixed_paths = []
@@ -150,9 +150,9 @@ class CoideExporter(Exporter):
                 % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        coproj_dic['Project']['Target']['Device'].update(mcu_def_dic['Target']['Device'])
-        coproj_dic['Project']['Target']['DebugOption'].update(mcu_def_dic['Target']['DebugOption'])
-        coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas'].update(mcu_def_dic['Target']['BuildOption']['Link']['MemoryAreas'])
+        coproj_dic['Project']['Target']['Device'].update(mcu_def_dic['Device'])
+        coproj_dic['Project']['Target']['DebugOption'].update(mcu_def_dic['DebugOption'])
+        coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas'].update(mcu_def_dic['MemoryAreas'])
 
         # get debugger definitions
         if expanded_dic['debugger']:

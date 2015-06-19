@@ -98,8 +98,8 @@ class IAREWARMExporter(Exporter):
 
     def normalize_mcu_def(self, mcu_def):
         # hack to insert tab as IAR using tab for MCU definitions
-        mcu_def['General']['data']['option']['OGChipSelectEditMenu']['state'] = mcu_def['General']['data']['option']['OGChipSelectEditMenu']['state'][0].replace(' ', '\t', 1)
-        mcu_def['General']['data']['option']['OGCoreOrChip']['state'] = mcu_def['General']['data']['option']['OGCoreOrChip']['state'][0]
+        mcu_def['OGChipSelectEditMenu']['state'] = mcu_def['OGChipSelectEditMenu']['state'][0].replace(' ', '\t', 1)
+        mcu_def['OGCoreOrChip']['state'] = mcu_def['OGCoreOrChip']['state'][0]
 
     def fix_paths(self, data, rel_path):
         fixed_paths = []
@@ -246,9 +246,9 @@ class IAREWARMExporter(Exporter):
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['General']['data']['option']['OGChipSelectEditMenu']['state'])
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['OGChipSelectEditMenu']['state'])
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGCoreOrChip')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['General']['data']['option']['OGCoreOrChip']['state'])
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['OGCoreOrChip']['state'])
 
         # overwrite debugger only if defined in the project file, otherwise use either default or from template
         if expanded_dic['debugger']:
