@@ -41,8 +41,8 @@ class CoideExporter(Exporter):
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
-                new_file = {"path": rel_path + normpath(file), "name": basename(
-                    file), "type": self.file_types[extension]}
+                new_file = {'@path': rel_path + normpath(file), '@name': basename(
+                    file), '@type': str(self.file_types[extension])}
                 new_data['groups'][group].append(new_file)
 
     def get_groups(self, data):
@@ -109,10 +109,10 @@ class CoideExporter(Exporter):
         coproj_dic['Project']['Files'] = {}
         coproj_dic['Project']['Files']['File'] = []
         for group,files in project_dic['groups'].items():
-            coproj_dic['Project']['Files']['File'].append({'name': group,'path': '', 'type' : 2 })
+            coproj_dic['Project']['Files']['File'].append({u'@name': group, u'@path': '', u'@type' : '2' })
             for file in files:
                 if group:
-                    file['name'] = group + '/' + file['name']
+                    file['@name'] = group + '/' + file['@name']
                 coproj_dic['Project']['Files']['File'].append(file)
 
     def generate(self, data, env_settings):
