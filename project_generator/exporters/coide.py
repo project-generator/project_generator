@@ -150,9 +150,21 @@ class CoideExporter(Exporter):
                 % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
+        # correct attributes from definition
+        for k,v in mcu_def_dic['Device'].items():
+            del mcu_def_dic['Device'][k]
+            mcu_def_dic['Device']['@' + k] = str(v)
+        memory_areas = []
+        for k,v in mcu_def_dic['MemoryAreas'].items():
+             for k,att in v.items():
+                 del v[k]
+                 v['@' + k] = str(att)
+             memory_areas.append(v)
+
         coproj_dic['Project']['Target']['Device'].update(mcu_def_dic['Device'])
-        coproj_dic['Project']['Target']['DebugOption'].update(mcu_def_dic['DebugOption'])
-        coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas'].update(mcu_def_dic['MemoryAreas'])
+        # TODO 0xc0170: fix
+        # coproj_dic['Project']['Target']['DebugOption'].update(mcu_def_dic['DebugOption'])
+        coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'] = memory_areas
 
         # get debugger definitions
         if expanded_dic['debugger']:
