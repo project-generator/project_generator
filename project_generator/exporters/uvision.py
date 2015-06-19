@@ -227,11 +227,11 @@ class UvisionExporter(Exporter):
             del uvproj_dic['Project'][u'@http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation']
 
         # Project file
-        uvproj_xml = xmltodict.unparse(uvproj_dic)
+        uvproj_xml = xmltodict.unparse(uvproj_dic, pretty=True)
         project_path, projfile = self.gen_file(
             uvproj_xml, expanded_dic, '%s.uvproj' % data['name'], expanded_dic['output_dir']['path'])
 
-        uvopt_xml = xmltodict.unparse(uvopt_dic)
+        uvopt_xml = xmltodict.unparse(uvopt_dic, pretty=True)
         project_path, optfile = self.gen_file(
             uvopt_xml, expanded_dic, '%s.uvopt' % data['name'], expanded_dic['output_dir']['path'])
         return project_path, [projfile, optfile]
