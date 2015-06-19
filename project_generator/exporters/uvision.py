@@ -175,11 +175,11 @@ class UvisionExporter(Exporter):
         # generic tool template specified or project
         if expanded_dic['template']:
             project_file = join(getcwd(), expanded_dic['template'][0]) #TODO 0xc0170: template list !
-            uvproj_dic = xmltodict.parse(file(project_file), process_namespaces=True)
+            uvproj_dic = xmltodict.parse(file(project_file))
         elif 'uvision' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
             project_file = join(getcwd(), env_settings.templates['uvision']['path'][0], env_settings.templates['uvision']['name'][0] + '.ewp')
-            uvproj_dic = xmltodict.parse(file(project_file), process_namespaces=True)
+            uvproj_dic = xmltodict.parse(file(project_file))
         else:
             uvproj_dic = self.definitions.uvproj_file
 
@@ -219,11 +219,6 @@ class UvisionExporter(Exporter):
                 uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[expanded_dic['debugger']]['TargetDlls']['Driver']
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
-
-        # This will need to be fixed, probably using ElementTree. Without this removal, uvision failes to
-        # open a project.
-        if u'@http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation' in uvproj_dic['Project']:
-            del uvproj_dic['Project'][u'@http://www.w3.org/2001/XMLSchema-instance:noNamespaceSchemaLocation']
 
         # Project file
         uvproj_xml = xmltodict.unparse(uvproj_dic, pretty=True)
