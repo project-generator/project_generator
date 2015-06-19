@@ -83,17 +83,13 @@ class CoideExporter(Exporter):
             mcu_def['MemoryAreas']['IRAM2'][k] = v[0]
 
     def fix_paths(self, data, rel_path):
-        fixed_paths = []
-        for path in data['includes']:
-            fixed_paths.append(join(rel_path, normpath(path)))
-        data['includes'] = fixed_paths
-        fixed_paths = []
-        for path in data['source_files_lib']:
-            fixed_paths.append(join(rel_path, normpath(path)))
-        data['source_files_lib'] = fixed_paths
-        fixed_paths = []
-        for path in data['source_files_obj']:
-            fixed_paths.append(join(rel_path, normpath(path)))
+        data['includes'] = [join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['includes']]
+
+        for k in data['source_files_lib'][0].keys():
+            data['source_files_lib'][0][k] = [join('$PROJ_DIR$',rel_path,normpath(path)) for path in data['source_files_lib'][0][k]]
+
+        for k in data['source_files_obj'][0].keys():
+            data['source_files_obj'][0][k] = [join('$PROJ_DIR$',rel_path,normpath(path)) for path in data['source_files_obj'][0][k]]
         if data['linker_file']:
             data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
