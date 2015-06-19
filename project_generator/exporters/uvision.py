@@ -24,7 +24,6 @@ from collections import OrderedDict
 from .exporter import Exporter
 from .uvision_definitions import uVisionDefinitions
 from ..targets import Targets
-from ..utils import xmldict
 
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']

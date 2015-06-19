@@ -22,7 +22,6 @@ import xmltodict
 from .exporter import Exporter
 from .coide_definitions import CoIDEdefinitions
 from ..targets import Targets
-from ..utils import xmldict
 
 class CoideExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',

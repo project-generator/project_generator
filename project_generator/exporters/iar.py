@@ -22,7 +22,6 @@ import xmltodict
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions
 from ..targets import Targets
-from ..utils import xmldict
 
 class IAREWARMExporter(Exporter):
 
