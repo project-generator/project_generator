@@ -182,6 +182,6 @@ class CoideExporter(Exporter):
 
         # Project file
         coproj_xml = xmltodict.unparse(coproj_dic, pretty=True)
-        project_path, projfile = self.gen_file(
+        project_path, projfile = self.gen_file_jinja(
             coproj_xml, expanded_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
         return project_path, [projfile]

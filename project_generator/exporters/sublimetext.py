@@ -33,13 +33,13 @@ class SublimeTextMakeGccARMExporter(MakefileGccArmExporter):
         self.fix_sublime_paths(data)
         data['linker_options'] =[]
 
-        project_path, makefile = self.gen_file('makefile_gcc.tmpl', data, 'Makefile',
+        project_path, makefile = self.gen_file_jinja('makefile_gcc.tmpl', data, 'Makefile',
             data['output_dir']['path'])
 
         data['buildsys_name'] = 'Make'
         data['buildsys_cmd'] = 'make all'
 
-        sublimeproject = self.gen_file('sublimetext.sublime-project.tmpl', data,
+        sublimeproject = self.gen_file_jinja('sublimetext.sublime-project.tmpl', data,
             '%s.sublime-project' % data['name'], data['output_dir']['path'])
 
         return project_path, [makefile, sublimeproject]

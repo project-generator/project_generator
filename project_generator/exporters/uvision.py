@@ -222,11 +222,11 @@ class UvisionExporter(Exporter):
 
         # Project file
         uvproj_xml = xmltodict.unparse(uvproj_dic, pretty=True)
-        project_path, projfile = self.gen_file(
+        project_path, projfile = self.gen_file_raw(
             uvproj_xml, expanded_dic, '%s.uvproj' % data['name'], expanded_dic['output_dir']['path'])
 
         uvopt_xml = xmltodict.unparse(uvopt_dic, pretty=True)
-        project_path, optfile = self.gen_file(
+        project_path, optfile = self.gen_file_raw(
             uvopt_xml, expanded_dic, '%s.uvopt' % data['name'], expanded_dic['output_dir']['path'])
         return project_path, [projfile, optfile]
 
