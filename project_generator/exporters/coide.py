@@ -104,7 +104,8 @@ class CoideExporter(Exporter):
         coproj_dic['Project']['Files'] = {}
         coproj_dic['Project']['Files']['File'] = []
         for group,files in project_dic['groups'].items():
-            coproj_dic['Project']['Files']['File'].append({u'@name': group, u'@path': '', u'@type' : '2' })
+            # TODO 0xc0170: this might not be needed
+            # coproj_dic['Project']['Files']['File'].append({u'@name': group, u'@path': '', u'@type' : '2' })
             for file in files:
                 if group:
                     file['@name'] = group + '/' + file['@name']
@@ -132,6 +133,10 @@ class CoideExporter(Exporter):
         else:
             # setting values from the yaml files
             coproj_dic = self.definitions.coproj_file
+
+        # set name and target
+        coproj_dic['Project']['@name'] = expanded_dic['name']
+        coproj_dic['Project']['Target']['@name'] = expanded_dic['name']
 
         self._coproj_set_files(coproj_dic, expanded_dic)
 
