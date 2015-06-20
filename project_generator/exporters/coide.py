@@ -111,6 +111,16 @@ class CoideExporter(Exporter):
                     file['@name'] = group + '/' + file['@name']
                 coproj_dic['Project']['Files']['File'].append(file)
 
+    def _coproj_set_macros(self, coproj_dic, project_dic):
+        coproj_dic['Project']['Target']['BuildOption']['Compile']['DefinedSymbols']['Define'] = []
+        for macro in project_dic['macros']:
+            coproj_dic['Project']['Target']['BuildOption']['Compile']['DefinedSymbols']['Define'].append({'@name': macro})
+
+    def _coproj_set_includepaths(self, coproj_dic, project_dic):
+        coproj_dic['Project']['Target']['BuildOption']['Compile']['Includepaths']['Includepath'] = []
+        for include in project_dic['includes']:
+            coproj_dic['Project']['Target']['BuildOption']['Compile']['Includepaths']['Includepath'].append({'@path': include})
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = data.copy()
@@ -139,6 +149,8 @@ class CoideExporter(Exporter):
         coproj_dic['Project']['Target']['@name'] = expanded_dic['name']
 
         self._coproj_set_files(coproj_dic, expanded_dic)
+        self._coproj_set_macros(coproj_dic, expanded_dic)
+        self._coproj_set_includepaths(coproj_dic, expanded_dic)
 
         target = Targets(env_settings.get_env_settings('definitions'))
         if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
@@ -179,11 +191,11 @@ class CoideExporter(Exporter):
                 coproj_dic['Project']['Target']['DebugOption']['Option'][found]['@value'] = self.definitions.debuggers[expanded_dic['debugger']]['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
-#TODO fix define, paths
+
         # Project file
         # somehow this xml is not compatible with coide, v2.0 changing few things, lets use jinja
         # for now, more testing to get xml output right
         # coproj_xml = xmltodict.unparse(coproj_dic, pretty=True)
         project_path, projfile = self.gen_file_jinja(
-            coproj_dic, expanded_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
+            'coide.coproj.tmpl', coproj_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
         return project_path, [projfile]

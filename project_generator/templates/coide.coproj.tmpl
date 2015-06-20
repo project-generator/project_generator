@@ -14,20 +14,20 @@
           {% for path in Project['Target']['BuildOption']['Compile']['IncludePaths'] %} <Includepath path="{{path['Includepath']['@path']}}"/>{% endfor %}
         </Includepaths>
         <DefinedSymbols>
-          {% for s in Project['Target']['BuildOption']['Compile']['DefinedSymbols'] %} <Define name="{{s['Define']['@name']}}"/>{% endfor %}
+          {% for s in Project['Target']['BuildOption']['Compile']['DefinedSymbols']['Define'] %} <Define name="{{s['@name']}}"/>{% endfor %}
         </DefinedSymbols>
       </Compile>
       <Link useDefault="{{Project['Target']['BuildOption']['Link']['@useDefault']}}">
         <Option name="DiscardUnusedSection" value="{{Project['Target']['BuildOption']['Link']['Option'][0]['@value']}}"/>
         <Option name="UserEditLinkder" value="{{Project['Target']['BuildOption']['Link']['Option'][1]['@value']}}"/>
-        <Option name="UseMemoryLayout" value="{{Project['Target']['BuildOption']['Link']['Option']['2']['@value']}}"/>
-        <Option name="LTO" value="{{Project['Target']['BuildOption']['Link']['Option']['3']['@value']}}"/>
-        <Option name="IsNewStartupCode" value="{{Project['Target']['BuildOption']['Link']['Option']['4']['@value']}}"/>
-        <Option name="Library" value="{{Project['Target']['BuildOption']['Link']['Option']['5']['@value']}}"/>
-        <Option name="nostartfiles" value="{{Project['Target']['BuildOption']['Link']['Option']['6']['@value']}}"/>
-        <Option name="Printf" value="{{Project['Target']['BuildOption']['Link']['Option']['7']['@value']}}"/>
-        <Option name="Scanf" value="{{Project['Target']['BuildOption']['Link']['Option']['8']['@value']}}"/>
-        <Option name="UserEditLinker" value=" {{Project['Target']['BuildOption']['Link']['Option']['9']['@value'] }} {% for file in object_files %}
+        <Option name="UseMemoryLayout" value="{{Project['Target']['BuildOption']['Link']['Option'][2]['@value']}}"/>
+        <Option name="LTO" value="{{Project['Target']['BuildOption']['Link']['Option'][3]['@value']}}"/>
+        <Option name="IsNewStartupCode" value="{{Project['Target']['BuildOption']['Link']['Option'][4]['@value']}}"/>
+        <Option name="Library" value="{{Project['Target']['BuildOption']['Link']['Option'][5]['@value']}}"/>
+        <Option name="nostartfiles" value="{{Project['Target']['BuildOption']['Link']['Option'][6]['@value']}}"/>
+        <Option name="Printf" value="{{Project['Target']['BuildOption']['Link']['Option'][7]['@value']}}"/>
+        <Option name="Scanf" value="{{Project['Target']['BuildOption']['Link']['Option'][8]['@value']}}"/>
+        <Option name="UserEditLinker" value=" {{Project['Target']['BuildOption']['Link']['Option'][9]['@value'] }} {% for file in object_files %}
         ${project.path}/{{file}}; {% endfor %} {% for p in library_paths %}-L${project.path}/{{p}}; {% endfor %}"/>
         <LinkedLibraries>
           {% for lib in Project['Target']['BuildOption']['Link']['LinkedLibraries']['Libset'] %}
@@ -35,10 +35,10 @@
           {% endfor %}
         </LinkedLibraries>
         <MemoryAreas debugInFlashNotRAM="1">
-          <Memory name="IROM1" type="ReadOnly" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['0']['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['0']['startValue']}}"/>
-          <Memory name="IRAM1" type="ReadWrite" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['1']['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['1']['startValue']}}"/>
-          <Memory name="IROM2" type="ReadOnly" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['2']['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['2']['startValue']}}"/>
-          <Memory name="IRAM2" type="ReadWrite" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['3']['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory']['3']['startValue']}}"/>
+          <Memory name="IROM1" type="ReadOnly" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][0]['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][0]['startValue']}}"/>
+          <Memory name="IRAM1" type="ReadWrite" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][1]['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][1]['startValue']}}"/>
+          <Memory name="IROM2" type="ReadOnly" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][2]['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][2]['startValue']}}"/>
+          <Memory name="IRAM2" type="ReadWrite" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][3]['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][3]['startValue']}}"/>
         </MemoryAreas>
         <LocateLinkFile path="{{Project['Target']['BuildOption']['Link']['LocateLinkFile']['@path']}}" type="{{Project['Target']['BuildOption']['Link']['LocateLinkFile']['@type']}}"/>
       </Link>
@@ -54,7 +54,7 @@
         <UserRun name="Run#1" type="After" checked="0" value="{{Project['Target']['BuildOption']['User']['UserRun'][1]['@value']}}"/>
       </User>
     </BuildOption>
-<!--     <DebugOption>
+    <DebugOption>
       <Option name="org.coocox.codebugger.gdbjtag.core.adapter" value="{{Project['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']}}"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.debugMode" value="SWD"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.clockDiv" value="1M"/>
@@ -72,14 +72,13 @@
       <Option name="org.coocox.codebugger.gdbjtag.core.verify" value="1"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.downloadFuction" value="Erase Effected"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.defaultAlgorithm" value="{{Project['Target']['DebugOption']['defaultAlgorithm']}}"/>
-    </DebugOption> -->
+    </DebugOption>
     <ExcludeFile/>
   </Target>
   <Components path="./"/>
   <Files>
     {% for file in Project['Files']['File'] %}
     <File name="{{file['@name']}}" path="{{file['@path']}}" type="{{file['@type']}}"/>
-    {% endfor %}
     {% endfor %}
   </Files>
 </Project>
