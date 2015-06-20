@@ -179,9 +179,11 @@ class CoideExporter(Exporter):
                 coproj_dic['Project']['Target']['DebugOption']['Option'][found]['@value'] = self.definitions.debuggers[expanded_dic['debugger']]['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
-
+#TODO fix define, paths
         # Project file
-        coproj_xml = xmltodict.unparse(coproj_dic, pretty=True)
+        # somehow this xml is not compatible with coide, v2.0 changing few things, lets use jinja
+        # for now, more testing to get xml output right
+        # coproj_xml = xmltodict.unparse(coproj_dic, pretty=True)
         project_path, projfile = self.gen_file_jinja(
-            coproj_xml, expanded_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
+            coproj_dic, expanded_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
         return project_path, [projfile]
