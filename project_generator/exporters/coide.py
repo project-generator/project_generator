@@ -141,7 +141,8 @@ class CoideExporter(Exporter):
             coproj_dic = xmltodict.parse(file(project_file))
         elif 'coide' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
-            project_file = join(getcwd(), env_settings.templates['coide']['path'][0], env_settings.templates['coide']['name'][0] + '.coproj')
+            # TODO 0xc0170: extension check/expansion
+            project_file = join(getcwd(), env_settings.templates['coide'][0])
             coproj_dic = xmltodict.parse(file(project_file))
         else:
             # setting values from the yaml files

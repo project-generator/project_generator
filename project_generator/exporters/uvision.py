@@ -178,7 +178,9 @@ class UvisionExporter(Exporter):
             uvproj_dic = xmltodict.parse(file(project_file))
         elif 'uvision' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
-            project_file = join(getcwd(), env_settings.templates['uvision']['path'][0], env_settings.templates['uvision']['name'][0] + '.ewp')
+            # TODO 0xc0170: extensions for templates - support multiple files and get their extension
+            # and check if user defined them correctly
+            project_file = join(getcwd(), env_settings.templates['uvision'][0])
             uvproj_dic = xmltodict.parse(file(project_file))
         else:
             uvproj_dic = self.definitions.uvproj_file

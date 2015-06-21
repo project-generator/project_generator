@@ -201,7 +201,8 @@ class IAREWARMExporter(Exporter):
             ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
         elif 'iar' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
-            project_file = join(getcwd(), env_settings.templates['iar']['path'][0], env_settings.templates['iar']['name'][0] + '.ewp')
+            # TODO 0xc0170: extension check/expansion
+            project_file = join(getcwd(), env_settings.templates['iar'][0])
             ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
         else:
             ewp_dic = self.definitions.ewp_file
