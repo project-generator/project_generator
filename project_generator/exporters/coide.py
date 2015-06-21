@@ -83,13 +83,13 @@ class CoideExporter(Exporter):
             mcu_def['MemoryAreas']['IRAM2'][k] = v[0]
 
     def fix_paths(self, data, rel_path):
-        data['includes'] = [join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['includes']]
+        data['includes'] = [join(rel_path, normpath(path)) for path in data['includes']]
 
         for k in data['source_files_lib'][0].keys():
-            data['source_files_lib'][0][k] = [join('$PROJ_DIR$',rel_path,normpath(path)) for path in data['source_files_lib'][0][k]]
+            data['source_files_lib'][0][k] = [join(rel_path,normpath(path)) for path in data['source_files_lib'][0][k]]
 
         for k in data['source_files_obj'][0].keys():
-            data['source_files_obj'][0][k] = [join('$PROJ_DIR$',rel_path,normpath(path)) for path in data['source_files_obj'][0][k]]
+            data['source_files_obj'][0][k] = [join(rel_path,normpath(path)) for path in data['source_files_obj'][0][k]]
         if data['linker_file']:
             data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
@@ -121,6 +121,9 @@ class CoideExporter(Exporter):
         for include in project_dic['includes']:
             coproj_dic['Project']['Target']['BuildOption']['Compile']['Includepaths']['Includepath'].append({'@path': include})
 
+    def _coproj_set_linker(self, coproj_dic, project_dic):
+        coproj_dic['Project']['Target']['BuildOption']['Link']['LocateLinkFile']['@path'] = project_dic['linker_file']
+
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = data.copy()
@@ -147,10 +150,14 @@ class CoideExporter(Exporter):
         # set name and target
         coproj_dic['Project']['@name'] = expanded_dic['name']
         coproj_dic['Project']['Target']['@name'] = expanded_dic['name']
+        # library/exe
+        coproj_dic['Project']['Target']['BuildOption']['Output']['Option'][0]['@value'] = 0 if expanded_dic['output_type'] == 'exe' else 1
 
+        # Fill in pgen data to the coproj_dic
         self._coproj_set_files(coproj_dic, expanded_dic)
         self._coproj_set_macros(coproj_dic, expanded_dic)
         self._coproj_set_includepaths(coproj_dic, expanded_dic)
+        self._coproj_set_linker(coproj_dic, expanded_dic)
 
         target = Targets(env_settings.get_env_settings('definitions'))
         if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
@@ -162,7 +169,8 @@ class CoideExporter(Exporter):
                 % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        # correct attributes from definition
+        # correct attributes from definition, as yaml does not allowe multiple keys (=dict), we need to
+        # do this magic.
         for k,v in mcu_def_dic['Device'].items():
             del mcu_def_dic['Device'][k]
             mcu_def_dic['Device']['@' + k] = str(v)
@@ -174,13 +182,14 @@ class CoideExporter(Exporter):
              memory_areas.append(v)
 
         coproj_dic['Project']['Target']['Device'].update(mcu_def_dic['Device'])
-        # TODO 0xc0170: fix
+        # TODO 0xc0170: fix debug options
         # coproj_dic['Project']['Target']['DebugOption'].update(mcu_def_dic['DebugOption'])
         coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'] = memory_areas
 
         # get debugger definitions
         if expanded_dic['debugger']:
             try:
+                # find debugger definitions in the list of options
                 index = 0
                 for option in coproj_dic['Project']['Target']['DebugOption']['Option']:
                     for k,v in option.items():
@@ -193,8 +202,9 @@ class CoideExporter(Exporter):
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
         # Project file
-        # somehow this xml is not compatible with coide, v2.0 changing few things, lets use jinja
-        # for now, more testing to get xml output right
+        # somehow this xml is not compatible with coide, coide v2.0 changing few things, lets use jinja
+        # for now, more testing to get xml output right. Jinja template follows the xml dictionary,which is
+        # what we want anyway.
         # coproj_xml = xmltodict.unparse(coproj_dic, pretty=True)
         project_path, projfile = self.gen_file_jinja(
             'coide.coproj.tmpl', coproj_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
