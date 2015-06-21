@@ -128,6 +128,9 @@ class CoideExporter(Exporter):
         """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = data.copy()
 
+        if 'misc' in expanded_dic:
+            print "Using deprecated misc options for coide. Please use template project files."
+
         groups = self.get_groups(data)
         expanded_dic['groups'] = {}
         for group in groups:
