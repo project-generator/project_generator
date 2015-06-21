@@ -24,7 +24,7 @@ Project generator currently generaters projects for the following tools (IDE, Ma
  - Sublime (Makefile with GCC ARM)
 
 We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository.
-The plan is to support as many IDE as possible , same applies for boards/MCU.
+The plan is to support as many IDE as possible , same applies for targets/MCU.
 
 ### How to use it
 
@@ -39,15 +39,9 @@ pgen --version
 This should print the current installed version. You can use pgen or project_generator as a command.
 
 ##### Using directly the repository
-In case of using this repository directly, be aware, the project generator is using relative paths. To solve this, create a simple run.py script and place there:
+In case of using this repository directly, be aware, the project generator is using relative paths. To solve this, invoke run.py with arguments as you would if using the package. Something like: python run.py --version. This helps with debugging the package.
 
-```
-from project_generator.main import main
-
-main()
-```
-
-Then just invoke run.py with arguments as you would if using the package. Something like: python run.py --version
+##### Getting started
 
 An example how to use pgen [here](https://github.com/project-generator/project_generator_mbed_examples).
 
@@ -59,3 +53,4 @@ Dependencies for Project generator
  * [pyYAML](https://github.com/yaml/pyyaml)
  * [Setuptools](https://pypi.python.org/pypi/distribute)
  * [Jinja2](https://pypi.python.org/pypi/Jinja2)
+ * [xmltodict](https://pypi.python.org/pypi/xmltodict)

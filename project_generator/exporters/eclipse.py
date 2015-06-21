@@ -74,7 +74,7 @@ class EclipseGnuARMExporter(Exporter):
         data_for_make = data.copy()
 
         self.exporter.process_data_for_makefile(data_for_make, settings, "eclipse_makefile")
-        project_path, makefile = self.gen_file('makefile_gcc.tmpl', data_for_make, 'Makefile', data_for_make['output_dir']['path'])
+        project_path, makefile = self.gen_file_jinja('makefile_gcc.tmpl', data_for_make, 'Makefile', data_for_make['output_dir']['path'])
 
         expanded_dic = data.copy()
         expanded_dic['rel_path'] = data_for_make['output_dir']['rel_path']
@@ -85,8 +85,8 @@ class EclipseGnuARMExporter(Exporter):
         self.iterate(data, expanded_dic, data_for_make['rel_path'])
 
         # Project file
-        project_path, cproj = self.gen_file(
+        project_path, cproj = self.gen_file_jinja(
             'eclipse_makefile.cproject.tmpl', expanded_dic, '.cproject', data_for_make['output_dir']['path'])
-        project_path, projfile = self.gen_file(
+        project_path, projfile = self.gen_file_jinja(
             'eclipse.project.tmpl', expanded_dic, '.project', data_for_make['output_dir']['path'])
         return project_path, [projfile, cproj, makefile]
