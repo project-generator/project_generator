@@ -188,6 +188,9 @@ class IAREWARMExporter(Exporter):
         """ Processes groups and misc options specific for IAR, and run generator """
         expanded_dic = data.copy()
 
+        if 'misc' in expanded_dic:
+            print "Using deprecated misc options for iar. Please use template project files."
+
         groups = self.get_groups(data)
         expanded_dic['groups'] = {}
         for group in groups:

@@ -165,6 +165,8 @@ class UvisionExporter(Exporter):
         for group in groups:
             expanded_dic['groups'][group] = []
 
+        if 'misc' in expanded_dic:
+            print "Using deprecated misc options for uvision. Please use template project files."
 
         # get relative path and fix all paths within a project
         self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
