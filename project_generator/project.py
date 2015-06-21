@@ -72,9 +72,6 @@ class ToolSpecificSettings:
         self.template = None
 
     def add_settings(self, data_dictionary, group_name):
-        if 'source_paths' in data_dictionary:
-            self.source_paths.extend(data_dictionary['source_paths'])
-
         if 'sources' in data_dictionary:
             self._process_source_files(
                 data_dictionary['sources'], group_name)
