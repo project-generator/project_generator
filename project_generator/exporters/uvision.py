@@ -191,6 +191,7 @@ class UvisionExporter(Exporter):
         # TODO 0xc0170: support uvopt parsing
         uvopt_dic = self.definitions.uvopt_file
         uvopt_dic['ProjectOpt']['Target']['TargetName'] = expanded_dic['name']
+        uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
 
         self._uvproj_files_set(uvproj_dic, expanded_dic)
         self._uvproj_set_CommonProperty(uvproj_dic['Project']['Targets']['Target']['TargetOption']['CommonProperty'], expanded_dic)
