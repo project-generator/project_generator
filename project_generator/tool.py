@@ -168,5 +168,5 @@ def load_definitions(def_dir=None):
             command = ['git', 'pull', '--rebase' ,'origin', 'master']
             subprocess.call(command, cwd=definitions_directory)
         else:
-            command = ['git', 'clone', 'https://github.com/0xc0170/project_generator_definitions.git', definitions_directory]
+            command = ['git', 'clone', 'https://github.com/project-generator/project_generator_definitions.git', definitions_directory]
             subprocess.call(command, cwd=config_directory)
