@@ -11,217 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from collections import OrderedDict
 
 class uVisionDefinitions():
-    uvision_settings = {
-        # C/C++ settings
-        'Cads': {
-            'interw': 0,   # Execute-only code
-            'Optim': [0],  # Optimization level
-            'oTime': 0,    # Optimize for time
-            'SplitLS': 0,  # Split load and store multiple
-            'OneElfS': 0,  # One elf section per function
-            'Strict': 0,   # Strict ANSI C
-            'EnumInt': 0,  # Enum container always int
-            'PlainCh': 0,  # Plain char is signed
-            'Ropi': 0,     # Read-only position independent code
-            'Rwpi': 0,     # Read-write position independent code
-            'wLevel': 0,   # Warnings level
-            'uThumb': 0,   # Thumb mode
-            'uSurpInc': 0,  # No auto includes
-            'uC99': 0,     # C99 mode
-            'MiscControls': [],  # Misc controls
-        },
 
-        # Linker settings
-        'LDads': {
-            'umfTarg': 0,           # Use Memory from Target dialog window
-            'Ropi': 0,              # Make RO section position independent
-            'Rwpi': 0,              # Make RW section position independent
-            'noStLib': 0,           # Dont search Standard libraries
-            'RepFail': 0,           # Report might fail conditions as errors
-            'useFile': 0,
-            'TextAddressRange': 0,  # RO address range
-            'DataAddressRange': 0,  # RW address range
-            'IncludeLibs': 0,
-            'IncludeLibsPath': 0,
-            'Misc': [],             # Misc controls
-            'LinkerInputFile': 0,   # Scatter file
-            'DisabledWarnings': [], # Disable warnings
-        },
+    uvproj_file = OrderedDict([(u'Project', OrderedDict([(u'@xmlns:xsi', u'http://www.w3.org/2001/XMLSchema-instance'), (u'@xsi:noNamespaceSchemaLocation', u'project_proj.xsd'), (u'SchemaVersion', u'1.1'), (u'Header', u'### uVision Project, (C) Keil Software'), (u'Targets', OrderedDict([(u'Target', OrderedDict([(u'TargetName', u''), (u'ToolsetNumber', u'0x4'), (u'ToolsetName', u'ARM-ADS'), (u'TargetOption', OrderedDict([(u'TargetCommonOption', OrderedDict([(u'Device', u'LPC1768'), (u'Vendor', u'NXP'), (u'Cpu', u'IRAM(0x10000000-0x10007FFF) IRAM2(0x2007C000-0x20083FFF) IROM(0-0x7FFFF) CLOCK(12000000) CPUTYPE("Cortex-M3")'), (u'FlashUtilSpec', None), (u'StartupFile', None), (u'FlashDriverDll', u'UL2CM3(-O463 -S0 -C0 -FO7 -FD10000000 -FC800 -FN1 -FF0LPC_IAP_512 -FS00 -FL080000)'), (u'DeviceId', u'4868'), (u'RegisterFile', None), (u'MemoryEnv', None), (u'Cmp', None), (u'Asm', None), (u'Linker', None), (u'OHString', None), (u'InfinionOptionDll', None), (u'SLE66CMisc', None), (u'SLE66AMisc', None), (u'SLE66LinkerMisc', None), (u'SFDFile', u'SFD\\NXP\\LPC176x5x\\LPC176x5x.SFR'), (u'bCustSvd', u'0'), (u'UseEnv', u'0'), (u'BinPath', None), (u'IncludePath', None), (u'LibPath', None), (u'RegisterFilePath', None), (u'DBRegisterFilePath', None), (u'TargetStatus', OrderedDict([(u'Error', u'0'), (u'ExitCodeStop', u'0'), (u'ButtonStop', u'0'), (u'NotGenerated', u'0'), (u'InvalidFlash', u'1')])), (u'OutputDirectory', u'.\\build\\'), (u'OutputName', u''), (u'CreateExecutable', u'0'), (u'CreateLib', u'1'), (u'CreateHexFile', u'0'), (u'DebugInformation', u'1'), (u'BrowseInformation', u'1'), (u'ListingPath', u'.\\build'), (u'HexFormatSelection', u'1'), (u'Merge32K', u'0'), (u'CreateBatchFile', u'0'), (u'BeforeCompile', OrderedDict([(u'RunUserProg1', u'0'), (u'RunUserProg2', u'0'), (u'UserProg1Name', None), (u'UserProg2Name', None), (u'UserProg1Dos16Mode', u'0'), (u'UserProg2Dos16Mode', u'0'), (u'nStopU1X', u'0'), (u'nStopU2X', u'0')])), (u'BeforeMake', OrderedDict([(u'RunUserProg1', u'0'), (u'RunUserProg2', u'0'), (u'UserProg1Name', None), (u'UserProg2Name', None), (u'UserProg1Dos16Mode', u'0'), (u'UserProg2Dos16Mode', u'0'), (u'nStopB1X', u'0'), (u'nStopB2X', u'0')])), (u'AfterMake', OrderedDict([(u'RunUserProg1', u'0'), (u'RunUserProg2', u'0'), (u'UserProg1Name', None), (u'UserProg2Name', None), (u'UserProg1Dos16Mode', u'0'), (u'UserProg2Dos16Mode', u'0')])), (u'SelectedForBatchBuild', u'0'), (u'SVCSIdString', None)])), (u'CommonProperty', OrderedDict([(u'UseCPPCompiler', u'0'), (u'RVCTCodeConst', u'0'), (u'RVCTZI', u'0'), (u'RVCTOtherData', u'0'), (u'ModuleSelection', u'0'), (u'IncludeInBuild', u'0'), (u'AlwaysBuild', u'0'), (u'GenerateAssemblyFile', u'0'), (u'AssembleAssemblyFile', u'0'), (u'PublicsOnly', u'0'), (u'StopOnExitCode', u'0'), (u'CustomArgument', None), (u'IncludeLibraryModules', None), (u'ComprImg', u'1')])), (u'DllOption', OrderedDict([(u'SimDllName', u'SARMCM3.DLL'), (u'SimDllArguments', None), (u'SimDlgDll', u'DCM.DLL'), (u'SimDlgDllArguments', u'-pCM4'), (u'TargetDllName', u'SARMCM3.DLL'), (u'TargetDllArguments', u'-MPU'), (u'TargetDlgDll', u'TCM.DLL'), (u'TargetDlgDllArguments', u'-pCM4')])), (u'DebugOption', OrderedDict([(u'OPTHX', OrderedDict([(u'HexSelection', u'1'), (u'HexRangeLowAddress', u'0'), (u'HexRangeHighAddress', u'0'), (u'HexOffset', u'0'), (u'Oh166RecLen', u'16')])), (u'Simulator', OrderedDict([(u'UseSimulator', u'0'), (u'LoadApplicationAtStartup', u'1'), (u'RunToMain', u'1'), (u'RestoreBreakpoints', u'1'), (u'RestoreWatchpoints', u'1'), (u'RestoreMemoryDisplay', u'1'), (u'RestoreFunctions', u'1'), (u'RestoreToolbox', u'1'), (u'LimitSpeedToRealTime', u'0'), (u'RestoreSysVw', u'1')])), (u'Target', OrderedDict([(u'UseTarget', u'1'), (u'LoadApplicationAtStartup', u'1'), (u'RunToMain', u'1'), (u'RestoreBreakpoints', u'1'), (u'RestoreWatchpoints', u'1'), (u'RestoreMemoryDisplay', u'1'), (u'RestoreFunctions', u'0'), (u'RestoreToolbox', u'1'), (u'RestoreTracepoints', u'0'), (u'RestoreSysVw', u'1')])), (u'RunDebugAfterBuild', u'0'), (u'TargetSelection', u'12'), (u'SimDlls', OrderedDict([(u'CpuDll', None), (u'CpuDllArguments', None), (u'PeripheralDll', None), (u'PeripheralDllArguments', None), (u'InitializationFile', None)])), (u'TargetDlls', OrderedDict([(u'CpuDll', None), (u'CpuDllArguments', None), (u'PeripheralDll', None), (u'PeripheralDllArguments', None), (u'InitializationFile', None), (u'Driver', u'BIN\\CMSIS_AGDI.dll')]))])), (u'Utilities', OrderedDict([(u'Flash1', OrderedDict([(u'UseTargetDll', u'1'), (u'UseExternalTool', u'0'), (u'RunIndependent', u'0'), (u'UpdateFlashBeforeDebugging', u'1'), (u'Capability', u'1'), (u'DriverSelection', u'4105')])), (u'bUseTDR', u'1'), (u'Flash2', u'BIN\\CMSIS_AGDI.dll'), (u'Flash3', u'"" ()'), (u'Flash4', None), (u'pFcarmOut', None), (u'pFcarmGrp', None), (u'pFcArmRoot', None), (u'FcArmLst', u'0')])), (u'TargetArmAds', OrderedDict([(u'ArmAdsMisc', OrderedDict([(u'GenerateListings', u'0'), (u'asHll', u'1'), (u'asAsm', u'1'), (u'asMacX', u'1'), (u'asSyms', u'1'), (u'asFals', u'1'), (u'asDbgD', u'1'), (u'asForm', u'1'), (u'ldLst', u'0'), (u'ldmm', u'1'), (u'ldXref', u'1'), (u'BigEnd', u'0'), (u'AdsALst', u'1'), (u'AdsACrf', u'1'), (u'AdsANop', u'0'), (u'AdsANot', u'0'), (u'AdsLLst', u'1'), (u'AdsLmap', u'1'), (u'AdsLcgr', u'1'), (u'AdsLsym', u'1'), (u'AdsLszi', u'1'), (u'AdsLtoi', u'1'), (u'AdsLsun', u'1'), (u'AdsLven', u'1'), (u'AdsLsxf', u'1'), (u'RvctClst', u'0'), (u'GenPPlst', u'0'), (u'AdsCpuType', u'"Cortex-M3"'), (u'RvctDeviceName', None), (u'mOS', u'0'), (u'uocRom', u'0'), (u'uocRam', u'0'), (u'hadIROM', u'1'), (u'hadIRAM', u'1'), (u'hadXRAM', u'0'), (u'uocXRam', u'0'), (u'RvdsVP', u'0'), (u'hadIRAM2', u'1'), (u'hadIROM2', u'0'), (u'StupSel', u'8'), (u'useUlib', u'0'), (u'EndSel', u'0'), (u'uLtcg', u'0'), (u'RoSelD', u'3'), (u'RwSelD', u'3'), (u'CodeSel', u'0'), (u'OptFeed', u'0'), (u'NoZi1', u'0'), (u'NoZi2', u'0'), (u'NoZi3', u'0'), (u'NoZi4', u'0'), (u'NoZi5', u'0'), (u'Ro1Chk', u'0'), (u'Ro2Chk', u'0'), (u'Ro3Chk', u'0'), (u'Ir1Chk', u'1'), (u'Ir2Chk', u'0'), (u'Ra1Chk', u'0'), (u'Ra2Chk', u'0'), (u'Ra3Chk', u'0'), (u'Im1Chk', u'1'), (u'Im2Chk', u'0'), (u'OnChipMemories', OrderedDict([(u'Ocm1', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'Ocm2', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'Ocm3', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'Ocm4', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'Ocm5', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'Ocm6', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'IRAM', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x10000000'), (u'Size', u'0x8000')])), (u'IROM', OrderedDict([(u'Type', u'1'), (u'StartAddress', u'0x0'), (u'Size', u'0x80000')])), (u'XRAM', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'OCR_RVCT1', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'OCR_RVCT2', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'OCR_RVCT3', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'OCR_RVCT4', OrderedDict([(u'Type', u'1'), (u'StartAddress', u'0x0'), (u'Size', u'0x80000')])), (u'OCR_RVCT5', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'OCR_RVCT6', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'OCR_RVCT7', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'OCR_RVCT8', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x0'), (u'Size', u'0x0')])), (u'OCR_RVCT9', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x10000000'), (u'Size', u'0x8000')])), (u'OCR_RVCT10', OrderedDict([(u'Type', u'0'), (u'StartAddress', u'0x2007c000'), (u'Size', u'0x8000')]))])), (u'RvctStartVector', None)])), (u'Cads', OrderedDict([(u'interw', u'0'), (u'Optim', u'2'), (u'oTime', u'0'), (u'SplitLS', u'0'), (u'OneElfS', u'0'), (u'Strict', u'0'), (u'EnumInt', u'0'), (u'PlainCh', u'0'), (u'Ropi', u'0'), (u'Rwpi', u'0'), (u'wLevel', u'0'), (u'uThumb', u'0'), (u'uSurpInc', u'0'), (u'uC99', u'1'), (u'useXO', u'0'), (u'VariousControls', OrderedDict([(u'MiscControls', u''), (u'Define', None), (u'Undefine', None), (u'IncludePath', None)]))])), (u'Aads', OrderedDict([(u'interw', u'0'), (u'Ropi', u'0'), (u'Rwpi', u'0'), (u'thumb', u'0'), (u'SplitLS', u'0'), (u'SwStkChk', u'0'), (u'NoWarn', u'0'), (u'uSurpInc', u'0'), (u'useXO', u'0'), (u'VariousControls', OrderedDict([(u'MiscControls', None), (u'Define', None), (u'Undefine', None), (u'IncludePath', None)]))])), (u'LDads', OrderedDict([(u'umfTarg', u'0'), (u'Ropi', u'0'), (u'Rwpi', u'0'), (u'noStLib', u'0'), (u'RepFail', u'0'), (u'useFile', u'0'), (u'TextAddressRange', u'0'), (u'DataAddressRange', u'0'), (u'pXoBase', None), (u'ScatterFile', None), (u'IncludeLibs', None), (u'IncludeLibsPath', None), (u'Misc', None), (u'LinkerInputFile', None), (u'DisabledWarnings', None)]))]))])), (u'Groups', OrderedDict([(u'Group', OrderedDict([(u'GroupName', u'default'), (u'Files', None)]))]))]))]))]))])
+        # u'Project': {u'SchemaVersion': u'1.1', u'Header': u'### uVision Project, (C) Keil Software', u'Targets': {u'Target': {u'ToolsetNumber': u'0x4', u'ToolsetName': u'ARM-ADS', u'TargetName': u'lpc1768_blinky', u'TargetOption': {u'TargetCommonOption': {u'UseEnv': u'0', u'TargetStatus': {u'InvalidFlash': u'1', u'ExitCodeStop': u'0', u'NotGenerated': u'0', u'ButtonStop': u'0', u'Error': u'0'}, u'RegisterFile': None, u'LibPath': None, u'SFDFile': u'SFD\\NXP\\LPC176x5x\\LPC176x5x.SFR', u'BinPath': None, u'AfterMake': {u'RunUserProg2': u'0', u'UserProg1Dos16Mode': u'0', u'RunUserProg1': u'0', u'UserProg2Name': None, u'UserProg2Dos16Mode': u'0', u'UserProg1Name': None}, u'DBRegisterFilePath': None, u'BeforeMake': {u'RunUserProg2': u'0', u'UserProg1Dos16Mode': u'0', u'RunUserProg1': u'0', u'UserProg2Name': None, u'nStopB1X': u'0', u'nStopB2X': u'0', u'UserProg2Dos16Mode': u'0', u'UserProg1Name': None}, u'MemoryEnv': None, u'Vendor': u'NXP', u'SLE66AMisc': None, u'StartupFile': None, u'FlashUtilSpec': None, u'SLE66LinkerMisc': None, u'SVCSIdString': None, u'InfinionOptionDll': None, u'DebugInformation': u'1', u'Device': u'LPC1768', u'Asm': None, u'BrowseInformation': u'1', u'OutputName': u'lpc1768_blinky', u'bCustSvd': u'0', u'HexFormatSelection': u'1', u'ListingPath': u'.\\build\\lpc1768_blinky\\', u'CreateExecutable': u'0', u'BeforeCompile': {u'RunUserProg2': u'0', u'nStopU2X': u'0', u'UserProg1Dos16Mode': u'0', u'RunUserProg1': u'0', u'UserProg2Name': None, u'UserProg2Dos16Mode': u'0', u'nStopU1X': u'0', u'UserProg1Name': None}, u'OHString': None, u'CreateLib': u'1', u'SelectedForBatchBuild': u'0', u'OutputDirectory': u'.\\build\\', u'Cpu': u'IRAM(0x10000000-0x10007FFF) IRAM2(0x2007C000-0x20083FFF) IROM(0-0x7FFFF) CLOCK(12000000) CPUTYPE("Cortex-M3")', u'Merge32K': u'0', u'Cmp': None, u'CreateHexFile': u'0', u'CreateBatchFile': u'0', u'Linker': None, u'SLE66CMisc': None, u'DeviceId': u'4868', u'FlashDriverDll': u'UL2CM3(-O463 -S0 -C0 -FO7 -FD10000000 -FC800 -FN1 -FF0LPC_IAP_512 -FS00 -FL080000)', u'RegisterFilePath': None, u'IncludePath': None}, u'CommonProperty': {u'RVCTCodeConst': u'0', u'PublicsOnly': u'0', u'IncludeInBuild': u'0', u'CustomArgument': None, u'RVCTZI': u'0', u'GenerateAssemblyFile': u'0', u'ModuleSelection': u'0', u'ComprImg': u'1', u'RVCTOtherData': u'0', u'StopOnExitCode': u'0', u'UseCPPCompiler': u'0', u'AlwaysBuild': u'0', u'IncludeLibraryModules': None, u'AssembleAssemblyFile': u'0'}, u'DebugOption': {u'Target': {u'RestoreWatchpoints': u'1', u'RestoreTracepoints': u'0', u'UseTarget': u'1', u'LoadApplicationAtStartup': u'1', u'RunToMain': u'1', u'RestoreBreakpoints': u'1', u'RestoreFunctions': u'0', u'RestoreSysVw': u'1', u'RestoreToolbox': u'1', u'RestoreMemoryDisplay': u'1'}, u'Simulator': {u'RestoreWatchpoints': u'1', u'UseSimulator': u'0', u'LimitSpeedToRealTime': u'0', u'LoadApplicationAtStartup': u'1', u'RunToMain': u'1', u'RestoreBreakpoints': u'1', u'RestoreFunctions': u'1', u'RestoreSysVw': u'1', u'RestoreToolbox': u'1', u'RestoreMemoryDisplay': u'1'}, u'SimDlls': {u'CpuDll': None, u'CpuDllArguments': None, u'InitializationFile': None, u'PeripheralDllArguments': None, u'PeripheralDll': None}, u'TargetSelection': u'12', u'TargetDlls': {u'PeripheralDll': None, u'PeripheralDllArguments': None, u'CpuDll': None, u'InitializationFile': None, u'Driver': u'BIN\\CMSIS_AGDI.dll', u'CpuDllArguments': None}, u'RunDebugAfterBuild': u'0', u'OPTHX': {u'HexRangeLowAddress': u'0', u'HexSelection': u'1', u'HexRangeHighAddress': u'0', u'Oh166RecLen': u'16', u'HexOffset': u'0'}}, u'Utilities': {u'FcArmLst': u'0', u'pFcarmGrp': None, u'bUseTDR': u'1', u'Flash2': u'BIN\\CMSIS_AGDI.dll', u'Flash4': None, u'pFcArmRoot': None, u'Flash1': {u'Capability': u'1', u'DriverSelection': u'4105', u'RunIndependent': u'0', u'UpdateFlashBeforeDebugging': u'1', u'UseExternalTool': u'0', u'UseTargetDll': u'1'}, u'pFcarmOut': None, u'Flash3': u'"" ()'}, u'DllOption': {u'TargetDllName': u'SARMCM3.DLL', u'TargetDllArguments': u'-MPU', u'TargetDlgDll': u'TCM.DLL', u'TargetDlgDllArguments': u'-pCM4', u'SimDllName': u'SARMCM3.DLL', u'SimDllArguments': None, u'SimDlgDllArguments': u'-pCM4', u'SimDlgDll': u'DCM.DLL'}, u'TargetArmAds': {u'Aads': {u'SplitLS': u'0', u'SwStkChk': u'0', u'thumb': u'0', u'interw': u'0', u'VariousControls': {u'MiscControls': None, u'Define': None,  u'Undefine': None, u'IncludePath': None}, u'uSurpInc': u'0', u'NoWarn': u'0', u'Rwpi': u'0', u'useXO': u'0', u'Ropi': u'0'}, u'LDads': {u'noStLib': u'0', u'IncludeLibs': None, u'TextAddressRange': u'0', u'DisabledWarnings': None, u'RepFail': u'0', u'Misc': None, u'IncludeLibsPath': None, u'LinkerInputFile': None, u'pXoBase': None, u'ScatterFile': None, u'Rwpi': u'0', u'useFile': u'0', u'DataAddressRange': u'0', u'Ropi': u'0', u'umfTarg': u'0'}, u'Cads': {u'SplitLS': u'0', u'oTime': u'0', u'uThumb': u'0', u'Optim': u'2', u'wLevel': u'0', u'interw': u'0', u'VariousControls': {u'MiscControls': u'--debug -g --gnu', u'Define': None, u'Undefine': None, u'IncludePath': None}, u'uSurpInc': u'0', u'Strict': u'0', u'Rwpi': u'0', u'OneElfS': u'0', u'PlainCh': u'0', u'useXO': u'0', u'Ropi': u'0', u'uC99': u'1', u'EnumInt': u'0'}, u'ArmAdsMisc': {u'RvctStartVector': None, u'Ro1Chk': u'0', u'uocRom': u'0', u'mOS': u'0', u'hadIROM2': u'0', u'Ra3Chk': u'0', u'ldmm': u'1', u'AdsLszi': u'1', u'AdsLcgr': u'1', u'GenerateListings': u'0', u'RoSelD': u'3', u'asForm': u'1', u'asDbgD': u'1', u'Ro3Chk': u'0', u'hadIRAM': u'1', u'asSyms': u'1', u'Ra2Chk': u'0', u'AdsLsxf': u'1', u'AdsANop': u'0', u'AdsANot': u'0', u'uLtcg': u'0', u'Ra1Chk': u'0', u'NoZi4': u'0', u'RvctDeviceName': None, u'AdsACrf': u'1', u'AdsALst': u'1', u'OptFeed': u'0', u'AdsLmap': u'1', u'asMacX': u'1', u'Im2Chk': u'0', u'GenPPlst': u'0', u'AdsLtoi': u'1', u'AdsLsun': u'1', u'asAsm': u'1', u'AdsLven': u'1', u'RvdsVP': u'0', u'Ir2Chk': u'0', u'EndSel': u'0', u'Ir1Chk': u'1', u'hadIROM': u'1', u'ldLst': u'0', u'hadXRAM': u'0', u'StupSel': u'8', u'asFals': u'1', u'uocXRam': u'0', u'Ro2Chk': u'0', u'AdsCpuType': u'"Cortex-M3"', u'AdsLLst': u'1', u'ldXref': u'1', u'asHll': u'1', u'uocRam': u'0', u'AdsLsym': u'1', u'hadIRAM2': u'1', u'Im1Chk': u'1', u'NoZi5': u'0', u'NoZi2': u'0', u'NoZi3': u'0', u'RvctClst': u'0', u'NoZi1': u'0', u'useUlib': u'0', u'RwSelD': u'3', u'CodeSel': u'0', u'BigEnd': u'0'}}}, u'Groups': {u'Group': {u'Files': None, u'GroupName': u'default'}}}}}
 
-        # Assembly settings
-        'Aads': {
-            'interw': 0,           # Execute-only code
-            'Ropi': 0,             # RO position independent
-            'Rwpi': 0,             # RW position independent
-            'thumb': 0,            # Thumb mode
-            'SplitLS': 0,          # Split load and store multiple
-            'SwStkChk': 0,
-            'NoWarn': 0,           # No warnings
-            'uSurpInc': 0,         # No auto includes
-            'MiscControls': [],    # Misc controls
-            'Define': [],          # Define
-            'Undefine': 0,         # Undefine
-            'IncludePath': [],     # Include paths
-        },
+    uvopt_file = {
+        u'ProjectOpt': {u'Group': [{u'RteFlg': u'0', u'tvExp': u'0', u'cbSel': u'0', u'GroupName': u'default', u'File': {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'1', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\examples\\blinky\\main.cpp', u'FilenameWithoutPath': u'main.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'1', u'bShared': u'0'}, u'tvExpOptDlg': u'0'}, {u'RteFlg': u'0', u'tvExp': u'0', u'cbSel': u'0', u'GroupName': u'lpc1768_cmsis', u'File': [{u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'2', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\cmsis\\TARGET_NXP\\TARGET_LPC176X\\cmsis_nvic.c', u'FilenameWithoutPath': u'cmsis_nvic.c', u'tvExpOptDlg': u'0', u'FileNumber': u'2', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'2', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\cmsis\\TARGET_NXP\\TARGET_LPC176X\\system_LPC17xx.c', u'FilenameWithoutPath': u'system_LPC17xx.c', u'tvExpOptDlg': u'0', u'FileNumber': u'3', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'2', u'GroupNumber': u'2', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\cmsis\\TARGET_NXP\\TARGET_LPC176X\\TOOLCHAIN_ARM_STD\\startup_LPC17xx.s', u'FilenameWithoutPath': u'startup_LPC17xx.s', u'tvExpOptDlg': u'0', u'FileNumber': u'4', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'2', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\cmsis\\TARGET_NXP\\TARGET_LPC176X\\TOOLCHAIN_ARM_STD\\sys.cpp', u'FilenameWithoutPath': u'sys.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'5', u'bShared': u'0'}], u'tvExpOptDlg': u'0'}, {u'RteFlg': u'0', u'tvExp': u'0', u'cbSel': u'0', u'GroupName': u'lpc1768_hal', u'File': [{u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\analogin_api.c', u'FilenameWithoutPath': u'analogin_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'6', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\analogout_api.c', u'FilenameWithoutPath': u'analogout_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'7', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\can_api.c', u'FilenameWithoutPath': u'can_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'8', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\ethernet_api.c', u'FilenameWithoutPath': u'ethernet_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'9', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\gpio_api.c', u'FilenameWithoutPath': u'gpio_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'10', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\gpio_irq_api.c', u'FilenameWithoutPath': u'gpio_irq_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'11', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\i2c_api.c', u'FilenameWithoutPath': u'i2c_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'12', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\pinmap.c', u'FilenameWithoutPath': u'pinmap.c', u'tvExpOptDlg': u'0', u'FileNumber': u'13', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\port_api.c', u'FilenameWithoutPath': u'port_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'14', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\pwmout_api.c', u'FilenameWithoutPath': u'pwmout_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'15', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\rtc_api.c', u'FilenameWithoutPath': u'rtc_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'16', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\serial_api.c', u'FilenameWithoutPath': u'serial_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'17', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\sleep.c', u'FilenameWithoutPath': u'sleep.c', u'tvExpOptDlg': u'0', u'FileNumber': u'18', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\spi_api.c', u'FilenameWithoutPath': u'spi_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'19', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'3', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\targets\\hal\\TARGET_NXP\\TARGET_LPC176X\\us_ticker.c', u'FilenameWithoutPath': u'us_ticker.c', u'tvExpOptDlg': u'0', u'FileNumber': u'20', u'bShared': u'0'}], u'tvExpOptDlg': u'0'}, {u'RteFlg': u'0', u'tvExp': u'0', u'cbSel': u'0', u'GroupName': u'mbed_common', u'File': [{u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\assert.c', u'FilenameWithoutPath': u'assert.c', u'tvExpOptDlg': u'0', u'FileNumber': u'21', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\board.c', u'FilenameWithoutPath': u'board.c', u'tvExpOptDlg': u'0', u'FileNumber': u'22', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\error.c', u'FilenameWithoutPath': u'error.c', u'tvExpOptDlg': u'0', u'FileNumber': u'23', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\exit.c', u'FilenameWithoutPath': u'exit.c', u'tvExpOptDlg': u'0', u'FileNumber': u'24', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\gpio.c', u'FilenameWithoutPath': u'gpio.c', u'tvExpOptDlg': u'0', u'FileNumber': u'25', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\mbed_interface.c', u'FilenameWithoutPath': u'mbed_interface.c', u'tvExpOptDlg': u'0', u'FileNumber': u'26', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\pinmap_common.c', u'FilenameWithoutPath': u'pinmap_common.c', u'tvExpOptDlg': u'0', u'FileNumber': u'27', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\rtc_time.c', u'FilenameWithoutPath': u'rtc_time.c', u'tvExpOptDlg': u'0', u'FileNumber': u'28', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\semihost_api.c', u'FilenameWithoutPath': u'semihost_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'29', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\us_ticker_api.c', u'FilenameWithoutPath': u'us_ticker_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'30', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'1', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\wait_api.c', u'FilenameWithoutPath': u'wait_api.c', u'tvExpOptDlg': u'0', u'FileNumber': u'31', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\BusIn.cpp', u'FilenameWithoutPath': u'BusIn.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'32', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\BusInOut.cpp', u'FilenameWithoutPath': u'BusInOut.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'33', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\BusOut.cpp', u'FilenameWithoutPath': u'BusOut.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'34', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\CallChain.cpp', u'FilenameWithoutPath': u'CallChain.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'35', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\CAN.cpp', u'FilenameWithoutPath': u'CAN.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'36', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\Ethernet.cpp', u'FilenameWithoutPath': u'Ethernet.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'37', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\FileBase.cpp', u'FilenameWithoutPath': u'FileBase.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'38', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\FileLike.cpp', u'FilenameWithoutPath': u'FileLike.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'39', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\FilePath.cpp', u'FilenameWithoutPath': u'FilePath.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'40', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\FileSystemLike.cpp', u'FilenameWithoutPath': u'FileSystemLike.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'41', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\FunctionPointer.cpp', u'FilenameWithoutPath': u'FunctionPointer.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'42', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\I2C.cpp', u'FilenameWithoutPath': u'I2C.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'43', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\I2CSlave.cpp', u'FilenameWithoutPath': u'I2CSlave.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'44', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\InterruptIn.cpp', u'FilenameWithoutPath': u'InterruptIn.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'45', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\InterruptManager.cpp', u'FilenameWithoutPath': u'InterruptManager.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'46', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\LocalFileSystem.cpp', u'FilenameWithoutPath': u'LocalFileSystem.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'47', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\RawSerial.cpp', u'FilenameWithoutPath': u'RawSerial.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'48', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\retarget.cpp', u'FilenameWithoutPath': u'retarget.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'49', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\Serial.cpp', u'FilenameWithoutPath': u'Serial.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'50', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\SerialBase.cpp', u'FilenameWithoutPath': u'SerialBase.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'51', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\SPI.cpp', u'FilenameWithoutPath': u'SPI.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'52', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\SPISlave.cpp', u'FilenameWithoutPath': u'SPISlave.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'53', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\Stream.cpp', u'FilenameWithoutPath': u'Stream.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'54', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\Ticker.cpp', u'FilenameWithoutPath': u'Ticker.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'55', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\Timeout.cpp', u'FilenameWithoutPath': u'Timeout.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'56', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\Timer.cpp', u'FilenameWithoutPath': u'Timer.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'57', u'bShared': u'0'}, {u'RteFlg': u'0', u'FileType': u'8', u'GroupNumber': u'4', u'tvExp': u'0', u'Focus': u'0', u'bDave2': u'0', u'PathWithFileName': u'..\\..\\mbed\\libraries\\mbed\\common\\TimerEvent.cpp', u'FilenameWithoutPath': u'TimerEvent.cpp', u'tvExpOptDlg': u'0', u'FileNumber': u'58', u'bShared': u'0'}], u'tvExpOptDlg': u'0'}], u'Target': {u'ToolsetNumber': u'0x4', u'ToolsetName': u'ARM-ADS', u'TargetName': u'', u'TargetOption': {u'OPTLEX': {u'TabStop': u'8', u'PageLength': u'66', u'ListingPath': u'.\\build\\lpc1768_blinky\\', u'PageWidth': u'79'}, u'ListingPage': {u'LinkerCodeListing': u'0', u'CreateLListing': u'1', u'CreateAListing': u'1', u'AsmCond': u'1', u'AsmXref': u'0', u'CreateCListing': u'1', u'CreateIListing': u'0', u'AsmSymb': u'1', u'CListInc': u'0', u'CCond': u'1', u'CSymb': u'0', u'CCode': u'0'}, u'OPTFL': {u'tvExpOptDlg': u'0', u'tvExp': u'1', u'IsCurrentTarget': u'1'}, u'OPTTT': {u'RunTarget': u'0', u'gFlags': u'1', u'BeepAtEnd': u'1', u'RunSim': u'1', u'RunAbUc': u'0'}, u'LintExecutable': None, u'Tracepoint': {u'THDelay': u'0'}, u'DebugFlag': {u'TrcWin': u'0', u'aSym': u'0', u'aLa': u'0', u'aPa1': u'0', u'aCover': u'0', u'AscS2': u'0', u'AscS1': u'0', u'AscS4': u'0', u'aSer2': u'0', u'aSer3': u'0', u'aSer1': u'0', u'aSer4': u'0', u'aPa': u'0', u'trace': u'0', u'vrSel': u'0', u'viewmode': u'0', u'aTbox': u'0', u'newCpu': u'0', u'StkLoc': u'0', u'eProf': u'0', u'uProt': u'0', u'AscS3': u'0', u'periodic': u'0', u'aLwin': u'0'}, u'Books': {u'Book': [{u'Path': u'DATASHTS\\Freescale\\K20PB.pdf', u'Number': u'0', u'Title': u'Data Sheet'}, {u'Path': u'datashts\\arm\\cortex_m4\\r0p1\\DDI0439C_CORTEX_M4_R0P1_TRM.PDF', u'Number': u'1', u'Title': u'Technical Reference Manual'}, {u'Path': u'datashts\\arm\\cortex_m4\\r0p1\\DUI0553A_CORTEX_M4_DGUG.PDF', u'Number': u'2', u'Title': u'Generic User Guide'}]}, u'DebugOpt': {u'pMon': u'BIN\\CMSIS_AGDI.dll', u'tDll': None, u'tRwatch': u'1', u'uSim': u'0', u'sRfunc': u'1', u'sDlgDll': None, u'tDllPa': None, u'tRbox': u'1', u'sDll': None, u'tRtrace': u'0', u'tLdApp': u'1', u'sIfile': None, u'sRmem': u'1', u'sDllPa': None, u'sRwatch': u'1', u'sRSysVw': u'1', u'sLdApp': u'1', u'tRmem': u'1', u'tDlgPa': None, u'sRunDeb': u'0', u'tIfile': None, u'sGomain': u'1', u'sRbox': u'1', u'sDlgPa': None, u'uTrg': u'1', u'tDlgDll': None, u'sRbreak': u'1', u'tGomain': u'1', u'tRbreak': u'1', u'tRfunc': u'0', u'nTsel': u'12', u'sLrtime': u'0', u'tRSysVw': u'1'}, u'TargetDriverDllRegistry': {u'SetRegEntry': {u'Number': u'0', u'Key': u'UL2CM3', u'Name': u'UL2CM3(-O463 -S0 -C0 -FO7 -FD10000000 -FC800 -FN1 -FF0LPC_IAP_512 -FS00 -FL080000)'}}, u'Breakpoint': None, u'OPTXL': {u'LGenerateSymbols': u'1', u'LLibSym': u'1', u'LLines': u'1', u'LLocSym': u'1', u'LXref': u'0', u'LExpSel': u'0', u'LPubSym': u'1', u'LMap': u'1', u'LComments': u'1'}, u'CLKADS': u'12000000', u'CpuCode': u'14', u'OPTHX': {u'FlashByte': u'65535', u'HexRangeLowAddress': u'0', u'HexSelection': u'1', u'HexRangeHighAddress': u'0', u'HexOffset': u'0'}, u'LintConfigFile': None}}, u'DaveTm': {u'dwHighDateTime': u'0', u'dwLowDateTime': u'0'}, u'Header': u'### uVision Project, (C) Keil Software', u'Extensions': {u'lExt': u'*.lib', u'cExt': u'*.c', u'pExt': u'*.plm', u'tExt': u'*.txt; *.h; *.inc', u'CppX': u'*.cpp', u'aExt': u'*.s*; *.src; *.a*', u'oExt': u'*.obj', u'nMigrate': u'0'}}
+    }
 
-        # User settings
-        'TargetOption': {
-            'CreateExecutable': 0,     # Create executable
-            'CreateLib': 0,            # Create library
-            'CreateHexFile': 0,        # Create hex file
-            'DebugInformation': 0,     # Debug information
-            'BrowseInformation': 0,    # Browse information
-            'CreateBatchFile': 0,      # Create batch file
-            'BeforeCompile': {         # Run user program before compilation
-                'RunUserProg1': 0,     # Run #1
-                'UserProg1Name': 0,    # Program #1 name
-                'RunUserProg2': 0,     # Run #2
-                'UserProg2Name': 0,    # Program #2 name
-                'UserProg1Dos16Mode': 0,   # Dos16 mode for #1
-                'UserProg2Dos16Mode': 0,   # Dos16 mode for #2
+    debuggers = {
+        'cmsis-dap': {
+            'TargetDlls': {
+                'Driver' : 'BIN\CMSIS_AGDI.dll',
             },
-            'BeforeMake': {                # User programs before build
-                'RunUserProg1': 0,         # Run #1
-                'UserProg1Name': 0,        # Program #1 name
-                'RunUserProg2': 0,         # Run #2
-                'UserProg2Name': 0,        # Program #2 name
-                'UserProg1Dos16Mode': 0,   # Dos16 mode for #1
-                'UserProg2Dos16Mode': 0,   # Dos16 mode for #2
-            },
-            'AfterMake': {
-                'RunUserProg1': 0,         # Run #2
-                'UserProg1Name': 0,        # Program #1 name
-                'RunUserProg2': 0,         # Run #2
-                'UserProg2Name': 0,        # Program #2 name
-                'UserProg1Dos16Mode': 0,   # Dos16 mode for #1
-                'UserProg2Dos16Mode': 0,   # Dos16 mode for #2
-            }
         },
-
-        # Target settings
-        'ArmAdsMisc': {
-            'useUlib': 0,  # use MicroLIB
-            'NoZi1': 0,    #
-            'NoZi2': 0,
-            'NoZi3': 0,
-            'NoZi4': 0,
-            'NoZi5': 0,
-            'OCR_RVCT1': {
-                'Type': 0,
-                'StartAddress': 0,
-                'Size': 0,
+        'j-link': {
+            'TargetDlls': {
+                'Driver' : 'Segger\JL2CM3.dll',
             },
-            'OCR_RVCT2': {
-                'Type': 0,
-                'StartAddress': 0,
-                'Size': 0,
-            },
-            'OCR_RVCT3': {
-                'Type': 0,
-                'StartAddress': 0,
-                'Size': 0,
-            },
-            'OCR_RVCT4': {
-                'Type': 0,
-                'StartAddress': 0,
-                'Size': 0,
-            },
-            'OCR_RVCT5': {
-                'Type': 0,
-                'StartAddress': 0,
-                'Size': 0,
-            },
-            'OCR_RVCT6': {
-                'Type': 0,
-                'StartAddress': 0,
-                'Size': 0,
-            },
-            'OCR_RVCT7': {
-                'Type': 0,
-                'StartAddress': 0,
-                'Size': 0,
-            },
-            'OCR_RVCT8': {
-                'Type': 0,
-                'StartAddress': 0,
-                'Size': 0,
-            },
-            'OCR_RVCT9': {
-                'Type': 0,
-                'StartAddress': 0,
-                'Size': 0,
-            },
-            'OCR_RVCT10': {
-                'Type': 0,
-                'StartAddress': 0,
-                'Size': 0,
-            }
-        },
-
-        'CommonProperty': {
-            'UseCPPCompile': 0,    # Use CPP compiler for C files
-            'RVCTCodeConst': 0,
-            'RVCTZI': 0,
-            'RVCTOtherData': 0,
-            'ModuleSelection': 0,
-            'IncludeInBuild': 0,
-            'AlwaysBuild': 0,
-            'GenerateAssemblyFile': 0,
-            'AssembleAssemblyFile': 0,
-            'PublicsOnly': 0,
-            'StopOnExitCode': 0,
-            'CustomArgument': 0,
-            'IncludeLibraryModules': 0,
-        },
-
-        'DebugOption': {
-            'Simulator': {
-                'UseSimulator': 0,
-                'LoadApplicationAtStartup': 1,
-                'RunToMain': 1,
-                'RestoreBreakpoints': 1,
-                'RestoreWatchpoints': 1,
-                'RestoreMemoryDisplay': 1,
-                'RestoreFunctions': 1,
-                'RestoreToolbox': 1,
-                'LimitSpeedToRealTime': 0,
-            },
-            'Target': {
-                'UseTarget': 1,
-                'LoadApplicationAtStartup': 1,
-                'RunToMain': 1,
-                'RestoreBreakpoints': 1,
-                'RestoreWatchpoints': 1,
-                'RestoreMemoryDisplay': 1,
-                'RestoreFunctions': 1,
-                'RestoreToolbox': 1,
-                'RestoreTracepoints': 1,
-                'RestoreTracepoints': 1,
-                'RestoreTracepoints': 1,
-            },
-            'RunDebugAfterBuild': 0,
-            'TargetSelection': 0,
-        },
-
-        'Utilities': {
-            'Flash1': {
-                'UseTargetDll': 0,
-                'UseExternalTool': 0,
-                'RunIndependent': 0,
-                'UpdateFlashBeforeDebugging': 0,
-                'Capability': 0,
-                'DriverSelection': 0,
-            },
-            'bUseTDR': 1,
-            'Flash2': 'BIN\CMSIS_AGDI.dll',
-            'Flash3': 0,
-            'Flash4': 0,
-            'pFcarmOut': 0,
-            'pFcarmGrp': 0,
-            'pFcArmRoot': 0,
-            'FcArmLst': 0,
         }
     }

@@ -27,12 +27,12 @@ def run(args):
     root = os.getcwd()
 
     directory = root if not args.directory else os.path.join(root, args.directory)
-    Project.scrape_dir(root, directory, args.name, args.target, args.sources)
+    Project.create_yaml(root, directory, args.name, args.target, args.sources)
 
 
 def setup(subparser):
     subparser.add_argument(
-        'name', help='Project name')
+        '-name', help='Project name')
     subparser.add_argument(
         '-tar', '--target', action='store', help='Target definition')
     subparser.add_argument(

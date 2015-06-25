@@ -1,60 +1,61 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
-  This project was exported via the project generator.  More information https://github.com/0xc0170/project_generator
+  This project was exported via the project generator.  More information https://github.com/project-generator/project_generator
 -->
-<Project version="2G - 1.7.5" name="{{name}}">
-  <Target name="{{name}}" isCurrent="1">
-    <Device manufacturerId="{{coide_settings['Device']['manufacturerId']}}" manufacturerName="{{coide_settings['Device']['manufacturerName']}}" chipId="{{coide_settings['Device']['chipId']}}" chipName="{{coide_settings['Device']['chipName']}}" boardId="" boardName=""/>
+<Project version="2G - 1.7.5" name="{{Project['@name']}}">
+  <Target name="{{Project['@name']}}" isCurrent="1">
+    <Device manufacturerId="{{Project['Target']['Device']['@manufacturerId']}}" manufacturerName="{{Project['Target']['Device']['@manufacturerName']}}" chipId="{{Project['Target']['Device']['@chipId']}}" chipName="{{Project['Target']['Device']['@chipName']}}" boardId="" boardName=""/>
     <BuildOption>
       <Compile>
-        <Option name="OptimizationLevel" value="{{coide_settings['Compile']['OptimizationLevel']}}"/>
-        <Option name="UseFPU" value="0"/>
-        <Option name="UserEditCompiler" value="{% for flag in coide_settings['Compile']['UserEditCompiler'] %}-{{flag}};{% endfor%}"/>
+        <Option name="OptimizationLevel" value="{{Project['Target']['BuildOption']['Compile']['Option'][0]['@value']}}"/>
+        <Option name="UseFPU" value="{{Project['Target']['BuildOption']['Compile']['Option'][1]['@value']}}"/>
+        <Option name="UserEditCompiler" value="{{Project['Target']['BuildOption']['Compile']['Option'][2]['@value']}}"/>
         <Includepaths>
-          {% for path in include_paths %} <Includepath path="{{path}}"/>{% endfor %}
+          {% for path in Project['Target']['BuildOption']['Compile']['Includepaths']['Includepath'] %} <Includepath path="{{path['@path']}}"/>{% endfor %}
         </Includepaths>
         <DefinedSymbols>
-          {% for s in macros %} <Define name="{{s}}"/>{% endfor %}
+          {% for s in Project['Target']['BuildOption']['Compile']['DefinedSymbols']['Define'] %} <Define name="{{s['@name']}}"/>{% endfor %}
         </DefinedSymbols>
       </Compile>
-      <Link useDefault="0">
-        <Option name="DiscardUnusedSection" value="{{coide_settings['Link']['DiscardUnusedSection']}}"/>
-        <Option name="UserEditLinkder" value=""/>
-        <Option name="UseMemoryLayout" value="{{coide_settings['Link']['UseMemoryLayout']}}"/>
-        <Option name="LTO" value="coide_settings['Link']['LTO']"/>
-        <Option name="IsNewStartupCode" value="{{coide_settings['Link']['IsNewStartupCode']}}"/>
-        <Option name="Library" value="Not use C Library"/>
-        <Option name="nostartfiles" value="{{coide_settings['Link']['nostartfiles']}}"/>
-        <Option name="UserEditLinker" value=" {% for option in coide_settings['Link']['UserEditLinker'] %}
-        {{option}}; {% endfor %} {% for file in object_files %}
+      <Link useDefault="{{Project['Target']['BuildOption']['Link']['@useDefault']}}">
+        <Option name="DiscardUnusedSection" value="{{Project['Target']['BuildOption']['Link']['Option'][0]['@value']}}"/>
+        <Option name="UserEditLinkder" value="{{Project['Target']['BuildOption']['Link']['Option'][1]['@value']}}"/>
+        <Option name="UseMemoryLayout" value="{{Project['Target']['BuildOption']['Link']['Option'][2]['@value']}}"/>
+        <Option name="LTO" value="{{Project['Target']['BuildOption']['Link']['Option'][3]['@value']}}"/>
+        <Option name="IsNewStartupCode" value="{{Project['Target']['BuildOption']['Link']['Option'][4]['@value']}}"/>
+        <Option name="Library" value="{{Project['Target']['BuildOption']['Link']['Option'][5]['@value']}}"/>
+        <Option name="nostartfiles" value="{{Project['Target']['BuildOption']['Link']['Option'][6]['@value']}}"/>
+        <Option name="Printf" value="{{Project['Target']['BuildOption']['Link']['Option'][8]['@value']}}"/>
+        <Option name="Scanf" value="{{Project['Target']['BuildOption']['Link']['Option'][9]['@value']}}"/>
+        <Option name="UserEditLinker" value=" {{Project['Target']['BuildOption']['Link']['Option'][7]['@value'] }} {% for file in object_files %}
         ${project.path}/{{file}}; {% endfor %} {% for p in library_paths %}-L${project.path}/{{p}}; {% endfor %}"/>
         <LinkedLibraries>
-          {% for lib in coide_settings['Link']['LinkedLibraries'] %}
-          <Libset dir="" libs="{{lib}}"/>
+          {% for lib in Project['Target']['BuildOption']['Link']['LinkedLibraries']['Libset'] %}
+          <Libset dir="" libs="{{lib['@libs']}}"/>
           {% endfor %}
         </LinkedLibraries>
         <MemoryAreas debugInFlashNotRAM="1">
-          <Memory name="IROM1" type="ReadOnly" size="{{coide_settings['MemoryAreas']['IROM1']['size']}}" startValue="MemoryAreas['IROM1']['startValue']"/>
-          <Memory name="IRAM1" type="ReadWrite" size="{{coide_settings['MemoryAreas']['IRAM1']['size']}}" startValue="{{coide_settings['MemoryAreas']['IRAM1']['startValue']}}"/>
-          <Memory name="IROM2" type="ReadOnly" size="{{coide_settings['MemoryAreas']['IROM2']['size']}}" startValue="{{coide_settings['MemoryAreas']['IROM2']['startValue']}}"/>
-          <Memory name="IRAM2" type="ReadWrite" size="{{coide_settings['MemoryAreas']['IRAM2']['size']}}" startValue="{{coide_settings['MemoryAreas']['IRAM2']['startValue']}}"/>
+          <Memory name="IROM1" type="ReadOnly" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][0]['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][0]['startValue']}}"/>
+          <Memory name="IRAM1" type="ReadWrite" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][1]['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][1]['startValue']}}"/>
+          <Memory name="IROM2" type="ReadOnly" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][2]['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][2]['startValue']}}"/>
+          <Memory name="IRAM2" type="ReadWrite" size="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][3]['size']}}" startValue="{{Project['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][3]['startValue']}}"/>
         </MemoryAreas>
-        <LocateLinkFile path="{{linker_file}}" type="0"/>
+        <LocateLinkFile path="{{Project['Target']['BuildOption']['Link']['LocateLinkFile']['@path']}}" type="{{Project['Target']['BuildOption']['Link']['LocateLinkFile']['@type']}}"/>
       </Link>
       <Output>
-        <Option name="OutputFileType" value="{% if output_type == 'exe' %}0{% else %}1{% endif %}"/>
+        <Option name="OutputFileType" value="{{Project['Target']['BuildOption']['Output']['Option'][0]['@value']}}"/>
         <Option name="Path" value="./"/>
-        <Option name="Name" value="{{name}}"/>
-        <Option name="HEX" value="{{coide_settings['Output']['HEX']}}"/>
-        <Option name="BIN" value="{{coide_settings['Output']['BIN']}}"/>
+        <Option name="Name" value="{{Project['Target']['BuildOption']['Output']['Option'][2]['@value']}}"/>
+        <Option name="HEX" value="{{Project['Target']['BuildOption']['Output']['Option'][3]['@value']}}"/>
+        <Option name="BIN" value="{{Project['Target']['BuildOption']['Output']['Option'][4]['@value']}}"/>
       </Output>
       <User>
-        <UserRun name="Run#1" type="Before" checked="0" value="{{coide_settings['User']['UserRun']['Before']}}"/>
-        <UserRun name="Run#1" type="After" checked="0" value="{{coide_settings['User']['UserRun']['After']}}"/>
+        <UserRun name="Run#1" type="Before" checked="0" value="{{Project['Target']['BuildOption']['User']['UserRun'][0]['@value']}}"/>
+        <UserRun name="Run#1" type="After" checked="0" value="{{Project['Target']['BuildOption']['User']['UserRun'][1]['@value']}}"/>
       </User>
     </BuildOption>
     <DebugOption>
-      <Option name="org.coocox.codebugger.gdbjtag.core.adapter" value="CMSIS-DAP"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.adapter" value="{{Project['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']}}"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.debugMode" value="SWD"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.clockDiv" value="1M"/>
       <Option name="org.coocox.codebugger.gdbjtag.corerunToMain" value="1"/>
@@ -70,17 +71,14 @@
       <Option name="org.coocox.codebugger.gdbjtag.core.autoDownload" value="1"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.verify" value="1"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.downloadFuction" value="Erase Effected"/>
-      <Option name="org.coocox.codebugger.gdbjtag.core.defaultAlgorithm" value="{{coide_settings['DebugOption']['defaultAlgorithm']}}"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.defaultAlgorithm" value="{{Project['Target']['DebugOption']['defaultAlgorithm']}}"/>
     </DebugOption>
     <ExcludeFile/>
   </Target>
   <Components path="./"/>
   <Files>
-    {% for group_name, files in groups.items() %}
-    <File name="{{group_name}}" path="" type="2"/>
-    {% for file in files %}
-    <File name="{{group_name}}/{{file.name}}" path="{{file.path}}" type="{{file.type}}"/>
-    {% endfor %}
+    {% for file in Project['Files']['File'] %}
+    <File name="{{file['@name']}}" path="{{file['@path']}}" type="{{file['@type']}}"/>
     {% endfor %}
   </Files>
 </Project>

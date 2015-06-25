@@ -1,2 +1,4 @@
 pyYAML
 Jinja2
+argparse
+xmltodict

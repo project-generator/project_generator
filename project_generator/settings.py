@@ -1,4 +1,4 @@
-# Copyright 2014 0xc0170
+# Copyright 2014-2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,32 +35,39 @@ class ProjectSettings:
         """ This are default enviroment settings for build tools. To override,
         define them in the projects.yaml file. """
         self.paths = {}
+        self.templates = {}
         self.paths['uvision'] = os.environ.get('UV4') or join('C:', sep,
             'Keil', 'UV4', 'UV4.exe')
         self.paths['iar'] = os.environ.get('IARBUILD') or join(
             'C:', sep, 'Program Files (x86)',
             'IAR Systems', 'Embedded Workbench 7.0',
-            'common', 'bin', 'IarBuild.exe')
+            'common', 'bin')
         self.paths['gcc'] = os.environ.get('ARM_GCC_PATH') or ''
-        self.paths['definitions'] = join(expanduser('~/.pg'), 'definitions')
+        self.paths['definitions_default'] = join(expanduser('~/.pg'), 'definitions')
+        self.paths['definitions'] = self.paths['definitions_default']
         if not os.path.exists(join(expanduser('~/.pg'))):
             os.mkdir(join(expanduser('~/.pg')))
         self.generated_projects_dir_default = 'generated_projects'
         self.generated_projects_dir = self.generated_projects_dir_default
 
     def update(self, settings):
-        if 'tools' in settings:
-            for k, v in settings['tools'].items():
-                if k in self.paths:
-                    self.paths[k] = v['path'][0]
-        if 'definitions_dir' in settings:
-            self.paths['definitions'] = normpath(settings['definitions_dir'][0])
+        if settings:
+            if 'tools' in settings:
+                for k, v in settings['tools'].items():
+                    if k in self.paths:
+                        if 'path' in v.keys():
+                            self.paths[k] = v['path'][0]
+                    elif 'template' in v.keys():
+                        self.templates[k] = v['template']
 
-        if 'export_dir' in settings:
-            self.generated_projects_dir = normpath(settings['export_dir'][0])
+            if 'definitions_dir' in settings:
+                self.paths['definitions'] = normpath(settings['definitions_dir'][0])
 
-    def set_definitions_file(self, def_dir):
-        self.paths['definitions'] = def_dir
+            if 'export_dir' in settings:
+                self.generated_projects_dir = normpath(settings['export_dir'][0])
+
+    def update_definitions_dir(self, def_dir):
+        self.paths['definitions'] = normpath(def_dir)
 
     def get_env_settings(self, env_set):
         return self.paths[env_set]

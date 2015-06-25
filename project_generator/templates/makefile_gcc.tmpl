@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This project was exported via the project generator.  More information https://github.com/0xc0170/project_generator
+# This project was exported via the project generator.  More information https://github.com/project-generator/project_generator
 
 CPU = {{core}}
 
@@ -47,9 +47,9 @@ CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 LIBS = {% for library in source_files_lib %} -l{{library}} {% endfor %}
 
 # directories
-INC_DIRS = {% for path in include_paths %} {{path}} {% endfor %}
+INC_DIRS = {% for path in includes %} {{path}} {% endfor %}
 
-OUT_DIR = build
+OUT_DIR = {{build_dir}}
 
 INC_DIRS_F = -I. $(patsubst %, -I%, $(INC_DIRS))
 
