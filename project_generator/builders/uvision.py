@@ -16,7 +16,7 @@ import os
 import subprocess
 import logging
 
-from .builder import Builder
+from builder import Builder
 from os.path import join
 
 class UvisionBuilder(Builder):

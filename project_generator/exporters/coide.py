@@ -19,9 +19,9 @@ from os.path import basename, join, relpath, normpath
 from os import getcwd
 import xmltodict
 
-from .exporter import Exporter
-from .coide_definitions import CoIDEdefinitions
-from ..targets import Targets
+from exporter import Exporter
+from coide_definitions import CoIDEdefinitions
+from targets import Targets
 
 class CoideExporter(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',

@@ -17,7 +17,7 @@ import subprocess
 import logging
 import time
 
-from .builder import Builder
+from builder import Builder
 from os.path import join
 
 class IARBuilder(Builder):

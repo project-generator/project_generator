@@ -11,10 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from os.path import join, normpath, expanduser, splitext, isfile
-from os import getcwd, listdir
+from os.path import join, normpath, splitext, isfile
+from os import listdir
 import yaml
-import logging
 
 class Targets:
 

@@ -16,19 +16,19 @@ import os
 import logging
 import subprocess
 
-from .targets import Targets
+from targets import Targets
 
-from .builders.iar import IARBuilder
-from .builders.gccarm import MakefileGccArmBuilder
-from .builders.uvision import UvisionBuilder
-from .exporters.iar import IAREWARMExporter
-from .exporters.coide import CoideExporter
-from .exporters.gccarm import MakefileGccArmExporter
-from .exporters.uvision import UvisionExporter
-from .exporters.eclipse import EclipseGnuARMExporter
-from .exporters.gdb import GDBExporter
-from .exporters.gdb import ARMNoneEABIGDBExporter
-from .exporters.sublimetext import SublimeTextMakeGccARMExporter
+from builders.iar import IARBuilder
+from builders.gccarm import MakefileGccArmBuilder
+from builders.uvision import UvisionBuilder
+from exporters.iar import IAREWARMExporter
+from exporters.coide import CoideExporter
+from exporters.gccarm import MakefileGccArmExporter
+from exporters.uvision import UvisionExporter
+from exporters.eclipse import EclipseGnuARMExporter
+from exporters.gdb import GDBExporter
+from exporters.gdb import ARMNoneEABIGDBExporter
+from exporters.sublimetext import SublimeTextMakeGccARMExporter
 
 
 class ToolsSupported:

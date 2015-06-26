@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, relpath, join, normpath
+from os.path import join, normpath
 
-from .exporter import Exporter
-from ..targets import Targets
+from exporter import Exporter
+from targets import Targets
 
 class MakefileGccArmExporter(Exporter):
 

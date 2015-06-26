@@ -14,17 +14,16 @@
 
 import argparse
 import os
-import sys
 import logging
 import pkg_resources
 
-from . import init
-from . import clean
-from . import export
-from . import update
-from . import list_projects
-from . import build
-from . import flash
+import init
+import clean
+import export
+import update
+import list_projects
+import build
+import flash
 
 subcommands = {
     'init': init,

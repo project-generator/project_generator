@@ -12,18 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
 import shutil
 import logging
 
-from os.path import basename, join, relpath, normpath
+from os.path import basename, join, normpath
 from os import getcwd
 import xmltodict
 from collections import OrderedDict
 
-from .exporter import Exporter
-from .uvision_definitions import uVisionDefinitions
-from ..targets import Targets
+from exporter import Exporter
+from uvision_definitions import uVisionDefinitions
+from targets import Targets
 
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
@@ -187,10 +186,8 @@ class UvisionExporter(Exporter):
             uvproj_dic = xmltodict.parse(file(project_file))
         else:
             uvproj_dic = self.definitions.uvproj_file
+            print env_settings.templates.keys()
 
-        # TODO 0xc0170: support uvopt parsing
-        uvopt_dic = self.definitions.uvopt_file
-        uvopt_dic['ProjectOpt']['Target']['TargetName'] = expanded_dic['name']
         uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
 
         self._uvproj_files_set(uvproj_dic, expanded_dic)
@@ -231,10 +228,7 @@ class UvisionExporter(Exporter):
         project_path, projfile = self.gen_file_raw(
             uvproj_xml, '%s.uvproj' % data['name'], expanded_dic['output_dir']['path'])
 
-        uvopt_xml = xmltodict.unparse(uvopt_dic, pretty=True)
-        project_path, optfile = self.gen_file_raw(
-            uvopt_xml, '%s.uvopt' % data['name'], expanded_dic['output_dir']['path'])
-        return project_path, [projfile, optfile]
+        return project_path, [projfile]
 
     def fixup_executable(self, exe_path):
         new_exe_path = exe_path + '.axf'

@@ -13,10 +13,9 @@
 # limitations under the License.
 
 import os
-import sys
 import logging
 
-from .project import Project
+from project import Project
 
 help = 'Create a project record'
 

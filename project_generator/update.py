@@ -11,11 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import shutil
 import logging
 import subprocess
 
-from .settings import ProjectSettings
+from settings import ProjectSettings
 
 help = 'Update definitions source repository'
 
