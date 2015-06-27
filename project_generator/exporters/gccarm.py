@@ -14,8 +14,8 @@
 
 from os.path import join, normpath
 
-from exporter import Exporter
-from targets import Targets
+from .exporter import Exporter
+from ..targets import Targets
 
 class MakefileGccArmExporter(Exporter):
 

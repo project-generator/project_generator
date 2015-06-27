@@ -15,7 +15,7 @@
 import os
 import logging
 
-from project import Project
+from .project import Project
 
 help = 'Create a project record'
 

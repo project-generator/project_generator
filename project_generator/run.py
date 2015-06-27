@@ -1,3 +1,3 @@
-from main import main
+from project_generator.main import main
 
 main()

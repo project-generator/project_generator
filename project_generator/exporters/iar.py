@@ -19,9 +19,9 @@ import copy
 import logging
 import xmltodict
 
-from exporter import Exporter
-from iar_definitions import IARDefinitions
-from targets import Targets
+from .exporter import Exporter
+from .iar_definitions import IARDefinitions
+from ..targets import Targets
 
 class IAREWARMExporter(Exporter):
 

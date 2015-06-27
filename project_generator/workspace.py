@@ -14,10 +14,10 @@
 import yaml
 import logging
 
-from project import Project
-from settings import ProjectSettings
-from tool import ToolsSupported
-from targets import Targets
+from .project import Project
+from .settings import ProjectSettings
+from .tool import ToolsSupported
+from .targets import Targets
 
 class Workspace:
 

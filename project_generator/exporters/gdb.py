@@ -4,8 +4,8 @@
 # Licensed under the Apache License, Version 2.0
 # See LICENSE file for details.
 
-import gdb_definitions
-from exporter import Exporter
+from . import gdb_definitions
+from .exporter import Exporter
 
 class GDBExporter(Exporter):
     def generate(self, data, env_settings):

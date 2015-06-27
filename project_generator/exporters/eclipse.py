@@ -17,8 +17,8 @@ import copy
 # eclipse works with linux paths
 from posixpath import normpath, join, basename, relpath
 
-from exporter import Exporter
-from gccarm import MakefileGccArmExporter
+from .exporter import Exporter
+from .gccarm import MakefileGccArmExporter
 
 
 class EclipseGnuARMExporter(Exporter):

@@ -19,7 +19,7 @@ import operator
 
 from collections import defaultdict
 
-from tool import build, export, flash, ToolsSupported
+from .tool import build, export, flash, ToolsSupported
 
 try:
     input = raw_input

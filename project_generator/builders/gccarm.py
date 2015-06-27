@@ -15,7 +15,7 @@
 import subprocess
 import logging
 
-from builder import Builder
+from .builder import Builder
 from os.path import dirname
 
 class MakefileGccArmBuilder(Builder):
