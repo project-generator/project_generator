@@ -139,9 +139,9 @@ class UvisionExporter(Exporter):
     def _uvproj_set_Utilities(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)
 
-    def _uvxxx_files_set(self, uvxxx_dic_target, project_dic):
-        uvxxx_dic_target['Groups'] = OrderedDict()
-        uvxxx_dic_target['Groups']['Group'] = []
+    def _uvproj_files_set(self, uvproj_dic, project_dic):
+        uvproj_dic['Project']['Targets']['Target']['Groups'] = OrderedDict()
+        uvproj_dic['Project']['Targets']['Target']['Groups']['Group'] = []
         i = 0
         for group_name, files in project_dic['groups'].items():
             # Why OrderedDict() - uvision project requires an order. GroupName must be before Files,
@@ -151,9 +151,9 @@ class UvisionExporter(Exporter):
             group['GroupName'] = group_name
             # group['Files'] = {}
             group['Files'] = {'File' : []}
-            uvxxx_dic_target['Groups']['Group'].append(group)
+            uvproj_dic['Project']['Targets']['Target']['Groups']['Group'].append(group)
             for file in files:
-                uvxxx_dic_target['Groups']['Group'][i]['Files']['File'].append(file)
+                uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'].append(file)
             i = i + 1
 
     def generate(self, data, env_settings):
@@ -188,15 +188,9 @@ class UvisionExporter(Exporter):
         else:
             uvproj_dic = self.definitions.uvproj_file
 
-        # TODO 0xc0170: support uvopt parsing
-        uvopt_dic = self.definitions.uvopt_file
-        uvopt_dic['ProjectOpt']['Target']['TargetName'] = expanded_dic['name']
         uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
 
-        # Set files in uvopt and uvproj. uvopt contains more info which we might add, works for now as it is
-        self._uvxxx_files_set(uvproj_dic['Project']['Targets']['Target'], expanded_dic)
-        self._uvxxx_files_set(uvopt_dic['ProjectOpt'], expanded_dic)
-
+        self._uvproj_files_set(uvproj_dic, expanded_dic)
         self._uvproj_set_CommonProperty(uvproj_dic['Project']['Targets']['Target']['TargetOption']['CommonProperty'], expanded_dic)
         self._uvproj_set_DebugOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption'], expanded_dic)
         self._uvproj_set_DllOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['DllOption'], expanded_dic)
@@ -234,10 +228,7 @@ class UvisionExporter(Exporter):
         project_path, projfile = self.gen_file_raw(
             uvproj_xml, '%s.uvproj' % data['name'], expanded_dic['output_dir']['path'])
 
-        uvopt_xml = xmltodict.unparse(uvopt_dic, pretty=True)
-        project_path, optfile = self.gen_file_raw(
-            uvopt_xml, '%s.uvopt' % data['name'], expanded_dic['output_dir']['path'])
-        return project_path, [projfile, optfile]
+        return project_path, [projfile]
 
     def fixup_executable(self, exe_path):
         new_exe_path = exe_path + '.axf'
