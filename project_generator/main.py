@@ -14,7 +14,6 @@
 
 import argparse
 import os
-import sys
 import logging
 import pkg_resources
 
@@ -32,8 +31,8 @@ subcommands = {
     'clean': clean,
     'list': list_projects,
     'update': update,
-    'build' : build,
-    'flash' : flash,
+    'build': build,
+    'flash': flash,
 }
 
 

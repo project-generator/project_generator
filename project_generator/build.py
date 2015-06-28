@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import export
+import logging
+
 from .tool import build, ToolsSupported
 from .workspace import Workspace
 from .settings import ProjectSettings
-import export
 
 help = 'Build a project'
+
 
 def run(args):
     # Export if we know how, otherwise return
@@ -43,6 +46,7 @@ def run(args):
         project_files = [os.path.join(args.directory, args.project)]
         builder = ToolsSupported().get_value(args.tool, 'builder')
         build(builder, args.project, project_files, args.tool, project_settings)
+
 
 def setup(subparser):
     subparser.add_argument(

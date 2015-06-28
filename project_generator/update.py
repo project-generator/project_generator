@@ -10,14 +10,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import os
-import shutil
 import logging
 import subprocess
 
 from .settings import ProjectSettings
 
 help = 'Update definitions source repository'
+
 
 def update(force=False, settings=ProjectSettings()):
     defdir_exists = True
@@ -28,7 +29,8 @@ def update(force=False, settings=ProjectSettings()):
     # For default, use up to date repo from github
     if settings.get_env_settings('definitions') == settings.get_env_settings('definitions_default'):
         if not defdir_exists:
-            cmd = ('git', 'clone', '--quiet', 'https://github.com/project-generator/project_generator_definitions.git', '.')
+            cmd = ('git', 'clone', '--quiet',
+                   'https://github.com/project-generator/project_generator_definitions.git', '.')
             subprocess.call(cmd, cwd=settings.paths['definitions'])
         elif force:
             # rebase only if force, otherwise use the current version
@@ -46,8 +48,11 @@ def update(force=False, settings=ProjectSettings()):
                 cmd = ('git', 'pull', '--rebase', '--quiet', 'origin', 'master')
                 subprocess.call(cmd, cwd=settings.paths['definitions'])
 
+
 def run(args):
     update(args.source, args.force, args.copy)
 
+
 def setup(subparser):
-    subparser.add_argument('-f', '--force', action='store_true', help='Force update of the remote directory', default=True)
+    subparser.add_argument('-f', '--force', action='store_true',
+                           help='Force update of the remote directory', default=True)

@@ -16,8 +16,9 @@ import os
 import subprocess
 import logging
 
-from .builder import Builder
 from os.path import join
+from .builder import Builder
+
 
 class UvisionBuilder(Builder):
     ERRORLEVEL = {
@@ -55,11 +56,9 @@ class UvisionBuilder(Builder):
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
-                logging.error("Build failed with the status: %s" %
-                              self.ERRORLEVEL[ret_code])
+                logging.error("Build failed with the status: %s" % self.ERRORLEVEL[ret_code])
             else:
-                logging.info("Build succeeded with the status: %s" %
-                             self.ERRORLEVEL[ret_code])
+                logging.info("Build succeeded with the status: %s" % self.ERRORLEVEL[ret_code])
 
     def flash_project(self, proj_dic, project_name, project_files, env_settings):
         # > UV4 -f [project_path]

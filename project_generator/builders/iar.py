@@ -17,8 +17,9 @@ import subprocess
 import logging
 import time
 
-from .builder import Builder
 from os.path import join
+from .builder import Builder
+
 
 class IARBuilder(Builder):
 
@@ -26,7 +27,7 @@ class IARBuilder(Builder):
         # > IarBuild [project_path] -build [project_name]
         path = join(os.getcwd(), project_files[0])
         if path.split('.')[-1] != '.ewp':
-            path = path + '.ewp'
+            path += '.ewp'
         if not os.path.exists(path):
             logging.debug("The file: %s does not exists, exported prior building?" % path)
             return

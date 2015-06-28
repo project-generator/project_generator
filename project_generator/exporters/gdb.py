@@ -4,8 +4,9 @@
 # Licensed under the Apache License, Version 2.0
 # See LICENSE file for details.
 
-from . import gdb_definitions
 from .exporter import Exporter
+from . import gdb_definitions
+
 
 class GDBExporter(Exporter):
     def generate(self, data, env_settings):
@@ -19,6 +20,7 @@ class GDBExporter(Exporter):
     def is_supported_by_default(self, target):
         # does not require additional information
         return True
+
 
 class ARMNoneEABIGDBExporter(GDBExporter):
     SUPPORTED = gdb_definitions.SUPPORTED_MCUS

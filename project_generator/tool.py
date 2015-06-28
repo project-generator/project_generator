@@ -17,7 +17,6 @@ import logging
 import subprocess
 
 from .targets import Targets
-
 from .builders.iar import IARBuilder
 from .builders.gccarm import MakefileGccArmBuilder
 from .builders.uvision import UvisionBuilder
@@ -37,71 +36,71 @@ class ToolsSupported:
     # Tools dictionary, defines toolchain and all tools used
     TOOLS = {
         'iar_arm': {
-            'toolchain' : 'iar',
-            'toolnames' : ['iar_arm'],
-            'exporter' : IAREWARMExporter,
-            'builder' : IARBuilder,
-            'flasher' : IARBuilder,
+            'toolchain': 'iar',
+            'toolnames': ['iar_arm'],
+            'exporter': IAREWARMExporter,
+            'builder': IARBuilder,
+            'flasher': IARBuilder,
         },
         'uvision': {
-            'toolchain' : 'uvision',
-            'toolnames' : ['uvision'],
-            'exporter' : UvisionExporter,
-            'builder' : UvisionBuilder,
-            'flasher' : UvisionBuilder,
+            'toolchain': 'uvision',
+            'toolnames': ['uvision'],
+            'exporter': UvisionExporter,
+            'builder': UvisionBuilder,
+            'flasher': UvisionBuilder,
         },
         'coide': {
-            'toolchain' : 'gcc_arm',
-            'toolnames' : ['coide'],
-            'exporter' : CoideExporter,
-            'builder' : None,
-            'flasher' : None,
+            'toolchain': 'gcc_arm',
+            'toolnames': ['coide'],
+            'exporter': CoideExporter,
+            'builder': None,
+            'flasher': None,
         },
         'make_gcc_arm': {
-            'toolchain' : 'gcc_arm',
-            'toolnames' : ['make_gcc_arm'],
-            'exporter' : MakefileGccArmExporter,
-            'builder' : MakefileGccArmBuilder,
-            'flasher' : None,
+            'toolchain': 'gcc_arm',
+            'toolnames': ['make_gcc_arm'],
+            'exporter': MakefileGccArmExporter,
+            'builder': MakefileGccArmBuilder,
+            'flasher': None,
         },
         'eclipse_make_gcc_arm': {
-            'toolchain' : 'gcc_arm',
-            'toolnames' : ['eclipse_make_gcc_arm', 'make_gcc_arm'],
-            'exporter' : EclipseGnuARMExporter,
-            'builder' : None,
-            'flasher' : None,
+            'toolchain': 'gcc_arm',
+            'toolnames': ['eclipse_make_gcc_arm', 'make_gcc_arm'],
+            'exporter': EclipseGnuARMExporter,
+            'builder': None,
+            'flasher': None,
         },
-        'sublime_make_gcc_arm' : {
-            'toolchain' : 'gcc_arm',
-            'toolnames' : ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
-            'exporter' : SublimeTextMakeGccARMExporter,
-            'builder' : MakefileGccArmBuilder,
-            'flasher' : None,
+        'sublime_make_gcc_arm': {
+            'toolchain': 'gcc_arm',
+            'toolnames': ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
+            'exporter': SublimeTextMakeGccARMExporter,
+            'builder': MakefileGccArmBuilder,
+            'flasher': None,
         },
-        'sublime' : {
-            'toolchain' : None,
-            'toolnames' : ['sublime'],
-            'exporter' : None,
-            'builder' : None,
-            'flasher' : None,
+        'sublime': {
+            'toolchain': None,
+            'toolnames': ['sublime'],
+            'exporter': None,
+            'builder': None,
+            'flasher': None,
         },
-        'gdb' : {
-            'toolchain' : None,
-            'toolnames' : ['gdb'],
-            'exporter' : GDBExporter,
-            'builder' : None,
-            'flasher' : None,
+        'gdb': {
+            'toolchain': None,
+            'toolnames': ['gdb'],
+            'exporter': GDBExporter,
+            'builder': None,
+            'flasher': None,
         },
-        'arm_none_eabi_gdb' : {
-            'toolchain' : None,
-            'toolnames' : ['gdb'],
-            'exporter' : ARMNoneEABIGDBExporter,
-            'builder' : None,
-            'flasher' : None,
+        'arm_none_eabi_gdb': {
+            'toolchain': None,
+            'toolnames': ['gdb'],
+            'exporter': ARMNoneEABIGDBExporter,
+            'builder': None,
+            'flasher': None,
         },
     }
 
-    TOOLCHAINS = list(set([v['toolchain'] for k,v in TOOLS.items() if v['toolchain'] is not None]))
+    TOOLCHAINS = list(set([v['toolchain'] for k, v in TOOLS.items() if v['toolchain'] is not None]))
 
     def get_value(self, tool, key):
         try:
@@ -168,5 +167,6 @@ def load_definitions(def_dir=None):
             command = ['git', 'pull', '--rebase' ,'origin', 'master']
             subprocess.call(command, cwd=definitions_directory)
         else:
-            command = ['git', 'clone', 'https://github.com/project-generator/project_generator_definitions.git', definitions_directory]
+            command = ['git', 'clone',
+                       'https://github.com/project-generator/project_generator_definitions.git', definitions_directory]
             subprocess.call(command, cwd=config_directory)

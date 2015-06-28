@@ -21,11 +21,9 @@ GCC_BIN_PATH
 """
 
 import os
-from os.path import expanduser, normpath
 
-import yaml
+from os.path import expanduser, normpath, join, pardir, sep
 
-from os.path import join, pardir, sep
 
 class ProjectSettings:
     PROJECT_ROOT = os.environ.get('PROJECT_GENERATOR_ROOT') or join(pardir, pardir)

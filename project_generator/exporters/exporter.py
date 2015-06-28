@@ -11,17 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import os
 import logging
 
 from os.path import join, dirname
-from jinja2 import Template, StrictUndefined
+from jinja2 import Template
+
 
 class Exporter:
 
     """Just a template for subclassing"""
 
-    TEMPLATE_DIR = join(dirname(__file__), '..','templates')
+    TEMPLATE_DIR = join(dirname(__file__), '..', 'templates')
     DOT_IN_RELATIVE_PATH = False
 
     def gen_file_raw(self, target_text, output, dest_path):
@@ -42,7 +44,8 @@ class Exporter:
         """ Fills data to the project template, using jinja2. """
         template_path = join(self.TEMPLATE_DIR, template_file)
         template_text = open(template_path).read()
-        template = Template(template_text) # TODO: undefined=StrictUndefined - this needs fixes in templates
+        # TODO: undefined=StrictUndefined - this needs fixes in templates
+        template = Template(template_text)
         target_text = template.render(data)
 
         open(output, "w").write(target_text)
