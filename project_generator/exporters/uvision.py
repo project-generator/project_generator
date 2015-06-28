@@ -139,9 +139,9 @@ class UvisionExporter(Exporter):
     def _uvproj_set_Utilities(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)
 
-    def _uvproj_files_set(self, uvproj_dic, project_dic):
-        uvproj_dic['Project']['Targets']['Target']['Groups'] = OrderedDict()
-        uvproj_dic['Project']['Targets']['Target']['Groups']['Group'] = []
+    def _uvxxx_files_set(self, uvxxx_dic_target, project_dic):
+        uvxxx_dic_target['Groups'] = OrderedDict()
+        uvxxx_dic_target['Groups']['Group'] = []
         i = 0
         for group_name, files in project_dic['groups'].items():
             # Why OrderedDict() - uvision project requires an order. GroupName must be before Files,
@@ -151,9 +151,9 @@ class UvisionExporter(Exporter):
             group['GroupName'] = group_name
             # group['Files'] = {}
             group['Files'] = {'File' : []}
-            uvproj_dic['Project']['Targets']['Target']['Groups']['Group'].append(group)
+            uvxxx_dic_target['Groups']['Group'].append(group)
             for file in files:
-                uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'].append(file)
+                uvxxx_dic_target['Groups']['Group'][i]['Files']['File'].append(file)
             i = i + 1
 
     def generate(self, data, env_settings):
@@ -193,7 +193,10 @@ class UvisionExporter(Exporter):
         uvopt_dic['ProjectOpt']['Target']['TargetName'] = expanded_dic['name']
         uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
 
-        self._uvproj_files_set(uvproj_dic, expanded_dic)
+        # Set files in uvopt and uvproj. uvopt contains more info which we might add, works for now as it is
+        self._uvxxx_files_set(uvproj_dic['Project']['Targets']['Target'], expanded_dic)
+        self._uvxxx_files_set(uvopt_dic['ProjectOpt'], expanded_dic)
+
         self._uvproj_set_CommonProperty(uvproj_dic['Project']['Targets']['Target']['TargetOption']['CommonProperty'], expanded_dic)
         self._uvproj_set_DebugOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption'], expanded_dic)
         self._uvproj_set_DllOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['DllOption'], expanded_dic)
