@@ -188,9 +188,6 @@ class UvisionExporter(Exporter):
         else:
             uvproj_dic = self.definitions.uvproj_file
 
-        # TODO 0xc0170: support uvopt parsing
-        uvopt_dic = self.definitions.uvopt_file
-        uvopt_dic['ProjectOpt']['Target']['TargetName'] = expanded_dic['name']
         uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
 
         self._uvproj_files_set(uvproj_dic, expanded_dic)
@@ -231,10 +228,7 @@ class UvisionExporter(Exporter):
         project_path, projfile = self.gen_file_raw(
             uvproj_xml, '%s.uvproj' % data['name'], expanded_dic['output_dir']['path'])
 
-        uvopt_xml = xmltodict.unparse(uvopt_dic, pretty=True)
-        project_path, optfile = self.gen_file_raw(
-            uvopt_xml, '%s.uvopt' % data['name'], expanded_dic['output_dir']['path'])
-        return project_path, [projfile, optfile]
+        return project_path, [projfile]
 
     def fixup_executable(self, exe_path):
         new_exe_path = exe_path + '.axf'

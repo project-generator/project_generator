@@ -57,7 +57,7 @@ class ProjectSettings:
                     if k in self.paths:
                         if 'path' in v.keys():
                             self.paths[k] = v['path'][0]
-                    elif 'template' in v.keys():
+                    if 'template' in v.keys():
                         self.templates[k] = v['template']
 
             if 'definitions_dir' in settings:
