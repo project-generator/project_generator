@@ -2,6 +2,12 @@
 
 ## Projects
 
+A YAML dictionary consisting of one or projects, which each contain a list of YAML files, specified from the root directory of the project.
+
+## Modules
+
+Modules allow you to specify a group of records which can easily be reused between projects.
+
 ## Settings
 
 ### Toolchain Paths

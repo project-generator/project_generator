@@ -34,5 +34,5 @@ You can then use run.py just like you would use the command:
 python run.py --version
 ```
 
-To start using project_generator with a project, see the [getting started guide](getting_started.md).
+To start using project_generator with a project, see the [getting started guide](/user-guide/getting_started).
 

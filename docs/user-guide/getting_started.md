@@ -35,7 +35,7 @@ Here's an example directory tree for a typical Project Generator project, which 
 
 ## Projects File
 
-The Projects YAML file (by default projects.yaml) defines one or more projects for a repository, as well as environment settings for toolchains. Each project consists of a list of files which each define a module, which together build the project. By default, Project Generator includes sane defaults, which can be changed to fit your project.
+The Projects YAML file (by default projects.yaml) defines one or more projects for a repository, as well as toolchain environment settings. Each project consists of a list of record files, which together build the project. 
 
 The following example specifies one project, called `my_project`, which contains one module, called `main`, as well as specifying settings which allow Project Generator to use the iar toolchain.
 
@@ -51,7 +51,24 @@ settings:
                 - path/to/iar
 ```
 
-For more details about settings you can specify in projects.yaml, see the projects.yaml documentation **(TODO)**.
+For more details about settings you can specify in projects.yaml, see the [projects.yaml documentation](/reference/projects).
+
+### Advanced Use
+
+Over time you may find that your projects.yaml files become cluttered, with many repeated record files. In order to simplify things, you can specifiy modules, which are groups of records which can be included by a project.
+
+```yaml
+modules:
+	common: &common_module
+		- records/common/common.yaml
+		- records/common/other.yaml
+
+projects:
+	project_1:
+		- *common_modules
+		- records/project_1/a.yaml
+		- records/project_1/b.yaml
+```
 
 ## Project Records
 
