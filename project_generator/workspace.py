@@ -14,7 +14,7 @@
 import yaml
 import logging
 
-from .project import Project, flatten
+from .project import Project
 from .settings import ProjectSettings
 from .tool import ToolsSupported
 from .targets import Targets

@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
 import shutil
 import logging
 
-from os.path import basename, join, relpath, normpath
+from os.path import basename, join, normpath
 from os import getcwd
 import xmltodict
 from collections import OrderedDict
@@ -187,6 +186,7 @@ class UvisionExporter(Exporter):
             uvproj_dic = xmltodict.parse(file(project_file))
         else:
             uvproj_dic = self.definitions.uvproj_file
+            print env_settings.templates.keys()
 
         uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
 

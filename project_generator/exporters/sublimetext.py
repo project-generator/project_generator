@@ -12,11 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, normpath, join
-
 from .gccarm import MakefileGccArmExporter
-from .exporter import Exporter
-from ..targets import Targets
 
 class SublimeTextMakeGccARMExporter(MakefileGccArmExporter):
 

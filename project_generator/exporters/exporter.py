@@ -15,7 +15,7 @@ import os
 import logging
 
 from os.path import join, dirname
-from jinja2 import Template, StrictUndefined
+from jinja2 import Template
 
 class Exporter:
 
