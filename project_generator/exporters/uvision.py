@@ -169,7 +169,7 @@ class UvisionExporter(Exporter):
 
         # TODO 0xc0170: fix misc , its a list with a dictionary
         if 'misc' in expanded_dic and bool(expanded_dic['misc'][0]):
-            print "Using deprecated misc options for uvision. Please use template project files."
+            print ("Using deprecated misc options for uvision. Please use template project files.")
 
         # get relative path and fix all paths within a project
         self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
