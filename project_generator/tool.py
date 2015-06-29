@@ -101,6 +101,9 @@ class ToolsSupported:
     }
 
     TOOLCHAINS = list(set([v['toolchain'] for k, v in TOOLS.items() if v['toolchain'] is not None]))
+    EXPORTERS = list(set([v['exporter'] for k, v in TOOLS.items() if v['exporter'] is not None]))
+    BUILDERS = list(set([v['builder'] for k, v in TOOLS.items() if v['builder'] is not None]))
+    FLASHERS = list(set([v['flasher'] for k, v in TOOLS.items() if v['flasher'] is not None]))
 
     def get_value(self, tool, key):
         try:
@@ -114,43 +117,44 @@ class ToolsSupported:
 
 def export(exporter, data, tool, env_settings):
     """ Invokes tool generator. """
-    try:
-        project_path, projectfiles = exporter().generate(data, env_settings)
-    except TypeError:
+    if exporter not in ToolsSupported().EXPORTERS:
         raise RuntimeError("Exporter does not support specified tool: %s" % tool)
-    return project_path, projectfiles
+    else:
+        project_path, projectfiles = exporter().generate(data, env_settings)
+        return project_path, projectfiles
 
 def fixup_executable(exporter, executable_path, tool):
     """ Perform any munging of the executable necessary to debug it with the specified tool. """
-    try:
-        return exporter().fixup_executable(executable_path)
-    except TypeError:
+    if exporter not in ToolsSupported().EXPORTERS:
         raise RuntimeError("Exporter does not support specified tool: %s" % tool)
+    else:
+        return exporter().fixup_executable(executable_path)
 
 def target_supported(exporter, target, tool, env_settings):
-    try:
-        supported = exporter().is_supported_by_default(target)
-    except TypeError:
+    # TODO 0xc0170: fix, target supported goes to the tool, not exporter
+    if exporter not in ToolsSupported().EXPORTERS:
         raise RuntimeError("Target does not support specified tool: %s" % tool)
-    # target requires further definitions for exporter
-    if not supported:
-        Target = Targets(env_settings.get_env_settings('definitions'))
-        supported = Target.is_supported(target, tool)
-    return supported
+    else:
+        supported = exporter().is_supported_by_default(target)
+        # target requires further definitions for exporter
+        if not supported:
+            Target = Targets(env_settings.get_env_settings('definitions'))
+            supported = Target.is_supported(target, tool)
+        return supported
 
 def build(builder, project_name, project_files, tool, env_settings):
     """ Invokes builder for specified tool. """
-    try:
-        builder().build_project(project_name, project_files, env_settings)
-    except TypeError:
+    if builder not in ToolsSupported().BUILDERS:
         raise RuntimeError("Builder does not support specified tool: %s" % tool)
+    else:
+        builder().build_project(project_name, project_files, env_settings)
 
 def flash(flasher, proj_dic, project_name, project_files, tool, env_settings):
     """ Invokes flasher for specified tool. """
-    try:
-        flasher().flash_project(proj_dic, project_name, project_files, env_settings)
-    except TypeError:
+    if builder not in ToolsSupported().FLASHERS:
         raise RuntimeError("Flasher does not support specified tool: %s" % tool)
+    else:
+        flasher().flash_project(proj_dic, project_name, project_files, env_settings)
 
 def load_definitions(def_dir=None):
     definitions_directory = def_dir
