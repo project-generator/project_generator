@@ -207,22 +207,24 @@ class UvisionExporter(Exporter):
         self._uvproj_set_Utilities(
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities'], expanded_dic)
 
-        target = Targets(env_settings.get_env_settings('definitions'))
-        if not target.is_supported(expanded_dic['target'].lower(), 'uvision'):
-            raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-        mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'uvision')
-        if not mcu_def_dic:
-             raise RuntimeError(
-                "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
-        # self.normalize_mcu_def(mcu_def_dic)
-        logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        # self.append_mcu_def(expanded_dic, mcu_def_dic)
-        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
-        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
-        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
-        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
-        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
-        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
+        # set target only if defined, otherwise use from template/default one
+        if expanded_dic['target']:
+            target = Targets(env_settings.get_env_settings('definitions'))
+            if not target.is_supported(expanded_dic['target'].lower(), 'uvision'):
+                raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
+            mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'uvision')
+            if not mcu_def_dic:
+                 raise RuntimeError(
+                    "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
+            # self.normalize_mcu_def(mcu_def_dic)
+            logging.debug("Mcu definitions: %s" % mcu_def_dic)
+            # self.append_mcu_def(expanded_dic, mcu_def_dic)
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
 
         # load debugger
         if expanded_dic['debugger']:

@@ -165,33 +165,35 @@ class CoideExporter(Exporter):
         self._coproj_set_includepaths(coproj_dic, expanded_dic)
         self._coproj_set_linker(coproj_dic, expanded_dic)
 
-        target = Targets(env_settings.get_env_settings('definitions'))
-        if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
-            raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-        mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'coide')
-        if not mcu_def_dic:
-             raise RuntimeError(
-                "Mcu definitions were not found for %s. Please add them to https://github.com/0xc0170/project_generator_definitions"
-                % expanded_dic['target'].lower())
-        self.normalize_mcu_def(mcu_def_dic)
-        logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        # correct attributes from definition, as yaml does not allowed multiple keys (=dict), we need to
-        # do this magic.
-        for k, v in mcu_def_dic['Device'].items():
-            del mcu_def_dic['Device'][k]
-            mcu_def_dic['Device']['@' + k] = str(v)
-        memory_areas = []
-        for k, v in mcu_def_dic['MemoryAreas'].items():
-            # ??? duplicate use of k
-            for k, att in v.items():
-                del v[k]
-                v['@' + k] = str(att)
-            memory_areas.append(v)
+        # set target only if defined, otherwise use from template/default one
+        if expanded_dic['target']:
+            target = Targets(env_settings.get_env_settings('definitions'))
+            if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
+                raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
+            mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'coide')
+            if not mcu_def_dic:
+                 raise RuntimeError(
+                    "Mcu definitions were not found for %s. Please add them to https://github.com/0xc0170/project_generator_definitions"
+                    % expanded_dic['target'].lower())
+            self.normalize_mcu_def(mcu_def_dic)
+            logging.debug("Mcu definitions: %s" % mcu_def_dic)
+            # correct attributes from definition, as yaml does not allowed multiple keys (=dict), we need to
+            # do this magic.
+            for k, v in mcu_def_dic['Device'].items():
+                del mcu_def_dic['Device'][k]
+                mcu_def_dic['Device']['@' + k] = str(v)
+            memory_areas = []
+            for k, v in mcu_def_dic['MemoryAreas'].items():
+                # ??? duplicate use of k
+                for k, att in v.items():
+                    del v[k]
+                    v['@' + k] = str(att)
+                memory_areas.append(v)
 
-        coproj_dic['Project']['Target']['Device'].update(mcu_def_dic['Device'])
-        # TODO 0xc0170: fix debug options
-        # coproj_dic['Project']['Target']['DebugOption'].update(mcu_def_dic['DebugOption'])
-        coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'] = memory_areas
+            coproj_dic['Project']['Target']['Device'].update(mcu_def_dic['Device'])
+            # TODO 0xc0170: fix debug options
+            # coproj_dic['Project']['Target']['DebugOption'].update(mcu_def_dic['DebugOption'])
+            coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'] = memory_areas
 
         # get debugger definitions
         if expanded_dic['debugger']:

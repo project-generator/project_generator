@@ -237,21 +237,23 @@ class IAREWARMExporter(Exporter):
         self._ewp_ilink_set(ewp_dic, expanded_dic)
         self._ewp_files_set(ewp_dic, expanded_dic)
 
-        # get target definition (target + mcu)
-        target = Targets(env_settings.get_env_settings('definitions'))
-        if not target.is_supported(expanded_dic['target'].lower(), 'iar'):
-            raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-        mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'iar')
-        if not mcu_def_dic:
-             raise RuntimeError(
-                "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
-        self.normalize_mcu_def(mcu_def_dic)
-        logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['OGChipSelectEditMenu']['state'])
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGCoreOrChip')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['OGCoreOrChip']['state'])
+        # set target only if defined, otherwise use from template/default one
+        if expanded_dic['target']:
+            # get target definition (target + mcu)
+            target = Targets(env_settings.get_env_settings('definitions'))
+            if not target.is_supported(expanded_dic['target'].lower(), 'iar'):
+                raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
+            mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'iar')
+            if not mcu_def_dic:
+                 raise RuntimeError(
+                    "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
+            self.normalize_mcu_def(mcu_def_dic)
+            logging.debug("Mcu definitions: %s" % mcu_def_dic)
+            index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
+            index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
+            self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['OGChipSelectEditMenu']['state'])
+            index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGCoreOrChip')
+            self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['OGCoreOrChip']['state'])
 
         # overwrite debugger only if defined in the project file, otherwise use either default or from template
         if expanded_dic['debugger']:
