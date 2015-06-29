@@ -20,12 +20,12 @@ from os import getcwd
 from os.path import join, normpath
 from .exporter import Exporter
 from ..targets import Targets
-from ..tools.iar import IAREWARM
+from ..tools.iar import IAREmbeddedWorkbench
 
-class IAREWARMExporter(Exporter, IAREWARM):
+class IAREmbeddedWorkbenchARMExporter(Exporter, IAREmbeddedWorkbench):
 
     def __init__(self):
-        IAREWARM.__init__(self)
+        IAREmbeddedWorkbench.__init__(self)
 
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for IAR, and run generator """

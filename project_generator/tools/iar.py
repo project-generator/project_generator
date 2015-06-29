@@ -18,7 +18,7 @@ from os.path import join, normpath
 
 from .iar_definitions import IARDefinitions
 
-class IAREWARM:
+class IAREmbeddedWorkbench:
 
     source_files_dic = [
         'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
