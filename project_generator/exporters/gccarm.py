@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, relpath, join, normpath
-
+from os.path import join, normpath
 from .exporter import Exporter
 from ..targets import Targets
+
 
 class MakefileGccArmExporter(Exporter):
 
@@ -88,17 +88,20 @@ class MakefileGccArmExporter(Exporter):
         fixed_paths = []
         for path in data['includes']:
             fixed_paths.append(join(data['output_dir']['rel_path'], normpath(path)))
+
         data['includes'] = fixed_paths
-        fixed_paths = []
         for k in data['source_files_lib'][0].keys():
-            data['source_files_lib'][0][k] = [join(data['output_dir']['rel_path'], normpath(path)) for path in data['source_files_lib'][0][k]]
+            data['source_files_lib'][0][k] = [join(data['output_dir']['rel_path'],
+                                                   normpath(path)) for path in data['source_files_lib'][0][k]]
 
         for k in data['source_files_obj'][0].keys():
-            data['source_files_obj'][0][k] = [join(data['output_dir']['rel_path'], normpath(path)) for path in data['source_files_obj'][0][k]]
+            data['source_files_obj'][0][k] = [join(data['output_dir']['rel_path'],
+                                                   normpath(path)) for path in data['source_files_obj'][0][k]]
 
         fixed_paths = []
         for path in data['source_paths']:
             fixed_paths.append(join(data['output_dir']['rel_path'], normpath(path)))
+
         data['source_paths'] = fixed_paths
         if data['linker_file']:
             data['linker_file'] = join(data['output_dir']['rel_path'], normpath(data['linker_file']))
@@ -125,7 +128,7 @@ class MakefileGccArmExporter(Exporter):
             data['core'] = target.get_mcu_core(data['target'])[0]
         else:
             raise RuntimeError(
-                "Target: %s not found, Please add them to https://github.com/0xc0170/project_generator_definitions" % data['target'].lower())
+                "Target: %s not found, Please add them to https://github.com/project-generator/project_generator_definitions" % data['target'].lower())
 
         # gcc arm is funny about cortex-m4f.
         if data['core'] == 'cortex-m4f':

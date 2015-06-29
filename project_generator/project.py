@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import os
 import yaml
 import shutil
@@ -18,13 +19,13 @@ import logging
 import operator
 
 from collections import defaultdict
-
 from .tool import build, export, flash, ToolsSupported
 
 try:
     input = raw_input
 except:
     pass
+
 
 def merge_recursive(*args):
     if all(isinstance(x, dict) for x in args):
@@ -39,6 +40,7 @@ def merge_recursive(*args):
     else:
         return reduce(operator.add, args)
 
+
 def flatten(*args):
     for x in args:
         if hasattr(x, '__iter__'):
@@ -48,18 +50,19 @@ def flatten(*args):
             yield x
 
 FILES_EXTENSIONS = {
-    'include_paths' : ['h', 'hpp', 'inc'],
-    'source_files_s' : ['s'],
-    'source_files_c' : ['c'],
-    'source_files_cpp' : ['cpp', 'cc'],
-    'source_files_lib' : ['lib', 'ar', 'a'],
-    'source_files_obj' : ['o','obj'],
-    'linker_file' : ['sct', 'ld', 'lin', 'icf'],
+    'include_paths': ['h', 'hpp', 'inc'],
+    'source_files_s': ['s'],
+    'source_files_c': ['c'],
+    'source_files_cpp': ['cpp', 'cc'],
+    'source_files_lib': ['lib', 'ar', 'a'],
+    'source_files_obj': ['o', 'obj'],
+    'linker_file': ['sct', 'ld', 'lin', 'icf'],
 }
+
 
 class ToolSpecificSettings:
 
-    """represents the settings that are specifc to targets"""
+    """represents the settings that are specific to targets"""
 
     def __init__(self):
         self.include_paths = []
@@ -83,6 +86,7 @@ class ToolSpecificSettings:
             self.macros.extend([x for x in data_dictionary['macros'] if x is not None])
 
         if 'project_dir' in data_dictionary:
+            # ??? project_dir defined in Project but not ToolSpecificSettings: unresolved attribute reference
             self.project_dir.update(data_dictionary['project_dir'])
 
         if 'linker_file' in data_dictionary:
@@ -166,9 +170,9 @@ class Project:
         }
         self.build_dir = 'build'
         self.output_dir = {
-            'path' : '',
-            'rel_path' : '',
-            'rel_count' : '',
+            'path': '',
+            'rel_path': '',
+            'rel_count': '',
         }
         self.mcu = ''
         self.core = ''
@@ -224,11 +228,13 @@ class Project:
 
                 if 'sources' in project_file_data['common']:
                     if type(project_file_data['common']['sources']) == type(dict()):
+                        # ??? local variables source_paths and group_names not used
                         group_names = project_file_data['common']['sources'].keys()
-                        source_paths = [self._process_source_files(project_file_data['common']['sources'][group_name], group_name) for group_name in group_names]
+                        source_paths = [self._process_source_files(project_file_data['common']['sources'][group_name],
+                                                                   group_name) for group_name in group_names]
                     else:
                         if 'group_name' in project_file_data['common']:
-                             group_name = project_file_data['common']['group_name'][0]
+                            group_name = project_file_data['common']['group_name'][0]
                         else:
                             group_name = 'default'
                         self._process_source_files(project_file_data['common']['sources'], group_name)
@@ -269,8 +275,7 @@ class Project:
         if 'tool_specific' in project_file_data:
             group_name = 'default'
             for tool_name, tool_settings in project_file_data['tool_specific'].items():
-                self.tool_specific[tool_name].add_settings(
-                    tool_settings, group_name)
+                self.tool_specific[tool_name].add_settings(tool_settings, group_name)
 
     def _process_source_files(self, files, group_name):
         source_paths = []
@@ -388,11 +393,11 @@ class Project:
                 proj_dic['output_dir']['rel_count'] = count
                 while count:
                     rel_path_output = os.path.join('..', rel_path_output)
-                    count = count - 1
+                    count -= 1
                 proj_dic['output_dir']['rel_path'] = rel_path_output
+
             logging.debug("Project dict: %s" % proj_dic)
-            project_path, project_files = export(exporter,
-                proj_dic, export_tool, self.workspace.settings)
+            project_path, project_files = export(exporter, proj_dic, export_tool, self.workspace.settings)
 
             self.project_path[export_tool] = project_path
             self.project_files[export_tool] = project_files
@@ -431,43 +436,59 @@ class Project:
             'core': self.core,
             'target': self.target,
             'output_type': self.output_type,
-            'build_dir' : self.build_dir,
-            'tools_supported' : self.tools_supported,
-            'debugger' : self.debugger,
-            'output_dir' : self.output_dir,
-            'includes': self.include_paths + list(flatten([settings.include_paths for settings in tool_specific_settings])),
-            'source_paths': self.source_paths + list(flatten([settings.source_paths for settings in tool_specific_settings])),
-            'source_files': merge_recursive(self.source_groups,
-                                            { k: v for settings in tool_specific_settings for k, v in settings.source_groups.items() },
-                                            toolchain_specific_settings.source_groups),
+            'build_dir': self.build_dir,
+            'tools_supported': self.tools_supported,
+            'debugger': self.debugger,
+            'output_dir': self.output_dir,
+            'includes':
+                self.include_paths + list(flatten([settings.include_paths for settings in tool_specific_settings])),
+            'source_paths':
+                self.source_paths + list(flatten([settings.source_paths for settings in tool_specific_settings])),
+
+            'source_files':
+                merge_recursive(self.source_groups,
+                                {k: v for settings in tool_specific_settings for k, v in settings.source_groups.items()},
+                                toolchain_specific_settings.source_groups),
             # for backwards compatibility
-            'source_files_c': [merge_recursive(self.source_of_type('c'),
-                                               { k: v for settings in [settings.source_of_type('c') for settings in tool_specific_settings] for k, v in settings.items() },
-                                               toolchain_specific_settings.source_of_type('c'))],
-            'source_files_cpp': [merge_recursive(self.source_of_type('cpp'),
-                                                 { k: v for settings in [settings.source_of_type('cpp') for settings in tool_specific_settings] for k, v in settings.items() },
-                                                 toolchain_specific_settings.source_of_type('cpp'))],
-            'source_files_s': [merge_recursive(self.source_of_type('s'),
-                                               { k: v for settings in [settings.source_of_type('s') for settings in tool_specific_settings] for k, v in settings.items() },
-                                               toolchain_specific_settings.source_of_type('s'))],
-            'source_files_obj': [merge_recursive(self.source_of_type('obj'),
-                                               { k: v for settings in [settings.source_of_type('obj') for settings in tool_specific_settings] for k, v in settings.items() },
-                                               toolchain_specific_settings.source_of_type('obj')),
-                                                self.source_of_type('o'),
-                                               { k: v for settings in [settings.source_of_type('o') for settings in tool_specific_settings] for k, v in settings.items() },
-                                               toolchain_specific_settings.source_of_type('o')],
-             'source_files_lib': [merge_recursive(self.source_of_type('lib'),
-                                               { k: v for settings in [settings.source_of_type('lib') for settings in tool_specific_settings] for k, v in settings.items() },
-                                               toolchain_specific_settings.source_of_type('lib'))],
-            'linker_file': self.linker_file
-                        or toolchain_specific_settings.linker_file or [tool_settings.linker_file for tool_settings in tool_specific_settings if tool_settings.linker_file][0],
-            'macros': self.macros +
-                      list(flatten([ settings.macros for settings in tool_specific_settings])) +
-                      toolchain_specific_settings.macros,
-            'misc': [merge_recursive({ k: v for settings in tool_specific_settings for k, v in settings.misc.items() },
-                                     toolchain_specific_settings.misc)],
+            'source_files_c': [
+                merge_recursive(self.source_of_type('c'),
+                                {k: v for settings in [settings.source_of_type('c') for settings in tool_specific_settings] for k, v in settings.items()},
+                                toolchain_specific_settings.source_of_type('c'))],
+
+            'source_files_cpp': [
+                merge_recursive(self.source_of_type('cpp'),
+                                {k: v for settings in [settings.source_of_type('cpp') for settings in tool_specific_settings] for k, v in settings.items()},
+                                toolchain_specific_settings.source_of_type('cpp'))],
+
+            'source_files_s': [
+                merge_recursive(self.source_of_type('s'),
+                                {k: v for settings in [settings.source_of_type('s') for settings in tool_specific_settings] for k, v in settings.items()},
+                                toolchain_specific_settings.source_of_type('s'))],
+
+            'source_files_obj': [
+                merge_recursive(self.source_of_type('obj'),
+                                {k: v for settings in [settings.source_of_type('obj') for settings in tool_specific_settings] for k, v in settings.items()},
+                                toolchain_specific_settings.source_of_type('obj')), self.source_of_type('o'),{k: v for settings in [settings.source_of_type('o') for settings in tool_specific_settings] for k, v in settings.items()},
+                                toolchain_specific_settings.source_of_type('o')],
+
+            'source_files_lib': [
+                merge_recursive(self.source_of_type('lib'),
+                                {k: v for settings in [settings.source_of_type('lib') for settings in tool_specific_settings] for k, v in settings.items()},
+                                toolchain_specific_settings.source_of_type('lib'))],
+
+            'linker_file': self.linker_file or toolchain_specific_settings.linker_file or [
+                tool_settings.linker_file for tool_settings in tool_specific_settings if tool_settings.linker_file][0],
+
+            'macros': self.macros + list(flatten([
+                settings.macros for settings in tool_specific_settings])) + toolchain_specific_settings.macros,
+
+            'misc': [
+                merge_recursive({k: v for settings in tool_specific_settings for k, v in settings.misc.items()},
+                                toolchain_specific_settings.misc)],
             'project_dir': self.project_dir,
-            'template' : toolchain_specific_settings.template or [tool_settings.template for tool_settings in tool_specific_settings if tool_settings.template],
+
+            'template': toolchain_specific_settings.template or [
+                tool_settings.template for tool_settings in tool_specific_settings if tool_settings.template],
         }
         self.validate_generated_dic(d)
 
@@ -478,7 +499,7 @@ class Project:
             if self.target:
                 output_dir = output_dir.replace('$target$', self.target)
         else:
-             output_dir = os.path.join(self.project_dir['path'], "%s_%s" % (tool, self.name))
+            output_dir = os.path.join(self.project_dir['path'], "%s_%s" % (tool, self.name))
         d['output_dir']['path'] = os.path.normpath(output_dir)
         return d
 
@@ -487,7 +508,8 @@ class Project:
             raise RuntimeError("Executable - no linker command found.")
 
     def fixup_executable(executable_path, tool):
-        exporter =  self.tools.get_value(tool, 'exporter')
+        exporter = self.tools.get_value(tool, 'exporter')
+        # ??? recursive call without self parameter ???
         fixup_executable(exporter, executable_path, tool)
 
     def _copy_files(self, file, output_dir, valid_files_group):
@@ -508,17 +530,18 @@ class Project:
                 os.makedirs(dest_dir)
             for filename in files:
                 if filename.split('.')[-1] in FILES_EXTENSIONS['include_paths']:
-                    shutil.copy2(os.path.join(os.getcwd(), path, filename), os.path.join(os.getcwd(), proj_dic['output_dir']['path'], path))
+                    shutil.copy2(os.path.join(os.getcwd(), path, filename),
+                                 os.path.join(os.getcwd(), proj_dic['output_dir']['path'], path))
 
-        for k,v in proj_dic['source_files_c'][0].items():
+        for k, v in proj_dic['source_files_c'][0].items():
             for file in v:
                 self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_c'])
 
-        for k,v in proj_dic['source_files_cpp'][0].items():
+        for k, v in proj_dic['source_files_cpp'][0].items():
             for file in v:
                 self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_cpp'])
 
-        for k,v in proj_dic['source_files_s'][0].items():
+        for k, v in proj_dic['source_files_s'][0].items():
             for file in v:
                 self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_s'])
 
@@ -532,7 +555,8 @@ class Project:
         dest_dir = os.path.join(os.getcwd(), proj_dic['output_dir']['path'], os.path.dirname(linker))
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
-        shutil.copy2(os.path.join(os.getcwd(), linker), os.path.join(os.getcwd(), proj_dic['output_dir']['path'], linker))
+        shutil.copy2(os.path.join(os.getcwd(), linker),
+                     os.path.join(os.getcwd(), proj_dic['output_dir']['path'], linker))
 
     @staticmethod
     def determine_tool(linker_ext):
@@ -557,15 +581,15 @@ class Project:
                     if section == "sources":
                         dir = directory.split(os.path.sep)[-1] if dirpath == directory else dirpath.replace(directory,'').split(os.path.sep)[1]
                         if dir in data_dict:
-                            data_dict[dir].append(os.path.join(relpath,filename))
+                            data_dict[dir].append(os.path.join(relpath, filename))
                         else:
-                            data_dict[dir] = [(os.path.join(relpath,filename))]
+                            data_dict[dir] = [(os.path.join(relpath, filename))]
                     elif section == 'includes':
                         dirs = relpath.split(os.path.sep)
-                        for i in range(1,len(dirs)+1):
+                        for i in range(1, len(dirs)+1):
                             data_dict.append(os.path.sep.join(dirs[:i]))
                     else:
-                        data_dict.append(relpath if is_path else os.path.join(relpath,filename))
+                        data_dict.append(relpath if is_path else os.path.join(relpath, filename))
         if section == "sources":
             return data_dict
         return list(set(data_dict))
@@ -573,48 +597,50 @@ class Project:
     @staticmethod
     def create_yaml(root, directory, project_name, board, list_sources):
         common_section = {
-                'linker_file': [False, FILES_EXTENSIONS['linker_file']],
-                'sources': [False,FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] +
-                            FILES_EXTENSIONS['source_files_s'] + FILES_EXTENSIONS['source_files_obj'] + FILES_EXTENSIONS['source_files_lib']],
-                'includes': [True,FILES_EXTENSIONS['include_paths']],
-                'target': [False,[]],
+            'linker_file': [False, FILES_EXTENSIONS['linker_file']],
+            'sources': [False, FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] +
+                        FILES_EXTENSIONS['source_files_s'] + FILES_EXTENSIONS['source_files_obj'] +
+                        FILES_EXTENSIONS['source_files_lib']],
+            'includes': [True, FILES_EXTENSIONS['include_paths']],
+            'target': [False, []],
         }
-        data = {'projects':{
-                   project_name:{
-                        'common':{},
-                         'tool_specific':{}
-                         }
-                    }
+        data = {
+            'projects': {
+                project_name: {
+                    'common': {},
+                    'tool_specific': {}
                 }
+            }
+        }
 
         for section in common_section:
-            if(len(common_section[section][1]) > 0):
-                data['projects'][project_name]['common'][section]=Project.scan(section, root, directory,common_section[section][1],common_section[section][0])
+            if len(common_section[section][1]) > 0:
+                data['projects'][project_name]['common'][section] = Project.scan(section, root, directory,
+                                                                                 common_section[section][1],
+                                                                                 common_section[section][0])
 
         data['projects'][project_name]['common']['target'] = []
         data['projects'][project_name]['common']['target'].append(board)
         tool = Project.determine_tool(str(data['projects'][project_name]['common']['linker_file']).split('.')[-1])
-        data['projects'][project_name]['tool_specific'] = {tool : {'linker_file':data['projects'][project_name]['common']['linker_file']}}
+        data['projects'][project_name]['tool_specific'] = {
+            tool: {
+                'linker_file': data['projects'][project_name]['common']['linker_file']
+            }
+        }
 
         logging.debug('Generating yaml file')
-
         filename = 'projects.yaml'
 
         #TODO: fix
         if os.path.isfile(os.path.join(directory, filename)):
-            # this should be print, not logging
             print("Project file already exists")
-
             while True:
                 answer = input('Should I overwrite it? (Y/n)')
-
                 try:
                     overwrite = answer.lower() in ('y', 'yes')
-
                     if not overwrite:
                         logging.critical('Unable to save project file')
                         return -1
-
                     break
                 except ValueError:
                     continue

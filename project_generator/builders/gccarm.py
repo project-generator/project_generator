@@ -15,8 +15,9 @@
 import subprocess
 import logging
 
-from .builder import Builder
 from os.path import dirname
+from .builder import Builder
+
 
 class MakefileGccArmBuilder(Builder):
     # http://www.gnu.org/software/make/manual/html_node/Running.html

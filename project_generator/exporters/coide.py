@@ -12,20 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
 import logging
-
-from os.path import basename, join, relpath, normpath
-from os import getcwd
 import xmltodict
 
+from os.path import basename, join, normpath
+from os import getcwd
 from .exporter import Exporter
 from .coide_definitions import CoIDEdefinitions
 from ..targets import Targets
 
+
 class CoideExporter(Exporter):
-    source_files_dic = ['source_files_c', 'source_files_s',
-                        'source_files_cpp', 'source_files_obj', 'source_files_lib']
+    source_files_dic = [
+        'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
 
     def __init__(self):
@@ -37,11 +36,13 @@ class CoideExporter(Exporter):
             old_group = None
         else:
             old_group = group
+
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
-                new_file = {'@path': rel_path + normpath(file), '@name': basename(
-                    file), '@type': str(self.file_types[extension])}
+                new_file = {
+                    '@path': rel_path + normpath(file), '@name': basename(file), '@type': str(self.file_types[extension])
+                }
                 new_data['groups'][group].append(new_file)
 
     def get_groups(self, data):
@@ -69,17 +70,17 @@ class CoideExporter(Exporter):
                     self.expand_data(dic, expanded_data, attribute, group, rel_path)
 
     def normalize_mcu_def(self, mcu_def):
-        for k,v in mcu_def['Device'].items():
+        for k, v in mcu_def['Device'].items():
             mcu_def['Device'][k] = v[0]
-        for k,v in mcu_def['DebugOption'].items():
+        for k, v in mcu_def['DebugOption'].items():
             mcu_def['DebugOption'][k] = v[0]
-        for k,v in mcu_def['MemoryAreas']['IROM1'].items():
+        for k, v in mcu_def['MemoryAreas']['IROM1'].items():
             mcu_def['MemoryAreas']['IROM1'][k] = v[0]
-        for k,v in mcu_def['MemoryAreas']['IROM2'].items():
+        for k, v in mcu_def['MemoryAreas']['IROM2'].items():
             mcu_def['MemoryAreas']['IROM2'][k] = v[0]
-        for k,v in mcu_def['MemoryAreas']['IRAM1'].items():
+        for k, v in mcu_def['MemoryAreas']['IRAM1'].items():
             mcu_def['MemoryAreas']['IRAM1'][k] = v[0]
-        for k,v in mcu_def['MemoryAreas']['IRAM2'].items():
+        for k, v in mcu_def['MemoryAreas']['IRAM2'].items():
             mcu_def['MemoryAreas']['IRAM2'][k] = v[0]
 
     def fix_paths(self, data, rel_path):
@@ -174,17 +175,18 @@ class CoideExporter(Exporter):
                 % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
-        # correct attributes from definition, as yaml does not allowe multiple keys (=dict), we need to
+        # correct attributes from definition, as yaml does not allowed multiple keys (=dict), we need to
         # do this magic.
-        for k,v in mcu_def_dic['Device'].items():
+        for k, v in mcu_def_dic['Device'].items():
             del mcu_def_dic['Device'][k]
             mcu_def_dic['Device']['@' + k] = str(v)
         memory_areas = []
-        for k,v in mcu_def_dic['MemoryAreas'].items():
-             for k,att in v.items():
-                 del v[k]
-                 v['@' + k] = str(att)
-             memory_areas.append(v)
+        for k, v in mcu_def_dic['MemoryAreas'].items():
+            # ??? duplicate use of k
+            for k, att in v.items():
+                del v[k]
+                v['@' + k] = str(att)
+            memory_areas.append(v)
 
         coproj_dic['Project']['Target']['Device'].update(mcu_def_dic['Device'])
         # TODO 0xc0170: fix debug options
@@ -197,11 +199,11 @@ class CoideExporter(Exporter):
                 # find debugger definitions in the list of options
                 index = 0
                 for option in coproj_dic['Project']['Target']['DebugOption']['Option']:
-                    for k,v in option.items():
+                    # ??? k, v not used ???
+                    for k, v in option.items():
                         if option['@name'] == 'org.coocox.codebugger.gdbjtag.core.adapter':
                             found = index
-                index = index + 1
-
+                index += 1
                 coproj_dic['Project']['Target']['DebugOption']['Option'][found]['@value'] = self.definitions.debuggers[expanded_dic['debugger']]['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])

@@ -12,23 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
 import shutil
 import logging
-
-from os.path import basename, join, relpath, normpath
-from os import getcwd
 import xmltodict
-from collections import OrderedDict
 
+from os.path import basename, join, normpath
+from os import getcwd
+from collections import OrderedDict
 from .exporter import Exporter
 from .uvision_definitions import uVisionDefinitions
 from ..targets import Targets
 
+
 class UvisionExporter(Exporter):
     optimization_options = ['O0', 'O1', 'O2', 'O3']
-    source_files_dic = ['source_files_c', 'source_files_s',
-                        'source_files_cpp','source_files_lib','source_files_obj']
+    source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_lib', 'source_files_obj']
     file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3,'o':3, 'lib': 4, 'ar': 4}
 
     def __init__(self):
@@ -43,8 +41,8 @@ class UvisionExporter(Exporter):
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
-                new_file = {"FilePath": rel_path + normpath(file), "FileName": basename(
-                    file), "FileType": self.file_types[extension]}
+                new_file = {"FilePath": rel_path + normpath(file), "FileName": basename(file),
+                            "FileType": self.file_types[extension]}
                 new_data['groups'][group].append(new_file)
 
     def iterate(self, data, expanded_data, rel_path):
@@ -72,7 +70,7 @@ class UvisionExporter(Exporter):
         return groups
 
     def normalize_mcu_def(self, mcu_def):
-        for k,v in mcu_def['TargetOption'].items():
+        for k, v in mcu_def['TargetOption'].items():
             mcu_def['TargetOption'][k] = v[0]
 
     def fix_paths(self, data, rel_path):
@@ -80,21 +78,25 @@ class UvisionExporter(Exporter):
 
         if type(data['source_files_lib'][0]) == type(dict()):
             for k in data['source_files_lib'][0].keys():
-                data['source_files_lib'][0][k] = [join(rel_path,normpath(path)) for path in data['source_files_lib'][0][k]]
+                data['source_files_lib'][0][k] = [
+                    join(rel_path, normpath(path)) for path in data['source_files_lib'][0][k]]
         else:
-            data['source_files_lib'][0] = [join(rel_path,normpath(path)) for path in data['source_files_lib'][0]]
+            data['source_files_lib'][0] = [
+                join(rel_path, normpath(path)) for path in data['source_files_lib'][0]]
 
         if type(data['source_files_obj'][0]) == type(dict()):
             for k in data['source_files_obj'][0].keys():
-                data['source_files_obj'][0][k] = [join(rel_path,normpath(path)) for path in data['source_files_obj'][0][k]]
+                data['source_files_obj'][0][k] = [
+                    join(rel_path, normpath(path)) for path in data['source_files_obj'][0][k]]
         else:
-            data['source_files_obj'][0] = [join(rel_path,normpath(path)) for path in data['source_files_obj'][0]]
+            data['source_files_obj'][0] = [
+                join(rel_path, normpath(path)) for path in data['source_files_obj'][0]]
 
         if data['linker_file']:
             data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
     def _uvproj_clean_xmldict(self, uvproj_dic):
-        for k,v in uvproj_dic.items():
+        for k, v in uvproj_dic.items():
             if v is None:
                 uvproj_dic[k] = ''
 
@@ -150,11 +152,11 @@ class UvisionExporter(Exporter):
             group = OrderedDict()
             group['GroupName'] = group_name
             # group['Files'] = {}
-            group['Files'] = {'File' : []}
+            group['Files'] = {'File': []}
             uvproj_dic['Project']['Targets']['Target']['Groups']['Group'].append(group)
             for file in files:
                 uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'].append(file)
-            i = i + 1
+            i += 1
 
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for uVision, and run generator """
@@ -177,7 +179,8 @@ class UvisionExporter(Exporter):
 
         # generic tool template specified or project
         if expanded_dic['template']:
-            project_file = join(getcwd(), expanded_dic['template'][0]) #TODO 0xc0170: template list !
+            # TODO 0xc0170: template list !
+            project_file = join(getcwd(), expanded_dic['template'][0])
             uvproj_dic = xmltodict.parse(file(project_file))
         elif 'uvision' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
@@ -191,12 +194,18 @@ class UvisionExporter(Exporter):
         uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
 
         self._uvproj_files_set(uvproj_dic, expanded_dic)
-        self._uvproj_set_CommonProperty(uvproj_dic['Project']['Targets']['Target']['TargetOption']['CommonProperty'], expanded_dic)
-        self._uvproj_set_DebugOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption'], expanded_dic)
-        self._uvproj_set_DllOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['DllOption'], expanded_dic)
-        self._uvproj_set_TargetArmAds(uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetArmAds'], expanded_dic)
-        self._uvproj_set_TargetCommonOption(uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption'], expanded_dic)
-        self._uvproj_set_Utilities(uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities'], expanded_dic)
+        self._uvproj_set_CommonProperty(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['CommonProperty'], expanded_dic)
+        self._uvproj_set_DebugOption(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption'], expanded_dic)
+        self._uvproj_set_DllOption(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['DllOption'], expanded_dic)
+        self._uvproj_set_TargetArmAds(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetArmAds'], expanded_dic)
+        self._uvproj_set_TargetCommonOption(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption'], expanded_dic)
+        self._uvproj_set_Utilities(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities'], expanded_dic)
 
         target = Targets(env_settings.get_env_settings('definitions'))
         if not target.is_supported(expanded_dic['target'].lower(), 'uvision'):
@@ -204,8 +213,7 @@ class UvisionExporter(Exporter):
         mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'uvision')
         if not mcu_def_dic:
              raise RuntimeError(
-                "Mcu definitions were not found for %s. Please add them to https://github.com/0xc0170/project_generator_definitions"
-                % expanded_dic['target'].lower())
+                "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
         # self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         # self.append_mcu_def(expanded_dic, mcu_def_dic)
@@ -225,8 +233,7 @@ class UvisionExporter(Exporter):
 
         # Project file
         uvproj_xml = xmltodict.unparse(uvproj_dic, pretty=True)
-        project_path, projfile = self.gen_file_raw(
-            uvproj_xml, '%s.uvproj' % data['name'], expanded_dic['output_dir']['path'])
+        project_path, projfile = self.gen_file_raw(uvproj_xml, '%s.uvproj' % data['name'], expanded_dic['output_dir']['path'])
 
         return project_path, [projfile]
 

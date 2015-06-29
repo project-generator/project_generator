@@ -12,24 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, join, relpath, normpath
-from os import getcwd
-
 import copy
 import logging
 import xmltodict
 
+from os import getcwd
+from os.path import join, normpath
 from .exporter import Exporter
 from .iar_definitions import IARDefinitions
 from ..targets import Targets
+
 
 class IAREWARMExporter(Exporter):
 
     def __init__(self):
         self.definitions = IARDefinitions()
 
-    source_files_dic = ['source_files_c', 'source_files_s',
-                        'source_files_cpp', 'source_files_obj', 'source_files_lib']
+    source_files_dic = [
+        'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
+
     core_dic = {
         "cortex-m0": 34,
         "cortex-m0+": 35,
@@ -79,7 +80,7 @@ class IAREWARMExporter(Exporter):
         return core_dic['cortex-m0']  # def cortex-m0 if not defined otherwise
 
     def parse_specific_options(self, data):
-        """ Parse all IAR specific setttings. """
+        """ Parse all IAR specific settings. """
         data['iar_settings'].update(copy.deepcopy(
             self.definitions.iar_settings))  # set specific options to default values
         for dic in data['misc']:
@@ -89,7 +90,7 @@ class IAREWARMExporter(Exporter):
     def set_specific_settings(self, value_list, data):
         for k, v in value_list.items():
             for option in v.items():
-                for key,value in v['data']['option'].items():
+                for key, value in v['data']['option'].items():
                     result = 0
                     if value[0] == 'enable':
                         result = 1
@@ -104,10 +105,12 @@ class IAREWARMExporter(Exporter):
         data['includes'] = [join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['includes']]
 
         for k in data['source_files_lib'][0].keys():
-            data['source_files_lib'][0][k] = [join('$PROJ_DIR$',rel_path,normpath(path)) for path in data['source_files_lib'][0][k]]
+            data['source_files_lib'][0][k] = [
+                join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['source_files_lib'][0][k]]
 
         for k in data['source_files_obj'][0].keys():
-            data['source_files_obj'][0][k] = [join('$PROJ_DIR$',rel_path,normpath(path)) for path in data['source_files_obj'][0][k]]
+            data['source_files_obj'][0][k] = [
+                join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['source_files_obj'][0][k]]
             
         if data['linker_file']:
             data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))
@@ -128,13 +131,13 @@ class IAREWARMExporter(Exporter):
     def _ewp_general_set(self, ewp_dic, project_dic):
         index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ExePath')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'] ,'Exe'))
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'Exe'))
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ObjPath')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'] ,'Obj'))
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'Obj'))
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ListPath')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'] ,'List'))
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'List'))
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'GOutputBinary')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], 0 if project_dic['output_type'] == 'exe' else 1 )
+        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], 0 if project_dic['output_type'] == 'exe' else 1)
 
     def _ewp_iccarm_set(self, ewp_dic, project_dic):
         index_iccarm = self._get_option(ewp_dic['project']['configuration']['settings'], 'ICCARM')
@@ -159,10 +162,10 @@ class IAREWARMExporter(Exporter):
         ewp_dic['project']['group'] = []
         i = 0
         for group_name, files in project_dic['groups'].items():
-            ewp_dic['project']['group'].append({'name': group_name, 'file' : []})
+            ewp_dic['project']['group'].append({'name': group_name, 'file': []})
             for file in files:
-                ewp_dic['project']['group'][i]['file'].append({ 'name' : file})
-            i = i + 1
+                ewp_dic['project']['group'][i]['file'].append({'name': file})
+            i += 1
 
     def _clean_xmldict_option(self, dictionary):
             for option in dictionary['data']['option']:
@@ -170,7 +173,7 @@ class IAREWARMExporter(Exporter):
                     option['state'] = ''
 
     def _clean_xmldict_single_dic(self, dictionary):
-            for k,v in dictionary.items():
+            for k, v in dictionary.items():
                 if v is None:
                     dictionary[k] = ''
 
@@ -201,7 +204,8 @@ class IAREWARMExporter(Exporter):
 
         # generic tool template specified or project
         if expanded_dic['template']:
-            project_file = join(getcwd(), expanded_dic['template'][0]) #TODO 0xc0170: template list !
+            # TODO 0xc0170: template list !
+            project_file = join(getcwd(), expanded_dic['template'][0])
             ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
         elif 'iar' in env_settings.templates.keys():
             # template overrides what is set in the yaml files
@@ -240,8 +244,7 @@ class IAREWARMExporter(Exporter):
         mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'iar')
         if not mcu_def_dic:
              raise RuntimeError(
-                "Mcu definitions were not found for %s. Please add them to https://github.com/0xc0170/project_generator_definitions"
-                % expanded_dic['target'].lower())
+                "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
         self.normalize_mcu_def(mcu_def_dic)
         logging.debug("Mcu definitions: %s" % mcu_def_dic)
         index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
@@ -261,14 +264,11 @@ class IAREWARMExporter(Exporter):
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
         ewp_xml = xmltodict.unparse(ewp_dic, pretty=True)
-        project_path, ewp = self.gen_file_raw(ewp_xml, '%s.ewp' %
-            expanded_dic['name'], expanded_dic['output_dir']['path'])
+        project_path, ewp = self.gen_file_raw(ewp_xml, '%s.ewp' % expanded_dic['name'], expanded_dic['output_dir']['path'])
 
         eww_xml = xmltodict.unparse(eww_dic, pretty=True)
-        project_path, eww = self.gen_file_raw(eww_xml, '%s.eww' %
-            expanded_dic['name'], expanded_dic['output_dir']['path'])
+        project_path, eww = self.gen_file_raw(eww_xml, '%s.eww' % expanded_dic['name'], expanded_dic['output_dir']['path'])
 
         ewd_xml = xmltodict.unparse(ewd_dic, pretty=True)
-        project_path, ewd = self.gen_file_raw(ewd_xml, '%s.ewd' %
-                    expanded_dic['name'], expanded_dic['output_dir']['path'])
+        project_path, ewd = self.gen_file_raw(ewd_xml, '%s.ewd' % expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww, ewd]
