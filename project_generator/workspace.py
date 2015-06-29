@@ -92,11 +92,11 @@ class Workspace:
     @staticmethod
     def pgen_list(type):
         if type == 'tools':
-            print "pgen supports the following tools:"
+            print ("pgen supports the following tools:")
             print(yaml.dump(ToolsSupported().get_supported(), default_flow_style=False))
         elif type == 'targets':
             target = Targets(ProjectSettings().get_env_settings('definitions'))
-            print "pgen supports the following targets:"
+            print ("pgen supports the following targets:")
             print(yaml.dump(target.targets, default_flow_style=False))
 
     def list(self, type, format='logging', out=True):
@@ -104,15 +104,15 @@ class Workspace:
         if type == 'projects':
             for project in self.projects:
                 output.append(project)
-                print project
+                print (project)
         elif type == 'targets':
             for project in self.projects:
-                print "project: " + project + "\ntarget: " + str(self.projects_dict['projects'][project]['common']['target'][0])
+                print ("project: " + project + "\ntarget: " + str(self.projects_dict['projects'][project]['common']['target'][0]))
                 output.append(self.projects_dict['projects'][project]['common']['target'][0])
         elif type == 'tools':
             for project in self.projects:
                 tool = self.projects_dict['projects'][project]['tool_specific'].keys()[0]
-                print "project: " + project + "\ntool: " + tool
+                print ("project: " + project + "\ntool: " + tool)
                 output.append(tool)
 
         if format == 'logging':

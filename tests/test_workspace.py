@@ -34,5 +34,5 @@ class TestWorkspace(TestCase):
     #     assert os.path.exists(os.path.expanduser(self.workspace.settings.paths['definitions']))
 
     def test_list_projects(self):
-        assert self.workspace.list_projects('raw') == set()
+        assert self.workspace.list('projects', 'raw') == set()
 
