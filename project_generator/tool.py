@@ -18,11 +18,11 @@ import subprocess
 
 from .targets import Targets
 from .builders.gccarm import MakefileGccArmBuilder
-from .builders.uvision import UvisionBuilder
 from .tools.iar import IAREmbeddedWorkbench
+from .tools.uvision import Uvision
+
 from .exporters.coide import CoideExporter
 from .exporters.gccarm import MakefileGccArmExporter
-from .exporters.uvision import UvisionExporter
 from .exporters.eclipse import EclipseGnuARMExporter
 from .exporters.gdb import GDBExporter
 from .exporters.gdb import ARMNoneEABIGDBExporter
@@ -44,9 +44,9 @@ class ToolsSupported:
         'uvision': {
             'toolchain': 'uvision',
             'toolnames': ['uvision'],
-            'exporter': UvisionExporter,
-            'builder': UvisionBuilder,
-            'flasher': UvisionBuilder,
+            'exporter': Uvision,
+            'builder': Uvision,
+            'flasher': Uvision,
         },
         'coide': {
             'toolchain': 'gcc_arm',
