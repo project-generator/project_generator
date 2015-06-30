@@ -17,10 +17,9 @@ import logging
 import subprocess
 
 from .targets import Targets
-from .builders.iar import IARBuilder
 from .builders.gccarm import MakefileGccArmBuilder
 from .builders.uvision import UvisionBuilder
-from .exporters.iar import IAREWARMExporter
+from .tools.iar import IAREmbeddedWorkbench
 from .exporters.coide import CoideExporter
 from .exporters.gccarm import MakefileGccArmExporter
 from .exporters.uvision import UvisionExporter
@@ -38,9 +37,9 @@ class ToolsSupported:
         'iar_arm': {
             'toolchain': 'iar',
             'toolnames': ['iar_arm'],
-            'exporter': IAREWARMExporter,
-            'builder': IARBuilder,
-            'flasher': IARBuilder,
+            'exporter': IAREmbeddedWorkbench,
+            'builder': IAREmbeddedWorkbench,
+            'flasher': IAREmbeddedWorkbench,
         },
         'uvision': {
             'toolchain': 'uvision',
