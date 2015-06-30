@@ -13,8 +13,14 @@
 # limitations under the License.
 
 import copy
+import logging
+import xmltodict
 
+from os import getcwd
 from os.path import join, normpath
+from ..exporters.exporter import Exporter
+from ..targets import Targets
+
 
 class IARDefinitions():
 
@@ -141,7 +147,7 @@ class IAREmbeddedWorkbenchProject:
         index_option = self._get_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OCDynDriverList')
         self._set_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], debugger_def_dic['OCDynDriverList']['state'])
 
-class IAREmbeddedWorkbench(IAREmbeddedWorkbenchProject):
+class IAREmbeddedWorkbench(Exporter, IAREmbeddedWorkbenchProject):
 
     source_files_dic = [
         'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
@@ -158,7 +164,7 @@ class IAREmbeddedWorkbench(IAREmbeddedWorkbenchProject):
         self.definitions = IARDefinitions()
         IAREmbeddedWorkbenchProject.__init__(self)
 
-    def expand_data(self, old_data, new_data, attribute, group, rel_path):
+    def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ Groups expansion for Sources. """
         if group == 'Sources':
             old_group = None
@@ -168,7 +174,7 @@ class IAREmbeddedWorkbench(IAREmbeddedWorkbenchProject):
             if file:
                 new_data['groups'][group].append(join('$PROJ_DIR$', rel_path, normpath(file)))
 
-    def iterate(self, data, expanded_data, rel_path):
+    def _iterate(self, data, expanded_data, rel_path):
         """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
@@ -177,9 +183,9 @@ class IAREmbeddedWorkbench(IAREmbeddedWorkbenchProject):
                         group = 'Sources'
                     else:
                         group = k
-                    self.expand_data(dic, expanded_data, attribute, group, rel_path)
+                    self._expand_data(dic, expanded_data, attribute, group, rel_path)
 
-    def get_groups(self, data):
+    def _get_groups(self, data):
         """ Get all groups defined. """
         groups = []
         for attribute in self.source_files_dic:
@@ -191,14 +197,14 @@ class IAREmbeddedWorkbench(IAREmbeddedWorkbenchProject):
                         groups.append(k)
         return groups
 
-    def find_target_core(self, data):
+    def _find_target_core(self, data):
         """ Sets Target core. """
         for k, v in self.core_dic.items():
             if k == data['core']:
                 return v
         return core_dic['cortex-m0']  # def cortex-m0 if not defined otherwise
 
-    def parse_specific_options(self, data):
+    def _parse_specific_options(self, data):
         """ Parse all IAR specific settings. """
         data['iar_settings'].update(copy.deepcopy(
             self.definitions.iar_settings))  # set specific options to default values
@@ -206,7 +212,7 @@ class IAREmbeddedWorkbench(IAREmbeddedWorkbenchProject):
             # for k,v in dic.items():
             self.set_specific_settings(dic, data)
 
-    def set_specific_settings(self, value_list, data):
+    def _set_specific_settings(self, value_list, data):
         for k, v in value_list.items():
             for option in v.items():
                 for key, value in v['data']['option'].items():
@@ -215,12 +221,12 @@ class IAREmbeddedWorkbench(IAREmbeddedWorkbenchProject):
                         result = 1
                     data['iar_settings'][k]['data']['option'][key]['state'] = result
 
-    def normalize_mcu_def(self, mcu_def):
+    def _normalize_mcu_def(self, mcu_def):
         # hack to insert tab as IAR using tab for MCU definitions
         mcu_def['OGChipSelectEditMenu']['state'] = mcu_def['OGChipSelectEditMenu']['state'][0].replace(' ', '\t', 1)
         mcu_def['OGCoreOrChip']['state'] = mcu_def['OGCoreOrChip']['state'][0]
 
-    def fix_paths(self, data, rel_path):
+    def _fix_paths(self, data, rel_path):
         data['includes'] = [join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['includes']]
 
         for k in data['source_files_lib'][0].keys():
@@ -238,3 +244,85 @@ class IAREmbeddedWorkbench(IAREmbeddedWorkbenchProject):
         for option in settings:
             if option['name'] == find_key:
                 return settings.index(option)
+
+    def generate(self, data, env_settings):
+        """ Processes groups and misc options specific for IAR, and run generator """
+        expanded_dic = data.copy()
+
+        # TODO 0xc0170: fix misc , its a list with a dictionary
+        if 'misc' in expanded_dic and bool(expanded_dic['misc'][0]):
+            print ("Using deprecated misc options for iar. Please use template project files.")
+
+        groups = self._get_groups(data)
+        expanded_dic['groups'] = {}
+        for group in groups:
+            expanded_dic['groups'][group] = []
+        self._iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
+
+        # generic tool template specified or project
+        if expanded_dic['template']:
+            # TODO 0xc0170: template list !
+            project_file = join(getcwd(), expanded_dic['template'][0])
+            ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+        elif 'iar' in env_settings.templates.keys():
+            # template overrides what is set in the yaml files
+            # TODO 0xc0170: extension check/expansion
+            project_file = join(getcwd(), env_settings.templates['iar'][0])
+            ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+        else:
+            ewp_dic = self.definitions.ewp_file
+
+        # TODO 0xc0170: add ewd file parsing and support
+        ewd_dic = self.definitions.ewd_file
+        eww_dic = self.definitions.eww_file
+
+        # replace all None with empty strings ''
+        self._clean_xmldict_ewp(ewp_dic)
+        #self._clean_xmldict_ewd(ewd_dic)
+
+        # set ARM toolchain and project name\
+        self._ewp_set_toolchain(ewp_dic, 'ARM')
+        self._ewp_set_name(ewp_dic, expanded_dic['name'])
+
+        # set eww
+        self._eww_set_path(eww_dic, expanded_dic['name'])
+
+        # set common things we have for IAR
+        self._ewp_general_set(ewp_dic, expanded_dic)
+        self._ewp_iccarm_set(ewp_dic, expanded_dic)
+        self._ewp_aarm_set(ewp_dic, expanded_dic)
+        self._ewp_ilink_set(ewp_dic, expanded_dic)
+        self._ewp_files_set(ewp_dic, expanded_dic)
+
+        # set target only if defined, otherwise use from template/default one
+        if expanded_dic['target']:
+            # get target definition (target + mcu)
+            target = Targets(env_settings.get_env_settings('definitions'))
+            if not target.is_supported(expanded_dic['target'].lower(), 'iar'):
+                raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
+            mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'iar')
+            if not mcu_def_dic:
+                 raise RuntimeError(
+                    "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
+            self._normalize_mcu_def(mcu_def_dic)
+            logging.debug("Mcu definitions: %s" % mcu_def_dic)
+            self._ewp_set_target(ewp_dic, mcu_def_dic)
+
+        # overwrite debugger only if defined in the project file, otherwise use either default or from template
+        if expanded_dic['debugger']:
+            try:
+                debugger = self.definitions.debuggers[expanded_dic['debugger']]
+                self._ewd_set_debugger(ewd_dic, ewp_dic, debugger)
+            except KeyError:
+                raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
+
+        ewp_xml = xmltodict.unparse(ewp_dic, pretty=True)
+        project_path, ewp = self.gen_file_raw(ewp_xml, '%s.ewp' % expanded_dic['name'], expanded_dic['output_dir']['path'])
+
+        eww_xml = xmltodict.unparse(eww_dic, pretty=True)
+        project_path, eww = self.gen_file_raw(eww_xml, '%s.eww' % expanded_dic['name'], expanded_dic['output_dir']['path'])
+
+        ewd_xml = xmltodict.unparse(ewd_dic, pretty=True)
+        project_path, ewd = self.gen_file_raw(ewd_xml, '%s.ewd' % expanded_dic['name'], expanded_dic['output_dir']['path'])
+        return project_path, [ewp, eww, ewd]

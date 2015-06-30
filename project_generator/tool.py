@@ -20,7 +20,7 @@ from .targets import Targets
 from .builders.iar import IARBuilder
 from .builders.gccarm import MakefileGccArmBuilder
 from .builders.uvision import UvisionBuilder
-from .exporters.iar import IAREmbeddedWorkbenchARMExporter
+from .tools.iar import IAREmbeddedWorkbench
 from .exporters.coide import CoideExporter
 from .exporters.gccarm import MakefileGccArmExporter
 from .exporters.uvision import UvisionExporter
@@ -38,8 +38,8 @@ class ToolsSupported:
         'iar_arm': {
             'toolchain': 'iar',
             'toolnames': ['iar_arm'],
-            'exporter': IAREmbeddedWorkbenchARMExporter,
-            'builder': IARBuilder,
+            'exporter': IAREmbeddedWorkbench,
+            'builder': IARBuilder, # TODO 0xc0170: fix this, use one class for IAR to do everything
             'flasher': IARBuilder,
         },
         'uvision': {
