@@ -61,9 +61,6 @@ class IARDefinitions():
 
 class IAREmbeddedWorkbenchProject:
 
-    def __init__(self):
-        pass
-
     def _set_option(self, settings, value):
         settings['state'] = value
 
@@ -167,7 +164,6 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
 
     def __init__(self):
         self.definitions = IARDefinitions()
-        IAREmbeddedWorkbenchProject.__init__(self)
 
     def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ Groups expansion for Sources. """
@@ -227,11 +223,13 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
                     data['iar_settings'][k]['data']['option'][key]['state'] = result
 
     def _normalize_mcu_def(self, mcu_def):
+        """ Normalizes mcu definitions to the required format """
         # hack to insert tab as IAR using tab for MCU definitions
         mcu_def['OGChipSelectEditMenu']['state'] = mcu_def['OGChipSelectEditMenu']['state'][0].replace(' ', '\t', 1)
         mcu_def['OGCoreOrChip']['state'] = mcu_def['OGCoreOrChip']['state'][0]
 
     def _fix_paths(self, data, rel_path):
+        """ All paths needs to be fixed - add PROJ_DIR prefix + normalize """
         data['includes'] = [join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['includes']]
 
         for k in data['source_files_lib'][0].keys():
@@ -333,6 +331,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         return project_path, [ewp, eww, ewd]
 
     def build_project(self, project_name, project_files, env_settings):
+        """ Build IAR project. """
         # > IarBuild [project_path] -build [project_name]
         proj_path = join(getcwd(), project_files[0])
         if proj_path.split('.')[-1] != '.ewp':
@@ -354,6 +353,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             logging.info("Build completed.")
 
     def flash_project(self, proj_dic, project_name, project_files, env_settings):
+        """ Flash IAR project. """
         # > [project_path]/settings/[project_name].[project_name].bat
         proj_path = join(getcwd(), project_files[0])
         if proj_path.split('.')[-1] != '.eww':
