@@ -17,7 +17,6 @@ import logging
 import subprocess
 
 from .targets import Targets
-from .builders.iar import IARBuilder
 from .builders.gccarm import MakefileGccArmBuilder
 from .builders.uvision import UvisionBuilder
 from .tools.iar import IAREmbeddedWorkbench
@@ -39,8 +38,8 @@ class ToolsSupported:
             'toolchain': 'iar',
             'toolnames': ['iar_arm'],
             'exporter': IAREmbeddedWorkbench,
-            'builder': IARBuilder, # TODO 0xc0170: fix this, use one class for IAR to do everything
-            'flasher': IARBuilder,
+            'builder': IAREmbeddedWorkbench,
+            'flasher': IAREmbeddedWorkbench,
         },
         'uvision': {
             'toolchain': 'uvision',

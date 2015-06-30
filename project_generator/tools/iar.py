@@ -15,9 +15,14 @@
 import copy
 import logging
 import xmltodict
+import subprocess
+import logging
+import time
 
-from os import getcwd
+from os import getcwd, path
 from os.path import join, normpath
+
+from ..builders.builder import Builder
 from ..exporters.exporter import Exporter
 from ..targets import Targets
 
@@ -147,7 +152,7 @@ class IAREmbeddedWorkbenchProject:
         index_option = self._get_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OCDynDriverList')
         self._set_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], debugger_def_dic['OCDynDriverList']['state'])
 
-class IAREmbeddedWorkbench(Exporter, IAREmbeddedWorkbenchProject):
+class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
 
     source_files_dic = [
         'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
@@ -326,3 +331,50 @@ class IAREmbeddedWorkbench(Exporter, IAREmbeddedWorkbenchProject):
         ewd_xml = xmltodict.unparse(ewd_dic, pretty=True)
         project_path, ewd = self.gen_file_raw(ewd_xml, '%s.ewd' % expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww, ewd]
+
+    def build_project(self, project_name, project_files, env_settings):
+        # > IarBuild [project_path] -build [project_name]
+        proj_path = join(getcwd(), project_files[0])
+        if proj_path.split('.')[-1] != '.ewp':
+            proj_path += '.ewp'
+        if not path.exists(proj_path):
+            logging.debug("The file: %s does not exists, exported prior building?" % path)
+            return
+        logging.debug("Building IAR project: %s" % proj_path)
+
+        args = [join(env_settings.get_env_settings('iar'), 'IarBuild.exe'), proj_path, '-build', project_name]
+
+        try:
+            ret_code = None
+            ret_code = subprocess.call(args)
+        except:
+            logging.error("Error whilst calling IarBuild. Please check IARBUILD path in the user_settings.py file.")
+        else:
+            # no IAR doc describes errors from IarBuild
+            logging.info("Build completed.")
+
+    def flash_project(self, proj_dic, project_name, project_files, env_settings):
+        # > [project_path]/settings/[project_name].[project_name].bat
+        proj_path = join(getcwd(), project_files[0])
+        if proj_path.split('.')[-1] != '.eww':
+            proj_path = proj_path + '.eww'
+        # to be able to flash, open and close IAR, to generate .bat - is there other way around this? IAR help
+        child = subprocess.Popen([join(env_settings.get_env_settings('iar'), 'IarIdePm.exe'), proj_path])
+        time.sleep(5)
+        child.terminate()
+        path = join(path.dirname(proj_path), 'settings', project_name) + '.' + project_name + '.cspy.bat'
+        logging.debug("Flashing IAR project: %s" % proj_path)
+
+        args = [proj_path, join('.', proj_dic['build_dir'], 'Exe', project_name + '.out')]
+
+        try:
+            ret_code = None
+            ret_code = subprocess.call(args)
+        except:
+            logging.error("Error whilst calling: %s. Please check IARBUILD path in the user_settings.py file." % path)
+        else:
+            # cspy returns 0 for success, 1 for error
+            if ret_code == 0:
+                logging.info("Flashing completed.")
+            else:
+                logging.info("Flashing failed.")
