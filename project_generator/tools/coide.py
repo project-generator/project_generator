@@ -1,4 +1,4 @@
-# Copyright 2014 0xc0170
+# Copyright 2014-2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +14,35 @@
 
 import logging
 import xmltodict
+from collections import OrderedDict
 
 from os.path import basename, join, normpath
 from os import getcwd
-from .exporter import Exporter
-from .coide_definitions import CoIDEdefinitions
+from ..exporters.exporter import Exporter
 from ..targets import Targets
 
+class CoIDEdefinitions():
 
-class CoideExporter(Exporter):
+    coproj_file = OrderedDict([(u'Project', OrderedDict([(u'@version', u'2G - 1.7.5'), (u'@name', u''), (u'Target', OrderedDict([(u'@name', u''), (u'@isCurrent', u'1'), (u'Device', OrderedDict([(u'@manufacturerId', u'7'), (u'@manufacturerName', u'NXP'), (u'@chipId', u'165'), (u'@chipName', u'LPC1768'), (u'@boardId', u''), (u'@boardName', u'')])), (u'BuildOption', OrderedDict([(u'Compile', OrderedDict([(u'Option', [OrderedDict([(u'@name', u'OptimizationLevel'), (u'@value', u'4')]), OrderedDict([(u'@name', u'UseFPU'), (u'@value', u'0')]), OrderedDict([(u'@name', u'UserEditCompiler'), (u'@value', u'-fno-common;-fmessage-length=0;-Wall;-fno-strict-aliasing;-fno-rtti;-fno-exceptions;-ffunction-sections;-fdata-sections;-std=gnu++98;')])]), (u'Includepaths', OrderedDict([(u'Includepath', OrderedDict([(u'@path', u'')]))])), (u'DefinedSymbols', OrderedDict([(u'Define', OrderedDict([(u'@name', u'')]))]))])), (u'Link', OrderedDict([(u'@useDefault', u'0'), (u'Option', [OrderedDict([(u'@name', u'DiscardUnusedSection'), (u'@value', u'0')]), OrderedDict([(u'@name', u'UserEditLinkder'), (u'@value', u'1')]), OrderedDict([(u'@name', u'UseMemoryLayout'), (u'@value', u'0')]), OrderedDict([(u'@name', u'LTO'), (u'@value', u'')]), OrderedDict([(u'@name', u'IsNewStartupCode'), (u'@value', u'')]), OrderedDict([(u'@name', u'Library'), (u'@value', u'Use nano C Library')]), OrderedDict([(u'@name', u'nostartfiles'), (u'@value', u'0')]), OrderedDict([(u'@name', u'UserEditLinker'), (u'@value', u'')]), OrderedDict([(u'@name', u'Printf'), (u'@value', u'1')]), OrderedDict([(u'@name', u'Scanf'), (u'@value', u'1')])]), (u'LinkedLibraries', OrderedDict([(u'Libset', [OrderedDict([(u'@dir', u''), (u'@libs', u'stdc++')]), OrderedDict([(u'@dir', u''), (u'@libs', u'supc++')]), OrderedDict([(u'@dir', u''), (u'@libs', u'm')]), OrderedDict([(u'@dir', u''), (u'@libs', u'gcc')]), OrderedDict([(u'@dir', u''), (u'@libs', u'c')]), OrderedDict([(u'@dir', u''), (u'@libs', u'nosys')])])])), (u'MemoryAreas', OrderedDict([(u'@debugInFlashNotRAM', u'1'), (u'Memory', [OrderedDict([(u'@name', u'IROM1'), (u'@type', u'ReadOnly'), (u'@size', u'524288'), (u'@startValue', u'0')]), OrderedDict([(u'@name', u'IRAM1'), (u'@type', u'ReadWrite'), (u'@size', u'32768'), (u'@startValue', u'268435456')]), OrderedDict([(u'@name', u'IROM2'), (u'@type', u'ReadOnly'), (u'@size', u'0'), (u'@startValue', u'0')]), OrderedDict([(u'@name', u'IRAM2'), (u'@type', u'ReadWrite'), (u'@size', u'32768'), (u'@startValue', u'537378816')])])])), (u'LocateLinkFile', OrderedDict([(u'@path', u''), (u'@type', u'0')]))])), (u'Output', OrderedDict([(u'Option', [OrderedDict([(u'@name', u'OutputFileType'), (u'@value', u'0')]), OrderedDict([(u'@name', u'Path'), (u'@value', u'./')]), OrderedDict([(u'@name', u'Name'), (u'@value', u'')]), OrderedDict([(u'@name', u'HEX'), (u'@value', u'1')]), OrderedDict([(u'@name', u'BIN'), (u'@value', u'1')])])])), (u'User', OrderedDict([(u'UserRun', [OrderedDict([(u'@name', u'Run#1'), (u'@type', u'Before'), (u'@checked', u'0'), (u'@value', u'')]), OrderedDict([(u'@name', u'Run#1'), (u'@type', u'After'), (u'@checked', u'0'), (u'@value', u'')])])]))])), (u'DebugOption', OrderedDict([(u'Option', [OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.adapter'), (u'@value', u'J-Link')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.debugMode'), (u'@value', u'SWD')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.clockDiv'), (u'@value', u'1M')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.corerunToMain'), (u'@value', u'1')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.jlinkgdbserver'), (u'@value', u'')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.userDefineGDBScript'), (u'@value', u'')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.targetEndianess'), (u'@value', u'0')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.jlinkResetMode'), (u'@value', u'Type 0: Normal')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.resetMode'), (u'@value', u'SYSRESETREQ')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.ifSemihost'), (u'@value', u'0')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.ifCacheRom'), (u'@value', u'1')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.ipAddress'), (u'@value', u'127.0.0.1')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.portNumber'), (u'@value', u'2009')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.autoDownload'), (u'@value', u'1')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.verify'), (u'@value', u'1')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.downloadFuction'), (u'@value', u'Erase Effected')]), OrderedDict([(u'@name', u'org.coocox.codebugger.gdbjtag.core.defaultAlgorithm'), (u'@value', u'')])])])), (u'ExcludeFile', None)])), (u'Components', OrderedDict([(u'@path', u'./')])), (u'Files', None)]))])
+
+    debuggers = {
+        'cmsis-dap' : {
+            'Target': {
+                'DebugOption' : {
+                    'org.coocox.codebugger.gdbjtag.core.adapter' : 'CMSIS-DAP',
+                }
+            }
+        },
+        'j-link' : {
+            'Target': {
+                'DebugOption' : {
+                    'org.coocox.codebugger.gdbjtag.core.adapter' : 'J-Link',
+                }
+            }
+        },
+    }
+
+class Coide(Exporter):
     source_files_dic = [
         'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
@@ -30,7 +50,7 @@ class CoideExporter(Exporter):
     def __init__(self):
         self.definitions = CoIDEdefinitions()
 
-    def expand_data(self, old_data, new_data, attribute, group, rel_path):
+    def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ data expansion - uvision needs filename and path separately. """
         if group == 'Sources':
             old_group = None
@@ -45,7 +65,7 @@ class CoideExporter(Exporter):
                 }
                 new_data['groups'][group].append(new_file)
 
-    def get_groups(self, data):
+    def _get_groups(self, data):
         """ Get all groups defined. """
         groups = []
         for attribute in self.source_files_dic:
@@ -58,8 +78,8 @@ class CoideExporter(Exporter):
                             groups.append(k)
         return groups
 
-    def iterate(self, data, expanded_data, rel_path):
-        """ Iterate through all data, store the result expansion in extended dictionary. """
+    def __iterate(self, data, expanded_data, rel_path):
+        """ _Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
                 for k, v in dic.items():
@@ -67,9 +87,9 @@ class CoideExporter(Exporter):
                         group = 'Sources'
                     else:
                         group = k
-                    self.expand_data(dic, expanded_data, attribute, group, rel_path)
+                    self._expand_data(dic, expanded_data, attribute, group, rel_path)
 
-    def normalize_mcu_def(self, mcu_def):
+    def _normalize_mcu_def(self, mcu_def):
         for k, v in mcu_def['Device'].items():
             mcu_def['Device'][k] = v[0]
         for k, v in mcu_def['DebugOption'].items():
@@ -83,7 +103,7 @@ class CoideExporter(Exporter):
         for k, v in mcu_def['MemoryAreas']['IRAM2'].items():
             mcu_def['MemoryAreas']['IRAM2'][k] = v[0]
 
-    def fix_paths(self, data, rel_path):
+    def _fix_paths(self, data, rel_path):
         data['includes'] = [join(rel_path, normpath(path)) for path in data['includes']]
 
         for k in data['source_files_lib'][0].keys():
@@ -133,12 +153,12 @@ class CoideExporter(Exporter):
         if 'misc' in expanded_dic and bool(expanded_dic['misc'][0]):
             print ("Using deprecated misc options for coide. Please use template project files.")
 
-        groups = self.get_groups(data)
+        groups = self._get_groups(data)
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self.iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
-        self.fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         # generic tool template specified or project
         if expanded_dic['template']:
@@ -175,7 +195,7 @@ class CoideExporter(Exporter):
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/0xc0170/project_generator_definitions"
                     % expanded_dic['target'].lower())
-            self.normalize_mcu_def(mcu_def_dic)
+            self._normalize_mcu_def(mcu_def_dic)
             logging.debug("Mcu definitions: %s" % mcu_def_dic)
             # correct attributes from definition, as yaml does not allowed multiple keys (=dict), we need to
             # do this magic.
