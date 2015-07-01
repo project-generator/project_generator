@@ -13,15 +13,15 @@
 # limitations under the License.
 
 from os.path import join, normpath
-from .exporter import Exporter
+from ..exporters.exporter import Exporter
 from ..targets import Targets
 
 
-class MakefileGccArmExporter(Exporter):
+class MakefileGccArm(Exporter):
 
     optimization_options = ['O0', 'O1', 'O2', 'O3', 'Os']
 
-    def list_files(self, data, attribute, rel_path):
+    def _list_files(self, data, attribute, rel_path):
         """ Creates a list of all files based on the attribute. """
         file_list = []
         for groups in data[attribute]:
@@ -33,57 +33,57 @@ class MakefileGccArmExporter(Exporter):
                 continue
         data[attribute] = file_list
 
-    def libraries(self, key, value, data):
+    def _libraries(self, key, value, data):
         """ Add defined GCC libraries. """
         for option in value:
             if key == "libraries":
                 data['source_files_lib'].append(option)
 
-    def compiler_options(self, key, value, data):
+    def _compiler_options(self, key, value, data):
         """ Compiler flags """
         for option in value:
             if key == "compiler_options":
                 data['compiler_options'].append(option)
 
-    def linker_options(self, key, value, data):
+    def _linker_options(self, key, value, data):
         """ Linker flags """
         for option in value:
             if key == "linker_options":
                 data['linker_options'].append(option)
 
-    def optimization(self, key, value, data):
+    def _optimization(self, key, value, data):
         """ Optimization setting. """
         for option in value:
             if option in self.optimization_options:
                 data['optimization_level'] = option
 
-    def cc_standard(self, key, value, data):
+    def _cc_standard(self, key, value, data):
         """ C++ Standard """
         if key == "cc_standard":
             data['cc_standard'] = value
 
-    def c_standard(self, key, value, data):
+    def _c_standard(self, key, value, data):
         """ C Standard """
         if key == "c_standard":
             data['c_standard'] = value
 
-    def parse_specific_options(self, data):
+    def _parse_specific_options(self, data):
         """ Parse all uvision specific setttings. """
         data['compiler_options'] = []
         for dic in data['misc']:
             for k, v in dic.items():
-                self.libraries(k, v, data)
-                self.compiler_options(k, v, data)
-                self.optimization(k, v, data)
-                self.cc_standard(k, v, data)
-                self.c_standard(k, v, data)
+                self._libraries(k, v, data)
+                self._compiler_options(k, v, data)
+                self._optimization(k, v, data)
+                self._cc_standard(k, v, data)
+                self._c_standard(k, v, data)
 
         data['linker_options'] = []
         for dic in data['misc']:
             for k, v in dic.items():
-                self.linker_options(k, v, data)
+                self._linker_options(k, v, data)
 
-    def fix_paths(self, data, name, env_settings):
+    def _fix_paths(self, data, name, env_settings):
         # get relative path and fix all paths within a project
         fixed_paths = []
         for path in data['includes']:
@@ -113,12 +113,12 @@ class MakefileGccArmExporter(Exporter):
         return project_path, [makefile]
 
     def process_data_for_makefile(self, data, env_settings, name):
-        self.fix_paths(data, name, env_settings)
-        self.list_files(data, 'source_files_c', data['output_dir']['rel_path'])
-        self.list_files(data, 'source_files_cpp', data['output_dir']['rel_path'])
-        self.list_files(data, 'source_files_s', data['output_dir']['rel_path'])
+        self._fix_paths(data, name, env_settings)
+        self._list_files(data, 'source_files_c', data['output_dir']['rel_path'])
+        self._list_files(data, 'source_files_cpp', data['output_dir']['rel_path'])
+        self._list_files(data, 'source_files_s', data['output_dir']['rel_path'])
 
-        self.parse_specific_options(data)
+        self._parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'
         data['toolchain_bin_path'] = env_settings.get_env_settings('gcc')
 

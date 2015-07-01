@@ -21,12 +21,12 @@ from .builders.gccarm import MakefileGccArmBuilder
 from .tools.iar import IAREmbeddedWorkbench
 from .tools.uvision import Uvision
 from .tools.coide import Coide
+from .tools.eclipse import EclipseGnuARM
+from .tools.gccarm import MakefileGccArm
+from .tools.sublimetext import SublimeTextMakeGccARM
+from .tools.gdb import GDB
+from .tools.gdb import ARMNoneEABIGDB
 
-from .exporters.gccarm import MakefileGccArmExporter
-from .exporters.eclipse import EclipseGnuARMExporter
-from .exporters.gdb import GDBExporter
-from .exporters.gdb import ARMNoneEABIGDBExporter
-from .exporters.sublimetext import SublimeTextMakeGccARMExporter
 
 
 class ToolsSupported:
@@ -58,21 +58,21 @@ class ToolsSupported:
         'make_gcc_arm': {
             'toolchain': 'gcc_arm',
             'toolnames': ['make_gcc_arm'],
-            'exporter': MakefileGccArmExporter,
+            'exporter': MakefileGccArm,
             'builder': MakefileGccArmBuilder,
             'flasher': None,
         },
         'eclipse_make_gcc_arm': {
             'toolchain': 'gcc_arm',
             'toolnames': ['eclipse_make_gcc_arm', 'make_gcc_arm'],
-            'exporter': EclipseGnuARMExporter,
+            'exporter': EclipseGnuARM,
             'builder': None,
             'flasher': None,
         },
         'sublime_make_gcc_arm': {
             'toolchain': 'gcc_arm',
             'toolnames': ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
-            'exporter': SublimeTextMakeGccARMExporter,
+            'exporter': SublimeTextMakeGccARM,
             'builder': MakefileGccArmBuilder,
             'flasher': None,
         },
@@ -86,14 +86,14 @@ class ToolsSupported:
         'gdb': {
             'toolchain': None,
             'toolnames': ['gdb'],
-            'exporter': GDBExporter,
+            'exporter': GDB,
             'builder': None,
             'flasher': None,
         },
         'arm_none_eabi_gdb': {
             'toolchain': None,
             'toolnames': ['gdb'],
-            'exporter': ARMNoneEABIGDBExporter,
+            'exporter': ARMNoneEABIGDB,
             'builder': None,
             'flasher': None,
         },
@@ -150,7 +150,7 @@ def build(builder, project_name, project_files, tool, env_settings):
 
 def flash(flasher, proj_dic, project_name, project_files, tool, env_settings):
     """ Invokes flasher for specified tool. """
-    if builder not in ToolsSupported().FLASHERS:
+    if flasher not in ToolsSupported().FLASHERS:
         raise RuntimeError("Flasher does not support specified tool: %s" % tool)
     else:
         flasher().flash_project(proj_dic, project_name, project_files, env_settings)

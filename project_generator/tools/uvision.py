@@ -160,7 +160,6 @@ class Uvision(Builder, Exporter):
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
         uvproj_dic['Aads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
 
-
     def _uvproj_set_TargetCommonOption(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)
         self._uvproj_clean_xmldict(uvproj_dic['AfterMake'])
@@ -191,7 +190,6 @@ class Uvision(Builder, Exporter):
             for file in files:
                 uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'].append(file)
             i += 1
-
 
     def generate(self, data, env_settings):
         """ Processes groups and misc options specific for uVision, and run generator """

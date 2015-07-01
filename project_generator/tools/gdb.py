@@ -4,11 +4,17 @@
 # Licensed under the Apache License, Version 2.0
 # See LICENSE file for details.
 
-from .exporter import Exporter
-from . import gdb_definitions
+from ..exporters.exporter import Exporter
+
+class gdb_definitions():
+
+    SUPPORTED_MCUS = {
+        'K64F': {
+        }
+    }
 
 
-class GDBExporter(Exporter):
+class GDB(Exporter):
     def generate(self, data, env_settings):
         # for native debugging, no command files are necessary
         return None, []
@@ -22,7 +28,7 @@ class GDBExporter(Exporter):
         return True
 
 
-class ARMNoneEABIGDBExporter(GDBExporter):
+class ARMNoneEABIGDB(GDB):
     SUPPORTED = gdb_definitions.SUPPORTED_MCUS
 
     def generate(self, data, env_settings):

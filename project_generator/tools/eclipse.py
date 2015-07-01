@@ -15,22 +15,22 @@
 import copy
 
 # eclipse works with linux paths
-from posixpath import normpath, join, basename, relpath
+from posixpath import normpath, join, basename
 
-from .exporter import Exporter
-from .gccarm import MakefileGccArmExporter
+from ..exporters.exporter import Exporter
+from .gccarm import MakefileGccArm
 
 
-class EclipseGnuARMExporter(Exporter):
+class EclipseGnuARM(Exporter):
     source_files_dic = ['source_files_c', 'source_files_s',
                         'source_files_cpp', 'source_files_obj']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
 
     def __init__(self):
         self.definitions = 0
-        self.exporter = MakefileGccArmExporter()
+        self.exporter = MakefileGccArm()
 
-    def expand_data(self, old_data, new_data, attribute, group, rel_path):
+    def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ data expansion - uvision needs filename and path separately. """
         if group == 'Sources':
             old_group = None
@@ -45,7 +45,7 @@ class EclipseGnuARMExporter(Exporter):
                     source), "type": self.file_types[extension]}
                 new_data['groups'][group].append(new_file)
 
-    def get_groups(self, data):
+    def _get_groups(self, data):
         """ Get all groups defined. """
         groups = []
         for attribute in self.source_files_dic:
@@ -58,7 +58,7 @@ class EclipseGnuARMExporter(Exporter):
                             groups.append(k)
         return groups
 
-    def iterate(self, data, expanded_data, rel_path):
+    def _iterate(self, data, expanded_data, rel_path):
         """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
@@ -67,7 +67,7 @@ class EclipseGnuARMExporter(Exporter):
                         group = 'Sources'
                     else:
                         group = k
-                    self.expand_data(dic, expanded_data, attribute, group, rel_path)
+                    self._expand_data(dic, expanded_data, attribute, group, rel_path)
 
     def generate(self, data, settings):
         """ Processes groups and misc options specific for eclipse, and run generator """
@@ -78,11 +78,11 @@ class EclipseGnuARMExporter(Exporter):
 
         expanded_dic = data.copy()
         expanded_dic['rel_path'] = data_for_make['output_dir']['rel_path']
-        groups = self.get_groups(expanded_dic)
+        groups = self._get_groups(expanded_dic)
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self.iterate(data, expanded_dic, data_for_make['rel_path'])
+        self._iterate(data, expanded_dic, data_for_make['rel_path'])
 
         # Project file
         project_path, cproj = self.gen_file_jinja(

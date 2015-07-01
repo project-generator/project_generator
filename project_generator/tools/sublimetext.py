@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .gccarm import MakefileGccArmExporter
+from .gccarm import MakefileGccArm
 
 
-class SublimeTextMakeGccARMExporter(MakefileGccArmExporter):
+class SublimeTextMakeGccARM(MakefileGccArm):
 
-    def fix_sublime_paths(self, data):
+    def _fix_sublime_paths(self, data):
         fixed_paths = []
         for path in data['source_paths']:
             # TODO - fix, using only posix paths
@@ -27,7 +27,7 @@ class SublimeTextMakeGccARMExporter(MakefileGccArmExporter):
     def generate(self, data, env_settings):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.process_data_for_makefile(data, env_settings, "sublime_make_gcc_arm")
-        self.fix_sublime_paths(data)
+        self._fix_sublime_paths(data)
         data['linker_options'] =[]
 
         project_path, makefile = self.gen_file_jinja('makefile_gcc.tmpl', data, 'Makefile', data['output_dir']['path'])
