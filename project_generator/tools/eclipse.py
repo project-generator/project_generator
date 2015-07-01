@@ -18,7 +18,7 @@ import copy
 from posixpath import normpath, join, basename
 
 from ..exporters.exporter import Exporter
-from gccarm import MakefileGccArm
+from .gccarm import MakefileGccArm
 
 
 class EclipseGnuARM(Exporter):
