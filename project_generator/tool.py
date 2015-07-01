@@ -17,7 +17,6 @@ import logging
 import subprocess
 
 from .targets import Targets
-from .builders.gccarm import MakefileGccArmBuilder
 from .tools.iar import IAREmbeddedWorkbench
 from .tools.uvision import Uvision
 from .tools.coide import Coide
@@ -59,7 +58,7 @@ class ToolsSupported:
             'toolchain': 'gcc_arm',
             'toolnames': ['make_gcc_arm'],
             'exporter': MakefileGccArm,
-            'builder': MakefileGccArmBuilder,
+            'builder': MakefileGccArm,
             'flasher': None,
         },
         'eclipse_make_gcc_arm': {
