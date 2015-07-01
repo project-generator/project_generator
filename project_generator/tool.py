@@ -20,8 +20,8 @@ from .targets import Targets
 from .builders.gccarm import MakefileGccArmBuilder
 from .tools.iar import IAREmbeddedWorkbench
 from .tools.uvision import Uvision
+from .tools.coide import Coide
 
-from .exporters.coide import CoideExporter
 from .exporters.gccarm import MakefileGccArmExporter
 from .exporters.eclipse import EclipseGnuARMExporter
 from .exporters.gdb import GDBExporter
@@ -51,7 +51,7 @@ class ToolsSupported:
         'coide': {
             'toolchain': 'gcc_arm',
             'toolnames': ['coide'],
-            'exporter': CoideExporter,
+            'exporter': Coide,
             'builder': None,
             'flasher': None,
         },
