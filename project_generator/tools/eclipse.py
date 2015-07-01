@@ -69,7 +69,7 @@ class EclipseGnuARM(Exporter):
                         group = k
                     self._expand_data(dic, expanded_data, attribute, group, rel_path)
 
-    def generate(self, data, settings):
+    def export_project(self, data, settings):
         """ Processes groups and misc options specific for eclipse, and run generator """
         data_for_make = data.copy()
 

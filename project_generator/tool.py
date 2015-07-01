@@ -118,7 +118,7 @@ def export(exporter, data, tool, env_settings):
     if exporter not in ToolsSupported().EXPORTERS:
         raise RuntimeError("Exporter does not support specified tool: %s" % tool)
     else:
-        project_path, projectfiles = exporter().generate(data, env_settings)
+        project_path, projectfiles = exporter().export_project(data, env_settings)
         return project_path, projectfiles
 
 def fixup_executable(exporter, executable_path, tool):

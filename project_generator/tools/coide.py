@@ -78,7 +78,7 @@ class Coide(Exporter):
                             groups.append(k)
         return groups
 
-    def __iterate(self, data, expanded_data, rel_path):
+    def _iterate(self, data, expanded_data, rel_path):
         """ _Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
             for dic in data[attribute]:
@@ -145,7 +145,7 @@ class Coide(Exporter):
     def _coproj_set_linker(self, coproj_dic, project_dic):
         coproj_dic['Project']['Target']['BuildOption']['Link']['LocateLinkFile']['@path'] = project_dic['linker_file']
 
-    def generate(self, data, env_settings):
+    def export_project(self, data, env_settings):
         """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = data.copy()
 

@@ -115,7 +115,7 @@ class MakefileGccArm(Exporter):
         if data['linker_file']:
             data['linker_file'] = join(data['output_dir']['rel_path'], normpath(data['linker_file']))
 
-    def generate(self, data, env_settings):
+    def export_project(self, data, env_settings):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.process_data_for_makefile(data, env_settings, "make_gcc_arm")
         project_path, makefile = self.gen_file_jinja('makefile_gcc.tmpl', data, 'Makefile', data['output_dir']['path'])

@@ -15,7 +15,7 @@ class gdb_definitions():
 
 
 class GDB(Exporter):
-    def generate(self, data, env_settings):
+    def export_project(self, data, env_settings):
         # for native debugging, no command files are necessary
         return None, []
 
@@ -31,7 +31,7 @@ class GDB(Exporter):
 class ARMNoneEABIGDB(GDB):
     SUPPORTED = gdb_definitions.SUPPORTED_MCUS
 
-    def generate(self, data, env_settings):
+    def export_project(self, data, env_settings):
         expanded_dic = data.copy()
         
         # !!! TODO: store and read settings from gdb_definitions

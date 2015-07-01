@@ -249,7 +249,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             if option['name'] == find_key:
                 return settings.index(option)
 
-    def generate(self, data, env_settings):
+    def export_project(self, data, env_settings):
         """ Processes groups and misc options specific for IAR, and run generator """
         expanded_dic = data.copy()
 
