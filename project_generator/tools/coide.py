@@ -18,7 +18,7 @@ from collections import OrderedDict
 
 from os.path import basename, join, normpath
 from os import getcwd
-from ..exporters.exporter import Exporter
+from .exporter import Exporter
 from ..targets import Targets
 
 class CoIDEdefinitions():
