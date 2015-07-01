@@ -21,8 +21,8 @@ import xmltodict
 from os.path import basename, join, normpath
 from os import getcwd
 from collections import OrderedDict
-from ..exporters.exporter import Exporter
-from ..builders.builder import Builder
+from .exporter import Exporter
+from .builder import Builder
 from ..targets import Targets
 
 class uVisionDefinitions():

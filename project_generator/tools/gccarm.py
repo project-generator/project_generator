@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from os.path import join, normpath
-from ..exporters.exporter import Exporter
+from .exporter import Exporter
 from ..targets import Targets
 
 

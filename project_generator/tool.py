@@ -72,7 +72,7 @@ class ToolsSupported:
             'toolchain': 'gcc_arm',
             'toolnames': ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
             'exporter': SublimeTextMakeGccARM,
-            'builder': MakefileGccArmBuilder,
+            'builder': MakefileGccArm,
             'flasher': None,
         },
         'sublime': {

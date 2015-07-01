@@ -23,8 +23,8 @@ import os
 from os import getcwd
 from os.path import join, normpath
 
-from ..builders.builder import Builder
-from ..exporters.exporter import Exporter
+from .builder import Builder
+from .exporter import Exporter
 from ..targets import Targets
 
 
