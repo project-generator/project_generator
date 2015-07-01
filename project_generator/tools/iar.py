@@ -19,7 +19,8 @@ import subprocess
 import logging
 import time
 
-from os import getcwd, path
+import os
+from os import getcwd
 from os.path import join, normpath
 
 from ..builders.builder import Builder
@@ -203,7 +204,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         for k, v in self.core_dic.items():
             if k == data['core']:
                 return v
-        return core_dic['cortex-m0']  # def cortex-m0 if not defined otherwise
+        return IAREmbeddedWorkbench.core_dic['cortex-m0']  # def cortex-m0 if not defined otherwise
 
     def _parse_specific_options(self, data):
         """ Parse all IAR specific settings. """
@@ -336,8 +337,8 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         proj_path = join(getcwd(), project_files[0])
         if proj_path.split('.')[-1] != '.ewp':
             proj_path += '.ewp'
-        if not path.exists(proj_path):
-            logging.debug("The file: %s does not exists, exported prior building?" % path)
+        if not os.path.exists(proj_path):
+            logging.debug("The file: %s does not exists, exported prior building?" % proj_path)
             return
         logging.debug("Building IAR project: %s" % proj_path)
 
@@ -362,7 +363,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         child = subprocess.Popen([join(env_settings.get_env_settings('iar'), 'IarIdePm.exe'), proj_path])
         time.sleep(5)
         child.terminate()
-        path = join(path.dirname(proj_path), 'settings', project_name) + '.' + project_name + '.cspy.bat'
+        path = join(os.path.dirname(proj_path), 'settings', project_name) + '.' + project_name + '.cspy.bat'
         logging.debug("Flashing IAR project: %s" % proj_path)
 
         args = [proj_path, join('.', proj_dic['build_dir'], 'Exe', project_name + '.out')]
