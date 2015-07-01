@@ -24,7 +24,7 @@ class SublimeTextMakeGccARM(MakefileGccArm):
             fixed_paths.append(path.replace('\\', '/'))
         data['source_paths'] = fixed_paths
 
-    def generate(self, data, env_settings):
+    def export_project(self, data, env_settings):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.process_data_for_makefile(data, env_settings, "sublime_make_gcc_arm")
         self._fix_sublime_paths(data)

@@ -13,11 +13,20 @@
 # limitations under the License.
 
 from os.path import join, normpath
-from ..exporters.exporter import Exporter
+from .exporter import Exporter
 from ..targets import Targets
 
 
 class MakefileGccArm(Exporter):
+
+    # http://www.gnu.org/software/make/manual/html_node/Running.html
+    ERRORLEVEL = {
+        0: 'success (0 warnings, 0 errors)',
+        1: 'targets not already up to date',
+        2: 'errors'
+    }
+
+    SUCCESSVALUE = 0
 
     optimization_options = ['O0', 'O1', 'O2', 'O3', 'Os']
 
@@ -108,7 +117,7 @@ class MakefileGccArm(Exporter):
         if data['linker_file']:
             data['linker_file'] = join(data['output_dir']['rel_path'], normpath(data['linker_file']))
 
-    def generate(self, data, env_settings):
+    def export_project(self, data, env_settings):
         """ Processes misc options specific for GCC ARM, and run generator. """
         self.process_data_for_makefile(data, env_settings, "make_gcc_arm")
         project_path, makefile = self.gen_file_jinja('makefile_gcc.tmpl', data, 'Makefile', data['output_dir']['path'])
@@ -143,3 +152,25 @@ class MakefileGccArm(Exporter):
         # set default values
         if 'optimization_level' not in data:
             data['optimization_level'] = self.optimization_options[0]
+
+    def build_project(self, project_name, project_files, env_settings):
+        # cwd: relpath(join(project_path, ("gcc_arm" + project)))
+        # > make all
+        path = dirname(project_files[0])
+        logging.debug("Building GCC ARM project: %s" % path)
+
+        args = ['make', 'all']
+
+        try:
+            ret_code = None
+            ret_code = subprocess.call(args, cwd=path)
+        except:
+            logging.error("Error whilst calling make. Is it in your PATH?")
+        else:
+            if ret_code != self.SUCCESSVALUE:
+                # Seems like something went wrong.
+                logging.error("Build failed with the status: %s" %
+                              self.ERRORLEVEL[ret_code])
+            else:
+                logging.info("Build succeeded with the status: %s" %
+                             self.ERRORLEVEL[ret_code])

@@ -21,8 +21,8 @@ import xmltodict
 from os.path import basename, join, normpath
 from os import getcwd
 from collections import OrderedDict
-from ..exporters.exporter import Exporter
-from ..builders.builder import Builder
+from .exporter import Exporter
+from .builder import Builder
 from ..targets import Targets
 
 class uVisionDefinitions():
@@ -191,7 +191,7 @@ class Uvision(Builder, Exporter):
                 uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'].append(file)
             i += 1
 
-    def generate(self, data, env_settings):
+    def export_project(self, data, env_settings):
         """ Processes groups and misc options specific for uVision, and run generator """
         expanded_dic = data.copy()
 

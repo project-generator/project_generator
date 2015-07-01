@@ -17,7 +17,6 @@ import logging
 import subprocess
 
 from .targets import Targets
-from .builders.gccarm import MakefileGccArmBuilder
 from .tools.iar import IAREmbeddedWorkbench
 from .tools.uvision import Uvision
 from .tools.coide import Coide
@@ -59,7 +58,7 @@ class ToolsSupported:
             'toolchain': 'gcc_arm',
             'toolnames': ['make_gcc_arm'],
             'exporter': MakefileGccArm,
-            'builder': MakefileGccArmBuilder,
+            'builder': MakefileGccArm,
             'flasher': None,
         },
         'eclipse_make_gcc_arm': {
@@ -73,7 +72,7 @@ class ToolsSupported:
             'toolchain': 'gcc_arm',
             'toolnames': ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
             'exporter': SublimeTextMakeGccARM,
-            'builder': MakefileGccArmBuilder,
+            'builder': MakefileGccArm,
             'flasher': None,
         },
         'sublime': {
@@ -119,7 +118,7 @@ def export(exporter, data, tool, env_settings):
     if exporter not in ToolsSupported().EXPORTERS:
         raise RuntimeError("Exporter does not support specified tool: %s" % tool)
     else:
-        project_path, projectfiles = exporter().generate(data, env_settings)
+        project_path, projectfiles = exporter().export_project(data, env_settings)
         return project_path, projectfiles
 
 def fixup_executable(exporter, executable_path, tool):
