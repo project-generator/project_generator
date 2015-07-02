@@ -17,6 +17,7 @@ import subprocess
 import shutil
 import logging
 import xmltodict
+import re
 
 from os.path import basename, join, normpath
 from os import getcwd
@@ -330,14 +331,14 @@ class Uvision(Builder, Exporter):
                 logging.info("Flashing succeeded with the status: %s" %
                              self.ERRORLEVEL[ret_code])
 
-    def create_target(self, project_file):
-        """ Parse project file to get target definition """
+    def get_mcu_definition(self, project_file):
+        """ Parse project file to get mcu definition """
         project_file = join(getcwd(), project_file)
         uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-        # Generic Target, should get from Target class !
-        target = Targets().get_target_definition()
 
-        target['tool_specific'] = {
+        mcu = Targets().get_mcu_definition()
+
+        mcu['tool_specific'] = {
             # legacy device
             'uvision' : {
                 'TargetOption' : {
@@ -350,4 +351,4 @@ class Uvision(Builder, Exporter):
                 }
             }
         }
-        return target
+        return mcu

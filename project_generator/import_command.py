@@ -17,14 +17,14 @@ import logging
 
 help = 'Import to pgen'
 
-from tool import ToolsSupported, target_create
+from tool import ToolsSupported, mcu_create
 
 def run(args):
     root = os.getcwd()
 
     # exporter - fix TOOLS please
     tool = ToolsSupported().get_value(args.tool, 'exporter')
-    target_create(tool, args.mcu, args.file, args.tool)
+    mcu_create(tool, args.mcu, args.file, args.tool)
 
 def setup(subparser):
     subparser.add_argument(
