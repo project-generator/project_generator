@@ -22,9 +22,9 @@ class Targets:
 
     TARGET_TEMPLATE = {
         'mcu' : {
-            'vendor' : '',
-            'name' : '',
-            'core' : '',
+            'vendor' : [''],
+            'name' : [''],
+            'core' : [''],
         },
     }
 
