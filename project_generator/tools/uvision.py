@@ -351,19 +351,20 @@ class Uvision(Builder, Exporter):
     def create_target(self, project_file):
         """ Parse project file to get target definition """
         project_file = join(getcwd(), project_file)
-        uvproj_dic = xmltodict.parse(file(project_file))
+        uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
         # Generic Target, should get from Target class !
         target = Targets().get_target_definition()
 
         target['tool_specific'] = {
+            # legacy device
             'uvision' : {
                 'TargetOption' : {
-                    'Device' : uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'],
-                    'Vendor' : uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'],
-                    'Cpu' : uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'],
-                    'FlashDriverDll' : uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'],
-                    'DeviceId' : uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'],
-                    'SFDFile' : uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'],
+                    'Device' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device']],
+                    'Vendor' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor']],
+                    'Cpu' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu']],
+                    'FlashDriverDll' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll']],
+                    'DeviceId' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId']],
+                    'SFDFile' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile']],
                 }
             }
         }
