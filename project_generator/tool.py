@@ -154,8 +154,8 @@ def flash(flasher, proj_dic, project_name, project_files, tool, env_settings):
     else:
         flasher().flash_project(proj_dic, project_name, project_files, env_settings)
 
-def target_create(ToolParser, mcu_name, proj_file, tool):
-    data = ToolParser().create_target(proj_file)
+def mcu_create(ToolParser, mcu_name, proj_file, tool):
+    data = ToolParser().get_mcu_definition(proj_file)
     data['mcu']['name'] = [mcu_name]
     # we got target, now damp it to root using target.yaml file
     with open(os.path.join(os.getcwd(), mcu_name + '.yaml'), 'wt') as f:

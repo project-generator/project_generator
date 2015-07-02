@@ -20,7 +20,7 @@ from os import listdir
 
 class Targets:
 
-    TARGET_TEMPLATE = {
+    MCU_TEMPLATE = {
         'mcu' : {
             'vendor' : [''],
             'name' : [''],
@@ -40,8 +40,8 @@ class Targets:
         project_file.close()
         return config
 
-    def get_target_definition(self):
-        return self.TARGET_TEMPLATE
+    def get_mcu_definition(self):
+        return self.MCU_TEMPLATE
 
     def get_mcu_record(self, target):
         target_path = join(self.definitions_directory, 'target', target + '.yaml')
