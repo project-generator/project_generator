@@ -169,7 +169,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         'files': {
             'ewp': '',
             'ewd': '',
-            'ewd': '',
+            'eww': '',
         }
     }
 

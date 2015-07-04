@@ -14,14 +14,14 @@
 import os
 from unittest import TestCase
 
-from project_generator.workspace import Workspace
+from project_generator.workspace import PgenWorkspace
 
 class TestWorkspace(TestCase):
 
-    """test things related to the Workspace class"""
+    """test things related to the PgenWorkspace class"""
 
     def setUp(self):
-        self.workspace = Workspace('test_projects/test_workspace/projects.yaml')
+        self.workspace = PgenWorkspace('test_projects/test_workspace/projects.yaml')
 
     def test_settings(self):
         # only check things which are affected by projects.yaml
