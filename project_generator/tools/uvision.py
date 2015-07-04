@@ -63,8 +63,11 @@ class Uvision(Builder, Exporter):
 
     SUCCESSVALUE = 0
 
-    def __init__(self):
+    def __init__(self, workspace, env_settings):
         self.definitions = uVisionDefinitions()
+        # workspace - projects
+        self.workspace = workspace
+        self.env_settings = env_settings
 
     def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ data expansion - uvision needs filename and path separately. """
@@ -191,10 +194,10 @@ class Uvision(Builder, Exporter):
                 uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'].append(file)
             i += 1
 
-    def export_project(self, workspace, env_settings):
+    def export_project(self):
         project_paths = []
         project_files = []
-        for project in workspace:
+        for project in self.workspace:
             """ Processes groups and misc options specific for uVision, and run generator """
             expanded_dic = project.copy()
 
@@ -218,11 +221,11 @@ class Uvision(Builder, Exporter):
                 # TODO 0xc0170: template list !
                 project_file = join(getcwd(), expanded_dic['template'][0])
                 uvproj_dic = xmltodict.parse(file(project_file))
-            elif 'uvision' in env_settings.templates.keys():
+            elif 'uvision' in self.env_settings.templates.keys():
                 # template overrides what is set in the yaml files
                 # TODO 0xc0170: extensions for templates - support multiple files and get their extension
                 # and check if user defined them correctly
-                project_file = join(getcwd(), env_settings.templates['uvision'][0])
+                project_file = join(getcwd(), self.env_settings.templates['uvision'][0])
                 uvproj_dic = xmltodict.parse(file(project_file))
             else:
                 uvproj_dic = self.definitions.uvproj_file
@@ -245,7 +248,7 @@ class Uvision(Builder, Exporter):
 
             # set target only if defined, otherwise use from template/default one
             if expanded_dic['target']:
-                target = Targets(env_settings.get_env_settings('definitions'))
+                target = Targets(self.env_settings.get_env_settings('definitions'))
                 if not target.is_supported(expanded_dic['target'].lower(), 'uvision'):
                     raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
                 mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'uvision')

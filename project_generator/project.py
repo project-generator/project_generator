@@ -197,8 +197,6 @@ class Project:
 
         self.workspace = pgen_workspace
 
-        #logging.debug("Initialising project %s" % name)
-
         self.name = name
 
         self.include_paths = []

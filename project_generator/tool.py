@@ -113,12 +113,12 @@ class ToolsSupported:
     def get_supported(self):
         return self.TOOLS.keys()
 
-def export(exporter, data, tool, env_settings):
+def export(exporter, project_workspace, tool, env_settings):
     """ Invokes tool generator. """
     if exporter not in ToolsSupported().EXPORTERS:
         raise RuntimeError("Exporter does not support specified tool: %s" % tool)
     else:
-        return exporter().export_project(data, env_settings)
+        return exporter(project_workspace, env_settings).export_project()
 
 def fixup_executable(exporter, executable_path, tool):
     """ Perform any munging of the executable necessary to debug it with the specified tool. """

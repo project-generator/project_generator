@@ -163,8 +163,10 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         "cortex-m4f": 40,
     }
 
-    def __init__(self):
+    def __init__(self, workspace, env_settings):
         self.definitions = IARDefinitions()
+        self.workspace = workspace
+        self.env_settings = env_settings
 
     def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ Groups expansion for Sources. """
@@ -249,7 +251,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             if option['name'] == find_key:
                 return settings.index(option)
 
-    def _export_single_project(self, data, env_settings):
+    def _export_single_project(self, data):
         expanded_dic = data.copy()
 
         # TODO 0xc0170: fix misc , its a list with a dictionary
@@ -268,10 +270,10 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             # TODO 0xc0170: template list !
             project_file = join(getcwd(), expanded_dic['template'][0])
             ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-        elif 'iar' in env_settings.templates.keys():
+        elif 'iar' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
             # TODO 0xc0170: extension check/expansion
-            project_file = join(getcwd(), env_settings.templates['iar'][0])
+            project_file = join(getcwd(), self.env_settings.templates['iar'][0])
             ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
         else:
             ewp_dic = self.definitions.ewp_file
@@ -301,7 +303,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         # set target only if defined, otherwise use from template/default one
         if expanded_dic['target']:
             # get target definition (target + mcu)
-            target = Targets(env_settings.get_env_settings('definitions'))
+            target = Targets(self.env_settings.get_env_settings('definitions'))
             if not target.is_supported(expanded_dic['target'].lower(), 'iar'):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
             mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'iar')
@@ -330,15 +332,15 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         project_path, ewd = self.gen_file_raw(ewd_xml, '%s.ewd' % expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww, ewd]
 
-    def export_project(self, data, env_settings):
+    def export_project(self):
         """ Processes groups and misc options specific for IAR, and run generator """
         # TODO 0xc0170: fix this return values. It should be specified what export should return.
         # looks like some other projects might benefit of getting where data were generated and
         # what files. Define common structure for this
         project_paths = []
         project_files = []
-        for project in data:
-           path, files = self._export_single_project(project, env_settings)
+        for project in self.workspace:
+           path, files = self._export_single_project(project)
            project_paths.append(path)
            project_files.append(files)
         return project_paths, project_files
