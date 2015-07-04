@@ -153,8 +153,7 @@ class ProjectWorkspace:
         self.name = proj_name
         self.projects = []
         self.pgen_workspace = pgen_workspace # TODO: FIX me please
-        self.project_path = {}
-        self.project_files = {}
+        self.generated_files = {}
 
         if type(proj_records) == type(dict()):
             for name, records in proj_records.items():
@@ -183,10 +182,9 @@ class ProjectWorkspace:
             for project in self.projects:
                 workspace_dic.append(project.generate_dic(export_tool, copy))
             logging.debug("Project workspace dict: %s" % workspace_dic)
-            project_path, project_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
+            generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
 
-            self.project_path[export_tool] = project_path
-            self.project_files[export_tool] = project_files
+            self.generated_files[export_tool] = generated_files
 
 class Project:
 

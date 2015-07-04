@@ -19,7 +19,7 @@ from os.path import join, dirname
 from jinja2 import Template
 
 
-class Exporter:
+class Exporter(object):
 
     """Just a template for subclassing"""
 

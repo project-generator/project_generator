@@ -18,6 +18,7 @@ import xmltodict
 import subprocess
 import logging
 import time
+import copy
 
 import os
 from os import getcwd
@@ -162,6 +163,16 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         "cortex-m4":  39,
         "cortex-m4f": 40,
     }
+
+    generated_project = {
+        'path': '',
+        'files': {
+            'ewp': '',
+            'ewd': '',
+            'ewd': '',
+        }
+    }
+
 
     def __init__(self, workspace, env_settings):
         self.definitions = IARDefinitions()
@@ -330,20 +341,16 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
 
         ewd_xml = xmltodict.unparse(ewd_dic, pretty=True)
         project_path, ewd = self.gen_file_raw(ewd_xml, '%s.ewd' % expanded_dic['name'], expanded_dic['output_dir']['path'])
-        return project_path, [ewp, eww, ewd]
+        return project_path, ewp, eww, ewd
 
     def export_project(self):
         """ Processes groups and misc options specific for IAR, and run generator """
-        # TODO 0xc0170: fix this return values. It should be specified what export should return.
-        # looks like some other projects might benefit of getting where data were generated and
-        # what files. Define common structure for this
-        project_paths = []
-        project_files = []
+        generated_projects = {}
         for project in self.workspace:
-           path, files = self._export_single_project(project)
-           project_paths.append(path)
-           project_files.append(files)
-        return project_paths, project_files
+            output = copy.deepcopy(self.generated_project)
+            output['path'],  output['files']['ewp'], output['files']['eww'], output['files']['ewd'] = self._export_single_project(project)
+            generated_projects[project['name']] = output
+        return generated_projects
 
     def build_project(self, project_name, project_files, env_settings):
         """ Build IAR project. """

@@ -15,6 +15,7 @@
 import logging
 import xmltodict
 from collections import OrderedDict
+import copy
 
 from os.path import basename, join, normpath
 from os import getcwd
@@ -239,13 +240,12 @@ class Coide(Exporter):
         # coproj_xml = xmltodict.unparse(coproj_dic, pretty=True)
         project_path, projfile = self.gen_file_jinja(
             'coide.coproj.tmpl', coproj_dic, '%s.coproj' % expanded_dic['name'], expanded_dic['output_dir']['path'])
-        return project_path, [projfile]
+        return project_path, projfile
 
     def export_project(self):
-        project_paths = []
-        project_files = []
+        generated_projects = {}
         for project in self.workspace:
-            path, files = self._export_single_project(project)
-            project_paths.append(path)
-            project_files.append(files)
-        return project_paths, project_files
+            output = copy.deepcopy(self.generated_project)
+            output['path'], output['files']['coproj'] = self._export_single_project(project)
+            generated_projects[project['name']] = output
+        return generated_projects

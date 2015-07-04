@@ -17,6 +17,7 @@ import subprocess
 import shutil
 import logging
 import xmltodict
+import copy
 
 from os.path import basename, join, normpath
 from os import getcwd
@@ -62,6 +63,13 @@ class Uvision(Builder, Exporter):
     }
 
     SUCCESSVALUE = 0
+
+    generated_project = {
+        'path': '',
+        'files': {
+            'uvproj': '',
+        }
+    }
 
     def __init__(self, workspace, env_settings):
         self.definitions = uVisionDefinitions()
@@ -195,10 +203,10 @@ class Uvision(Builder, Exporter):
             i += 1
 
     def export_project(self):
-        project_paths = []
-        project_files = []
+        generated_projects = {}
         for project in self.workspace:
             """ Processes groups and misc options specific for uVision, and run generator """
+            generated_projects[project['name']] = copy.deepcopy(self.generated_project)
             expanded_dic = project.copy()
 
             groups = self._get_groups(project)
@@ -274,15 +282,13 @@ class Uvision(Builder, Exporter):
 
             # Project file
             uvproj_xml = xmltodict.unparse(uvproj_dic, pretty=True)
-            project_path, projfile = self.gen_file_raw(uvproj_xml, '%s.uvproj' % project['name'], expanded_dic['output_dir']['path'])
-            # TODO 0xc0170: FIX this, why do we return both ?
-            project_paths.append(project_path)
-            project_files.append(projfile)
-
+            path, files = self.gen_file_raw(uvproj_xml, '%s.uvproj' % project['name'], expanded_dic['output_dir']['path'])
+            generated_projects[project['name']]['path'] = path
+            generated_projects[project['name']]['files']['uvproj'] = files
         # if len(projects) > 1:
             # we have a workspace. TODO to implement
 
-        return project_paths, project_files
+        return generated_projects
 
     def fixup_executable(self, exe_path):
         new_exe_path = exe_path + '.axf'
