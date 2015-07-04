@@ -147,16 +147,56 @@ class ToolSpecificSettings:
                 self.source_paths.append(os.path.dirname(source_file))
 
 
+class ProjectWorkspace:
+    """represents a workspace (multiple projects) """
+
+    def __init__(self, proj_name, proj_records, pgen_workspace):
+        self.name = proj_name
+        self.projects = []
+        self.pgen_workspace = pgen_workspace # TODO: FIX me please
+        self.generated_files = {}
+
+        # We support grouping of projects or just a project for ProjectWorkspace
+        if type(proj_records) == type(dict()):
+            for name, records in proj_records.items():
+                if "common" in records:
+                    self.projects.append(Project(name, records, pgen_workspace))
+                else:
+                    x = set([item if len(item)>1 else sublist for sublist in records for item in sublist])
+                    self.projects.append(Project(name, list(x), pgen_workspace))
+        else:
+            if "common" in proj_records:
+                self.projects.append(Project(proj_name, proj_records, pgen_workspace))
+            else:
+                x = set([item if len(item)>1 else sublist for sublist in proj_records for item in sublist])
+                self.projects.append(Project(proj_name, list(x), pgen_workspace))
+
+    def export(self, tool, copy):
+        """ Exports workspace """
+        tools = []
+        if not tool:
+            tools = self.tools_supported
+        else:
+            tools = [tool]
+
+        for export_tool in tools:
+            exporter = ToolsSupported().get_value(export_tool, 'exporter')
+            workspace_dic = []
+            for project in self.projects:
+                workspace_dic.append(project.generate_dic(export_tool, copy))
+            logging.debug("Project workspace dict: %s" % workspace_dic)
+            generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
+
+            self.generated_files[export_tool] = generated_files
+
 class Project:
 
     """represents a project, which can be formed of many yaml files"""
 
-    def __init__(self, name, project_files, workspace):
+    def __init__(self, name, project_files, pgen_workspace):
         """initialise a project with a yaml file"""
 
-        self.workspace = workspace
-
-        #logging.debug("Initialising project %s" % name)
+        self.workspace = pgen_workspace
 
         self.name = name
 
@@ -192,8 +232,8 @@ class Project:
         self.linker_file = None
         self.tool_specific = defaultdict(ToolSpecificSettings)
 
-        self.project_path = {}
-        self.project_files = {}
+        # self.project_path = {}
+        # self.project_files = {}
         self.project_name = None
         self.tools = ToolsSupported()
         done = False
@@ -361,48 +401,33 @@ class Project:
             project_files = [os.path.join(proj_dic['output_dir']['path'], proj_dic['name'])]
         flash(flasher, proj_dic, self.name, project_files, tool, self.workspace.settings)
 
-    def export(self, tool, copy):
+    def generate_dic(self, tool, copy):
         """export the project"""
-        tools = []
-        if not tool:
-            tools = self.tools_supported
+        proj_dic = self.generate_dict_for_tool(tool)
+        proj_dic['copy_sources'] = False
+        proj_dic['output_dir']['rel_path'] = ''
+
+        if copy:
+            self.copy_files(proj_dic, tool)
+            # TODO: fixme
+            proj_dic['copy_sources'] = True
         else:
-            tools = [tool]
+            # Get number of how far we are from root, to set paths in the project
+            # correctly
+            count = 1
+            pdir = proj_dic['output_dir']['path']
+            while os.path.split(pdir)[0]:
+                pdir = os.path.split(pdir)[0]
+                count += 1
+            rel_path_output = ''
 
-        for export_tool in tools:
-            exporter = self.tools.get_value(export_tool, 'exporter')
+            proj_dic['output_dir']['rel_count'] = count
+            while count:
+                rel_path_output = os.path.join('..', rel_path_output)
+                count -= 1
+            proj_dic['output_dir']['rel_path'] = rel_path_output
 
-            proj_dic = self.generate_dict_for_tool(export_tool)
-            proj_dic['copy_sources'] = False
-            proj_dic['output_dir']['rel_path'] = ''
-
-            if copy:
-                self.copy_files(proj_dic, export_tool)
-                # TODO: fixme
-                proj_dic['copy_sources'] = True
-            else:
-                # Get number of how far we are from root, to set paths in the project
-                # correctly
-                count = 1
-                pdir = proj_dic['output_dir']['path']
-                while os.path.split(pdir)[0]:
-                    pdir = os.path.split(pdir)[0]
-                    count += 1
-                rel_path_output = ''
-
-                proj_dic['output_dir']['rel_count'] = count
-                while count:
-                    rel_path_output = os.path.join('..', rel_path_output)
-                    count -= 1
-                proj_dic['output_dir']['rel_path'] = rel_path_output
-
-            logging.debug("Project dict: %s" % proj_dic)
-            project_path, project_files = export(exporter, proj_dic, export_tool, self.workspace.settings)
-
-            self.project_path[export_tool] = project_path
-            self.project_files[export_tool] = project_files
-
-        return project_path, project_files
+        return proj_dic
 
     def source_of_type(self, filetype):
         """return a dictionary of groups and the sources of a specified type within them"""

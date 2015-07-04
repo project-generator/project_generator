@@ -13,14 +13,14 @@
 # limitations under the License.
 import os
 
-from .workspace import Workspace
+from .workspace import PgenWorkspace
 
 help = 'List all projects'
 
 
 def run(args):
     if args.file != "X":
-        workspace = Workspace(args.file, os.getcwd())
+        workspace = PgenWorkspace(args.file, os.getcwd())
         workspace.list(args.section.lower())
     else:
         Workspace.pgen_list(args.section.lower())

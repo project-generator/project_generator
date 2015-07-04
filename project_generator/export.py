@@ -14,13 +14,13 @@
 import os
 
 from .update import update
-from .workspace import Workspace
+from .workspace import PgenWorkspace
 
 help = 'Export a project record'
 
 
 def run(args):
-    workspace = Workspace(args.file, os.getcwd())
+    workspace = PgenWorkspace(args.file, os.getcwd())
     if args.defdirectory:
         workspace.settings.update_definitions_dir(os.path.join(os.getcwd(), args.defdirectory))
     else:

@@ -15,13 +15,13 @@
 import yaml
 import logging
 
-from .project import Project
+from .project import Project, ProjectWorkspace
 from .settings import ProjectSettings
 from .tool import ToolsSupported
 from .targets import Targets
 
 
-class Workspace:
+class PgenWorkspace:
 
     """a collections of projects from a single projects.yaml file"""
 
@@ -37,57 +37,53 @@ class Workspace:
             self.settings.update(self.projects_dict['settings'])
 
         # so that we can test things independently of eachother
-        self.projects = {}
+        self.workspaces = {}
 
         if 'projects' in self.projects_dict:
             for name,records in self.projects_dict['projects'].items():
-                if "common" in records:
-                    self.projects[name] = Project(name, records, self)
-                else:
-                    x = set([item if len(item)>1 else sublist for sublist in records for item in sublist])
-                    self.projects[name] = Project(name, list(x), self)
+                self.workspaces[name] = ProjectWorkspace(name, records, self)
         else:
             logging.debug("No projects found in the main record file.")
+
     def export_project(self, project_name, tool, copy):
-        if project_name not in self.projects:
+        if project_name not in self.workspaces:
             raise RuntimeError("Invalid Project Name")
 
         logging.debug("Exporting Project %s" % project_name)
-
-        self.projects[project_name].export(tool, copy)
+        self.workspaces[project_name].export(tool, copy)
 
     def export_projects(self, tool, copy):
-        for name, project in self.projects.items():
+        for name, project in self.workspace.items():
             logging.debug("Exporting Project %s" % name)
 
             project.export(tool, copy)
 
     def build_projects(self, tool):
-        for name, project in self.projects.items():
+        for name, project in self.workspace.items():
             logging.debug("Building Project %s" % name)
 
             project.build(tool)
 
     def flash_projects(self, tool):
 
-        for name, project in self.projects.items():
+        for name, project in self.workspace.items():
             logging.debug("Flashing Project %s" % name)
 
             project.flash(tool)
 
     def build_project(self, project_name, tool):
-        if project_name not in self.projects:
+        if project_name not in self.workspace:
             raise RuntimeError("Invalid Project Name")
 
         logging.debug("Building Project %s" % project_name)
-        self.projects[project_name].build(tool)
+        self.workspace[project_name].build(tool)
 
     def flash_project(self, project_name, tool):
-        if project_name not in self.projects:
+        if project_name not in self.workspace:
             raise RuntimeError("Invalid Project Name")
 
         logging.debug("Flashing Project %s" % project_name)
-        self.projects[project_name].flash(tool)
+        self.workspace[project_name].flash(tool)
 
     @staticmethod
     def pgen_list(type):
