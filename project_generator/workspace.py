@@ -41,26 +41,7 @@ class PgenWorkspace:
 
         if 'projects' in self.projects_dict:
             for name,records in self.projects_dict['projects'].items():
-        #         self.workspace[name] = {}
-                # if type(records) == type(dict()):
-                    # we have workspace defined
-                    # self.workspaces[name] = []
-                    # for proj_name, proj_records in records.items():
                 self.workspaces[name] = ProjectWorkspace(name, records, self)
-                # else:
-                    # self.workspaces[name] = ProjectWorkspace(name, records, self)
-        #                 # TODO 0xc0170: fix code duplication
-        #                 if "common" in proj_records:
-        #                     self.workspace[name][proj_name] = Project(proj_name, proj_records, self)
-        #                 else:
-        #                     x = set([item if len(item)>1 else sublist for sublist in proj_records for item in sublist])
-        #                     self.workspace[name][proj_name] = Project(proj_name, list(x), self)
-        #         else:
-        #             if "common" in records:
-        #                 self.workspace[name][name] = Project(name, records, self)
-        #             else:
-        #                 x = set([item if len(item)>1 else sublist for sublist in records for item in sublist])
-        #                 self.workspace[name][name] = Project(name, list(x), self)
         else:
             logging.debug("No projects found in the main record file.")
 

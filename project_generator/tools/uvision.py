@@ -194,7 +194,7 @@ class Uvision(Builder, Exporter):
     def export_project(self, workspace, env_settings):
         project_paths = []
         project_files = []
-        for project in workspace['projects']:
+        for project in workspace:
             """ Processes groups and misc options specific for uVision, and run generator """
             expanded_dic = project.copy()
 
@@ -276,9 +276,8 @@ class Uvision(Builder, Exporter):
             project_paths.append(project_path)
             project_files.append(projfile)
 
-        if len(projects) > 1:
-            # we have a workspace.
-            print workspace['name']
+        # if len(projects) > 1:
+            # we have a workspace. TODO to implement
 
         return project_paths, project_files
 

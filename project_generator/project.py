@@ -150,8 +150,9 @@ class ToolSpecificSettings:
 class ProjectWorkspace:
 
     def __init__(self, proj_name, proj_records, pgen_workspace):
+        self.name = proj_name
         self.projects = []
-        self.pgen_workspace = pgen_workspace # FIX me please
+        self.pgen_workspace = pgen_workspace # TODO: FIX me please
         self.project_path = {}
         self.project_files = {}
 
@@ -169,13 +170,6 @@ class ProjectWorkspace:
                 x = set([item if len(item)>1 else sublist for sublist in proj_records for item in sublist])
                 self.projects.append(Project(proj_name, list(x), pgen_workspace))
 
-        # for project in projects:
-        #     if "common" in project['records']:
-        #         self.projects.append(Project(project['name'], project['records'], pgen_workspace))
-        #     else:
-        #         x = set([item if len(item)>1 else sublist for sublist in records for item in sublist])
-        #         self.projects.append(Project(project['name'], list(x), self))
-
     def export(self, tool, copy):
         tools = []
         if not tool:
@@ -187,7 +181,7 @@ class ProjectWorkspace:
             exporter = ToolsSupported().get_value(export_tool, 'exporter')
             workspace_dic = []
             for project in self.projects:
-                workspace_dic.append(project.export(export_tool, copy))
+                workspace_dic.append(project.generate_dic(export_tool, copy))
             logging.debug("Project workspace dict: %s" % workspace_dic)
             project_path, project_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
 
@@ -408,17 +402,8 @@ class Project:
             project_files = [os.path.join(proj_dic['output_dir']['path'], proj_dic['name'])]
         flash(flasher, proj_dic, self.name, project_files, tool, self.workspace.settings)
 
-    def export(self, tool, copy):
+    def generate_dic(self, tool, copy):
         """export the project"""
-        # tools = []
-        # if not tool:
-        #     tools = self.tools_supported
-        # else:
-        #     tools = [tool]
-
-        # for export_tool in tools:
-        #     # exporter = self.tools.get_value(export_tool, 'exporter')
-
         proj_dic = self.generate_dict_for_tool(tool)
         proj_dic['copy_sources'] = False
         proj_dic['output_dir']['rel_path'] = ''
@@ -444,13 +429,6 @@ class Project:
             proj_dic['output_dir']['rel_path'] = rel_path_output
 
         return proj_dic
-            # logging.debug("Project dict: %s" % proj_dic)
-            # project_path, project_files = export(exporter, proj_dic, export_tool, self.workspace.settings)
-
-        #     self.project_path[export_tool] = project_path
-        #     self.project_files[export_tool] = project_files
-
-        # return project_path, project_files
 
     def source_of_type(self, filetype):
         """return a dictionary of groups and the sources of a specified type within them"""

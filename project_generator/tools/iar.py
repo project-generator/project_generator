@@ -249,8 +249,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             if option['name'] == find_key:
                 return settings.index(option)
 
-    def export_project(self, data, env_settings):
-        """ Processes groups and misc options specific for IAR, and run generator """
+    def _export_single_project(self, data, env_settings):
         expanded_dic = data.copy()
 
         # TODO 0xc0170: fix misc , its a list with a dictionary
@@ -330,6 +329,19 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         ewd_xml = xmltodict.unparse(ewd_dic, pretty=True)
         project_path, ewd = self.gen_file_raw(ewd_xml, '%s.ewd' % expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww, ewd]
+
+    def export_project(self, data, env_settings):
+        """ Processes groups and misc options specific for IAR, and run generator """
+        # TODO 0xc0170: fix this return values. It should be specified what export should return.
+        # looks like some other projects might benefit of getting where data were generated and
+        # what files. Define common structure for this
+        project_paths = []
+        project_files = []
+        for project in data:
+           path, files = self._export_single_project(project, env_settings)
+           project_paths.append(path)
+           project_files.append(files)
+        return project_paths, project_files
 
     def build_project(self, project_name, project_files, env_settings):
         """ Build IAR project. """
