@@ -15,7 +15,7 @@ import os
 import build
 
 from .tool import ToolsSupported
-from .workspace import Workspace
+from .workspace import PgenWorkspace
 from .settings import ProjectSettings
 
 help = 'Flash a project'
@@ -26,7 +26,7 @@ def run(args):
     # time to flash
     if args.file:
         # known project from records
-        workspace = Workspace(args.file, os.getcwd())
+        workspace = PgenWorkspace(args.file, os.getcwd())
         if args.project:
             workspace.flash_project(args.project, args.tool)
         else:
