@@ -17,6 +17,7 @@ import subprocess
 import shutil
 import logging
 import xmltodict
+import re
 
 from os.path import basename, join, normpath
 from os import getcwd
@@ -329,3 +330,25 @@ class Uvision(Builder, Exporter):
             else:
                 logging.info("Flashing succeeded with the status: %s" %
                              self.ERRORLEVEL[ret_code])
+
+    def get_mcu_definition(self, project_file):
+        """ Parse project file to get mcu definition """
+        project_file = join(getcwd(), project_file)
+        uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+
+        mcu = Targets().get_mcu_definition()
+
+        mcu['tool_specific'] = {
+            # legacy device
+            'uvision' : {
+                'TargetOption' : {
+                    'Device' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device']],
+                    'Vendor' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor']],
+                    'Cpu' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu']],
+                    'FlashDriverDll' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll']],
+                    'DeviceId' : [int(uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'])],
+                    'SFDFile' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile']],
+                }
+            }
+        }
+        return mcu
