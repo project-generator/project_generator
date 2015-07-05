@@ -19,6 +19,7 @@ from .project import Project, ProjectWorkspace
 from .settings import ProjectSettings
 from .tool import ToolsSupported
 from .targets import Targets
+from .util import flatten_list
 
 
 class PgenWorkspace:
@@ -39,9 +40,32 @@ class PgenWorkspace:
         # so that we can test things independently of eachother
         self.workspaces = {}
 
+        # We support grouping of projects or just a project for ProjectWorkspace
+        #
+        # [projects.yaml]
+        #   projects:
+        #       project_group_1:
+        #           project_1:
+        #               -a
+        #               -b
+        #               -c
+        #           project_2:
+        #               -d
+        #               -e
+        #               -f
+        #       project_3:
+        #           -g
+        #           -h
         if 'projects' in self.projects_dict:
-            for name,records in self.projects_dict['projects'].items():
-                self.workspaces[name] = ProjectWorkspace(name, records, self)
+            for name, records in self.projects_dict['projects'].items():
+                if type(records) is dict:
+                    # workspace
+                    projects = [Project(n, flatten_list(r), self) for n, r in records.items()]
+                else:
+                    # single project
+                    projects = [Project(name, flatten_list(records), self)]
+
+                self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
         else:
             logging.debug("No projects found in the main record file.")
 
@@ -95,36 +119,98 @@ class PgenWorkspace:
             print ("pgen supports the following targets:")
             print(yaml.dump(target.targets, default_flow_style=False))
 
-    def list(self, type, format='logging', out=True):
-        output = []
-        if type == 'projects':
-            for project in self.projects:
-                output.append(project)
-                print (project)
-        elif type == 'targets':
-            for project in self.projects:
-                print ("project: " + project + "\ntarget: " + str(self.projects_dict['projects'][project]['common']['target'][0]))
-                output.append(self.projects_dict['projects'][project]['common']['target'][0])
-        elif type == 'tools':
-            for project in self.projects:
-                tool = self.projects_dict['projects'][project]['tool_specific'].keys()[0]
-                print ("project: " + project + "\ntool: " + tool)
-                output.append(tool)
+    def list_projects(self, width = 1, use_unicode = True):
+        # List the projects in a PgenWorkspace. If flat is true, don't display
+        # as a tree.
 
-        if format == 'logging':
-            for o in output:
-                logging.info(o)
-        elif format == 'yaml':
-            projects = list(output)
+        workspace_names = list(self.workspaces)
+        lines = []
 
-            if out:
-                print(yaml.dump(output, default_flow_style=False))
+        unicode_chars = {
+            'tl': u'\u250c',
+            'bl': u'\u2514',
+            'rt': u'\u251c',
+            '-': u'\u2500',
+            '|': u'\u2502',
+            ' ': u' ',
+            '.': u'\u2504'
+        }
+
+        ascii_chars = {
+            'tl': '+',
+            'bl': '+',
+            'rt': '+',
+            '-': '-',
+            '|': '|',
+            ' ': ' '
+        }
+
+        chars = unicode_chars if use_unicode else ascii_chars
+        width = width if use_unicode else 0
+
+        for i in range(len(workspace_names)):
+            name = workspace_names[i]
+            workspace = self.workspaces[name]
+            line = u"" if unicode else ''
+
+            if len(workspace_names) == 1:
+                line += chars['.']
+            elif i == 0:
+                line += chars['tl']
+            elif i == len(workspace_names) - 1:
+                line += chars['bl']
             else:
-                return yaml.dump(output, default_flow_style=False)
-        elif format == 'raw':
-            return set(output)
-        else:
-            raise NotImplementedError("Output format not supported.")
+                line += chars['rt']
+
+            line += chars['-'] * width
+            line += chars[' ']
+
+            line += name
+            lines.append(line)
+
+            if not workspace.singular:
+                # it's not a placeholder workspace for a single project
+                for j in range(len(workspace.projects)):
+                    project = workspace.projects[j]
+
+                    line = u'' if unicode else ''
+
+                    if i == len(workspace_names) - 1:
+                        line += chars[' ']
+                    else:
+                        line += chars['|']
+
+                    line += chars[' '] * (width + 1)
+
+                    if j == len(workspace.projects) - 1:
+                        line += chars['bl']
+                    else:
+                        line += chars['rt']
+
+                    line += chars['-'] * width
+                    line += chars[' ']
+
+                    line += project.name
+
+                    lines.append(line)
+
+        return '\n'.join(lines)
+
+    def list_targets(self):
+        output = []
+        for project in self.projects:
+            output.append("project: " + project + "\ntarget: " + str(self.projects_dict['projects'][project]['common']['target'][0]))
+
+        return '\n'.join(output)
+
+    def list_tools(self):
+        output = []
+
+        for project in self.projects:
+            tool = self.projects_dict['projects'][project]['tool_specific'].keys()[0]
+            output.append("project: " + project + "\ntool: " + tool)
+
+        return '\n'.join(output)
 
     def clean_project(self, project_name, tool):
         if project_name not in self.projects:

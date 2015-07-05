@@ -18,3 +18,7 @@ import shutil
 def rmtree_if_exists(directory):
     if os.path.exists(directory):
         shutil.rmtree(directory)
+
+def flatten_list(l):
+    return set([item if len(item) > 1 else sublist for sublist in l for item in sublist])
+

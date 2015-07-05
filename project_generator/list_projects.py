@@ -19,13 +19,20 @@ help = 'List all projects'
 
 
 def run(args):
-    if args.file != "X":
+    if args.file:
         workspace = PgenWorkspace(args.file, os.getcwd())
-        workspace.list(args.section.lower())
+
+        if args.section.lower() == 'targets':
+            print(workspace.list_targets())
+        elif args.section.lower() == 'projects':
+            print(workspace.list_projects())
+        elif args.section.lower() == 'tools':
+            print(workspace.list_tools())
     else:
-        Workspace.pgen_list(args.section.lower())
+        PgenWorkspace.pgen_list(args.section.lower())
 
 
 def setup(subparser):
-    subparser.add_argument("section", choices =['targets','tools','projects'],    help="What section you would like listed", default='projects')
-    subparser.add_argument("-f", "--file", help="YAML projects file", default='X')
+    subparser.add_argument("section", choices = ['targets','tools','projects'],
+                           help="What section you would like listed", default='projects')
+    subparser.add_argument("-f", "--file", help="YAML projects file")
