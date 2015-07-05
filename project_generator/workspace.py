@@ -119,7 +119,7 @@ class PgenWorkspace:
             print ("pgen supports the following targets:")
             print(yaml.dump(target.targets, default_flow_style=False))
 
-    def list_projects(self, width = 1, unicode = True):
+    def list_projects(self, width = 1, use_unicode = True):
         # List the projects in a PgenWorkspace. If flat is true, don't display
         # as a tree.
 
@@ -145,7 +145,8 @@ class PgenWorkspace:
             ' ': ' '
         }
 
-        chars = unicode_chars if unicode else ascii_chars
+        chars = unicode_chars if use_unicode else ascii_chars
+        width = width if use_unicode else 0
 
         for i in range(len(workspace_names)):
             name = workspace_names[i]
