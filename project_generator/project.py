@@ -150,26 +150,12 @@ class ToolSpecificSettings:
 class ProjectWorkspace:
     """represents a workspace (multiple projects) """
 
-    def __init__(self, proj_name, proj_records, pgen_workspace):
+    def __init__(self, proj_name, projects, pgen_workspace, singular = False):
         self.name = proj_name
-        self.projects = []
+        self.projects = projects
         self.pgen_workspace = pgen_workspace # TODO: FIX me please
         self.generated_files = {}
-
-        # We support grouping of projects or just a project for ProjectWorkspace
-        if type(proj_records) == type(dict()):
-            for name, records in proj_records.items():
-                if "common" in records:
-                    self.projects.append(Project(name, records, pgen_workspace))
-                else:
-                    x = set([item if len(item)>1 else sublist for sublist in records for item in sublist])
-                    self.projects.append(Project(name, list(x), pgen_workspace))
-        else:
-            if "common" in proj_records:
-                self.projects.append(Project(proj_name, proj_records, pgen_workspace))
-            else:
-                x = set([item if len(item)>1 else sublist for sublist in proj_records for item in sublist])
-                self.projects.append(Project(proj_name, list(x), pgen_workspace))
+        self.singular = singular
 
     def export(self, tool, copy):
         """ Exports workspace """
