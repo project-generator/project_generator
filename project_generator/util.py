@@ -1,4 +1,4 @@
-#
+# Copyright 2014-2015 0xc0170
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -13,7 +13,7 @@
 
 import os
 import shutil
-
+import locale
 
 def rmtree_if_exists(directory):
     if os.path.exists(directory):
@@ -22,3 +22,5 @@ def rmtree_if_exists(directory):
 def flatten_list(l):
     return set([item if len(item) > 1 else sublist for sublist in l for item in sublist])
 
+def unicode_available():
+    return locale.getdefaultlocale()[1] == 'UTF-8'

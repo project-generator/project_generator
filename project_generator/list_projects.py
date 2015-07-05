@@ -14,6 +14,7 @@
 import os
 
 from .workspace import PgenWorkspace
+from .util import unicode_available
 
 help = 'List all projects'
 
@@ -22,11 +23,14 @@ def run(args):
     if args.file:
         workspace = PgenWorkspace(args.file, os.getcwd())
 
-        if args.section.lower() == 'targets':
+        if args.section == 'targets':
             print(workspace.list_targets())
-        elif args.section.lower() == 'projects':
-            print(workspace.list_projects())
-        elif args.section.lower() == 'tools':
+        elif args.section == 'projects':
+            if not args.no_unicode and unicode_available():
+                print(workspace.list_projects())
+            else:
+                print(workspace.list_projects(use_unicode=False))
+        elif args.section == 'tools':
             print(workspace.list_tools())
     else:
         PgenWorkspace.pgen_list(args.section.lower())
@@ -36,3 +40,4 @@ def setup(subparser):
     subparser.add_argument("section", choices = ['targets','tools','projects'],
                            help="What section you would like listed", default='projects')
     subparser.add_argument("-f", "--file", help="YAML projects file")
+    subparser.add_argument("-u", "--no-unicode", help="Use ASCII characters only", action='store_true')
