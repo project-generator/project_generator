@@ -413,7 +413,6 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         OGChipSelectEditMenu = uvproj_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option]
 
         mcu['tool_specific'] = {
-            # legacy device
             'iar' : {
                 'OGChipSelectEditMenu' : {
                     'state' : [OGChipSelectEditMenu['state'].replace('\t', ' ', 1)],
