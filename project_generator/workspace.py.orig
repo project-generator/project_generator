@@ -15,11 +15,11 @@
 import yaml
 import logging
 
-from .project import Project, ProjectWorkspace
+from .project import Project, ProjectWorkspace, flatten
 from .settings import ProjectSettings
 from .tool import ToolsSupported
 from .targets import Targets
-from .util import flatten, uniqify
+from .util import flatten_list
 
 
 class PgenWorkspace:
@@ -57,22 +57,25 @@ class PgenWorkspace:
         #           -g
         #           -h
         if 'projects' in self.projects_dict:
+<<<<<<< Updated upstream
             for name, records in self.projects_dict['projects'].items():
                 if type(records) is dict:
                     # workspace
-                    projects = [Project(n, uniqify(flatten(r)), self) for n, r in records.items()]
+                    projects = [Project(n, flatten_list(r), self) for n, r in records.items()]
                 else:
                     # single project
-                    projects = [Project(name, uniqify(flatten(records)), self)]
+                    projects = [Project(name, flatten_list(records), self)]
 
                 self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
-        # extension - workspaces
-        if 'workspaces' in self.projects_dict:
-            for work_name, projects in self.projects_dict['workspaces'].items():
-                workspace_projects = []
-                for project_name, proj_list in projects['projects'].items():
-                    workspace_projects.append(Project(project_name, flatten(proj_list), self))
-                self.workspaces[work_name] = ProjectWorkspace(work_name, workspace_projects, self, False)
+=======
+            for name,records in self.projects_dict['projects'].items():
+                self.workspaces[name] = ProjectWorkspace(name, records, self)
+            # extension - workspaces
+            if 'workspaces' in self.projects_dict:
+                for work_name, projects in self.projects_dict['workspaces'].items():
+                    for project_name, proj_list in projects.items():
+                        self.workspaces[work_name] = ProjectWorkspace(work_name, list(flatten(proj_list)), self, self.projects_dict['workspaces'])
+>>>>>>> Stashed changes
         else:
             logging.debug("No projects found in the main record file.")
 

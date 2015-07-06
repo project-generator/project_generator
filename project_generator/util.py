@@ -14,6 +14,7 @@
 import os
 import shutil
 import locale
+import operator
 
 def rmtree_if_exists(directory):
     if os.path.exists(directory):
