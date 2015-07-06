@@ -1,4 +1,4 @@
-#
+# Copyright 2014-2015 0xc0170
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -13,12 +13,19 @@
 
 import os
 import shutil
-
+import locale
 
 def rmtree_if_exists(directory):
     if os.path.exists(directory):
         shutil.rmtree(directory)
 
-def flatten_list(l):
-    return set([item if len(item) > 1 else sublist for sublist in l for item in sublist])
+def uniqify(_list):
+    # see: http://stackoverflow.com/questions/480214/how-do-you-remove-duplicates-from-a-list-in-python-whilst-preserving-order/29898968#29898968
+    reduce(lambda r, v: v in r[1] and r or (r[0].append(v) or r[1].add(v)) or r, _list, ([], set()))[0]
 
+def flatten_list(_list):
+    all_items = [item if len(item) > 1 else sublist for sublist in _list for item in sublist]
+    return uniqify(all_items)
+
+def unicode_available():
+    return locale.getdefaultlocale()[1] == 'UTF-8'
