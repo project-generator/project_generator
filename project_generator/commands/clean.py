@@ -13,7 +13,7 @@
 # limitations under the License.
 import os
 
-from .workspace import PgenWorkspace
+from ..workspace import PgenWorkspace
 
 help = 'Clean generated projects'
 

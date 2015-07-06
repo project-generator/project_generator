@@ -66,6 +66,8 @@ class PgenWorkspace:
                     projects = [Project(name, uniqify(flatten(records)), self)]
 
                 self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
+        else:
+            logging.debug("No projects found in the main record file.")
         # extension - workspaces
         if 'workspaces' in self.projects_dict:
             for work_name, projects in self.projects_dict['workspaces'].items():
@@ -74,7 +76,7 @@ class PgenWorkspace:
                     workspace_projects.append(Project(project_name, flatten(proj_list), self))
                 self.workspaces[work_name] = ProjectWorkspace(work_name, workspace_projects, self, False)
         else:
-            logging.debug("No projects found in the main record file.")
+            logging.debug("No workspaces found in the main record file.")
 
     def export_project(self, project_name, tool, copy):
         if project_name not in self.workspaces:
@@ -120,11 +122,11 @@ class PgenWorkspace:
     def pgen_list(type):
         if type == 'tools':
             print ("pgen supports the following tools:")
-            print(yaml.dump(ToolsSupported().get_supported(), default_flow_style=False))
+            return '\n'.join(ToolsSupported().get_supported())
         elif type == 'targets':
             target = Targets(ProjectSettings().get_env_settings('definitions'))
             print ("pgen supports the following targets:")
-            print(yaml.dump(target.targets, default_flow_style=False))
+            return '\n'.join(target.targets)
 
     def list_projects(self, width = 1, use_unicode = True):
         # List the projects in a PgenWorkspace. If flat is true, don't display
@@ -222,11 +224,9 @@ class PgenWorkspace:
     def clean_project(self, project_name, tool):
         if project_name not in self.projects:
             raise RuntimeError("Invalid Project Name")
-
+        logging.debug("Cleaning Project %s" % project_name)
         self.projects[project_name].clean(project_name, tool)
 
     def clean_projects(self, tool):
         for name, project in self.projects.items():
-            logging.debug("Cleaning Project %s" % name)
-
-            project.clean(tool)
+            self.clean_project(name,tool)

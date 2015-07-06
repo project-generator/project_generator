@@ -13,8 +13,8 @@
 # limitations under the License.
 import os
 
-from .workspace import PgenWorkspace
-from .util import unicode_available
+from ..workspace import PgenWorkspace
+from ..util import unicode_available
 
 help = 'List all projects'
 
@@ -33,7 +33,7 @@ def run(args):
         elif args.section == 'tools':
             print(workspace.list_tools())
     else:
-        PgenWorkspace.pgen_list(args.section.lower())
+        print(PgenWorkspace.pgen_list(args.section.lower()))
 
 
 def setup(subparser):

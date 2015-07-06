@@ -15,7 +15,7 @@ import os
 import logging
 import subprocess
 
-from .settings import ProjectSettings
+from ..settings import ProjectSettings
 
 help = 'Update definitions source repository'
 
