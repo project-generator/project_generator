@@ -19,7 +19,7 @@ from .project import Project, ProjectWorkspace
 from .settings import ProjectSettings
 from .tool import ToolsSupported
 from .targets import Targets
-from .util import flatten_list
+from .util import flatten
 
 
 class PgenWorkspace:
@@ -60,10 +60,10 @@ class PgenWorkspace:
             for name, records in self.projects_dict['projects'].items():
                 if type(records) is dict:
                     # workspace
-                    projects = [Project(n, flatten_list(r), self) for n, r in records.items()]
+                    projects = [Project(n, uniqify(flatten(r)), self) for n, r in records.items()]
                 else:
                     # single project
-                    projects = [Project(name, flatten_list(records), self)]
+                    projects = [Project(name, uniqify(flatten(records)), self)]
 
                 self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
         else:
