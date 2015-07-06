@@ -21,10 +21,10 @@ def rmtree_if_exists(directory):
 
 def uniqify(_list):
     # see: http://stackoverflow.com/questions/480214/how-do-you-remove-duplicates-from-a-list-in-python-whilst-preserving-order/29898968#29898968
-    reduce(lambda r, v: v in r[1] and r or (r[0].append(v) or r[1].add(v)) or r, _list, ([], set()))[0]
+    return reduce(lambda r, v: v in r[1] and r or (r[0].append(v) or r[1].add(v)) or r, _list, ([], set()))[0]
 
 def flatten_list(_list):
-    all_items = [item if len(item) > 1 else sublist for sublist in _list for item in sublist]
+    all_items = [item if type(item) is not list else sublist for sublist in _list for item in sublist]
     return uniqify(all_items)
 
 def unicode_available():
