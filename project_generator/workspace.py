@@ -66,6 +66,13 @@ class PgenWorkspace:
                     projects = [Project(name, uniqify(flatten(records)), self)]
 
                 self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
+        # extension - workspaces
+        if 'workspaces' in self.projects_dict:
+            for work_name, projects in self.projects_dict['workspaces'].items():
+                workspace_projects = []
+                for project_name, proj_list in projects['projects'].items():
+                    workspace_projects.append(Project(project_name, flatten_list(proj_list), self))
+                self.workspaces[work_name] = ProjectWorkspace(work_name, workspace_projects, self, False)
         else:
             logging.debug("No projects found in the main record file.")
 
