@@ -595,32 +595,37 @@ class Project:
             'includes': [True, FILES_EXTENSIONS['include_paths']],
             'target': [False, []],
         }
-        data = {
+        projects = {
             'projects': {
-                project_name: {
+                project_name: ['project.yaml']
+            }
+        }
+
+        data = {
                     'common': {},
                     'tool_specific': {}
                 }
-            }
-        }
 
         for section in common_section:
             if len(common_section[section][1]) > 0:
-                data['projects'][project_name]['common'][section] = Project.scan(section, root, directory,
+                data['common'][section] = Project.scan(section, root, directory,
                                                                                  common_section[section][1],
                                                                                  common_section[section][0])
 
-        data['projects'][project_name]['common']['target'] = []
-        data['projects'][project_name]['common']['target'].append(board)
-        tool = Project.determine_tool(str(data['projects'][project_name]['common']['linker_file']).split('.')[-1])
-        data['projects'][project_name]['tool_specific'] = {
+        data['common']['target'] = []
+        data['common']['target'].append(board)
+        tool = Project.determine_tool(str(data['common']['linker_file']).split('.')[-1])
+        data['tool_specific'] = {
             tool: {
-                'linker_file': data['projects'][project_name]['common']['linker_file']
+                'linker_file': data['common']['linker_file']
             }
         }
+        generate_file("projects.yaml", root, directory, projects)
+        generate_file("project.yaml", root, directory, data)
 
+
+def generate_file(filename,root,directory,data):
         logging.debug('Generating yaml file')
-        filename = 'projects.yaml'
 
         #TODO: fix
         if os.path.isfile(os.path.join(directory, filename)):
