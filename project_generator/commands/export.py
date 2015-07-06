@@ -13,8 +13,8 @@
 # limitations under the License.
 import os
 
-from .update import update
-from .workspace import PgenWorkspace
+from project_generator.update import update
+from project_generator.workspace import PgenWorkspace
 
 help = 'Export a project record'
 

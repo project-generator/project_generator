@@ -14,8 +14,9 @@
 
 import os
 import logging
+from project_generator.init_yaml import create_yaml
 
-from .project import Project
+from project_generator.project import Project
 
 help = 'Create a project record'
 
@@ -26,7 +27,7 @@ def run(args):
     root = os.getcwd()
 
     directory = root if not args.directory else os.path.join(root, args.directory)
-    Project.create_yaml(root, directory, args.name, args.target.lower(), args.sources)
+    create_yaml(root, directory, args.name, args.target.lower(), args.sources)
 
 
 def setup(subparser):

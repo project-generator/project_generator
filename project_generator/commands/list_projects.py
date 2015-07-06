@@ -13,8 +13,8 @@
 # limitations under the License.
 import os
 
-from .workspace import PgenWorkspace
-from .util import unicode_available
+from project_generator.workspace import PgenWorkspace
+from project_generator.util import unicode_available
 
 help = 'List all projects'
 
