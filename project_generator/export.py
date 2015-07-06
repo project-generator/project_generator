@@ -33,6 +33,8 @@ def run(args):
             workspace.build_project(args.project, args.tool)
         if args.flash:
             workspace.flash_project(args.project, args.tool)
+    elif args.workspace:
+        workspace.export_project(args.workspace, args.tool, args.copy)
     else:
         workspace.export_projects(args.tool, args.copy)
 
@@ -46,6 +48,8 @@ def setup(subparser):
         "-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument(
         "-p", "--project", help="Project to be generated")
+    subparser.add_argument(
+        "-w", "--workspace", help="Workspace to be generated")
     subparser.add_argument(
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     subparser.add_argument(

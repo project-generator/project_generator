@@ -204,7 +204,7 @@ class Uvision(Builder, Exporter):
 
     def export_project(self):
         generated_projects = {}
-        for project in self.workspace:
+        for project in self.workspace['projects']:
             """ Processes groups and misc options specific for uVision, and run generator """
             generated_projects[project['name']] = copy.deepcopy(self.generated_project)
             expanded_dic = project.copy()

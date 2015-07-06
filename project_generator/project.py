@@ -145,9 +145,12 @@ class ProjectWorkspace:
 
         for export_tool in tools:
             exporter = ToolsSupported().get_value(export_tool, 'exporter')
-            workspace_dic = []
+            workspace_dic = {
+                'projects': [],
+                'settings': {},
+            }
             for project in self.projects:
-                workspace_dic.append(project.generate_dic(export_tool, copy))
+                workspace_dic['projects'].append(project.generate_dic(export_tool, copy))
             logging.debug("Project workspace dict: %s" % workspace_dic)
             generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
 
