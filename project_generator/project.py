@@ -202,18 +202,14 @@ class Project:
         # self.project_files = {}
         self.project_name = None
         self.tools = ToolsSupported()
-        done = False
+        
         for project_file in project_files:
             try:
                 f = open(project_file, 'rt')
                 project_file_data = yaml.load(f)
-                done = True
             except IOError:
-                project_file_data = project_files
-                break
-            self.set_attributes(project_file_data)
-        if not done:
-            self.set_attributes(project_file_data)
+               logging.error("The file %s referenced in yaml doesn't exist"%project_file)
+
         if self.project_dir['path'] == '':
             self.project_dir['path'] = self.workspace.settings.generated_projects_dir_default
 
