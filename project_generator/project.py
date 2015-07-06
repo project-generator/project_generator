@@ -20,34 +20,12 @@ import operator
 
 from collections import defaultdict
 from .tool import build, export, flash, ToolsSupported
+from .util import flatten, merge_recursive
 
 try:
     input = raw_input
 except:
     pass
-
-
-def merge_recursive(*args):
-    if all(isinstance(x, dict) for x in args):
-        output = {}
-        keys = reduce(operator.or_, [set(x) for x in args])
-
-        for key in keys:
-            # merge all of the ones that have them
-            output[key] = merge_recursive(*[x[key] for x in args if key in x])
-
-        return output
-    else:
-        return reduce(operator.add, args)
-
-
-def flatten(*args):
-    for x in args:
-        if hasattr(x, '__iter__'):
-            for y in flatten(*x):
-                yield y
-        else:
-            yield x
 
 FILES_EXTENSIONS = {
     'include_paths': ['h', 'hpp', 'inc'],

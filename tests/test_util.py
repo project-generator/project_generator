@@ -21,9 +21,11 @@ def test_unicode_detection():
     else:
         assert unicode_available()
 
-def test_flatten_list():
-    l1 = ['a', 'b', ['c', 'd', 'e'], ['e', 'f'], 'g']
-    assert flatten_list(l1) == ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+def test_flatten():
+    l1 = [['aa', 'bb', ['cc', 'dd', 'ee'], ['ee', 'ff'], 'gg']]
+
+    assert list(flatten(l1)) == ['aa', 'bb', 'cc', 'dd', 'ee', 'ee', 'ff', 'gg']
+    assert uniqify(flatten(l1)) == ['aa', 'bb', 'cc', 'dd', 'ee', 'ff', 'gg']
 
 def test_uniqify():
     l1 = ['a', 'b', 'b', 'c', 'b', 'd', 'c', 'e', 'f', 'a']
