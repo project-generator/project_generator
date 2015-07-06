@@ -14,9 +14,7 @@
 
 import os
 import logging
-from project_generator.init_yaml import create_yaml
-
-from project_generator.project import Project
+from ..init_yaml import create_yaml
 
 help = 'Create a project record'
 

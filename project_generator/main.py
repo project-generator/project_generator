@@ -18,7 +18,7 @@ import logging
 
 import pkg_resources
 
-from project_generator.commands import build, clean, export, flash, init, list_projects, update
+from .commands import build, clean, export, flash, init, list_projects, update
 
 subcommands = {
     'init': init,

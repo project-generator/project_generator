@@ -15,9 +15,9 @@ import os
 import export
 import logging
 
-from project_generator.tool import build, ToolsSupported
-from project_generator.workspace import PgenWorkspace
-from project_generator.settings import ProjectSettings
+from ..tool import build, ToolsSupported
+from ..workspace import PgenWorkspace
+from ..settings import ProjectSettings
 
 help = 'Build a project'
 

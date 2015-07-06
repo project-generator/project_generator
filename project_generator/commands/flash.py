@@ -13,10 +13,10 @@
 # limitations under the License.
 import os
 
-from project_generator.commands import build
-from project_generator.tool import ToolsSupported
-from project_generator.workspace import PgenWorkspace
-from project_generator.settings import ProjectSettings
+import build
+from ..tool import ToolsSupported
+from ..workspace import PgenWorkspace
+from ..settings import ProjectSettings
 
 help = 'Flash a project'
 
