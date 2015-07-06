@@ -207,6 +207,7 @@ class Project:
             try:
                 f = open(project_file, 'rt')
                 project_file_data = yaml.load(f)
+                self.set_attributes(project_file_data)
             except IOError:
                raise IOError("The file %s referenced in main yaml doesn't exist."%project_file)
 
