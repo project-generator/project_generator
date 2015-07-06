@@ -408,6 +408,11 @@ class Project:
                 files.extend(group_contents[filetype])
         return files
 
+    def format_source_files(self, ext, tool_specific_settings, toolchain_specific_settings):
+        return [merge_recursive(self.source_of_type(ext), {k: v for settings in
+               [settings.source_of_type(ext) for settings in tool_specific_settings] for
+               k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
+
     def generate_dict_for_tool(self, tool):
         """for backwards compatibility"""
         toolchain_specific_settings =  self.tool_specific[self.tools.get_value(tool, 'toolchain')]
@@ -437,31 +442,16 @@ class Project:
                                 {k: v for settings in tool_specific_settings for k, v in settings.source_groups.items()},
                                 toolchain_specific_settings.source_groups),
             # for backwards compatibility
-            'source_files_c': [
-                merge_recursive(self.source_of_type('c'),
-                                {k: v for settings in [settings.source_of_type('c') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('c'))],
+            'source_files_c': self.format_source_files('c',tool_specific_settings, toolchain_specific_settings),
 
-            'source_files_cpp': [
-                merge_recursive(self.source_of_type('cpp'),
-                                {k: v for settings in [settings.source_of_type('cpp') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('cpp'))],
+            'source_files_cpp': self.format_source_files('cpp',tool_specific_settings, toolchain_specific_settings),
 
-            'source_files_s': [
-                merge_recursive(self.source_of_type('s'),
-                                {k: v for settings in [settings.source_of_type('s') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('s'))],
+            'source_files_s':  self.format_source_files('s',tool_specific_settings, toolchain_specific_settings),
 
-            'source_files_obj': [
-                merge_recursive(self.source_of_type('obj'),
-                                {k: v for settings in [settings.source_of_type('obj') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('obj')), self.source_of_type('o'),{k: v for settings in [settings.source_of_type('o') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('o')],
+            'source_files_obj': merge_recursive(self.format_source_files('obj',tool_specific_settings, toolchain_specific_settings),
+                                                self.format_source_files('o',tool_specific_settings, toolchain_specific_settings)),
 
-            'source_files_lib': [
-                merge_recursive(self.source_of_type('lib'),
-                                {k: v for settings in [settings.source_of_type('lib') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('lib'))],
+            'source_files_lib': self.format_source_files('lib',tool_specific_settings, toolchain_specific_settings),
 
             'linker_file': self.linker_file or toolchain_specific_settings.linker_file or [
                 tool_settings.linker_file for tool_settings in tool_specific_settings if tool_settings.linker_file],
@@ -477,7 +467,8 @@ class Project:
             'template': toolchain_specific_settings.template or [
                 tool_settings.template for tool_settings in tool_specific_settings if tool_settings.template],
         }
-        self.validate_generated_dic(d)
+        if d['linker_file'] == None and d['output_type'] == 'exe':
+            raise RuntimeError("Executable - no linker command found.")
 
         if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
             output_dir = self.workspace.settings.generated_projects_dir
@@ -489,10 +480,6 @@ class Project:
             output_dir = os.path.join(self.project_dir['path'], "%s_%s" % (tool, self.name))
         d['output_dir']['path'] = os.path.normpath(output_dir)
         return d
-
-    def validate_generated_dic(self, dic):
-        if dic['linker_file'] == None and dic['output_type'] == 'exe':
-            raise RuntimeError("Executable - no linker command found.")
 
     def fixup_executable(executable_path, tool):
         exporter = self.tools.get_value(tool, 'exporter')
@@ -550,9 +537,9 @@ class Project:
         if "sct" in linker_ext or "lin" in linker_ext:
             return "uvision"
         elif "ld" in linker_ext:
-            return "gcc"
+            return "make_gcc_arm"
         elif "icf" in linker_ext:
-            return "iar"
+            return "iar_arm"
 
     @staticmethod
     def scan(section, root, directory, extensions, is_path):
@@ -598,9 +585,9 @@ class Project:
         }
 
         data = {
-                    'common': {},
-                    'tool_specific': {}
-                }
+            'common': {},
+            'tool_specific': {}
+        }
 
         for section in common_section:
             if len(common_section[section][1]) > 0:
