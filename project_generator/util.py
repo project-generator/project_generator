@@ -19,8 +19,13 @@ def rmtree_if_exists(directory):
     if os.path.exists(directory):
         shutil.rmtree(directory)
 
+def uniqify(l):
+    # see: http://stackoverflow.com/questions/480214/how-do-you-remove-duplicates-from-a-list-in-python-whilst-preserving-order/29898968#29898968
+    reduce(lambda r, v: v in r[1] and r or (r[0].append(v) or r[1].add(v)) or r, l, ([], set()))[0]
+
 def flatten_list(l):
-    return set([item if len(item) > 1 else sublist for sublist in l for item in sublist])
+    all_items = [item if len(item) > 1 else sublist for sublist in l for item in sublist]
+    return uniqify(all_items)
 
 def unicode_available():
     return locale.getdefaultlocale()[1] == 'UTF-8'
