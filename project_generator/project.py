@@ -207,6 +207,7 @@ class Project:
             try:
                 f = open(project_file, 'rt')
                 project_file_data = yaml.load(f)
+                self.set_attributes(project_file_data)
             except IOError:
                raise IOError("The file %s referenced in main yaml doesn't exist."%project_file)
 
@@ -230,16 +231,10 @@ class Project:
 
                 if 'sources' in project_file_data['common']:
                     if type(project_file_data['common']['sources']) == type(dict()):
-                        # ??? local variables source_paths and group_names not used
-                        group_names = project_file_data['common']['sources'].keys()
-                        source_paths = [self._process_source_files(project_file_data['common']['sources'][group_name],
-                                                                   group_name) for group_name in group_names]
+                        for group_name, sources in project_file_data['common']['sources'].items():
+                            self._process_source_files(sources, group_name)
                     else:
-                        if 'group_name' in project_file_data['common']:
-                            group_name = project_file_data['common']['group_name'][0]
-                        else:
-                            group_name = 'default'
-                        self._process_source_files(project_file_data['common']['sources'], group_name)
+                        self._process_source_files(project_file_data['common']['sources'], 'default')
                     for source_path in self.source_paths:
                         if os.path.normpath(source_path) not in self.include_paths:
                             self.include_paths.extend([source_path])
@@ -273,7 +268,6 @@ class Project:
                 if 'tools_supported' in project_file_data['common']:
                     self.tools_supported.extend(
                         [x for x in project_file_data['common']['tools_supported'] if x is not None])
-
         if 'tool_specific' in project_file_data:
             group_name = 'default'
             for tool_name, tool_settings in project_file_data['tool_specific'].items():
@@ -410,8 +404,8 @@ class Project:
 
     def format_source_files(self, ext, tool_specific_settings, toolchain_specific_settings):
         return [merge_recursive(self.source_of_type(ext), {k: v for settings in
-               [settings.source_of_type(ext) for settings in tool_specific_settings] for
-               k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
+                [settings.source_of_type(ext) for settings in tool_specific_settings] for
+                k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
 
     def generate_dict_for_tool(self, tool):
         """for backwards compatibility"""
@@ -469,7 +463,6 @@ class Project:
         }
         if d['linker_file'] == None and d['output_type'] == 'exe':
             raise RuntimeError("Executable - no linker command found.")
-
         if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
             output_dir = self.workspace.settings.generated_projects_dir
             output_dir = output_dir.replace('$tool$', tool)
