@@ -33,7 +33,6 @@ class PgenWorkspace:
             self.projects_dict = yaml.load(f)
 
         self.settings = ProjectSettings()
-
         if 'settings' in self.projects_dict:
             self.settings.update(self.projects_dict['settings'])
 
@@ -56,6 +55,19 @@ class PgenWorkspace:
         #       project_3:
         #           -g
         #           -h
+        # extension - workspaces
+        settings = {}
+        if 'workspaces' in self.projects_dict:
+            for work_name, sections in self.projects_dict['workspaces'].items():
+                workspace_projects = []
+                for project_name, proj_list in sections['projects'].items():
+                    workspace_projects.append(Project(project_name, flatten(proj_list), self))
+                if 'settings' in self.projects_dict['workspaces'][work_name]:
+                    settings = self.projects_dict['workspaces'][work_name]['settings']
+                self.workspaces[work_name] = ProjectWorkspace(work_name, workspace_projects, settings, self, False)
+        else:
+            logging.debug("No workspaces found in the main record file.")
+
         if 'projects' in self.projects_dict:
             for name, records in self.projects_dict['projects'].items():
                 if type(records) is dict:
@@ -65,18 +77,9 @@ class PgenWorkspace:
                     # single project
                     projects = [Project(name, uniqify(flatten(records)), self)]
 
-                self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
+                self.workspaces[name] = ProjectWorkspace(name, projects, settings, self, type(records) is not dict)
         else:
             logging.debug("No projects found in the main record file.")
-        # extension - workspaces
-        if 'workspaces' in self.projects_dict:
-            for work_name, projects in self.projects_dict['workspaces'].items():
-                workspace_projects = []
-                for project_name, proj_list in projects['projects'].items():
-                    workspace_projects.append(Project(project_name, flatten(proj_list), self))
-                self.workspaces[work_name] = ProjectWorkspace(work_name, workspace_projects, self, False)
-        else:
-            logging.debug("No workspaces found in the main record file.")
 
     def export_project(self, project_name, tool, copy):
         if project_name not in self.workspaces:
