@@ -19,7 +19,6 @@ import operator
 def rmtree_if_exists(directory):
     if os.path.exists(directory):
         shutil.rmtree(directory)
-
 def uniqify(_list):
     # see: http://stackoverflow.com/questions/480214/how-do-you-remove-duplicates-from-a-list-in-python-whilst-preserving-order/29898968#29898968
     return reduce(lambda r, v: v in r[1] and r or (r[0].append(v) or r[1].add(v)) or r, _list, ([], set()))[0]
@@ -36,6 +35,7 @@ def merge_recursive(*args):
         return output
     else:
         return reduce(operator.add, args)
+
 def flatten(*args):
     for x in args:
         if hasattr(x, '__iter__'):
