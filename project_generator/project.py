@@ -127,15 +127,21 @@ class ToolSpecificSettings:
 class ProjectWorkspace:
     """represents a workspace (multiple projects) """
 
-    def __init__(self, proj_name, projects, pgen_workspace, singular = False):
+    def __init__(self, proj_name, projects, workspace_settings, pgen_workspace, singular = False):
         self.name = proj_name
         self.projects = projects
         self.pgen_workspace = pgen_workspace # TODO: FIX me please
         self.generated_files = {}
         self.singular = singular
 
+        #These are additional settings defined in yaml under workspace: {workspace_name: {settings: {}
+        self.workspace_settings = workspace_settings
+
     def export(self, tool, copy):
         """ Exports workspace """
+
+        #Update the project settings with settings specific to this workspace
+        self.pgen_workspace.settings.update(self.workspace_settings)
         tools = []
         if not tool:
             tools = self.tools_supported
@@ -150,7 +156,7 @@ class ProjectWorkspace:
             }
             for project in self.projects:
                 workspace_dic['projects'].append(project.generate_dic(export_tool, copy))
-            logging.debug("Project workspace dict: %s" % workspace_dic)
+            #logging.debug("Project workspace dict: %s" % workspace_dic)
             generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
 
             self.generated_files[export_tool] = generated_files
@@ -161,7 +167,7 @@ class Project:
 
     def __init__(self, name, project_files, pgen_workspace):
         """initialise a project with a yaml file"""
-
+        self.project = {}
         self.workspace = pgen_workspace
 
         self.name = name
@@ -198,8 +204,6 @@ class Project:
         self.linker_file = None
         self.tool_specific = defaultdict(ToolSpecificSettings)
 
-        # self.project_path = {}
-        # self.project_files = {}
         self.project_name = None
         self.tools = ToolsSupported()
 
@@ -304,6 +308,13 @@ class Project:
             if not os.path.dirname(source_file) in self.source_paths:
                 self.source_paths.append(os.path.normpath(os.path.dirname(source_file)))
         return source_paths
+
+    def _get_workspace_name(self):
+        workspaces = self.workspace.workspaces
+        for workspace, proj_workspace in workspaces.items():
+            for p in proj_workspace.projects:
+                if self is p:
+                    return workspace
 
     def clean(self, project_name, tool):
         if tool is None:
@@ -469,6 +480,9 @@ class Project:
             output_dir = output_dir.replace('$project_name$', self.name)
             if self.target:
                 output_dir = output_dir.replace('$target$', self.target)
+            workspace = self._get_workspace_name()
+            if workspace:
+                output_dir = output_dir.replace('$workspace$', workspace)
         else:
             output_dir = os.path.join(self.project_dir['path'], "%s_%s" % (tool, self.name))
         d['output_dir']['path'] = os.path.normpath(output_dir)
