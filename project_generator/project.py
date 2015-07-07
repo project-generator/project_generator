@@ -305,11 +305,9 @@ class Project:
         for current_tool in tools:
             if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
                 # TODO: same as in exporters.py - create keyword parser
-                path = self.workspace.settings.generated_projects_dir
-                path = path.replace('$tool$', tool)
-                path = path.replace('$project_name$', project_name)
-                if self.project['target']:
-                    path = path.replace('$target$', self.project['target'])
+                path = Template(self.workspace.settings.generated_projects_dir)
+                path = path.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
+                                        project_name=self.name, tool=tool)
             else:
                  path = os.path.join(self.project_dir['path'], "%s_%s" % (current_tool, self.name))
             if os.path.isdir(path):
