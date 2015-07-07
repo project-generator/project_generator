@@ -77,7 +77,7 @@ class PgenWorkspace:
                     # single project
                     projects = [Project(name, uniqify(flatten(records)), self)]
 
-                self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
+                self.workspaces[name] = ProjectWorkspace(name, projects, settings, self, type(records) is not dict)
         else:
             logging.debug("No projects found in the main record file.")
 
