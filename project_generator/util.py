@@ -1,4 +1,4 @@
-#
+# Copyright 2014-2015 0xc0170
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -13,11 +13,16 @@
 
 import os
 import shutil
-
+import locale
+import operator
 
 def rmtree_if_exists(directory):
     if os.path.exists(directory):
         shutil.rmtree(directory)
+
+def uniqify(_list):
+    # see: http://stackoverflow.com/questions/480214/how-do-you-remove-duplicates-from-a-list-in-python-whilst-preserving-order/29898968#29898968
+    return reduce(lambda r, v: v in r[1] and r or (r[0].append(v) or r[1].add(v)) or r, _list, ([], set()))[0]
 
 def merge_recursive(*args):
     if all(isinstance(x, dict) for x in args):
@@ -32,6 +37,7 @@ def merge_recursive(*args):
     else:
         return reduce(operator.add, args)
 
+
 def flatten(*args):
     for x in args:
         if hasattr(x, '__iter__'):
@@ -39,3 +45,6 @@ def flatten(*args):
                 yield y
         else:
             yield x
+
+def unicode_available():
+    return locale.getdefaultlocale()[1] == 'UTF-8'

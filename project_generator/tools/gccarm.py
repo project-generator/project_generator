@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
+
 from os.path import join, normpath
 from .exporter import Exporter
 from ..targets import Targets
@@ -29,6 +31,17 @@ class MakefileGccArm(Exporter):
     SUCCESSVALUE = 0
 
     optimization_options = ['O0', 'O1', 'O2', 'O3', 'Os']
+
+    generated_projects = {
+        'path': '',
+        'files': {
+            'makefile' : '',
+        }
+    }
+
+    def __init__(self, workspace, env_settings):
+        self.workspace = workspace
+        self.env_settings = env_settings
 
     def _list_files(self, data, attribute, rel_path):
         """ Creates a list of all files based on the attribute. """
@@ -92,7 +105,7 @@ class MakefileGccArm(Exporter):
             for k, v in dic.items():
                 self._linker_options(k, v, data)
 
-    def _fix_paths(self, data, name, env_settings):
+    def _fix_paths(self, data):
         # get relative path and fix all paths within a project
         fixed_paths = []
         for path in data['includes']:
@@ -117,23 +130,26 @@ class MakefileGccArm(Exporter):
         if data['linker_file']:
             data['linker_file'] = join(data['output_dir']['rel_path'], normpath(data['linker_file']))
 
-    def export_project(self, data, env_settings):
+    def export_project(self):
         """ Processes misc options specific for GCC ARM, and run generator. """
-        self.process_data_for_makefile(data, env_settings, "make_gcc_arm")
-        project_path, makefile = self.gen_file_jinja('makefile_gcc.tmpl', data, 'Makefile', data['output_dir']['path'])
-        return project_path, [makefile]
+        generated_projects = {}
+        for project in self.workspace:
+            generated_projects[project['name']] = copy.deepcopy(self.generated_projects)
+            self.process_data_for_makefile(project, "make_gcc_arm")
+            generated_projects[project['name']]['path'], generated_projects[project['name']]['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', project, 'Makefile', project['output_dir']['path'])
+        return generated_projects
 
-    def process_data_for_makefile(self, data, env_settings, name):
-        self._fix_paths(data, name, env_settings)
+    def process_data_for_makefile(self, data, name):
+        self._fix_paths(data)
         self._list_files(data, 'source_files_c', data['output_dir']['rel_path'])
         self._list_files(data, 'source_files_cpp', data['output_dir']['rel_path'])
         self._list_files(data, 'source_files_s', data['output_dir']['rel_path'])
 
         self._parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'
-        data['toolchain_bin_path'] = env_settings.get_env_settings('gcc')
+        data['toolchain_bin_path'] = self.env_settings.get_env_settings('gcc')
 
-        target = Targets(env_settings.get_env_settings('definitions'))
+        target = Targets(self.env_settings.get_env_settings('definitions'))
 
         if target.get_mcu_core(data['target'].lower()):
             data['core'] = target.get_mcu_core(data['target'].lower())[0]

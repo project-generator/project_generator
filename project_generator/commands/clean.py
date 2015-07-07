@@ -13,13 +13,13 @@
 # limitations under the License.
 import os
 
-from .workspace import Workspace
+from ..workspace import PgenWorkspace
 
 help = 'Clean generated projects'
 
 
 def run(args):
-    workspace = Workspace(args.file, os.getcwd())
+    workspace = PgenWorkspace(args.file, os.getcwd())
 
     if args.project:
         workspace.clean_project(args.project, args.tool)

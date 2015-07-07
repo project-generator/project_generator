@@ -15,9 +15,9 @@ import os
 import export
 import logging
 
-from .tool import build, ToolsSupported
-from .workspace import Workspace
-from .settings import ProjectSettings
+from ..tool import build, ToolsSupported
+from ..workspace import PgenWorkspace
+from ..settings import ProjectSettings
 
 help = 'Build a project'
 
@@ -35,7 +35,7 @@ def run(args):
 
     if args.file:
         # known project from records
-        workspace = Workspace(args.file, os.getcwd())
+        workspace = PgenWorkspace(args.file, os.getcwd())
         if args.project:
             workspace.build_project(args.project, args.tool)
         else:

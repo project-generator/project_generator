@@ -15,6 +15,7 @@
 import logging
 import xmltodict
 from collections import OrderedDict
+import copy
 
 from os.path import basename, join, normpath
 from os import getcwd
@@ -47,8 +48,10 @@ class Coide(Exporter):
         'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
 
-    def __init__(self):
+    def __init__(self, workspace, env_settings):
         self.definitions = CoIDEdefinitions()
+        self.workspace = workspace
+        self.env_settings = env_settings
 
     def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ data expansion - uvision needs filename and path separately. """
@@ -145,29 +148,29 @@ class Coide(Exporter):
     def _coproj_set_linker(self, coproj_dic, project_dic):
         coproj_dic['Project']['Target']['BuildOption']['Link']['LocateLinkFile']['@path'] = project_dic['linker_file']
 
-    def export_project(self, data, env_settings):
+    def _export_single_project(self, project):
         """ Processes groups and misc options specific for CoIDE, and run generator """
-        expanded_dic = data.copy()
+        expanded_dic = project.copy()
 
         # TODO 0xc0170: fix misc , its a list with a dictionary
         if 'misc' in expanded_dic and bool(expanded_dic['misc'][0]):
             print ("Using deprecated misc options for coide. Please use template project files.")
 
-        groups = self._get_groups(data)
+        groups = self._get_groups(project)
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self._iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._iterate(project, expanded_dic, expanded_dic['output_dir']['rel_path'])
         self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         # generic tool template specified or project
         if expanded_dic['template']:
             project_file = join(getcwd(), expanded_dic['template'][0])
             coproj_dic = xmltodict.parse(file(project_file))
-        elif 'coide' in env_settings.templates.keys():
+        elif 'coide' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
             # TODO 0xc0170: extension check/expansion
-            project_file = join(getcwd(), env_settings.templates['coide'][0])
+            project_file = join(getcwd(), self.env_settings.templates['coide'][0])
             coproj_dic = xmltodict.parse(file(project_file))
         else:
             # setting values from the yaml files
@@ -187,7 +190,7 @@ class Coide(Exporter):
 
         # set target only if defined, otherwise use from template/default one
         if expanded_dic['target']:
-            target = Targets(env_settings.get_env_settings('definitions'))
+            target = Targets(self.env_settings.get_env_settings('definitions'))
             if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
             mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'coide')
@@ -236,5 +239,13 @@ class Coide(Exporter):
         # what we want anyway.
         # coproj_xml = xmltodict.unparse(coproj_dic, pretty=True)
         project_path, projfile = self.gen_file_jinja(
-            'coide.coproj.tmpl', coproj_dic, '%s.coproj' % data['name'], expanded_dic['output_dir']['path'])
-        return project_path, [projfile]
+            'coide.coproj.tmpl', coproj_dic, '%s.coproj' % expanded_dic['name'], expanded_dic['output_dir']['path'])
+        return project_path, projfile
+
+    def export_project(self):
+        generated_projects = {}
+        for project in self.workspace:
+            output = copy.deepcopy(self.generated_project)
+            output['path'], output['files']['coproj'] = self._export_single_project(project)
+            generated_projects[project['name']] = output
+        return generated_projects

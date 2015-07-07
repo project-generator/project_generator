@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import build
 
-from .tool import ToolsSupported
-from .workspace import Workspace
-from .settings import ProjectSettings
+import build
+from ..tool import ToolsSupported
+from ..workspace import PgenWorkspace
+from ..settings import ProjectSettings
 
 help = 'Flash a project'
 
@@ -26,7 +26,7 @@ def run(args):
     # time to flash
     if args.file:
         # known project from records
-        workspace = Workspace(args.file, os.getcwd())
+        workspace = PgenWorkspace(args.file, os.getcwd())
         if args.project:
             workspace.flash_project(args.project, args.tool)
         else:

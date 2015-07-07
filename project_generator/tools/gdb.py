@@ -15,6 +15,10 @@ class gdb_definitions():
 
 
 class GDB(Exporter):
+    def __init__(self, workspace, env_settings):
+        self.workspace = workspace
+        self.env_settings = env_settings
+
     def export_project(self, data, env_settings):
         # for native debugging, no command files are necessary
         return None, []
@@ -31,15 +35,30 @@ class GDB(Exporter):
 class ARMNoneEABIGDB(GDB):
     SUPPORTED = gdb_definitions.SUPPORTED_MCUS
 
-    def export_project(self, data, env_settings):
-        expanded_dic = data.copy()
-        
-        # !!! TODO: store and read settings from gdb_definitions
-        expanded_dic['gdb_server_port'] = 3333
+    generated_project = {
+        'path': '',
+        'files': {
+            'startupfile': '',
+        }
+    }
 
-        project_path, startupfile = self.gen_file_jinja(
-            'gdb.tmpl', expanded_dic, '%s.gdbstartup' % data['name'], expanded_dic['output_dir']['path'])
-        return project_path, [startupfile]
+    def __init__(self, workspace, env_settings):
+        super(ARMNoneEABIGDB, self).__init__(workspace, env_settings)
+
+    def export_project(self):
+        generated_projects = {}
+        for project in self.workspace:
+            generated_projects[project['name']] = copy.deepcopy(self.generated_project)
+            expanded_dic = project.copy()
+            
+            # !!! TODO: store and read settings from gdb_definitions
+            expanded_dic['gdb_server_port'] = 3333
+
+            project_path, startupfile = self.gen_file_jinja(
+                'gdb.tmpl', expanded_dic, '%s.gdbstartup' % expanded_dic['name'], expanded_dic['output_dir']['path'])
+            generated_projects[project['name']]['path'] = project_path
+            generated_projects[project['name']]['files']['startupfile'] = startupfile
+        return generated_projects
 
     def supports_target(self, target):
         return target in self.SUPPORTED

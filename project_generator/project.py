@@ -125,16 +125,51 @@ class ToolSpecificSettings:
                 self.source_paths.append(os.path.dirname(source_file))
 
 
+class ProjectWorkspace:
+    """represents a workspace (multiple projects) """
+
+    def __init__(self, proj_name, projects, workspace_settings, pgen_workspace, singular = False):
+        self.name = proj_name
+        self.projects = projects
+        self.pgen_workspace = pgen_workspace # TODO: FIX me please
+        self.generated_files = {}
+        self.singular = singular
+
+        #These are additional settings defined in yaml under workspace: {workspace_name: {settings: {}
+        self.workspace_settings = workspace_settings
+
+    def export(self, tool, copy):
+        """ Exports workspace """
+
+        #Update the project settings with settings specific to this workspace
+        self.pgen_workspace.settings.update(self.workspace_settings)
+        tools = []
+        if not tool:
+            tools = self.tools_supported
+        else:
+            tools = [tool]
+
+        for export_tool in tools:
+            exporter = ToolsSupported().get_value(export_tool, 'exporter')
+            workspace_dic = {
+                'projects': [],
+                'settings': {},
+            }
+            for project in self.projects:
+                workspace_dic['projects'].append(project.generate_dic(export_tool, copy))
+            #logging.debug("Project workspace dict: %s" % workspace_dic)
+            generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
+
+            self.generated_files[export_tool] = generated_files
+
 class Project:
 
     """represents a project, which can be formed of many yaml files"""
 
-    def __init__(self, name, project_files, workspace):
+    def __init__(self, name, project_files, pgen_workspace):
         """initialise a project with a yaml file"""
-
-        self.workspace = workspace
-
-        #logging.debug("Initialising project %s" % name)
+        self.project = {}
+        self.workspace = pgen_workspace
 
         self.name = name
 
@@ -170,22 +205,17 @@ class Project:
         self.linker_file = None
         self.tool_specific = defaultdict(ToolSpecificSettings)
 
-        self.project_path = {}
-        self.project_files = {}
         self.project_name = None
         self.tools = ToolsSupported()
-        done = False
+
         for project_file in project_files:
             try:
                 f = open(project_file, 'rt')
                 project_file_data = yaml.load(f)
-                done = True
+                self.set_attributes(project_file_data)
             except IOError:
-                project_file_data = project_files
-                break
-            self.set_attributes(project_file_data)
-        if not done:
-            self.set_attributes(project_file_data)
+               raise IOError("The file %s referenced in main yaml doesn't exist."%project_file)
+
         if self.project_dir['path'] == '':
             self.project_dir['path'] = self.workspace.settings.generated_projects_dir_default
 
@@ -206,16 +236,10 @@ class Project:
 
                 if 'sources' in project_file_data['common']:
                     if type(project_file_data['common']['sources']) == type(dict()):
-                        # ??? local variables source_paths and group_names not used
-                        group_names = project_file_data['common']['sources'].keys()
-                        source_paths = [self._process_source_files(project_file_data['common']['sources'][group_name],
-                                                                   group_name) for group_name in group_names]
+                        for group_name, sources in project_file_data['common']['sources'].items():
+                            self._process_source_files(sources, group_name)
                     else:
-                        if 'group_name' in project_file_data['common']:
-                            group_name = project_file_data['common']['group_name'][0]
-                        else:
-                            group_name = 'default'
-                        self._process_source_files(project_file_data['common']['sources'], group_name)
+                        self._process_source_files(project_file_data['common']['sources'], 'default')
                     for source_path in self.source_paths:
                         if os.path.normpath(source_path) not in self.include_paths:
                             self.include_paths.extend([source_path])
@@ -249,7 +273,6 @@ class Project:
                 if 'tools_supported' in project_file_data['common']:
                     self.tools_supported.extend(
                         [x for x in project_file_data['common']['tools_supported'] if x is not None])
-
         if 'tool_specific' in project_file_data:
             group_name = 'default'
             for tool_name, tool_settings in project_file_data['tool_specific'].items():
@@ -286,6 +309,13 @@ class Project:
             if not os.path.dirname(source_file) in self.source_paths:
                 self.source_paths.append(os.path.normpath(os.path.dirname(source_file)))
         return source_paths
+
+    def _get_workspace_name(self):
+        workspaces = self.workspace.workspaces
+        for workspace, proj_workspace in workspaces.items():
+            for p in proj_workspace.projects:
+                if self is p:
+                    return workspace
 
     def clean(self, project_name, tool):
         if tool is None:
@@ -339,48 +369,33 @@ class Project:
             project_files = [os.path.join(proj_dic['output_dir']['path'], proj_dic['name'])]
         flash(flasher, proj_dic, self.name, project_files, tool, self.workspace.settings)
 
-    def export(self, tool, copy):
+    def generate_dic(self, tool, copy):
         """export the project"""
-        tools = []
-        if not tool:
-            tools = self.tools_supported
+        proj_dic = self.generate_dict_for_tool(tool)
+        proj_dic['copy_sources'] = False
+        proj_dic['output_dir']['rel_path'] = ''
+
+        if copy:
+            self.copy_files(proj_dic, tool)
+            # TODO: fixme
+            proj_dic['copy_sources'] = True
         else:
-            tools = [tool]
+            # Get number of how far we are from root, to set paths in the project
+            # correctly
+            count = 1
+            pdir = proj_dic['output_dir']['path']
+            while os.path.split(pdir)[0]:
+                pdir = os.path.split(pdir)[0]
+                count += 1
+            rel_path_output = ''
 
-        for export_tool in tools:
-            exporter = self.tools.get_value(export_tool, 'exporter')
+            proj_dic['output_dir']['rel_count'] = count
+            while count:
+                rel_path_output = os.path.join('..', rel_path_output)
+                count -= 1
+            proj_dic['output_dir']['rel_path'] = rel_path_output
 
-            proj_dic = self.generate_dict_for_tool(export_tool)
-            proj_dic['copy_sources'] = False
-            proj_dic['output_dir']['rel_path'] = ''
-
-            if copy:
-                self.copy_files(proj_dic, export_tool)
-                # TODO: fixme
-                proj_dic['copy_sources'] = True
-            else:
-                # Get number of how far we are from root, to set paths in the project
-                # correctly
-                count = 1
-                pdir = proj_dic['output_dir']['path']
-                while os.path.split(pdir)[0]:
-                    pdir = os.path.split(pdir)[0]
-                    count += 1
-                rel_path_output = ''
-
-                proj_dic['output_dir']['rel_count'] = count
-                while count:
-                    rel_path_output = os.path.join('..', rel_path_output)
-                    count -= 1
-                proj_dic['output_dir']['rel_path'] = rel_path_output
-
-            logging.debug("Project dict: %s" % proj_dic)
-            project_path, project_files = export(exporter, proj_dic, export_tool, self.workspace.settings)
-
-            self.project_path[export_tool] = project_path
-            self.project_files[export_tool] = project_files
-
-        return project_path, project_files
+        return proj_dic
 
     def source_of_type(self, filetype):
         """return a dictionary of groups and the sources of a specified type within them"""
@@ -398,6 +413,11 @@ class Project:
             if filetype in group_contents:
                 files.extend(group_contents[filetype])
         return files
+
+    def format_source_files(self, ext, tool_specific_settings, toolchain_specific_settings):
+        return [merge_recursive(self.source_of_type(ext), {k: v for settings in
+                [settings.source_of_type(ext) for settings in tool_specific_settings] for
+                k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
 
     def generate_dict_for_tool(self, tool):
         """for backwards compatibility"""
@@ -428,31 +448,16 @@ class Project:
                                 {k: v for settings in tool_specific_settings for k, v in settings.source_groups.items()},
                                 toolchain_specific_settings.source_groups),
             # for backwards compatibility
-            'source_files_c': [
-                merge_recursive(self.source_of_type('c'),
-                                {k: v for settings in [settings.source_of_type('c') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('c'))],
+            'source_files_c': self.format_source_files('c',tool_specific_settings, toolchain_specific_settings),
 
-            'source_files_cpp': [
-                merge_recursive(self.source_of_type('cpp'),
-                                {k: v for settings in [settings.source_of_type('cpp') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('cpp'))],
+            'source_files_cpp': self.format_source_files('cpp',tool_specific_settings, toolchain_specific_settings),
 
-            'source_files_s': [
-                merge_recursive(self.source_of_type('s'),
-                                {k: v for settings in [settings.source_of_type('s') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('s'))],
+            'source_files_s':  self.format_source_files('s',tool_specific_settings, toolchain_specific_settings),
 
-            'source_files_obj': [
-                merge_recursive(self.source_of_type('obj'),
-                                {k: v for settings in [settings.source_of_type('obj') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('obj')), self.source_of_type('o'),{k: v for settings in [settings.source_of_type('o') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('o')],
+            'source_files_obj': merge_recursive(self.format_source_files('obj',tool_specific_settings, toolchain_specific_settings),
+                                                self.format_source_files('o',tool_specific_settings, toolchain_specific_settings)),
 
-            'source_files_lib': [
-                merge_recursive(self.source_of_type('lib'),
-                                {k: v for settings in [settings.source_of_type('lib') for settings in tool_specific_settings] for k, v in settings.items()},
-                                toolchain_specific_settings.source_of_type('lib'))],
+            'source_files_lib': self.format_source_files('lib',tool_specific_settings, toolchain_specific_settings),
 
             'linker_file': self.linker_file or toolchain_specific_settings.linker_file or [
                 tool_settings.linker_file for tool_settings in tool_specific_settings if tool_settings.linker_file],
@@ -468,22 +473,21 @@ class Project:
             'template': toolchain_specific_settings.template or [
                 tool_settings.template for tool_settings in tool_specific_settings if tool_settings.template],
         }
-        self.validate_generated_dic(d)
-
+        if d['linker_file'] == None and d['output_type'] == 'exe':
+            raise RuntimeError("Executable - no linker command found.")
         if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
             output_dir = self.workspace.settings.generated_projects_dir
             output_dir = output_dir.replace('$tool$', tool)
             output_dir = output_dir.replace('$project_name$', self.name)
             if self.target:
                 output_dir = output_dir.replace('$target$', self.target)
+            workspace = self._get_workspace_name()
+            if workspace:
+                output_dir = output_dir.replace('$workspace$', workspace)
         else:
             output_dir = os.path.join(self.project_dir['path'], "%s_%s" % (tool, self.name))
         d['output_dir']['path'] = os.path.normpath(output_dir)
         return d
-
-    def validate_generated_dic(self, dic):
-        if dic['linker_file'] == None and dic['output_type'] == 'exe':
-            raise RuntimeError("Executable - no linker command found.")
 
     def fixup_executable(executable_path, tool):
         exporter = self.tools.get_value(tool, 'exporter')
@@ -535,92 +539,3 @@ class Project:
             os.makedirs(dest_dir)
         shutil.copy2(os.path.join(os.getcwd(), linker),
                      os.path.join(os.getcwd(), proj_dic['output_dir']['path'], linker))
-
-    @staticmethod
-    def determine_tool(linker_ext):
-        if "sct" in linker_ext or "lin" in linker_ext:
-            return "uvision"
-        elif "ld" in linker_ext:
-            return "gcc"
-        elif "icf" in linker_ext:
-            return "iar"
-
-    @staticmethod
-    def scan(section, root, directory, extensions, is_path):
-        if section == "sources":
-            data_dict = {}
-        else:
-            data_dict = []
-        for dirpath, dirnames, files in os.walk(directory):
-            for filename in files:
-                ext = filename.split('.')[-1]
-                relpath = os.path.relpath(dirpath, root)
-                if ext in extensions:
-                    if section == "sources":
-                        dir = directory.split(os.path.sep)[-1] if dirpath == directory else dirpath.replace(directory,'').split(os.path.sep)[1]
-                        if dir in data_dict:
-                            data_dict[dir].append(os.path.join(relpath, filename))
-                        else:
-                            data_dict[dir] = [(os.path.join(relpath, filename))]
-                    elif section == 'includes':
-                        dirs = relpath.split(os.path.sep)
-                        for i in range(1, len(dirs)+1):
-                            data_dict.append(os.path.sep.join(dirs[:i]))
-                    else:
-                        data_dict.append(relpath if is_path else os.path.join(relpath, filename))
-        if section == "sources":
-            return data_dict
-        return list(set(data_dict))
-
-    @staticmethod
-    def create_yaml(root, directory, project_name, board, list_sources):
-        common_section = {
-            'linker_file': [False, FILES_EXTENSIONS['linker_file']],
-            'sources': [False, FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] +
-                        FILES_EXTENSIONS['source_files_s'] + FILES_EXTENSIONS['source_files_obj'] +
-                        FILES_EXTENSIONS['source_files_lib']],
-            'includes': [True, FILES_EXTENSIONS['include_paths']],
-            'target': [False, []],
-        }
-        data = {
-            'projects': {
-                project_name: {
-                    'common': {},
-                    'tool_specific': {}
-                }
-            }
-        }
-
-        for section in common_section:
-            if len(common_section[section][1]) > 0:
-                data['projects'][project_name]['common'][section] = Project.scan(section, root, directory,
-                                                                                 common_section[section][1],
-                                                                                 common_section[section][0])
-
-        data['projects'][project_name]['common']['target'] = []
-        data['projects'][project_name]['common']['target'].append(board)
-        tool = Project.determine_tool(str(data['projects'][project_name]['common']['linker_file']).split('.')[-1])
-        data['projects'][project_name]['tool_specific'] = {
-            tool: {
-                'linker_file': data['projects'][project_name]['common']['linker_file']
-            }
-        }
-
-        logging.debug('Generating yaml file')
-        filename = 'projects.yaml'
-
-        #TODO: fix
-        if os.path.isfile(os.path.join(directory, filename)):
-            print("Project file already exists")
-            while True:
-                answer = input('Should I overwrite it? (Y/n)')
-                try:
-                    overwrite = answer.lower() in ('y', 'yes')
-                    if not overwrite:
-                        logging.critical('Unable to save project file')
-                        return -1
-                    break
-                except ValueError:
-                    continue
-        with open(os.path.join(root, filename), 'wt') as f:
-            f.write(yaml.dump(data, default_flow_style=False))
