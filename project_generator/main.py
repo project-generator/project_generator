@@ -18,7 +18,7 @@ import logging
 
 import pkg_resources
 
-from .commands import build, clean, export, flash, init, list_projects, update
+from .commands import build, clean, export, flash, init, list_projects, update, import_command
 
 subcommands = {
     'init': init,
@@ -28,6 +28,7 @@ subcommands = {
     'update': update,
     'build': build,
     'flash': flash,
+    'import': import_command,
 }
 
 
