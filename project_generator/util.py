@@ -36,8 +36,6 @@ def merge_recursive(*args):
         return output
     else:
         return reduce(operator.add, args)
-
-
 def flatten(*args):
     for x in args:
         if hasattr(x, '__iter__'):

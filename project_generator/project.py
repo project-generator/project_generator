@@ -19,7 +19,7 @@ import logging
 
 from collections import defaultdict
 from .tool import build, export, flash, ToolsSupported
-from .util import flatten, merge_recursive
+from .util import merge_recursive, flatten
 
 try:
     input = raw_input
