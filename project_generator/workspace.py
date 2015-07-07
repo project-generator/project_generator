@@ -65,7 +65,10 @@ class PgenWorkspace:
                 if 'settings' in self.projects_dict['workspaces'][work_name]:
                     settings = self.projects_dict['workspaces'][work_name]['settings']
                 self.workspaces[work_name] = ProjectWorkspace(work_name, workspace_projects, settings, self, False)
-        elif 'projects' in self.projects_dict:
+        else:
+            logging.debug("No workspaces found in the main record file.")
+
+        if 'projects' in self.projects_dict:
             for name, records in self.projects_dict['projects'].items():
                 if type(records) is dict:
                     # workspace
@@ -76,7 +79,7 @@ class PgenWorkspace:
 
                 self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
         else:
-            logging.debug("No projects or workspaces found in the main record file.")
+            logging.debug("No projects found in the main record file.")
 
     def export_project(self, project_name, tool, copy):
         if project_name not in self.workspaces:
