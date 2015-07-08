@@ -19,7 +19,7 @@ import logging
 import operator
 
 from collections import defaultdict
-from .tool import build, export, flash, ToolsSupported
+from .tool import build, export, flash, fixup_executable, ToolsSupported
 from .util import merge_recursive, flatten
 from string import Template
 
@@ -435,9 +435,9 @@ class Project:
             output_dir = os.path.join(self.project['project_dir']['path'], "%s_%s" % (tool, self.name))
         self.project['output_dir']['path'] = os.path.normpath(output_dir)
 
+    @staticmethod
     def fixup_executable(executable_path, tool):
-        exporter = self.tools.get_value(tool, 'exporter')
-        # ??? recursive call without self parameter ???
+        exporter = ToolsSupported().get_value(tool, 'exporter')
         fixup_executable(exporter, executable_path, tool)
 
     def _copy_files(self, file, output_dir, valid_files_group):
