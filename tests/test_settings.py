@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import shutil
 
-import yaml
 from unittest import TestCase
 
 from project_generator.settings import ProjectSettings
@@ -40,10 +38,6 @@ class TestProject(TestCase):
 
     def setUp(self):
         self.settings = ProjectSettings()
-
-    # def tearDown(self):
-    #     # remove created directory
-    #     shutil.rmtree('test_workspace', ignore_errors=True)
 
     def test_update(self):
         self.settings.update(settings_dict)

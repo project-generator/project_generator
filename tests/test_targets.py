@@ -13,7 +13,6 @@
 # limitations under the License.
 import os
 
-import yaml
 from unittest import TestCase
 
 from project_generator.targets import Targets
