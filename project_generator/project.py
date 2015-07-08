@@ -168,7 +168,6 @@ class Project:
 
     def __init__(self, name, project_files, pgen_workspace):
         """initialise a project with a yaml file"""
-        self.project = {}
         self.workspace = pgen_workspace
         self.tool_specific = defaultdict(ToolSpecificSettings)
         self.name = name
@@ -178,9 +177,15 @@ class Project:
             'library': 'lib',
             'lib': 'lib',
         }
+        self.project_dir = {
+            'name': '',
+            'path': self.workspace.settings.generated_projects_dir_default,
+        }
         self.tools = ToolsSupported()
         self.source_groups = {}
-        self._fill_defaults()
+
+        self.project = {}
+        self._fill_project_defaults()
 
         for project_file in project_files:
             try:
@@ -190,9 +195,8 @@ class Project:
             except IOError:
                raise IOError("The file %s referenced in main yaml doesn't exist."%project_file)
 
-    def _fill_defaults(self):
+    def _fill_project_defaults(self):
         self.project['name'] = self.name
-        self.project['output_type'] = self.output_types['executable']
         self.project['output_type'] = self.output_types['executable']
         self.project['linker_file'] = None
         self.project['project_name'] = None
@@ -204,18 +208,11 @@ class Project:
             'rel_path': '',
             'rel_count': '',
         }
-        self.project_dir = {
-            'name': '',
-            'path': self.workspace.settings.generated_projects_dir_default,
-        }
         self.project['misc'] ={}
-        self.path_arrays_keys = ['includes', 'macros', 'source_paths']
-        for key in self.path_arrays_keys:
+        for key in ['includes', 'macros', 'source_paths']:
             self.project[key] = []
 
     def _set_attributes(self,project_file_data):
-        direct_keys = ['debugger','build_dir','mcu','name','target','core']
-
         if 'common' in project_file_data:
                 if 'output' in project_file_data['common']:
                     if project_file_data['common']['output'][0] not in self.output_types:
@@ -245,7 +242,7 @@ class Project:
                     self.project['project_dir'].update(
                         project_file_data['common']['project_dir'])
 
-                for key in direct_keys:
+                for key in ['debugger','build_dir','mcu','name','target','core']:
                     if key in project_file_data['common']:
                         self.project[key] = project_file_data['common'][key][0]
 
@@ -344,7 +341,7 @@ class Project:
         self.project['output_dir']['rel_path'] = ''
 
         if copy:
-            self.copy_files(self.project, tool)
+            self.copy_files(tool)
             # TODO: fixme
             self.project['copy_sources'] = True
         else:
@@ -446,40 +443,40 @@ class Project:
         if file.split('.')[-1] in valid_files_group:
             shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
 
-    def copy_files(self, proj_dic, tool):
+    def copy_files(self, tool):
 
-        for path in proj_dic['include_paths']:
+        for path in self.project['include_paths']:
             path = os.path.normpath(path)
             files = os.listdir(path)
-            dest_dir = os.path.join(os.getcwd(), proj_dic['output_dir']['path'], path)
+            dest_dir = os.path.join(os.getcwd(), self.project['output_dir']['path'], path)
             if not os.path.exists(dest_dir) and len(files):
                 os.makedirs(dest_dir)
             for filename in files:
                 if filename.split('.')[-1] in FILES_EXTENSIONS['include_paths']:
                     shutil.copy2(os.path.join(os.getcwd(), path, filename),
-                                 os.path.join(os.getcwd(), proj_dic['output_dir']['path'], path))
+                                 os.path.join(os.getcwd(), self.project['output_dir']['path'], path))
 
-        for k, v in proj_dic['source_files_c'][0].items():
+        for k, v in self.project['source_files_c'][0].items():
             for file in v:
-                self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_c'])
+                self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_c'])
 
-        for k, v in proj_dic['source_files_cpp'][0].items():
+        for k, v in self.project['source_files_cpp'][0].items():
             for file in v:
-                self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_cpp'])
+                self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_cpp'])
 
-        for k, v in proj_dic['source_files_s'][0].items():
+        for k, v in self.project['source_files_s'][0].items():
             for file in v:
-                self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_s'])
+                self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_s'])
 
-        for file in proj_dic['source_files_obj']:
-            self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_obj'])
+        for file in self.project['source_files_obj']:
+            self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_obj'])
 
-        for file in proj_dic['source_files_lib']:
-            self._copy_files(file, proj_dic['output_dir']['path'], FILES_EXTENSIONS['source_files_lib'])
+        for file in self.project['source_files_lib']:
+            self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_lib'])
 
-        linker = os.path.normpath(proj_dic['linker_file'])
-        dest_dir = os.path.join(os.getcwd(), proj_dic['output_dir']['path'], os.path.dirname(linker))
+        linker = os.path.normpath(self.project['linker_file'])
+        dest_dir = os.path.join(os.getcwd(), self.project['output_dir']['path'], os.path.dirname(linker))
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
         shutil.copy2(os.path.join(os.getcwd(), linker),
-                     os.path.join(os.getcwd(), proj_dic['output_dir']['path'], linker))
+                     os.path.join(os.getcwd(), self.project['output_dir']['path'], linker))
