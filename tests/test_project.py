@@ -17,12 +17,19 @@ import shutil
 import yaml
 from unittest import TestCase
 
+from project_generator.project import Project
 from project_generator.workspace import PgenWorkspace
 
 project_1_yaml = {
     'common': {
         'sources': ['sources/main.cpp'],
-        'includes': ['includes/header1.h']
+        'includes': ['includes/header1.h'],
+        'macros': ['MACRO1', 'MACRO2'],
+        'target': ['target1'],
+        'core': ['core1'],
+        'tools_supported': ['iar_arm', 'uvision', 'coide', 'unknown'],
+        'output_type': ['exe'],
+        'debugger': ['debugger_1'],
     }
 }
 
@@ -36,9 +43,9 @@ projects_yaml = {
     }
 }
 
-class TestPgenWorkspace(TestCase):
+class TestProject(TestCase):
 
-    """test things related to the PgenWorkspace class"""
+    """test things related to the Project class"""
 
     def setUp(self):
         if not os.path.exists('test_workspace'):
@@ -49,23 +56,11 @@ class TestPgenWorkspace(TestCase):
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_yaml, default_flow_style=False))
-        self.workspace = PgenWorkspace('test_workspace/projects.yaml')
+        self.project = Project('project_1',['test_workspace/project_1.yaml'], PgenWorkspace('test_workspace/projects.yaml'))
 
     def tearDown(self):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
 
-    def test_settings(self):
-        # only check things which are affected by projects.yaml
-        assert self.workspace.settings.paths['definitions'] == os.path.normpath('notpg/path/somewhere')
-        assert self.workspace.settings.generated_projects_dir == 'not_generated_projects'
-
-    def test_workspaces(self):
-        # workspace should not be empty and project_1 should exist, not empty neither
-        assert bool(self.workspace.workspaces) == True
-        assert bool(self.workspace.workspaces['project_1']) == True
-
-    def test_projects_dict(self):
-        # check projects yaml file, if they match
-        assert bool(self.workspace.projects_dict) == True
-        assert self.workspace.projects_dict == projects_yaml
+    def test_name(self):
+        assert self.project.name == 'project_1'
