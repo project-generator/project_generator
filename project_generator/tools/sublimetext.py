@@ -17,6 +17,14 @@ from .gccarm import MakefileGccArm
 
 class SublimeTextMakeGccARM(MakefileGccArm):
 
+    generated_project = {
+        'path': '',
+        'files': {
+            'sublimetext': '',
+            'makefile': '',
+        }
+    }
+
     def __init__(self, workspace, env_settings):
         super(SublimeTextMakeGccARM, self).__init__(workspace, env_settings)
 
@@ -29,17 +37,20 @@ class SublimeTextMakeGccARM(MakefileGccArm):
 
     def export_project(self):
         """ Processes misc options specific for GCC ARM, and run generator. """
+        generated_projects = {}
         for project in self.workspace['projects']:
+            output = copy.deepcopy(self.generated_project)
             self.process_data_for_makefile(project, "sublime_make_gcc_arm")
             self._fix_sublime_paths(project)
             project['linker_options'] =[]
 
-            project_path, makefile = self.gen_file_jinja('makefile_gcc.tmpl', project, 'Makefile', project['output_dir']['path'])
+            output['path'], output['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', project, 'Makefile', project['output_dir']['path'])
 
             project['buildsys_name'] = 'Make'
             project['buildsys_cmd'] = 'make all'
 
-            sublimeproject = self.gen_file_jinja(
+            output['files']['sublimetext'] = self.gen_file_jinja(
                 'sublimetext.sublime-project.tmpl', project, '%s.sublime-project' % project['name'], project['output_dir']['path'])
+            generated_projects[project['name']] = output
 
-        return project_path, [makefile, sublimeproject]
+        return generated_projects
