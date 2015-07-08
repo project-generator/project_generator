@@ -39,13 +39,12 @@ def merge_recursive(*args):
         return reduce(operator.add, args)
 
 
-def flatten(*args):
-    for x in args:
-        if hasattr(x, '__iter__'):
-            for y in flatten(*x):
-                yield y
-        else:
-            yield x
+def flatten(S):
+    if S == []:
+        return S
+    if isinstance(S[0], list):
+        return flatten(S[0]) + flatten(S[1:])
+    return S[:1] + flatten(S[1:])
 
 def unicode_available():
     return locale.getdefaultlocale()[1] == 'UTF-8'
