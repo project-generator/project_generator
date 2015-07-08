@@ -14,9 +14,11 @@
 
 import copy
 
-from os.path import join, normpath
+from os.path import join, normpath,dirname
+import subprocess
 from .exporter import Exporter
 from ..targets import Targets
+import logging
 
 
 class MakefileGccArm(Exporter):
