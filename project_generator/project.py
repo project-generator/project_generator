@@ -191,7 +191,7 @@ class Project:
             try:
                 f = open(project_file, 'rt')
                 project_file_data = yaml.load(f)
-                self._set_attributes(project_file_data)
+                self._set_project_attributes(project_file_data)
             except IOError:
                raise IOError("The file %s referenced in main yaml doesn't exist."%project_file)
 
@@ -212,7 +212,7 @@ class Project:
         for key in ['includes', 'macros', 'source_paths']:
             self.project[key] = []
 
-    def _set_attributes(self,project_file_data):
+    def _set_project_attributes(self,project_file_data):
         if 'common' in project_file_data:
                 if 'output' in project_file_data['common']:
                     if project_file_data['common']['output'][0] not in self.output_types:
@@ -390,7 +390,6 @@ class Project:
                 [settings.source_of_type(ext) for settings in tool_specific_settings] for
                 k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
 
-
     def customize_project_for_tool(self, tool):
         """for backwards compatibility"""
         toolchain_specific_settings =  self.tool_specific[self.tools.get_value(tool, 'toolchain')]
@@ -406,11 +405,11 @@ class Project:
                                 {k: v for settings in tool_specific_settings for k, v in settings.source_groups.items()},
                                 toolchain_specific_settings.source_groups)
         for ext in ["c","cpp","s","lib"]:
-            key = "source_files_"+ext
-            self.project[key] = self.format_source_files(ext,tool_specific_settings, toolchain_specific_settings)
+           key = "source_files_"+ext
+           self.project[key] = self.format_source_files(ext, tool_specific_settings, toolchain_specific_settings)
 
         self.project['source_files_obj']= merge_recursive(self.format_source_files('obj',tool_specific_settings, toolchain_specific_settings),
-                                                self.format_source_files('o',tool_specific_settings, toolchain_specific_settings))
+            self.format_source_files('o',tool_specific_settings, toolchain_specific_settings))
 
         self.project['linker_file'] =  self.project['linker_file'] or toolchain_specific_settings.linker_file or [
             tool_settings.linker_file for tool_settings in tool_specific_settings if tool_settings.linker_file]
@@ -434,6 +433,7 @@ class Project:
         else:
             output_dir = os.path.join(self.project['project_dir']['path'], "%s_%s" % (tool, self.name))
         self.project['output_dir']['path'] = os.path.normpath(output_dir)
+        print self.project.keys()
 
     def _copy_files(self, file, output_dir, valid_files_group):
         file = os.path.normpath(file)
