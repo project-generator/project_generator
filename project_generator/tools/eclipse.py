@@ -37,7 +37,7 @@ class EclipseGnuARM(Exporter):
 
     def __init__(self, workspace, env_settings):
         self.definitions = 0
-        self.exporter = MakefileGccArm()
+        self.exporter = MakefileGccArm(workspace, env_settings)
         self.workspace = workspace
         self.env_settings = env_settings
 
@@ -84,20 +84,20 @@ class EclipseGnuARM(Exporter):
         """ Processes groups and misc options specific for eclipse, and run generator """
 
         generated_projects = {}
-        for project in self.workspace:
+        for project in self.workspace['projects']:
             output = copy.deepcopy(self.generated_project)
-            data_for_make = data.copy()
+            data_for_make = project.copy()
 
-            self.exporter.process_data_for_makefile(data_for_make, settings, "eclipse_makefile")
+            self.exporter.process_data_for_makefile(data_for_make)
             output['path'], output['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', data_for_make, 'Makefile', data_for_make['output_dir']['path'])
 
-            expanded_dic = data.copy()
+            expanded_dic = project.copy()
             expanded_dic['rel_path'] = data_for_make['output_dir']['rel_path']
             groups = self._get_groups(expanded_dic)
             expanded_dic['groups'] = {}
             for group in groups:
                 expanded_dic['groups'][group] = []
-            self._iterate(data, expanded_dic, data_for_make['rel_path'])
+            self._iterate(project, expanded_dic, expanded_dic['rel_path'])
 
             # Project file
             project_path, output['files']['cproj'] = self.gen_file_jinja(

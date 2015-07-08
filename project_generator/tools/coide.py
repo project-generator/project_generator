@@ -48,6 +48,13 @@ class Coide(Exporter):
         'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
 
+    generated_project = {
+        'path': '',
+        'files': {
+            'coproj': ''
+        }
+    }
+
     def __init__(self, workspace, env_settings):
         self.definitions = CoIDEdefinitions()
         self.workspace = workspace
@@ -244,7 +251,7 @@ class Coide(Exporter):
 
     def export_project(self):
         generated_projects = {}
-        for project in self.workspace:
+        for project in self.workspace['projects']:
             output = copy.deepcopy(self.generated_project)
             output['path'], output['files']['coproj'] = self._export_single_project(project)
             generated_projects[project['name']] = output

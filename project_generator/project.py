@@ -423,7 +423,7 @@ class Project:
         self.project['template'] = toolchain_specific_settings.template or [
                 tool_settings.template for tool_settings in tool_specific_settings if tool_settings.template]
 
-        if self.project['linker_file'] == None and self.project['output_type'] == 'exe':
+        if self.project['linker_file'] is None and self.project['output_type'] == 'exe':
             raise RuntimeError("Executable - no linker command found.")
 
         if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
@@ -433,7 +433,6 @@ class Project:
         else:
             output_dir = os.path.join(self.project['project_dir']['path'], "%s_%s" % (tool, self.name))
         self.project['output_dir']['path'] = os.path.normpath(output_dir)
-        print self.project.keys()
 
     def _copy_files(self, file, output_dir, valid_files_group):
         file = os.path.normpath(file)

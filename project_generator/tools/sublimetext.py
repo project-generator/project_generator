@@ -29,7 +29,7 @@ class SublimeTextMakeGccARM(MakefileGccArm):
 
     def export_project(self):
         """ Processes misc options specific for GCC ARM, and run generator. """
-        for project in self.workspace:
+        for project in self.workspace['projects']:
             self.process_data_for_makefile(project, "sublime_make_gcc_arm")
             self._fix_sublime_paths(project)
             project['linker_options'] =[]

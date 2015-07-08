@@ -47,7 +47,7 @@ class ARMNoneEABIGDB(GDB):
 
     def export_project(self):
         generated_projects = {}
-        for project in self.workspace:
+        for project in self.workspace['projects']:
             generated_projects[project['name']] = copy.deepcopy(self.generated_project)
             expanded_dic = project.copy()
             

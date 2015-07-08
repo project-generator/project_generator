@@ -346,7 +346,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
     def export_project(self):
         """ Processes groups and misc options specific for IAR, and run generator """
         generated_projects = {}
-        for project in self.workspace:
+        for project in self.workspace['projects']:
             output = copy.deepcopy(self.generated_project)
             output['path'],  output['files']['ewp'], output['files']['eww'], output['files']['ewd'] = self._export_single_project(project)
             generated_projects[project['name']] = output
