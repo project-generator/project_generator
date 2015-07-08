@@ -435,6 +435,11 @@ class Project:
             output_dir = os.path.join(self.project['project_dir']['path'], "%s_%s" % (tool, self.name))
         self.project['output_dir']['path'] = os.path.normpath(output_dir)
 
+    def fixup_executable(executable_path, tool):
+        exporter = self.tools.get_value(tool, 'exporter')
+        # ??? recursive call without self parameter ???
+        fixup_executable(exporter, executable_path, tool)
+
     def _copy_files(self, file, output_dir, valid_files_group):
         file = os.path.normpath(file)
         dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
