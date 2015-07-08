@@ -15,10 +15,12 @@ import os
 import shutil
 import locale
 import operator
+from functools import reduce
 
 def rmtree_if_exists(directory):
     if os.path.exists(directory):
         shutil.rmtree(directory)
+
 def uniqify(_list):
     # see: http://stackoverflow.com/questions/480214/how-do-you-remove-duplicates-from-a-list-in-python-whilst-preserving-order/29898968#29898968
     return reduce(lambda r, v: v in r[1] and r or (r[0].append(v) or r[1].add(v)) or r, _list, ([], set()))[0]
@@ -43,6 +45,13 @@ def flatten(*args):
                 yield y
         else:
             yield x
+
+def flatten(S):
+    if S == []:
+        return S
+    if isinstance(S[0], list):
+        return flatten(S[0]) + flatten(S[1:])
+    return S[:1] + flatten(S[1:])
 
 def unicode_available():
     return locale.getdefaultlocale()[1] == 'UTF-8'

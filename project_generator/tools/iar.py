@@ -400,3 +400,26 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
                 logging.info("Flashing completed.")
             else:
                 logging.info("Flashing failed.")
+
+    def get_mcu_definition(self, project_file):
+        """ Parse project file to get mcu definition """
+        project_file = join(getcwd(), project_file)
+        uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+
+        mcu = Targets().get_mcu_definition()
+
+        index_general = self._get_option(uvproj_dic['project']['configuration']['settings'], 'General')
+        index_option = self._get_option(uvproj_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
+        OGChipSelectEditMenu = uvproj_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option]
+
+        mcu['tool_specific'] = {
+            'iar' : {
+                'OGChipSelectEditMenu' : {
+                    'state' : [OGChipSelectEditMenu['state'].replace('\t', ' ', 1)],
+                },
+                'OGCoreOrChip' : {
+                    'state' : [1],
+                },
+            }
+        }
+        return mcu

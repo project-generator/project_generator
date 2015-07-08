@@ -20,16 +20,28 @@ from os import listdir
 
 class Targets:
 
-    def __init__(self, directory):
-        self.definitions_directory = directory
-        target_dir = join(self.definitions_directory, 'target')
-        self.targets = [ splitext(f)[0] for f in listdir(target_dir) if isfile(join(target_dir,f)) ]
+    MCU_TEMPLATE = {
+        'mcu' : {
+            'vendor' : [''],
+            'name' : [''],
+            'core' : [''],
+        },
+    }
+
+    def __init__(self, directory=None):
+        if directory:
+            self.definitions_directory = directory
+            target_dir = join(self.definitions_directory, 'target')
+            self.targets = [ splitext(f)[0] for f in listdir(target_dir) if isfile(join(target_dir,f)) ]
 
     def _load_record(self, file):
         project_file = open(file)
         config = yaml.load(project_file)
         project_file.close()
         return config
+
+    def get_mcu_definition(self):
+        return self.MCU_TEMPLATE
 
     def get_mcu_record(self, target):
         target_path = join(self.definitions_directory, 'target', target + '.yaml')

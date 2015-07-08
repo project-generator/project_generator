@@ -15,6 +15,7 @@
 import os
 import logging
 import subprocess
+import yaml
 
 from .targets import Targets
 from .tools.iar import IAREmbeddedWorkbench
@@ -152,6 +153,15 @@ def flash(flasher, proj_dic, project_name, project_files, tool, env_settings):
         raise RuntimeError("Flasher does not support specified tool: %s" % tool)
     else:
         flasher().flash_project(proj_dic, project_name, project_files, env_settings)
+
+def mcu_create(ToolParser, mcu_name, proj_file, tool):
+    data = ToolParser(None, None).get_mcu_definition(proj_file)
+    data['mcu']['name'] = [mcu_name]
+    # we got target, now damp it to root using target.yaml file
+    # we can make it better, and ask for definitions repo clone, and add it
+    # there, at least to MCU folder
+    with open(os.path.join(os.getcwd(), mcu_name + '.yaml'), 'wt') as f:
+        f.write(yaml.safe_dump(data, default_flow_style=False, width=200))
 
 def load_definitions(def_dir=None):
     definitions_directory = def_dir
