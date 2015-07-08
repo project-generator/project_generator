@@ -38,7 +38,6 @@ def merge_recursive(*args):
     else:
         return reduce(operator.add, args)
 
-
 def flatten(S):
     if S == []:
         return S
