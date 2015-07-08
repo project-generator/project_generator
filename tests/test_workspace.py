@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import shutil
 
 import yaml
 from unittest import TestCase
@@ -35,7 +36,7 @@ projects_yaml = {
     }
 }
 
-class TestWorkspace(TestCase):
+class TestPgenWorkspace(TestCase):
 
     """test things related to the PgenWorkspace class"""
 
@@ -50,11 +51,21 @@ class TestWorkspace(TestCase):
             f.write(yaml.dump(projects_yaml, default_flow_style=False))
         self.workspace = PgenWorkspace('test_workspace/projects.yaml')
 
+    def tearDown(self):
+        # remove created directory
+        shutil.rmtree('test_workspace', ignore_errors=True)
+
     def test_settings(self):
         # only check things which are affected by projects.yaml
         assert self.workspace.settings.paths['definitions'] == os.path.normpath('notpg/path/somewhere')
         assert self.workspace.settings.generated_projects_dir == 'not_generated_projects'
 
-    def test_list_projects(self):
-        # assert self.workspace.list_projects(width=1, False) == 'project_1'
+    def test_workspaces(self):
+        # workspace should not be empty and project_1 should exist, not empty neither
+        assert bool(self.workspace.workspaces) == True
+        assert bool(self.workspace.workspaces['project_1']) == True
 
+    def test_projects_dict(self):
+        # check projects yaml file, if they match
+        assert bool(self.workspace.projects_dict) == True
+        assert self.workspace.projects_dict == projects_yaml
