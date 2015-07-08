@@ -17,6 +17,7 @@ from unittest import TestCase
 
 from project_generator.targets import Targets
 from project_generator.settings import ProjectSettings
+from project_generator.commands.update import update
 
 class TestProject(TestCase):
 
@@ -24,6 +25,7 @@ class TestProject(TestCase):
 
     def setUp(self):
         settings = ProjectSettings()
+        update(False, settings)
         self.targets = Targets(settings.get_env_settings('definitions'))
 
     def test_target(self):
