@@ -178,10 +178,6 @@ class Project:
             'library': 'lib',
             'lib': 'lib',
         }
-        self.project_dir = {
-            'name': '',
-            'path': self.workspace.settings.generated_projects_dir_default,
-        }
         self.tools = ToolsSupported()
         self.source_groups = {}
 
@@ -197,21 +193,37 @@ class Project:
                raise IOError("The file %s referenced in main yaml doesn't exist."%project_file)
 
     def _fill_project_defaults(self):
-        self.project['name'] = self.name
-        self.project['output_type'] = self.output_types['executable']
-        self.project['linker_file'] = None
-        self.project['project_name'] = None
-        self.project['tools_supported'] = [self.workspace.settings.DEFAULT_TOOL]
-        self.project['debugger'] = 'cmsis-dap'
-        self.project['build_dir'] = 'build'
-        self.project['output_dir'] = {
-            'path': '',
-            'rel_path': '',
-            'rel_count': '',
+
+        self.project = {
+            'name': self.name,          # project name
+            'core': '',                 # core
+            'linker_file': None,          # linker command file
+            'build_dir' : 'build',
+            'debugger' : 'cmsis-dap',   # TODO: find out what debugger is connected
+            'includes': [],             # include paths
+            'source_paths': [],         # source paths
+            'source_files_c': [],       # c source files
+            'source_files_cpp': [],     # c++ source files
+            'source_files_s': [],       # assembly source files
+            'source_files_obj': [{}],   # object files
+            'source_files_lib': [{}],   # libraries
+            'macros': [],               # macros (defines)
+            'misc': {},
+            'project_dir': {
+                'name': '.' + os.path.sep,
+                'path' : self.workspace.settings.generated_projects_dir_default
+            },
+            'output_dir': {
+                'path': '',
+                'rel_path': '',
+                'rel_count': '',
+            },
+            'target': '',  # target
+            'template' : '',        # tool template
+            'output_type': self.output_types['executable'],   # output type, default to exe
+            'tools_supported': [self.workspace.settings.DEFAULT_TOOL]
+
         }
-        self.project['misc'] ={}
-        for key in ['includes', 'macros', 'source_paths']:
-            self.project[key] = []
 
     def _set_project_attributes(self,project_file_data):
         if 'common' in project_file_data:
