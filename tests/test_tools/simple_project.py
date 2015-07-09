@@ -1,7 +1,8 @@
 project_1_yaml = {
     'common': {
         'sources': ['sources/main.cpp'],
-        'includes': ['includes/header1.h']
+        'includes': ['includes/header1.h'],
+        'target': ['mbed-lpc1768']
     }
 }
 
