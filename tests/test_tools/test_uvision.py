@@ -21,18 +21,7 @@ from project_generator.workspace import PgenWorkspace
 from project_generator.settings import ProjectSettings
 from project_generator.tools.uvision import uVisionDefinitions, Uvision
 
-project_1_yaml = {
-    'common': {
-        'sources': ['sources/main.cpp'],
-        'includes': ['includes/header1.h']
-    }
-}
-
-projects_yaml = {
-    'projects': {
-        'project_1' : ['test_workspace/project_1.yaml']
-    },
-}
+from simple_project import project_1_yaml, projects_1_yaml
 
 class TestProject(TestCase):
 
@@ -46,7 +35,7 @@ class TestProject(TestCase):
             f.write(yaml.dump(project_1_yaml, default_flow_style=False))
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
-            f.write(yaml.dump(projects_yaml, default_flow_style=False))
+            f.write(yaml.dump(projects_1_yaml, default_flow_style=False))
         self.workspace = PgenWorkspace('test_workspace/projects.yaml')
 
         self.defintions = uVisionDefinitions()
