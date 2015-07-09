@@ -12,22 +12,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import yaml
+import shutil
 
 from unittest import TestCase
 
+from project_generator.workspace import PgenWorkspace
 from project_generator.settings import ProjectSettings
 from project_generator.tools.sublimetext import SublimeTextMakeGccARM
+
+from simple_project import project_1_yaml, projects_1_yaml
 
 class TestProject(TestCase):
 
     """test things related to the sublimetext tool"""
 
     def setUp(self):
+        if not os.path.exists('test_workspace'):
+            os.makedirs('test_workspace')
+        # write project file
+        with open(os.path.join(os.getcwd(), 'test_workspace/project_1.yaml'), 'wt') as f:
+            f.write(yaml.dump(project_1_yaml, default_flow_style=False))
+        # write projects file
+        with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
+            f.write(yaml.dump(projects_1_yaml, default_flow_style=False))
+        self.workspace = PgenWorkspace('test_workspace/projects.yaml')
+
         workspace_dic = {
             'projects': [],
             'settings': {},
         }
         self.sublimetext = SublimeTextMakeGccARM(workspace_dic, ProjectSettings())
 
+    def tearDown(self):
+        # remove created directory
+        shutil.rmtree('test_workspace', ignore_errors=True)
+
     def test_export(self):
         self.sublimetext.export_project()
+
+    def test_export_project(self):
+        self.workspace.export_project('project_1', 'sublime_make_gcc_arm', False)
