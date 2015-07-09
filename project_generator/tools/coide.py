@@ -164,7 +164,7 @@ class Coide(Exporter):
             i += 1
         return None
 
-    def export_project(self, data, env_settings):
+    def _export_single_project(self, project):
         """ Processes groups and misc options specific for CoIDE, and run generator """
         expanded_dic = project.copy()
 

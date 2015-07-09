@@ -21,7 +21,7 @@ from project_generator.workspace import PgenWorkspace
 from project_generator.settings import ProjectSettings
 from project_generator.tools.uvision import uVisionDefinitions, Uvision
 
-from simple_project import project_1_yaml, projects_1_yaml
+from .simple_project import project_1_yaml, projects_1_yaml
 
 class TestProject(TestCase):
 
@@ -48,6 +48,7 @@ class TestProject(TestCase):
     def tearDown(self):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
+        shutil.rmtree('generated_projects', ignore_errors=True)
 
     def test_export(self):
         self.uvision.export_project()
