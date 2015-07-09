@@ -21,7 +21,7 @@ from project_generator.workspace import PgenWorkspace
 from project_generator.settings import ProjectSettings
 from project_generator.tools.uvision import uVisionDefinitions, Uvision
 
-from simple_project import project_1_yaml, projects_1_yaml
+from .simple_project import project_1_yaml, projects_1_yaml
 
 class TestProject(TestCase):
 
