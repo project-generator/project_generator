@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import copy
 
 from .gccarm import MakefileGccArm
 
@@ -40,7 +41,7 @@ class SublimeTextMakeGccARM(MakefileGccArm):
         generated_projects = {}
         for project in self.workspace['projects']:
             output = copy.deepcopy(self.generated_project)
-            self.process_data_for_makefile(project, "sublime_make_gcc_arm")
+            self.process_data_for_makefile(project)
             self._fix_sublime_paths(project)
             project['linker_options'] =[]
 

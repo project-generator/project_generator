@@ -137,7 +137,7 @@ class MakefileGccArm(Exporter):
         generated_projects = {}
         for project in self.workspace['projects']:
             generated_projects[project['name']] = copy.deepcopy(self.generated_projects)
-            self.process_data_for_makefile(project, "make_gcc_arm")
+            self.process_data_for_makefile(project)
             generated_projects[project['name']]['path'], generated_projects[project['name']]['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', project, 'Makefile', project['output_dir']['path'])
         return generated_projects
 
