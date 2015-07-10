@@ -193,7 +193,11 @@ class Coide(Exporter):
             coproj_dic = self.definitions.coproj_file
 
         # set name and target
-        coproj_dic['Project']['@name'] = expanded_dic['name']
+        try:
+            coproj_dic['Project']['@name'] = expanded_dic['name']
+        except KeyError:
+            raise RuntimeError("The coide template is not valid .coproj file")
+
         coproj_dic['Project']['Target']['@name'] = expanded_dic['name']
         # library/exe
         coproj_dic['Project']['Target']['BuildOption']['Output']['Option'][0]['@value'] = 0 if expanded_dic['output_type'] == 'exe' else 1

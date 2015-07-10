@@ -293,13 +293,17 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         ewd_dic = self.definitions.ewd_file
         eww_dic = self.definitions.eww_file
 
+        try:
+            self._ewp_set_name(ewp_dic, expanded_dic['name'])
+        except KeyError:
+            raise RuntimeError("The IAR template is not valid .ewp file")
+
         # replace all None with empty strings ''
         self._clean_xmldict_ewp(ewp_dic)
         #self._clean_xmldict_ewd(ewd_dic)
 
         # set ARM toolchain and project name\
         self._ewp_set_toolchain(ewp_dic, 'ARM')
-        self._ewp_set_name(ewp_dic, expanded_dic['name'])
 
         # set eww
         self._eww_set_path(eww_dic, expanded_dic['name'])
