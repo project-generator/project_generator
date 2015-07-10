@@ -254,7 +254,7 @@ class Project:
                     self.project['project_dir'].update(
                         project_file_data['common']['project_dir'])
 
-                for key in ['debugger','build_dir','mcu','name','target','core']:
+                for key in ['debugger','build_dir','mcu','name','target','core', 'linker_file']:
                     if key in project_file_data['common']:
                         self.project[key] = project_file_data['common'][key][0]
 
@@ -353,7 +353,7 @@ class Project:
         self.project['output_dir']['rel_path'] = ''
 
         if copy:
-            self.copy_files(tool)
+            self.copy_files()
             # TODO: fixme
             self.project['copy_sources'] = True
         else:
@@ -435,7 +435,7 @@ class Project:
         self.project['template'] = toolchain_specific_settings.template or [
                 tool_settings.template for tool_settings in tool_specific_settings if tool_settings.template]
 
-        if self.project['linker_file'] is None and self.project['output_type'] == 'exe':
+        if len(self.project['linker_file']) == 0 and self.project['output_type'] == 'exe':
             raise RuntimeError("Executable - no linker command found.")
 
         if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
@@ -459,11 +459,17 @@ class Project:
         if file.split('.')[-1] in valid_files_group:
             shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
 
-    def copy_files(self, tool):
-
+    def copy_files(self):
+        """" Copies all project files to specified directory - generated dir"""
         for path in self.project['includes']:
-            path = os.path.normpath(path)
-            files = os.listdir(path)
+            if os.path.isdir(path):
+                # directory full of include files
+                path = os.path.normpath(path)
+                files = os.listdir(path)
+            else:
+                # includes is a file, make it valid
+                files = [os.path.basename(path)]
+                path = os.path.dirname(path)
             dest_dir = os.path.join(os.getcwd(), self.project['output_dir']['path'], path)
             if not os.path.exists(dest_dir) and len(files):
                 os.makedirs(dest_dir)
@@ -472,6 +478,7 @@ class Project:
                     shutil.copy2(os.path.join(os.getcwd(), path, filename),
                                  os.path.join(os.getcwd(), self.project['output_dir']['path'], path))
 
+        # all sources are grouped, therefore treat them as dict
         for k, v in self.project['source_files_c'][0].items():
             for file in v:
                 self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_c'])
@@ -484,14 +491,17 @@ class Project:
             for file in v:
                 self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_s'])
 
-        for file in self.project['source_files_obj']:
-            self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_obj'])
+        for k,v in self.project['source_files_obj'][0].items():
+            for file in v:
+                self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_obj'])
 
-        for file in self.project['source_files_lib']:
-            self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_lib'])
+        for k,v in self.project['source_files_lib'][0].items():
+            for file in v:
+                self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_lib'])
 
         linker = os.path.normpath(self.project['linker_file'])
         dest_dir = os.path.join(os.getcwd(), self.project['output_dir']['path'], os.path.dirname(linker))
+        print os.path.join(os.getcwd(), linker)
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
         shutil.copy2(os.path.join(os.getcwd(), linker),
