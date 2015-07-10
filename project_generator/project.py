@@ -45,6 +45,7 @@ class ToolSpecificSettings:
 
     def __init__(self):
         self.includes = []
+        self.include_files = []
         self.source_paths = []
         self.source_groups = {}
         self.macros = []
@@ -59,7 +60,7 @@ class ToolSpecificSettings:
                 data_dictionary['sources'], group_name)
 
         if 'includes' in data_dictionary:
-            self.includes.extend([x for x in data_dictionary['includes'] if x is not None])
+            self._process_include_files(data_dictionary['includes'])
 
         if 'macros' in data_dictionary:
             self.macros.extend([x for x in data_dictionary['macros'] if x is not None])
@@ -124,6 +125,16 @@ class ToolSpecificSettings:
             if os.path.dirname(source_file) not in self.source_paths:
                 self.source_paths.append(os.path.dirname(source_file))
 
+    # TODO 0xc0170: remove this and process source files - duplicate. Probably we should reconsider
+    # this class
+    def _process_include_files(self, files):
+        # If it's dic add it , if file, add it to files
+        for include_file in files:
+            if os.path.isfile(include_file):
+                if not include_file in self.include_files:
+                    self.include_files.append(os.path.normpath(include_file))
+            if not os.path.dirname(include_file) in self.includes:
+                self.includes.append(os.path.normpath(include_file))
 
 class ProjectWorkspace:
     """represents a workspace (multiple projects) """
@@ -200,6 +211,7 @@ class Project:
             'build_dir' : 'build',      # Build output path
             'debugger' : 'cmsis-dap',   # Debugger
             'includes': [],             # include paths
+            'include_files': [],        # [internal] files to be included
             'source_paths': [],         # [internal] source paths
             'source_files_c': [],       # [internal] c source files
             'source_files_cpp': [],     # [internal] c++ source files
@@ -233,8 +245,9 @@ class Project:
                     self.project['output_type'] = self.output_types[project_file_data['common']['output'][0]]
 
                 if 'includes' in project_file_data['common']:
-                    self.project['includes'].extend(
-                        [os.path.normpath(x) for x in project_file_data['common']['includes'] if x is not None])
+                    self._process_include_files(project_file_data['common']['includes'])
+                    # self.project['includes'].extend(
+                        # [os.path.normpath(x) for x in project_file_data['common']['includes'] if x is not None])
 
                 if 'sources' in project_file_data['common']:
                     if type(project_file_data['common']['sources']) == type(dict()):
@@ -267,6 +280,20 @@ class Project:
             group_name = 'default'
             for tool_name, tool_settings in project_file_data['tool_specific'].items():
                 self.tool_specific[tool_name].add_settings(tool_settings, group_name)
+
+    def _process_include_files(self, files):
+        # If it's dic add it , if file, add it to files
+        for include_file in files:
+            if os.path.isfile(include_file):
+                # file, add it to the list (for copying or if tool requires it)
+                if not include_file in self.project['include_files']:
+                    self.project['include_files'].append(os.path.normpath(include_file))
+                dir_path = os.path.dirname(include_file)
+            else:
+                # its a directory
+                dir_path = include_file
+            if not os.path.dirname(include_file) in self.project['includes']:
+                self.project['includes'].append(os.path.normpath(dir_path))
 
     def _process_source_files(self, files, group_name):
         extensions = ['cpp', 'c', 's', 'obj', 'lib']
@@ -412,6 +439,7 @@ class Project:
                 tool_specific_settings.append(self.tool_specific[tool_spec])
 
         self.project['includes'] =  self.project['includes'] + list(flatten([settings.includes for settings in tool_specific_settings]))
+        self.project['include_files'] =  self.project['include_files'] + list(flatten([settings.include_files for settings in tool_specific_settings]))
         self.project['source_paths'] =  self.project['source_paths'] + list(flatten([settings.includes for settings in tool_specific_settings]))
         self.project['source_files'] = merge_recursive(self.source_groups,
                                 {k: v for settings in tool_specific_settings for k, v in settings.source_groups.items()},
@@ -501,7 +529,6 @@ class Project:
 
         linker = os.path.normpath(self.project['linker_file'])
         dest_dir = os.path.join(os.getcwd(), self.project['output_dir']['path'], os.path.dirname(linker))
-        print os.path.join(os.getcwd(), linker)
         if not os.path.exists(dest_dir):
             os.makedirs(dest_dir)
         shutil.copy2(os.path.join(os.getcwd(), linker),
