@@ -238,7 +238,10 @@ class Uvision(Builder, Exporter):
             else:
                 uvproj_dic = self.definitions.uvproj_file
 
-            uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
+            try:
+                uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
+            except KeyError:
+                raise RuntimeError("The uvision template is not valid .uvproj file")
 
             self._uvproj_files_set(uvproj_dic, expanded_dic)
             self._uvproj_set_CommonProperty(
