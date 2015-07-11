@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import yaml
 import logging
 
@@ -29,11 +30,15 @@ class PgenWorkspace:
     def __init__(self, projects_file='projects.yaml', project_root='.'):
         # load projects file
 
-        try:
-            with open(projects_file, 'rt') as f:
-                self.projects_dict = yaml.load(f)
-        except IOError:
-           raise IOError("The main pgen projects file %s doesn't exist." % projects_file)
+        # either it's file or a dictionary. If dictionary , proceed otherwise load yaml
+        if type(projects_file) is not dict:
+            try:
+                with open(projects_file, 'rt') as f:
+                    self.projects_dict = yaml.load(f)
+            except IOError:
+               raise IOError("The main pgen projects file %s doesn't exist." % projects_file)
+        else:
+            self.projects_dict = projects_file
 
         self.settings = ProjectSettings()
         if 'settings' in self.projects_dict:
