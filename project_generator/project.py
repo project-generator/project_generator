@@ -177,7 +177,7 @@ class Project:
 
     """represents a project, which can be formed of many yaml files"""
 
-    def __init__(self, name, project_files, pgen_workspace):
+    def __init__(self, name, project_dicts, pgen_workspace):
         """initialise a project with a yaml file"""
         self.workspace = pgen_workspace
         self.tool_specific = defaultdict(ToolSpecificSettings)
@@ -194,13 +194,9 @@ class Project:
         self.project = {}
         self._fill_project_defaults()
 
-        for project_file in project_files:
-            try:
-                f = open(project_file, 'rt')
-                project_file_data = yaml.load(f)
-                self._set_project_attributes(project_file_data)
-            except IOError:
-               raise IOError("The file %s referenced in main yaml doesn't exist."%project_file)
+        # process all projects dictionaries
+        for project in project_dicts:
+            self._set_project_attributes(project)
 
     def _fill_project_defaults(self):
 
