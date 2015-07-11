@@ -20,7 +20,7 @@ from .project import Project, ProjectWorkspace
 from .settings import ProjectSettings
 from .tool import ToolsSupported
 from .targets import Targets
-from .util import flatten, uniqify
+from .util import flatten, uniqify, load_yaml_records
 
 
 class PgenWorkspace:
@@ -28,8 +28,6 @@ class PgenWorkspace:
     """a collections of projects from a single projects.yaml file"""
 
     def __init__(self, projects_file='projects.yaml', project_root='.'):
-        # load projects file
-
         # either it's file or a dictionary. If dictionary , proceed otherwise load yaml
         if type(projects_file) is not dict:
             try:
@@ -80,23 +78,13 @@ class PgenWorkspace:
             for name, records in self.projects_dict['projects'].items():
                 if type(records) is dict:
                     # workspace
-                    projects = [Project(n, self._load_yaml_record(uniqify(flatten(r))), self) for n, r in records.items()]
+                    projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
                 else:
                     # single project
-                    projects = [Project(name, self._load_yaml_record(uniqify(flatten(records))), self)]
+                    projects = [Project(name, load_yaml_records(uniqify(flatten(records))), self)]
                 self.workspaces[name] = ProjectWorkspace(name, projects, settings, self, type(records) is not dict)
         else:
             logging.debug("No projects found in the main record file.")
-
-    def _load_yaml_record(self, yaml_files):
-        dictionaries = []
-        for yaml_file in yaml_files:
-            try:
-                f = open(yaml_file, 'rt')
-                dictionaries.append(yaml.load(f))
-            except IOError:
-               raise IOError("The file %s referenced in main yaml doesn't exist." % project_file)
-        return dictionaries
 
     def export_project(self, project_name, tool, copy):
         if project_name not in self.workspaces:

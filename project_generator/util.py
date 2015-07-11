@@ -15,6 +15,7 @@ import os
 import shutil
 import locale
 import operator
+import yaml
 from functools import reduce
 
 def rmtree_if_exists(directory):
@@ -47,3 +48,13 @@ def flatten(S):
 
 def unicode_available():
     return locale.getdefaultlocale()[1] == 'UTF-8'
+
+def load_yaml_records(yaml_files):
+    dictionaries = []
+    for yaml_file in yaml_files:
+        try:
+            f = open(yaml_file, 'rt')
+            dictionaries.append(yaml.load(f))
+        except IOError:
+           raise IOError("The file %s referenced in main yaml doesn't exist." % project_file)
+    return dictionaries
