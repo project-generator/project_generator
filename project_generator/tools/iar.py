@@ -408,13 +408,20 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
     def get_mcu_definition(self, project_file):
         """ Parse project file to get mcu definition """
         project_file = join(getcwd(), project_file)
-        uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+        ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
 
         mcu = Targets().get_mcu_definition()
 
-        index_general = self._get_option(uvproj_dic['project']['configuration']['settings'], 'General')
-        index_option = self._get_option(uvproj_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
-        OGChipSelectEditMenu = uvproj_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option]
+        # we take 0 configuration or just configuration, as multiple configuration possibl
+        # debug, release, for mcu - does not matter, try and adjust
+        try:
+            index_general = self._get_option(ewp_dic['project']['configuration'][0]['settings'], 'General')
+            configuration = ewp_dic['project']['configuration'][0]
+        except KeyError:
+            index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
+            configuration = ewp_dic['project']['configuration']
+        index_option = self._get_option(configuration['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
+        OGChipSelectEditMenu = configuration['settings'][index_general]['data']['option'][index_option]
 
         mcu['tool_specific'] = {
             'iar' : {

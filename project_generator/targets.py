@@ -22,9 +22,9 @@ class Targets:
 
     MCU_TEMPLATE = {
         'mcu' : {
-            'vendor' : [''],
+            'vendor' : ['Manually add vendor (st, freescale, etc) instead of this text'],
             'name' : [''],
-            'core' : [''],
+            'core' : ['Manually add core (cortex-mX)instead of this text'],
         },
     }
 
