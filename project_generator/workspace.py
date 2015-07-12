@@ -82,13 +82,13 @@ class PgenWorkspace:
                 else:
                     # single project
                     projects = [Project(name, load_yaml_records(uniqify(flatten(records))), self)]
-                self.workspaces[name] = ProjectWorkspace(name, projects, settings, self, type(records) is dict)
+                self.workspaces[name] = ProjectWorkspace(name, projects, settings, self, type(records) is not dict)
         else:
             logging.debug("No projects found in the main record file.")
 
     def export_project(self, project_name, tool, copy):
         if project_name not in self.workspaces:
-            raise RuntimeError("Invalid Project Name")
+            raise RuntimeError("Invalid Project Name: %s" % project_name)
 
         logging.debug("Exporting Project %s" % project_name)
         self.workspaces[project_name].export(tool, copy)

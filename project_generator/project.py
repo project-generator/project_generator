@@ -170,7 +170,7 @@ class ProjectWorkspace:
             }
 
             for project in self.projects:
-                workspace_path = ''
+                workspace_path = None
                 if not self.singular:
                     # projects are part of a workspace, by default fix output dir path to
                     # workspace_output_dir/project_1, workspace_output_dir/project_2, ..
@@ -179,7 +179,7 @@ class ProjectWorkspace:
                 # Merge all dics, copy sources if required, correct output dir. This happens here
                 # because we need tool to set proper path (tool might be used as string template)
                 project.customize_project_for_tool(export_tool)
-                project._set_output_dir_path(export_tool)
+                project._set_output_dir_path(export_tool, workspace_path)
 
                 project._set_output_dir()
                 if copy:
@@ -207,7 +207,6 @@ class Project:
         }
         self.tools = ToolsSupported()
         self.source_groups = {}
-
         self.project = {}
         self._fill_project_defaults()
         # process all projects dictionaries
@@ -385,7 +384,7 @@ class Project:
 
         flasher = self.tools.get_value(tool, 'flasher')
         self.customize_project_for_tool(tool)
-        self._set_output_dir_path(tool)
+        self._set_output_dir_path(tool, None) # TODO: fix flashing for workspaces
         flash(flasher, self.project, self.name, self._get_project_files(), tool, self.pgen_workspace.settings)
 
     def copy_sources_to_generated_destination(self):
@@ -477,13 +476,16 @@ class Project:
         if len(self.project['linker_file']) == 0 and self.project['output_type'] == 'exe':
             raise RuntimeError("Executable - no linker command found.")
 
-    def _set_output_dir_path(self, tool):
+    def _set_output_dir_path(self, tool, workspace_path):
         if self.pgen_workspace.settings.generated_projects_dir != self.pgen_workspace.settings.generated_projects_dir_default:
             output_dir = Template(self.pgen_workspace.settings.generated_projects_dir)
             output_dir = output_dir.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
                                                project_name=self.name, tool=tool)
         else:
-            output_dir = os.path.join(self.project['project_dir']['path'], "%s_%s" % (tool, self.name))
+            if workspace_path:
+                output_dir = os.path.join(self.project['project_dir']['path'], workspace_path, "%s_%s" % (tool, self.name))
+            else:
+                output_dir = os.path.join(self.project['project_dir']['path'], "%s_%s" % (tool, self.name))
         self.project['output_dir']['path'] = os.path.normpath(output_dir)
 
     @staticmethod
