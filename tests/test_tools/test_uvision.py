@@ -41,7 +41,9 @@ class TestProject(TestCase):
         self.defintions = uVisionDefinitions()
         workspace_dic = {
             'projects': [],
-            'settings': {},
+            'settings': {
+                'is_workspace': False,
+            },
         }
         self.uvision = Uvision(workspace_dic, ProjectSettings())
 
