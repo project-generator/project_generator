@@ -167,7 +167,7 @@ class ProjectWorkspace:
                 'settings': {
                     'is_workspace': not self.singular,
                     'name' : self.name,
-                    'path': os.path.join(self.pgen_workspace.settings.generated_projects_dir_default, self.name),
+                    'path': os.path.join(self.pgen_workspace.settings.generated_projects_dir_default, export_tool + '_' + self.name),
                 },
             }
 
@@ -176,7 +176,7 @@ class ProjectWorkspace:
                 if not self.singular:
                     # projects are part of a workspace, by default fix output dir path to
                     # workspace_output_dir/project_1, workspace_output_dir/project_2, ..
-                    workspace_path = self.name
+                    workspace_path = export_tool + '_' + self.name
 
                 # Merge all dics, copy sources if required, correct output dir. This happens here
                 # because we need tool to set proper path (tool might be used as string template)
