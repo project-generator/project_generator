@@ -139,21 +139,16 @@ class ToolSpecificSettings:
 class ProjectWorkspace:
     """represents a workspace (multiple projects) """
 
-    def __init__(self, name, projects, workspace_settings, pgen_workspace, singular = False):
+    def __init__(self, name, projects, pgen_workspace, singular = False):
         self.name = name
         self.projects = projects
         self.pgen_workspace = pgen_workspace # TODO: FIX me please
         self.generated_files = {}
         self.singular = singular
 
-        # These are additional settings defined in yaml under workspace: {workspace_name: {settings: {}
-        self.workspace_settings = workspace_settings
-
     def export(self, tool, copy):
         """ Exports workspace """
 
-        # Update the project settings with settings specific to this workspace
-        self.pgen_workspace.settings.update(self.workspace_settings)
         tools = []
         if not tool:
             tools = ToolsSupported()
