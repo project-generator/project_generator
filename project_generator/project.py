@@ -139,8 +139,8 @@ class ToolSpecificSettings:
 class ProjectWorkspace:
     """represents a workspace (multiple projects) """
 
-    def __init__(self, proj_name, projects, workspace_settings, pgen_workspace, singular = False):
-        self.name = proj_name
+    def __init__(self, name, projects, workspace_settings, pgen_workspace, singular = False):
+        self.name = name
         self.projects = projects
         self.pgen_workspace = pgen_workspace # TODO: FIX me please
         self.generated_files = {}
@@ -168,13 +168,22 @@ class ProjectWorkspace:
                     'is_workspace': self.singular,
                 },
             }
+
             for project in self.projects:
+                workspace_path = ''
+                if not self.singular:
+                    # projects are part of a workspace, by default fix output dir path to
+                    # workspace_output_dir/project_1, workspace_output_dir/project_2, ..
+                    workspace_path = self.name
+
                 # Merge all dics, copy sources if required, correct output dir. This happens here
                 # because we need tool to set proper path (tool might be used as string template)
                 project.customize_project_for_tool(export_tool)
+                project._set_output_dir_path(export_tool)
+
+                project._set_output_dir()
                 if copy:
                     project.copy_sources_to_generated_destination()
-                project._set_output_dir()
                 workspace_dic['projects'].append(project.project)
             #logging.debug("Project workspace dict: %s" % workspace_dic)
             generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
@@ -187,7 +196,7 @@ class Project:
 
     def __init__(self, name, project_dicts, pgen_workspace):
         """initialise a project with a yaml file"""
-        self.workspace = pgen_workspace
+        self.pgen_workspace = pgen_workspace
         self.tool_specific = defaultdict(ToolSpecificSettings)
         self.name = name
         self.output_types = {
@@ -226,7 +235,7 @@ class Project:
             'misc': {},                 # misc tools settings, which are parsed by tool
             'project_dir': {            # Name and path for a project
                 'name': '.' + os.path.sep,
-                'path' : self.workspace.settings.generated_projects_dir_default
+                'path' : self.pgen_workspace.settings.generated_projects_dir_default
             },
             'output_dir': {         # The generated path dict
                 'path': '',
@@ -236,7 +245,7 @@ class Project:
             'target': '',       # target
             'template' : '',    # tool template
             'output_type': self.output_types['executable'],           # output type, default - exe
-            'tools_supported': [self.workspace.settings.DEFAULT_TOOL] # Tools which are supported
+            'tools_supported': [self.pgen_workspace.settings.DEFAULT_TOOL] # Tools which are supported
 
         }
 
@@ -330,7 +339,7 @@ class Project:
                 self.project['source_paths'].append(os.path.normpath(os.path.dirname(source_file)))
 
     def _get_workspace_name(self):
-        workspaces = self.workspace.workspaces
+        workspaces = self.pgen_workspace.workspaces
         for workspace, proj_workspace in workspaces.items():
             for p in proj_workspace.projects:
                 if self is p:
@@ -343,9 +352,9 @@ class Project:
             tools = [tool]
 
         for current_tool in tools:
-            if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
+            if self.pgen_workspace.settings.generated_projects_dir != self.pgen_workspace.settings.generated_projects_dir_default:
                 # TODO: same as in exporters.py - create keyword parser
-                path = Template(self.workspace.settings.generated_projects_dir)
+                path = Template(self.pgen_workspace.settings.generated_projects_dir)
                 path = path.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
                                         project_name=self.name, tool=tool)
             else:
@@ -365,17 +374,19 @@ class Project:
 
         for build_tool in tools:
             builder = self.tools.get_value(build_tool, 'builder')
-            build(builder, self.name, self._get_project_files(), build_tool, self.workspace.settings)
+            build(builder, self.name, self._get_project_files(), build_tool, self.pgen_workspace.settings)
 
     def flash(self, tool):
         """flash the project"""
         # flashing via various tools does not make much usefulness?
         if not tool:
-            tool = self.workspace.settings.DEFAULT_TOOL
+            logging.debug("No tool set for flashing, default is set: %s", self.pgen_workspace.settings.DEFAULT_TOOL)
+            tool = self.pgen_workspace.settings.DEFAULT_TOOL
 
         flasher = self.tools.get_value(tool, 'flasher')
         self.customize_project_for_tool(tool)
-        flash(flasher, self.project, self.name, self._get_project_files(), tool, self.workspace.settings)
+        self._set_output_dir_path(tool)
+        flash(flasher, self.project, self.name, self._get_project_files(), tool, self.pgen_workspace.settings)
 
     def copy_sources_to_generated_destination(self):
         self.project['copy_sources'] = True
@@ -466,8 +477,9 @@ class Project:
         if len(self.project['linker_file']) == 0 and self.project['output_type'] == 'exe':
             raise RuntimeError("Executable - no linker command found.")
 
-        if self.workspace.settings.generated_projects_dir != self.workspace.settings.generated_projects_dir_default:
-            output_dir = Template(self.workspace.settings.generated_projects_dir)
+    def _set_output_dir_path(self, tool):
+        if self.pgen_workspace.settings.generated_projects_dir != self.pgen_workspace.settings.generated_projects_dir_default:
+            output_dir = Template(self.pgen_workspace.settings.generated_projects_dir)
             output_dir = output_dir.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
                                                project_name=self.name, tool=tool)
         else:
