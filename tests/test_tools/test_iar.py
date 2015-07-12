@@ -41,7 +41,9 @@ class TestProject(TestCase):
         self.defintions = IARDefinitions()
         workspace_dic = {
             'projects': [],
-            'settings': {},
+            'settings': {
+                'is_workspace' : False,
+            },
         }
         self.iar = IAREmbeddedWorkbench(workspace_dic, ProjectSettings())
 
