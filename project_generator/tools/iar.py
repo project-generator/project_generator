@@ -140,7 +140,7 @@ class IAREmbeddedWorkbenchProject:
 
     def _eww_set_path_multiple_project(self, eww_dic, projects):
         eww_dic['workspace']['project'] = []
-        for project in projects:
+        for project in self.workspace['projects']:
             # This has an assumption all projects inside workspace
             path_to_project = project['output_dir']['path']
             path_to_project = path_to_project.replace(self.workspace['settings']['path'] + '\\', '', 1)
@@ -359,7 +359,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
 
     def _generate_eww_file(self):
         eww_dic = self.definitions.eww_file
-        self._eww_set_path_multiple_project(eww_dic, self.workspace['projects'])
+        self._eww_set_path_multiple_project(eww_dic)
 
         # generate the file
         eww_xml = xmltodict.unparse(eww_dic, pretty=True)
