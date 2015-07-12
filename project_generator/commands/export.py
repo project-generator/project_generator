@@ -49,8 +49,6 @@ def setup(subparser):
     subparser.add_argument(
         "-p", "--project", help="Project to be generated")
     subparser.add_argument(
-        "-w", "--workspace", help="Workspace to be generated")
-    subparser.add_argument(
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     subparser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects")

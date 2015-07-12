@@ -164,10 +164,18 @@ class ProjectWorkspace:
             exporter = ToolsSupported().get_value(export_tool, 'exporter')
             workspace_dic = {
                 'projects': [],
-                'settings': {},
+                'settings': {
+                    'is_workspace': self.singular,
+                },
             }
             for project in self.projects:
-                workspace_dic['projects'].append(project.generate_dic(export_tool, copy))
+                # Merge all dics, copy sources if required, correct output dir. This happens here
+                # because we need tool to set proper path (tool might be used as string template)
+                project.customize_project_for_tool(export_tool)
+                if copy:
+                    project.copy_sources_to_generated_destination()
+                project._set_output_dir()
+                workspace_dic['projects'].append(project.project)
             #logging.debug("Project workspace dict: %s" % workspace_dic)
             generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
 
@@ -193,7 +201,6 @@ class Project:
 
         self.project = {}
         self._fill_project_defaults()
-
         # process all projects dictionaries
         for project in project_dicts:
             self._set_project_attributes(project)
@@ -207,6 +214,7 @@ class Project:
             'build_dir' : 'build',      # Build output path
             'debugger' : 'cmsis-dap',   # Debugger
             'includes': [],             # include paths
+            'copy_sources': False,      # [internal] Copy sources to destination flag
             'include_files': [],        # [internal] files to be included
             'source_paths': [],         # [internal] source paths
             'source_files_c': [],       # [internal] c source files
@@ -369,17 +377,15 @@ class Project:
         self.customize_project_for_tool(tool)
         flash(flasher, self.project, self.name, self._get_project_files(), tool, self.workspace.settings)
 
-    def generate_dic(self, tool, copy):
-        """export the project"""
-        self.customize_project_for_tool(tool)
-        self.project['copy_sources'] = False
+    def copy_sources_to_generated_destination(self):
+        self.project['copy_sources'] = True
+        self.copy_files()
+
+    def _set_output_dir(self):
+        """Set paths"""
         self.project['output_dir']['rel_path'] = ''
 
-        if copy:
-            self.copy_files()
-            # TODO: fixme
-            self.project['copy_sources'] = True
-        else:
+        if not self.project['copy_sources']:
             # Get number of how far we are from root, to set paths in the project
             # correctly
             count = 1
@@ -394,8 +400,6 @@ class Project:
                 rel_path_output = os.path.join('..', rel_path_output)
                 count -= 1
             self.project['output_dir']['rel_path'] = rel_path_output
-
-        return self.project
 
     def _get_project_files(self):
         if self.project['project_dir']['name'] and self.project['project_dir']['path']:
