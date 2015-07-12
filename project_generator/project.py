@@ -165,7 +165,9 @@ class ProjectWorkspace:
             workspace_dic = {
                 'projects': [],
                 'settings': {
-                    'is_workspace': self.singular,
+                    'is_workspace': not self.singular,
+                    'name' : self.name,
+                    'path': os.path.join(self.pgen_workspace.settings.generated_projects_dir_default, self.name),
                 },
             }
 
