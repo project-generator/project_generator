@@ -471,19 +471,23 @@ class Project:
 
     def _set_output_dir_path(self, tool, workspace_path):
         if self.pgen_workspace.settings.generated_projects_dir != self.pgen_workspace.settings.generated_projects_dir_default:
+            # global settings defined, replace keys pgen is familiar, this overrides anything in the project
             output_dir = Template(self.pgen_workspace.settings.generated_projects_dir)
             output_dir = output_dir.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
                                                project_name=self.name, tool=tool)
         else:
             if self.project['export_dir'] == self.pgen_workspace.settings.generated_projects_dir_default:
+                # if export_dir is not defined we use tool_name for a project
                 project_name = "%s_%s" % (tool, self.name)
             else:
                 project_name = ""
+            # TODO: below works only if we are using default export dir, will blow up with user defined paths
             if workspace_path:
                 output_dir = os.path.join(self.project['export_dir'], workspace_path, project_name)
             else:
                 output_dir = os.path.join(self.project['export_dir'], project_name)
             self.pgen_workspace.settings.generated_projects_dir_default
+        # After all adjusting , set the output_dir path, which tools will use to export a project
         self.project['output_dir']['path'] = os.path.normpath(output_dir)
 
     @staticmethod
