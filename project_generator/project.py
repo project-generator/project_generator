@@ -230,10 +230,10 @@ class Project:
             'macros': [],               # macros (defines)
             'misc': {},                 # misc tools settings, which are parsed by tool
             'export_dir': self.pgen_workspace.settings.generated_projects_dir_default, # Export path for a project
-            'output_dir': {             # The generated path dict
-                'path': '',
-                'rel_path': '',
-                'rel_count': '',
+            'output_dir': {             # [internal] The generated path dict
+                'path': '',             # path with all name mangling we add to export_dir
+                'rel_path': '',         # how far we are from root
+                'rel_count': '',        # Contains count of how far we are from root, used for eclipse for example
             },
             'target': '',       # target
             'template' : '',    # tool template
