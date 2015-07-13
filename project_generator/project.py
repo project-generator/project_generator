@@ -65,8 +65,8 @@ class ToolSpecificSettings:
         if 'macros' in data_dictionary:
             self.macros.extend([x for x in data_dictionary['macros'] if x is not None])
 
-        if 'project_dir' in data_dictionary:
-            self.project_dir.update(data_dictionary['project_dir'])
+        if 'export_dir' in data_dictionary:
+            self.export_dir.update(data_dictionary['export_dir'])
 
         if 'linker_file' in data_dictionary:
             self.linker_file = data_dictionary['linker_file'][0]
@@ -229,11 +229,8 @@ class Project:
             'source_files_lib': [{}],   # [internal] libraries
             'macros': [],               # macros (defines)
             'misc': {},                 # misc tools settings, which are parsed by tool
-            'project_dir': {            # Name and path for a project
-                'name': '.' + os.path.sep,
-                'path' : self.pgen_workspace.settings.generated_projects_dir_default
-            },
-            'output_dir': {         # The generated path dict
+            'export_dir': self.pgen_workspace.settings.generated_projects_dir_default, # Export path for a project
+            'output_dir': {             # The generated path dict
                 'path': '',
                 'rel_path': '',
                 'rel_count': '',
@@ -272,9 +269,8 @@ class Project:
                     self.project['macros'].extend(
                         [x for x in project_file_data['common']['macros'] if x is not None])
 
-                if 'project_dir' in project_file_data['common']:
-                    self.project['project_dir'].update(
-                        project_file_data['common']['project_dir'])
+                if 'export_dir' in project_file_data['common']:
+                    self.project['export_dir'] = project_file_data['common']['export_dir'][0]
 
                 for key in ['debugger','build_dir','mcu','name','target','core', 'linker_file']:
                     if key in project_file_data['common']:
@@ -354,7 +350,7 @@ class Project:
                 path = path.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
                                         project_name=self.name, tool=tool)
             else:
-                 path = os.path.join(self.project_dir['path'], "%s_%s" % (current_tool, self.name))
+                 path = os.path.join(self.project['export_dir'], "%s_%s" % (current_tool, self.name))
             if os.path.isdir(path):
                 logging.info("Cleaning directory %s" % path)
 
@@ -409,8 +405,8 @@ class Project:
             self.project['output_dir']['rel_path'] = rel_path_output
 
     def _get_project_files(self):
-        if self.project['project_dir']['name'] and self.project['project_dir']['path']:
-            return [os.path.join(self.project['project_dir']['path'], self.project['project_dir']['name'])]
+        if self.project['export_dir']:
+            return [os.path.join(self.project['export_dir']['path'], self.name)]
         else:
             return [os.path.join(self.project['output_dir']['path'], self.project['name'])]
 
@@ -480,9 +476,9 @@ class Project:
                                                project_name=self.name, tool=tool)
         else:
             if workspace_path:
-                output_dir = os.path.join(self.project['project_dir']['path'], workspace_path, "%s_%s" % (tool, self.name))
+                output_dir = os.path.join(self.project['export_dir'], workspace_path, "%s_%s" % (tool, self.name))
             else:
-                output_dir = os.path.join(self.project['project_dir']['path'], "%s_%s" % (tool, self.name))
+                output_dir = os.path.join(self.project['export_dir'], "%s_%s" % (tool, self.name))
         self.project['output_dir']['path'] = os.path.normpath(output_dir)
 
     @staticmethod
