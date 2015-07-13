@@ -209,10 +209,15 @@ class Uvision(Builder, Exporter):
         uvmpw_dic['ProjectWorkspace']['project'] = []
 
         for project in self.workspace['projects']:
-            # This has an assumption all projects inside workspace
-            path_to_project = project['output_dir']['path']
-            path_to_project = path_to_project.replace(self.workspace['settings']['path'] + '\\', '', 1)
-            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(path_to_project, project['name'] + '.uvproj')})
+            # We check how far is project from root and workspace. IF they dont match,
+            # get relpath for project and inject it into workspace
+            path_project = os.path.dirname(project['output_dir']['path'] + '\\')
+            path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
+            # path_to_project = path_to_project.replace( + '\\', '', 1)
+            if path_project != path_workspace:
+                rel_path = os.path.relpath(os.getcwd(), path_workspace)
+                path_project = os.path.join(rel_path, path_project)
+            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(path_project, project['name'] + '.uvproj')})
 
         # generate the file
         uvmpw_xml = xmltodict.unparse(uvmpw_dic, pretty=True)
