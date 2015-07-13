@@ -20,7 +20,7 @@ import operator
 
 from collections import defaultdict
 from .tool import build, export, flash, fixup_executable, ToolsSupported
-from .util import merge_recursive, flatten
+from .util import merge_recursive, flatten, longest_common_substring
 from string import Template
 
 try:
@@ -139,12 +139,13 @@ class ToolSpecificSettings:
 class ProjectWorkspace:
     """represents a workspace (multiple projects) """
 
-    def __init__(self, name, projects, pgen_workspace, singular = False):
+    def __init__(self, name, projects, pgen_workspace, settings_dict, singular = False):
         self.name = name
         self.projects = projects
         self.pgen_workspace = pgen_workspace # TODO: FIX me please
         self.generated_files = {}
         self.singular = singular
+        self.settings_dict = settings_dict
 
     def export(self, tool, copy):
         """ Exports workspace """
@@ -157,6 +158,8 @@ class ProjectWorkspace:
 
         for export_tool in tools:
             exporter = ToolsSupported().get_value(export_tool, 'exporter')
+
+            self.pgen_workspace.settings.update(self.settings_dict)
             workspace_dic = {
                 'projects': [],
                 'settings': {
@@ -168,10 +171,6 @@ class ProjectWorkspace:
 
             for project in self.projects:
                 workspace_path = None
-                if not self.singular:
-                    # projects are part of a workspace, by default fix output dir path to
-                    # workspace_output_dir/project_1, workspace_output_dir/project_2, ..
-                    workspace_path = export_tool + '_' + self.name
 
                 # Merge all dics, copy sources if required, correct output dir. This happens here
                 # because we need tool to set proper path (tool might be used as string template)
@@ -183,6 +182,8 @@ class ProjectWorkspace:
                     project.copy_sources_to_generated_destination()
                 workspace_dic['projects'].append(project.project)
             #logging.debug("Project workspace dict: %s" % workspace_dic)
+            if not self.singular and len(self.projects) > 1:
+                workspace_dic['path'] = longest_common_substring(self.projects[0].project['output_dir']['path'],self.projects[1].project['output_dir']['path'])
             generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
 
             self.generated_files[export_tool] = generated_files
@@ -213,7 +214,7 @@ class Project:
     def _fill_project_defaults(self):
 
         self.project = {
-            'name': self.name,          # project name
+            'name': '',          # project name
             'core': '',                 # core
             'linker_file': None,        # linker command file
             'build_dir' : 'build',      # Build output path

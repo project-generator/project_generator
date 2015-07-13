@@ -58,3 +58,14 @@ def load_yaml_records(yaml_files):
         except IOError:
            raise IOError("The file %s referenced in main yaml doesn't exist." % project_file)
     return dictionaries
+
+def longest_common_substring(str1, str2):
+    def _yield_chars():
+        for char1, char2 in zip(str1, str2):
+            if char1 == char2:
+                yield char1
+            else:
+                return
+    return ''.join(_yield_chars())
+
+

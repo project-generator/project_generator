@@ -65,13 +65,18 @@ class PgenWorkspace:
 
         if 'projects' in self.projects_dict:
             for name, records in self.projects_dict['projects'].items():
+                settings_dict = {}
                 if type(records) is dict:
                     # workspace
-                    projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
+                    if "workspace_settings" in records:
+                        settings_dict = self.projects_dict['projects'][name]['workspace_settings']
+                    projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()
+                                if n != "workspace_settings"]
+
                 else:
                     # single project
                     projects = [Project(name, load_yaml_records(uniqify(flatten(records))), self)]
-                self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
+                self.workspaces[name] = ProjectWorkspace(name, projects, self, settings_dict, type(records) is not dict)
         else:
             logging.debug("No projects found in the main record file.")
 
