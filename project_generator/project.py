@@ -65,8 +65,8 @@ class ToolSpecificSettings:
         if 'macros' in data_dictionary:
             self.macros.extend([x for x in data_dictionary['macros'] if x is not None])
 
-        if 'project_dir' in data_dictionary:
-            self.project_dir.update(data_dictionary['project_dir'])
+        if 'export_dir' in data_dictionary:
+            self.export_dir.update(data_dictionary['export_dir'])
 
         if 'linker_file' in data_dictionary:
             self.linker_file = data_dictionary['linker_file'][0]
@@ -230,14 +230,11 @@ class Project:
             'source_files_lib': [{}],   # [internal] libraries
             'macros': [],               # macros (defines)
             'misc': {},                 # misc tools settings, which are parsed by tool
-            'project_dir': {            # Name and path for a project
-                'name': '.' + os.path.sep,
-                'path' : self.pgen_workspace.settings.generated_projects_dir_default
-            },
-            'output_dir': {         # The generated path dict
-                'path': '',
-                'rel_path': '',
-                'rel_count': '',
+            'export_dir': self.pgen_workspace.settings.generated_projects_dir_default, # Export path for a project
+            'output_dir': {             # [internal] The generated path dict
+                'path': '',             # path with all name mangling we add to export_dir
+                'rel_path': '',         # how far we are from root
+                'rel_count': '',        # Contains count of how far we are from root, used for eclipse for example
             },
             'target': '',       # target
             'template' : '',    # tool template
@@ -273,9 +270,8 @@ class Project:
                     self.project['macros'].extend(
                         [x for x in project_file_data['common']['macros'] if x is not None])
 
-                if 'project_dir' in project_file_data['common']:
-                    self.project['project_dir'].update(
-                        project_file_data['common']['project_dir'])
+                if 'export_dir' in project_file_data['common']:
+                    self.project['export_dir'] = os.path.normpath(project_file_data['common']['export_dir'][0])
 
                 for key in ['debugger','build_dir','mcu','name','target','core', 'linker_file']:
                     if key in project_file_data['common']:
@@ -355,7 +351,7 @@ class Project:
                 path = path.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
                                         project_name=self.name, tool=tool)
             else:
-                 path = os.path.join(self.project_dir['path'], "%s_%s" % (current_tool, self.name))
+                 path = os.path.join(self.project['export_dir'], "%s_%s" % (current_tool, self.name))
             if os.path.isdir(path):
                 logging.info("Cleaning directory %s" % path)
 
@@ -410,8 +406,8 @@ class Project:
             self.project['output_dir']['rel_path'] = rel_path_output
 
     def _get_project_files(self):
-        if self.project['project_dir']['name'] and self.project['project_dir']['path']:
-            return [os.path.join(self.project['project_dir']['path'], self.project['project_dir']['name'])]
+        if self.project['export_dir']:
+            return [os.path.join(self.project['export_dir']['path'], self.project['name'])]
         else:
             return [os.path.join(self.project['output_dir']['path'], self.project['name'])]
 
@@ -476,14 +472,23 @@ class Project:
 
     def _set_output_dir_path(self, tool, workspace_path):
         if self.pgen_workspace.settings.generated_projects_dir != self.pgen_workspace.settings.generated_projects_dir_default:
+            # global settings defined, replace keys pgen is familiar, this overrides anything in the project
             output_dir = Template(self.pgen_workspace.settings.generated_projects_dir)
             output_dir = output_dir.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
                                                project_name=self.name, tool=tool)
         else:
-            if workspace_path:
-                output_dir = os.path.join(self.project['project_dir']['path'], workspace_path, "%s_%s" % (tool, self.name))
+            if self.project['export_dir'] == self.pgen_workspace.settings.generated_projects_dir_default:
+                # if export_dir is not defined we use tool_name for a project
+                project_name = "%s_%s" % (tool, self.name)
             else:
-                output_dir = os.path.join(self.project['project_dir']['path'], "%s_%s" % (tool, self.name))
+                project_name = ""
+            # TODO: below works only if we are using default export dir, will blow up with user defined paths
+            if workspace_path:
+                output_dir = os.path.join(self.project['export_dir'], workspace_path, project_name)
+            else:
+                output_dir = os.path.join(self.project['export_dir'], project_name)
+            self.pgen_workspace.settings.generated_projects_dir_default
+        # After all adjusting , set the output_dir path, which tools will use to export a project
         self.project['output_dir']['path'] = os.path.normpath(output_dir)
 
     @staticmethod

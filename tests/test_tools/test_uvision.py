@@ -57,3 +57,13 @@ class TestProject(TestCase):
 
     def test_export_project(self):
         self.workspace.export_project('project_1', 'uvision', False)
+
+    def test_export_project_to_diff_directory(self):
+        project_1_yaml['common']['export_dir'] = ['create_this_folder']
+        with open(os.path.join(os.getcwd(), 'test_workspace/project_1.yaml'), 'wt') as f:
+            f.write(yaml.dump(project_1_yaml, default_flow_style=False))
+        workspace = PgenWorkspace('test_workspace/projects.yaml')
+        workspace.export_project('project_1', 'uvision', False)
+
+        assert os.path.isdir('create_this_folder')
+        shutil.rmtree('create_this_folder')

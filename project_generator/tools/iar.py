@@ -138,13 +138,18 @@ class IAREmbeddedWorkbenchProject:
     def _eww_set_path_single_project(self, eww_dic, name):
         eww_dic['workspace']['project']['path'] = join('$WS_DIR$', name + '.ewp')
 
-    def _eww_set_path_multiple_project(self, eww_dic, projects):
+    def _eww_set_path_multiple_project(self, eww_dic):
         eww_dic['workspace']['project'] = []
         for project in self.workspace['projects']:
-            # This has an assumption all projects inside workspace
-            path_to_project = project['output_dir']['path']
-            path_to_project = path_to_project.replace(self.workspace['settings']['path'] + '\\', '', 1)
-            eww_dic['workspace']['project'].append( { 'path' : join('$WS_DIR$', path_to_project, project['name'] + '.ewp') })
+            # We check how far is project from root and workspace. IF they dont match,
+            # get relpath for project and inject it into workspace
+            path_project = os.path.dirname(project['output_dir']['path'] + '\\')
+            path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
+            # path_to_project = path_to_project.replace( + '\\', '', 1)
+            if path_project != path_workspace:
+                rel_path = os.path.relpath(os.getcwd(), path_workspace)
+                path_project = os.path.join(rel_path, path_project)
+            eww_dic['workspace']['project'].append( { 'path' : join('$WS_DIR$', path_project, project['name'] + '.ewp') })
 
     def _ewp_set_target(self, ewp_dic, mcu_def_dic):
         index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
