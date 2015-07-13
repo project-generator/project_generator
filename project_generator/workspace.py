@@ -44,6 +44,7 @@ class PgenWorkspace:
 
         # so that we can test things independently of eachother
         self.workspaces = {}
+        self.projects = {}
 
         # We support grouping of projects or just a project for ProjectWorkspace
         #
@@ -68,19 +69,29 @@ class PgenWorkspace:
                 if type(records) is dict:
                     # workspace
                     projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
+                    self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
                 else:
                     # single project
-                    projects = [Project(name, load_yaml_records(uniqify(flatten(records))), self)]
-                self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
+                    self.projects[name] = Project(name, load_yaml_records(uniqify(flatten(records))), self)
         else:
             logging.debug("No projects found in the main record file.")
 
     def export_project(self, project_name, tool, copy):
-        if project_name not in self.workspaces:
-            raise RuntimeError("Invalid Project Name: %s" % project_name)
+        found = False
+        try:
+            self.projects[project_name].export(tool, copy)
+            found = True
+        except KeyError:
+            pass
 
-        logging.debug("Exporting Project %s" % project_name)
-        self.workspaces[project_name].export(tool, copy)
+        try:
+            self.workspaces[project_name].export(tool, copy)
+            found = True
+        except KeyError:
+            pass
+
+        if not found:
+            raise RuntimeError("Invalid Project Name: %s" % project_name)
 
     def export_projects(self, tool, copy):
         for name, project in self.workspace.items():

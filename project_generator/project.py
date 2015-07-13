@@ -209,6 +209,7 @@ class Project:
         # process all projects dictionaries
         for project in project_dicts:
             self._set_project_attributes(project)
+        self.generated_files = {}
 
     def _fill_project_defaults(self):
 
@@ -355,6 +356,39 @@ class Project:
                 logging.info("Cleaning directory %s" % path)
 
                 shutil.rmtree(path)
+
+    def export(self, tool, copy):
+        """ Exports a project """
+
+        tools = []
+        if not tool:
+            tools = ToolsSupported()
+        else:
+            tools = [tool]
+
+        workspace_dic = {
+            'projects': [self.project],
+            'settings': {
+                'is_workspace': False,
+                'name' : self.name,
+                'path': '',
+            },
+        }
+
+        for export_tool in tools:
+            exporter = ToolsSupported().get_value(export_tool, 'exporter')
+
+            # Merge all dics, copy sources if required, correct output dir. This happens here
+            # because we need tool to set proper path (tool might be used as string template)
+            self.customize_project_for_tool(export_tool)
+            self._set_output_dir_path(export_tool, '')
+
+            self._set_output_dir()
+            if copy:
+                self.copy_sources_to_generated_destination()
+            generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
+
+            self.generated_files[export_tool] = generated_files
 
     def build(self, tool):
         """build the project"""
