@@ -211,13 +211,12 @@ class Uvision(Builder, Exporter):
         for project in self.workspace['projects']:
             # We check how far is project from root and workspace. IF they dont match,
             # get relpath for project and inject it into workspace
-            path_project = os.path.dirname(project['output_dir']['path'] + '\\')
+            path_project = os.path.dirname(project['files']['uvproj'])
             path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
             # path_to_project = path_to_project.replace( + '\\', '', 1)
             if path_project != path_workspace:
                 rel_path = os.path.relpath(os.getcwd(), path_workspace)
-                path_project = os.path.join(rel_path, path_project)
-            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(path_project, project['name'] + '.uvproj')})
+            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(rel_path, project['path'])})
 
         # generate the file
         uvmpw_xml = xmltodict.unparse(uvmpw_dic, pretty=True)
@@ -307,29 +306,12 @@ class Uvision(Builder, Exporter):
         return path, files
 
     def export_workspace(self):
-        generated_projects = {
-            'projects': {},
-            'uvmpw_file': None,
-        }
-        generate_uvmpw = True
-        if self.workspace['settings']['is_workspace']:
-            output = copy.deepcopy(self.generated_project)
-            output['path'], output['files']['uvmpw'] = self._generate_uvmpw_file()
-            generated_projects['uvmpw_file'] = output
-            generate_uvmpw = False
-        for project in self.workspace['projects']:
-            """ Processes groups and misc options specific for uVision, and run generator """
-            generated_projects['projects'][project['name']] = copy.deepcopy(self.generated_project)
-            path, files = self._export_single_project(self, project)
-            generated_projects['projects'][project['name']]['path'] = path
-            generated_projects['projects'][project['name']]['files']['uvproj'] = files
-
-        return generated_projects
+        path, workspace = self._generate_uvmpw_file()
+        return path, [workspace]
 
     def export_project(self):
         generated_projects = {
             'projects': {},
-            'uvmpw_file': None,
         }
         path, files = self._export_single_project(self.workspace)
         generated_projects['projects'][self.workspace['name']] = copy.deepcopy(self.generated_project)

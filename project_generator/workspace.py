@@ -69,7 +69,7 @@ class PgenWorkspace:
                 if type(records) is dict:
                     # workspace
                     projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
-                    self.workspaces[name] = ProjectWorkspace(name, projects, self, type(records) is not dict)
+                    self.workspaces[name] = ProjectWorkspace(name, projects, self)
                 else:
                     # single project
                     self.projects[name] = Project(name, load_yaml_records(uniqify(flatten(records))), self)
@@ -82,15 +82,11 @@ class PgenWorkspace:
     def _is_workspace(self, workspace_name):
         return workspace_name in [name for name, v in self.workspaces.items()]
 
-
     def export_project(self, project_name, tool, copy):
-        found = False
         if self._is_project(project_name):
             self.projects[project_name].export(tool, copy)
-            found = True
         elif self._is_workspace(project_name):
             self.workspaces[project_name].export(tool, copy)
-            found = True
         else:
             raise RuntimeError("Invalid Project Name: %s" % project_name)
 
