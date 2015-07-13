@@ -76,21 +76,22 @@ class PgenWorkspace:
         else:
             logging.debug("No projects found in the main record file.")
 
+    def _is_project(self, proj_name):
+        return proj_name in [name for name, v in self.projects.items()]
+
+    def _is_workspace(self, workspace_name):
+        return workspace_name in [name for name, v in self.workspaces.items()]
+
+
     def export_project(self, project_name, tool, copy):
         found = False
-        try:
+        if self._is_project(project_name):
             self.projects[project_name].export(tool, copy)
             found = True
-        except KeyError:
-            pass
-
-        try:
+        elif self._is_workspace(project_name):
             self.workspaces[project_name].export(tool, copy)
             found = True
-        except KeyError:
-            pass
-
-        if not found:
+        else:
             raise RuntimeError("Invalid Project Name: %s" % project_name)
 
     def export_projects(self, tool, copy):

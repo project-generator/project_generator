@@ -182,7 +182,7 @@ class ProjectWorkspace:
                 if copy:
                     project.copy_sources_to_generated_destination()
                 workspace_dic['projects'].append(project.project)
-            #logging.debug("Project workspace dict: %s" % workspace_dic)
+
             generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
 
             self.generated_files[export_tool] = generated_files
@@ -366,15 +366,6 @@ class Project:
         else:
             tools = [tool]
 
-        workspace_dic = {
-            'projects': [self.project],
-            'settings': {
-                'is_workspace': False,
-                'name' : self.name,
-                'path': '',
-            },
-        }
-
         for export_tool in tools:
             exporter = ToolsSupported().get_value(export_tool, 'exporter')
 
@@ -386,7 +377,7 @@ class Project:
             self._set_output_dir()
             if copy:
                 self.copy_sources_to_generated_destination()
-            generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
+            generated_files = export(exporter, self.project, export_tool, self.pgen_workspace.settings)
 
             self.generated_files[export_tool] = generated_files
 
