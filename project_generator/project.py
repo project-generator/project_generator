@@ -270,7 +270,7 @@ class Project:
                         [x for x in project_file_data['common']['macros'] if x is not None])
 
                 if 'export_dir' in project_file_data['common']:
-                    self.project['export_dir'] = project_file_data['common']['export_dir'][0]
+                    self.project['export_dir'] = os.path.normpath(project_file_data['common']['export_dir'][0])
 
                 for key in ['debugger','build_dir','mcu','name','target','core', 'linker_file']:
                     if key in project_file_data['common']:
@@ -406,7 +406,7 @@ class Project:
 
     def _get_project_files(self):
         if self.project['export_dir']:
-            return [os.path.join(self.project['export_dir']['path'], self.name)]
+            return [os.path.join(self.project['export_dir']['path'], self.project['name'])]
         else:
             return [os.path.join(self.project['output_dir']['path'], self.project['name'])]
 
@@ -475,10 +475,15 @@ class Project:
             output_dir = output_dir.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
                                                project_name=self.name, tool=tool)
         else:
-            if workspace_path:
-                output_dir = os.path.join(self.project['export_dir'], workspace_path, "%s_%s" % (tool, self.name))
+            if self.project['export_dir'] == self.pgen_workspace.settings.generated_projects_dir_default:
+                project_name = "%s_%s" % (tool, self.name)
             else:
-                output_dir = os.path.join(self.project['export_dir'], "%s_%s" % (tool, self.name))
+                project_name = ""
+            if workspace_path:
+                output_dir = os.path.join(self.project['export_dir'], workspace_path, project_name)
+            else:
+                output_dir = os.path.join(self.project['export_dir'], project_name)
+            self.pgen_workspace.settings.generated_projects_dir_default
         self.project['output_dir']['path'] = os.path.normpath(output_dir)
 
     @staticmethod
