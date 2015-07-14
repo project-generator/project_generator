@@ -60,10 +60,10 @@ class TestPgenWorkspace(TestCase):
         assert self.workspace.settings.paths['definitions'] == os.path.normpath('notpg/path/somewhere')
         assert self.workspace.settings.generated_projects_dir == 'not_generated_projects'
 
-    def test_workspaces(self):
-        # workspace should not be empty and project_1 should exist, not empty neither
-        assert bool(self.workspace.workspaces) == True
-        assert bool(self.workspace.workspaces['project_1']) == True
+    def test_project(self):
+        # project should not be empty and project_1 should exist, not empty neither
+        assert bool(self.workspace.projects) == True
+        assert bool(self.workspace.projects['project_1']) == True
 
     def test_projects_dict(self):
         # check projects yaml file, if they match

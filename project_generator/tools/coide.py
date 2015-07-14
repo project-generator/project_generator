@@ -75,11 +75,11 @@ class Coide(Exporter):
                 }
                 new_data['groups'][group].append(new_file)
 
-    def _get_groups(self, data):
+    def _get_groups(self):
         """ Get all groups defined. """
         groups = []
         for attribute in self.source_files_dic:
-            for dic in data[attribute]:
+            for dic in self.workspace[attribute]:
                 if dic:
                     for k, v in dic.items():
                         if k == None:
@@ -172,7 +172,7 @@ class Coide(Exporter):
         if 'misc' in expanded_dic and bool(expanded_dic['misc'][0]):
             print ("Using deprecated misc options for coide. Please use template project files.")
 
-        groups = self._get_groups(self.workspace)
+        groups = self._get_groups()
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
