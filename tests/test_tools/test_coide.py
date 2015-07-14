@@ -37,22 +37,15 @@ class TestProject(TestCase):
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_1_yaml, default_flow_style=False))
-        self.workspace = PgenWorkspace('test_workspace/projects.yaml')
+        self.project = Project('project_1',[project_1_yaml],
+            PgenWorkspace(projects_1_yaml))
 
-        self.defintions = CoIDEdefinitions()
-        workspace_dic = {
-            'projects': [],
-            'settings': {},
-        }
-        self.coide = Coide(workspace_dic, ProjectSettings())
+        self.coide = Coide(self.project.project, ProjectSettings())
 
     def tearDown(self):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
         shutil.rmtree('generated_projects', ignore_errors=True)
 
-    def test_export(self):
-        self.coide.export_project()
-
     def test_export_project(self):
-        self.workspace.export_project('project_1', 'coide', False)
+        self.project.export('coide', False)
