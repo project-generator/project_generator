@@ -305,14 +305,11 @@ class Uvision(Builder, Exporter):
         return path, [workspace]
 
     def export_project(self):
-        generated_projects = {
-            'projects': {},
-        }
         path, files = self._export_single_project()
-        generated_projects['projects'][self.workspace['name']] = copy.deepcopy(self.generated_project)
-        generated_projects['projects'][self.workspace['name']]['path'] = path
-        generated_projects['projects'][self.workspace['name']]['files']['uvproj'] = files
-        return generated_projects['projects'][self.workspace['name']]
+        generated_projects = copy.deepcopy(self.generated_project)
+        generated_projects['path'] = path
+        generated_projects['files']['uvproj'] = files
+        return generated_projects
 
     def fixup_executable(self, exe_path):
         new_exe_path = exe_path + '.axf'
