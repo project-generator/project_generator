@@ -75,7 +75,7 @@ class Uvision(Builder, Exporter):
 
     def __init__(self, workspace, env_settings):
         self.definitions = uVisionDefinitions()
-        # workspace - projects
+        # workspace or project
         self.workspace = workspace
         self.env_settings = env_settings
 
@@ -232,7 +232,7 @@ class Uvision(Builder, Exporter):
             expanded_dic['groups'][group] = []
 
         # TODO 0xc0170: fix misc , its a list with a dictionary
-        if 'misc' in expanded_dic and bool(expanded_dic['misc'][0]):
+        if 'misc' in expanded_dic and bool(expanded_dic['misc']):
             print ("Using deprecated misc options for uvision. Please use template project files.")
 
         # get relative path and fix all paths within a project

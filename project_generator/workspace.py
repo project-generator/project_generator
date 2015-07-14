@@ -46,7 +46,7 @@ class PgenWorkspace:
         self.workspaces = {}
         self.projects = {}
 
-        # We support grouping of projects or just a project for ProjectWorkspace
+        # We support grouping of projects which is a workspace
         #
         # [projects.yaml]
         #   projects:

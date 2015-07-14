@@ -371,6 +371,9 @@ class Project:
         else:
             tools = [tool]
 
+        generated_files = {
+            'projects': {}
+        }
         for export_tool in tools:
             exporter = ToolsSupported().get_value(export_tool, 'exporter')
 
@@ -380,8 +383,9 @@ class Project:
             if copy:
                 self.copy_sources_to_generated_destination()
 
-            generated_files = exporter(self.project, self.pgen_workspace.settings).export_project()
-            self.generated_files[export_tool] = generated_files
+            files = exporter(self.project, self.pgen_workspace.settings).export_project()
+            generated_files['projects'][export_tool] = files
+        self.generated_files = generated_files
 
     def build(self, tool):
         """build the project"""
