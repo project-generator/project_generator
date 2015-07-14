@@ -38,20 +38,17 @@ class SublimeTextMakeGccARM(MakefileGccArm):
 
     def export_project(self):
         """ Processes misc options specific for GCC ARM, and run generator. """
-        generated_projects = {}
-        for project in self.workspace['projects']:
-            output = copy.deepcopy(self.generated_project)
-            self.process_data_for_makefile(project)
-            self._fix_sublime_paths(project)
-            project['linker_options'] =[]
+        output = copy.deepcopy(self.generated_project)
+        self.process_data_for_makefile(self.workspace)
+        self._fix_sublime_paths(self.workspace)
+        self.workspace['linker_options'] =[]
 
-            output['path'], output['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', project, 'Makefile', project['output_dir']['path'])
+        output['path'], output['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', self.workspace, 'Makefile', self.workspace['output_dir']['path'])
 
-            project['buildsys_name'] = 'Make'
-            project['buildsys_cmd'] = 'make all'
+        self.workspace['buildsys_name'] = 'Make'
+        self.workspace['buildsys_cmd'] = 'make all'
 
-            output['files']['sublimetext'] = self.gen_file_jinja(
-                'sublimetext.sublime-project.tmpl', project, '%s.sublime-project' % project['name'], project['output_dir']['path'])
-            generated_projects[project['name']] = output
-
+        output['files']['sublimetext'] = self.gen_file_jinja(
+            'sublimetext.sublime-project.tmpl', self.workspace, '%s.sublime-project' % self.workspace['name'], self.workspace['output_dir']['path'])
+        generated_projects = output
         return generated_projects

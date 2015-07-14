@@ -132,13 +132,14 @@ class MakefileGccArm(Exporter):
         if data['linker_file']:
             data['linker_file'] = join(data['output_dir']['rel_path'], normpath(data['linker_file']))
 
+    def export_workspace(self):
+        logging.debug("Current version of CoIDE does not support workspaces")
+
     def export_project(self):
         """ Processes misc options specific for GCC ARM, and run generator. """
-        generated_projects = {}
-        for project in self.workspace['projects']:
-            generated_projects[project['name']] = copy.deepcopy(self.generated_projects)
-            self.process_data_for_makefile(project)
-            generated_projects[project['name']]['path'], generated_projects[project['name']]['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', project, 'Makefile', project['output_dir']['path'])
+        generated_projects = copy.deepcopy(self.generated_projects)
+        self.process_data_for_makefile(self.workspace)
+        generated_projects['path'], generated_projects['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', self.workspace, 'Makefile', self.workspace['output_dir']['path'])
         return generated_projects
 
     def process_data_for_makefile(self, data):
