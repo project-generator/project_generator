@@ -143,13 +143,11 @@ class IAREmbeddedWorkbenchProject:
         for project in self.workspace['projects']:
             # We check how far is project from root and workspace. IF they dont match,
             # get relpath for project and inject it into workspace
-            path_project = os.path.dirname(project['output_dir']['path'] + '\\')
+            path_project = os.path.dirname(project['files']['ewp'])
             path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
-            # path_to_project = path_to_project.replace( + '\\', '', 1)
             if path_project != path_workspace:
                 rel_path = os.path.relpath(os.getcwd(), path_workspace)
-                path_project = os.path.join(rel_path, path_project)
-            eww_dic['workspace']['project'].append( { 'path' : join('$WS_DIR$', path_project, project['name'] + '.ewp') })
+            eww_dic['workspace']['project'].append( { 'path' : join('$WS_DIR$', os.path.join(rel_path, project['files']['ewp'])) })
 
     def _ewp_set_target(self, ewp_dic, mcu_def_dic):
         index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
@@ -275,18 +273,14 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             if option['name'] == find_key:
                 return settings.index(option)
 
-    def _export_single_project(self, data, generate_eww):
-        expanded_dic = data.copy()
+    def _export_single_project(self):
+        expanded_dic = self.workspace.copy()
 
-        # TODO 0xc0170: fix misc , its a list with a dictionary
-        if 'misc' in expanded_dic and bool(expanded_dic['misc'][0]):
-            print ("Using deprecated misc options for iar. Please use template project files.")
-
-        groups = self._get_groups(data)
+        groups = self._get_groups(expanded_dic)
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self._iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._iterate(self.workspace, expanded_dic, expanded_dic['output_dir']['rel_path'])
         self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         # generic tool template specified or project
@@ -305,9 +299,8 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         # TODO 0xc0170: add ewd file parsing and support
         ewd_dic = self.definitions.ewd_file
 
-        # single project needs eww, generate it, otherwise, wil be generated for real workspace
         eww = None
-        if generate_eww:
+        if self.workspace['singular']:
             eww_dic = self.definitions.eww_file
             # set eww
             self._eww_set_path_single_project(eww_dic, expanded_dic['name'])
@@ -360,7 +353,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
 
         ewd_xml = xmltodict.unparse(ewd_dic, pretty=True)
         project_path, ewd = self.gen_file_raw(ewd_xml, '%s.ewd' % expanded_dic['name'], expanded_dic['output_dir']['path'])
-        return project_path, ewp, eww, ewd
+        return project_path, [ewp, eww, ewd]
 
     def _generate_eww_file(self):
         eww_dic = self.definitions.eww_file
@@ -369,26 +362,21 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         # generate the file
         eww_xml = xmltodict.unparse(eww_dic, pretty=True)
         project_path, eww = self.gen_file_raw(eww_xml, '%s.eww' % self.workspace['settings']['name'], self.workspace['settings']['path'])
-        return project_path, eww
+        return project_path, [eww]
+
+    def export_workspace(self):
+        # we got a workspace defined, therefore one ewp generated only
+        path, workspace = self._generate_eww_file()
+        return path, [workspace]
 
     def export_project(self):
         """ Processes groups and misc options specific for IAR, and run generator """
-        generated_projects = {
-            'projects': {},
-            'eww_file': None,
-        }
-        generate_eww = True
-        if self.workspace['settings']['is_workspace']:
-            # we got a workspace defined, therefore one ewp generated only
-            output = copy.deepcopy(self.generated_project)
-            output['path'], output['files']['eww'] = self._generate_eww_file()
-            generated_projects['eww_file'] = output
-            generate_eww = False
-        for project in self.workspace['projects']:
-            output = copy.deepcopy(self.generated_project)
-            output['path'], output['files']['ewp'], output['files']['eww'], output['files']['ewd'] = self._export_single_project(project, generate_eww)
-            generated_projects['projects'][project['name']] = output
-
+        path, files = self._export_single_project()
+        generated_projects = copy.deepcopy(self.generated_project)
+        generated_projects['path'] = path
+        generated_projects['files']['ewp'] = files[0]
+        generated_projects['files']['eww'] = files[1]
+        generated_projects['files']['ewd'] = files[2]
         return generated_projects
 
     def build_project(self, project_name, project_files, env_settings):

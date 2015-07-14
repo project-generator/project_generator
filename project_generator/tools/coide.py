@@ -75,11 +75,11 @@ class Coide(Exporter):
                 }
                 new_data['groups'][group].append(new_file)
 
-    def _get_groups(self, data):
+    def _get_groups(self):
         """ Get all groups defined. """
         groups = []
         for attribute in self.source_files_dic:
-            for dic in data[attribute]:
+            for dic in self.workspace[attribute]:
                 if dic:
                     for k, v in dic.items():
                         if k == None:
@@ -164,19 +164,19 @@ class Coide(Exporter):
             i += 1
         return None
 
-    def _export_single_project(self, project):
+    def _export_single_project(self):
         """ Processes groups and misc options specific for CoIDE, and run generator """
-        expanded_dic = project.copy()
+        expanded_dic = self.workspace.copy()
 
         # TODO 0xc0170: fix misc , its a list with a dictionary
         if 'misc' in expanded_dic and bool(expanded_dic['misc'][0]):
             print ("Using deprecated misc options for coide. Please use template project files.")
 
-        groups = self._get_groups(project)
+        groups = self._get_groups()
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self._iterate(project, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._iterate(self.workspace, expanded_dic, expanded_dic['output_dir']['rel_path'])
         self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         # generic tool template specified or project
@@ -262,12 +262,12 @@ class Coide(Exporter):
             'coide.coproj.tmpl', coproj_dic, '%s.coproj' % expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, projfile
 
+    def export_workspace(self):
+        logging.debug("Current version of CoIDE does not support workspaces")
+
     def export_project(self):
-        generated_projects = {}
-        for project in self.workspace['projects']:
-            output = copy.deepcopy(self.generated_project)
-            output['path'], output['files']['coproj'] = self._export_single_project(project)
-            generated_projects[project['name']] = output
+        generated_projects = copy.deepcopy(self.generated_project)
+        generated_projects['path'], generated_projects['files']['coproj'] = self._export_single_project()
         return generated_projects
 
 

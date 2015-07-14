@@ -75,7 +75,7 @@ class Uvision(Builder, Exporter):
 
     def __init__(self, workspace, env_settings):
         self.definitions = uVisionDefinitions()
-        # workspace - projects
+        # workspace or project
         self.workspace = workspace
         self.env_settings = env_settings
 
@@ -211,116 +211,104 @@ class Uvision(Builder, Exporter):
         for project in self.workspace['projects']:
             # We check how far is project from root and workspace. IF they dont match,
             # get relpath for project and inject it into workspace
-            path_project = os.path.dirname(project['output_dir']['path'] + '\\')
+            path_project = os.path.dirname(project['files']['uvproj'])
             path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
-            # path_to_project = path_to_project.replace( + '\\', '', 1)
             if path_project != path_workspace:
                 rel_path = os.path.relpath(os.getcwd(), path_workspace)
-                path_project = os.path.join(rel_path, path_project)
-            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(path_project, project['name'] + '.uvproj')})
+            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(rel_path, project['path'])})
 
         # generate the file
         uvmpw_xml = xmltodict.unparse(uvmpw_dic, pretty=True)
         project_path, uvmpw = self.gen_file_raw(uvmpw_xml, '%s.uvmpw' % self.workspace['settings']['name'], self.workspace['settings']['path'])
         return project_path, uvmpw
 
-    def export_project(self):
-        generated_projects = {
-            'projects': {},
-            'uvmpw_file': None,
-        }
-        generate_uvmpw = True
-        if self.workspace['settings']['is_workspace']:
-            output = copy.deepcopy(self.generated_project)
-            output['path'], output['files']['uvmpw'] = self._generate_uvmpw_file()
-            generated_projects['uvmpw_file'] = output
-            generate_uvmpw = False
+    def _export_single_project(self):
+        expanded_dic = self.workspace.copy()
 
-        for project in self.workspace['projects']:
-            """ Processes groups and misc options specific for uVision, and run generator """
-            generated_projects['projects'][project['name']] = copy.deepcopy(self.generated_project)
-            expanded_dic = project.copy()
+        groups = self._get_groups(self.workspace)
+        expanded_dic['groups'] = {}
+        for group in groups:
+            expanded_dic['groups'][group] = []
 
-            groups = self._get_groups(project)
-            expanded_dic['groups'] = {}
-            for group in groups:
-                expanded_dic['groups'][group] = []
+        # get relative path and fix all paths within a project
+        self._iterate(self.workspace, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
-            # TODO 0xc0170: fix misc , its a list with a dictionary
-            if 'misc' in expanded_dic and bool(expanded_dic['misc'][0]):
-                print ("Using deprecated misc options for uvision. Please use template project files.")
+        expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
 
-            # get relative path and fix all paths within a project
-            self._iterate(project, expanded_dic, expanded_dic['output_dir']['rel_path'])
-            self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
+        # generic tool template specified or project
+        if expanded_dic['template']:
+            # TODO 0xc0170: template list !
+            project_file = join(getcwd(), expanded_dic['template'][0])
+            uvproj_dic = xmltodict.parse(file(project_file))
+        elif 'uvision' in self.env_settings.templates.keys():
+            # template overrides what is set in the yaml files
+            # TODO 0xc0170: extensions for templates - support multiple files and get their extension
+            # and check if user defined them correctly
+            project_file = join(getcwd(), self.env_settings.templates['uvision'][0])
+            uvproj_dic = xmltodict.parse(file(project_file))
+        else:
+            uvproj_dic = self.definitions.uvproj_file
 
-            expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
+        try:
+            uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
+        except KeyError:
+            raise RuntimeError("The uvision template is not valid .uvproj file")
 
-            # generic tool template specified or project
-            if expanded_dic['template']:
-                # TODO 0xc0170: template list !
-                project_file = join(getcwd(), expanded_dic['template'][0])
-                uvproj_dic = xmltodict.parse(file(project_file))
-            elif 'uvision' in self.env_settings.templates.keys():
-                # template overrides what is set in the yaml files
-                # TODO 0xc0170: extensions for templates - support multiple files and get their extension
-                # and check if user defined them correctly
-                project_file = join(getcwd(), self.env_settings.templates['uvision'][0])
-                uvproj_dic = xmltodict.parse(file(project_file))
-            else:
-                uvproj_dic = self.definitions.uvproj_file
+        self._uvproj_files_set(uvproj_dic, expanded_dic)
+        self._uvproj_set_CommonProperty(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['CommonProperty'], expanded_dic)
+        self._uvproj_set_DebugOption(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption'], expanded_dic)
+        self._uvproj_set_DllOption(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['DllOption'], expanded_dic)
+        self._uvproj_set_TargetArmAds(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetArmAds'], expanded_dic)
+        self._uvproj_set_TargetCommonOption(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption'], expanded_dic)
+        self._uvproj_set_Utilities(
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities'], expanded_dic)
 
+        # set target only if defined, otherwise use from template/default one
+        if expanded_dic['target']:
+            target = Targets(self.env_settings.get_env_settings('definitions'))
+            if not target.is_supported(expanded_dic['target'].lower(), 'uvision'):
+                raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
+            mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'uvision')
+            if not mcu_def_dic:
+                 raise RuntimeError(
+                    "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
+            # self.normalize_mcu_def(mcu_def_dic)
+            logging.debug("Mcu definitions: %s" % mcu_def_dic)
+            # self.append_mcu_def(expanded_dic, mcu_def_dic)
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
+
+        # load debugger
+        if expanded_dic['debugger']:
             try:
-                uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[expanded_dic['debugger']]['TargetDlls']['Driver']
             except KeyError:
-                raise RuntimeError("The uvision template is not valid .uvproj file")
+                raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
-            self._uvproj_files_set(uvproj_dic, expanded_dic)
-            self._uvproj_set_CommonProperty(
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['CommonProperty'], expanded_dic)
-            self._uvproj_set_DebugOption(
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption'], expanded_dic)
-            self._uvproj_set_DllOption(
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DllOption'], expanded_dic)
-            self._uvproj_set_TargetArmAds(
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetArmAds'], expanded_dic)
-            self._uvproj_set_TargetCommonOption(
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption'], expanded_dic)
-            self._uvproj_set_Utilities(
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities'], expanded_dic)
+        # Project file
+        uvproj_xml = xmltodict.unparse(uvproj_dic, pretty=True)
+        path, files = self.gen_file_raw(uvproj_xml, '%s.uvproj' % expanded_dic['name'], expanded_dic['output_dir']['path'])
+        return path, files
 
-            # set target only if defined, otherwise use from template/default one
-            if expanded_dic['target']:
-                target = Targets(self.env_settings.get_env_settings('definitions'))
-                if not target.is_supported(expanded_dic['target'].lower(), 'uvision'):
-                    raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-                mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'uvision')
-                if not mcu_def_dic:
-                     raise RuntimeError(
-                        "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
-                # self.normalize_mcu_def(mcu_def_dic)
-                logging.debug("Mcu definitions: %s" % mcu_def_dic)
-                # self.append_mcu_def(expanded_dic, mcu_def_dic)
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
+    def export_workspace(self):
+        path, workspace = self._generate_uvmpw_file()
+        return path, [workspace]
 
-            # load debugger
-            if expanded_dic['debugger']:
-                try:
-                    uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[expanded_dic['debugger']]['TargetDlls']['Driver']
-                except KeyError:
-                    raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
-
-            # Project file
-            uvproj_xml = xmltodict.unparse(uvproj_dic, pretty=True)
-            path, files = self.gen_file_raw(uvproj_xml, '%s.uvproj' % project['name'], expanded_dic['output_dir']['path'])
-            generated_projects['projects'][project['name']]['path'] = path
-            generated_projects['projects'][project['name']]['files']['uvproj'] = files
-
+    def export_project(self):
+        path, files = self._export_single_project()
+        generated_projects = copy.deepcopy(self.generated_project)
+        generated_projects['path'] = path
+        generated_projects['files']['uvproj'] = files
         return generated_projects
 
     def fixup_executable(self, exe_path):

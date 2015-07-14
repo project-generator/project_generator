@@ -139,12 +139,11 @@ class ToolSpecificSettings:
 class ProjectWorkspace:
     """represents a workspace (multiple projects) """
 
-    def __init__(self, name, projects, pgen_workspace, singular = False):
+    def __init__(self, name, projects, pgen_workspace):
         self.name = name
         self.projects = projects
         self.pgen_workspace = pgen_workspace # TODO: FIX me please
         self.generated_files = {}
-        self.singular = singular
 
     def export(self, tool, copy):
         """ Exports workspace """
@@ -160,18 +159,19 @@ class ProjectWorkspace:
             workspace_dic = {
                 'projects': [],
                 'settings': {
-                    'is_workspace': not self.singular,
-                    'name' : self.name,
+                    'name': self.name,
                     'path': os.path.join(self.pgen_workspace.settings.generated_projects_dir_default, export_tool + '_' + self.name),
                 },
             }
 
             for project in self.projects:
-                workspace_path = None
-                if not self.singular:
-                    # projects are part of a workspace, by default fix output dir path to
-                    # workspace_output_dir/project_1, workspace_output_dir/project_2, ..
-                    workspace_path = export_tool + '_' + self.name
+                generated_files = {
+                    'projects' : [],
+                    'workspaces': [],
+                }
+                # projects are part of a workspace, by default fix output dir path to
+                # workspace_output_dir/project_1, workspace_output_dir/project_2, ..
+                workspace_path = export_tool + '_' + self.name
 
                 # Merge all dics, copy sources if required, correct output dir. This happens here
                 # because we need tool to set proper path (tool might be used as string template)
@@ -180,10 +180,15 @@ class ProjectWorkspace:
 
                 project._set_output_dir()
                 if copy:
-                    project.copy_sources_to_generated_destination()
-                workspace_dic['projects'].append(project.project)
-            #logging.debug("Project workspace dict: %s" % workspace_dic)
-            generated_files = export(exporter, workspace_dic, export_tool, self.pgen_workspace.settings)
+                    project.copy_sources_to_generated_destination
+                project.project['singular'] = False
+                files = exporter(project.project, self.pgen_workspace.settings).export_project()
+                # we gather all generated files, needed for workspace files
+                workspace_dic['projects'].append(files)
+                generated_files['projects'].append(files)
+
+            # all projects are genereated, now generate workspace files
+            generated_files['workspaces'] = exporter(workspace_dic, self.pgen_workspace.settings).export_workspace()
 
             self.generated_files[export_tool] = generated_files
 
@@ -209,6 +214,7 @@ class Project:
         # process all projects dictionaries
         for project in project_dicts:
             self._set_project_attributes(project)
+        self.generated_files = {}
 
     def _fill_project_defaults(self):
 
@@ -238,7 +244,8 @@ class Project:
             'target': '',       # target
             'template' : '',    # tool template
             'output_type': self.output_types['executable'],           # output type, default - exe
-            'tools_supported': [self.pgen_workspace.settings.DEFAULT_TOOL] # Tools which are supported
+            'tools_supported': [self.pgen_workspace.settings.DEFAULT_TOOL], # Tools which are supported
+            'singular': True,  # singular project or part of a workspace
 
         }
 
@@ -355,6 +362,31 @@ class Project:
                 logging.info("Cleaning directory %s" % path)
 
                 shutil.rmtree(path)
+
+    def export(self, tool, copy):
+        """ Exports a project """
+
+        tools = []
+        if not tool:
+            tools = ToolsSupported()
+        else:
+            tools = [tool]
+
+        generated_files = {
+            'projects': {}
+        }
+        for export_tool in tools:
+            exporter = ToolsSupported().get_value(export_tool, 'exporter')
+
+            self.customize_project_for_tool(export_tool)
+            self._set_output_dir_path(export_tool, '')
+            self._set_output_dir()
+            if copy:
+                self.copy_sources_to_generated_destination()
+
+            files = exporter(self.project, self.pgen_workspace.settings).export_project()
+            generated_files['projects'][export_tool] = files
+        self.generated_files = generated_files
 
     def build(self, tool):
         """build the project"""
