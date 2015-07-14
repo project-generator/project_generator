@@ -16,5 +16,5 @@
 class Builder:
     """ Template to be subclassed """
 
-    def build_project(self, project, project_path):
+    def build_project(self):
         raise NotImplementedError
