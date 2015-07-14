@@ -379,11 +379,11 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         generated_projects['files']['ewd'] = files[2]
         return generated_projects
 
-    def build_project(self, project_name, project_files, env_settings):
+    def build_project(self):
         """ Build IAR project. """
         # > IarBuild [project_path] -build [project_name]
-        proj_path = join(getcwd(), project_files[0])
-        if proj_path.split('.')[-1] != '.ewp':
+        proj_path = join(getcwd(), self.workspace.generated_files['projects']['iar_arm']['files']['ewp'])
+        if proj_path.split('.')[-1] != 'ewp':
             proj_path += '.ewp'
         if not os.path.exists(proj_path):
             logging.debug("The file: %s does not exists, exported prior building?" % proj_path)
