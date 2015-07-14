@@ -18,6 +18,7 @@ import shutil
 from unittest import TestCase
 
 from project_generator.workspace import PgenWorkspace
+from project_generator.project import Project
 from project_generator.settings import ProjectSettings
 from project_generator.tools.coide import CoIDEdefinitions, Coide
 
