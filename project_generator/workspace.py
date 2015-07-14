@@ -83,6 +83,7 @@ class PgenWorkspace:
         return workspace_name in [name for name, v in self.workspaces.items()]
 
     def export_project(self, project_name, tool, copy):
+        """ Export a project or a workspace """
         if self._is_project(project_name):
             self.projects[project_name].export(tool, copy)
         elif self._is_workspace(project_name):
@@ -91,37 +92,38 @@ class PgenWorkspace:
             raise RuntimeError("Invalid Project Name: %s" % project_name)
 
     def export_projects(self, tool, copy):
-        for name, project in self.workspace.items():
-            logging.debug("Exporting Project %s" % name)
-
+        # Export all, projects and workspaces
+        for name, project in self.projects.items():
+            logging.debug("Exporting project: %s" % name)
             project.export(tool, copy)
 
-    def build_projects(self, tool):
-        for name, project in self.workspace.items():
-            logging.debug("Building Project %s" % name)
-
-            project.build(tool)
-
-    def flash_projects(self, tool):
-
-        for name, project in self.workspace.items():
-            logging.debug("Flashing Project %s" % name)
-
-            project.flash(tool)
+        for name, project in self.workspaces.items():
+            logging.debug("Exporting workspace: %s" % name)
+            project.export(tool, copy)
 
     def build_project(self, project_name, tool):
-        if project_name not in self.workspace:
+        if project_name not in self.projects:
             raise RuntimeError("Invalid Project Name")
 
         logging.debug("Building Project %s" % project_name)
-        self.workspace[project_name].build(tool)
+        self.projects[project_name].build(tool)
+
+    def build_projects(self, tool):
+        for name, project in self.projects.items():
+            logging.debug("Building Project %s" % name)
+            project.build(tool)
 
     def flash_project(self, project_name, tool):
-        if project_name not in self.workspace:
+        if project_name not in self.projects:
             raise RuntimeError("Invalid Project Name")
 
         logging.debug("Flashing Project %s" % project_name)
-        self.workspace[project_name].flash(tool)
+        self.projects[project_name].flash(tool)
+
+    def flash_projects(self, tool):
+        for name, project in self.projects.items():
+            logging.debug("Flashing Project %s" % name)
+            project.flash(tool)
 
     @staticmethod
     def pgen_list(type):

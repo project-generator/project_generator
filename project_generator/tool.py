@@ -145,7 +145,7 @@ def build(builder, project_name, project_files, tool, env_settings):
     if builder not in ToolsSupported().BUILDERS:
         raise RuntimeError("Builder does not support specified tool: %s" % tool)
     else:
-        builder().build_project(project_name, project_files, env_settings)
+        builder(project_workspace, env_settings).build_project()
 
 def flash(flasher, proj_dic, project_name, project_files, tool, env_settings):
     """ Invokes flasher for specified tool. """
