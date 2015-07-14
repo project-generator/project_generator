@@ -181,7 +181,7 @@ class ProjectWorkspace:
                 project._set_output_dir()
                 if copy:
                     project.copy_sources_to_generated_destination
-
+                project.project['singular'] = False
                 files = exporter(project.project, self.pgen_workspace.settings).export_project()
                 # we gather all generated files, needed for workspace files
                 workspace_dic['projects'].append(files)
@@ -244,7 +244,8 @@ class Project:
             'target': '',       # target
             'template' : '',    # tool template
             'output_type': self.output_types['executable'],           # output type, default - exe
-            'tools_supported': [self.pgen_workspace.settings.DEFAULT_TOOL] # Tools which are supported
+            'tools_supported': [self.pgen_workspace.settings.DEFAULT_TOOL], # Tools which are supported
+            'singular': True,  # singular project or part of a workspace
 
         }
 

@@ -213,7 +213,6 @@ class Uvision(Builder, Exporter):
             # get relpath for project and inject it into workspace
             path_project = os.path.dirname(project['files']['uvproj'])
             path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
-            # path_to_project = path_to_project.replace( + '\\', '', 1)
             if path_project != path_workspace:
                 rel_path = os.path.relpath(os.getcwd(), path_workspace)
             uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(rel_path, project['path'])})
@@ -223,20 +222,16 @@ class Uvision(Builder, Exporter):
         project_path, uvmpw = self.gen_file_raw(uvmpw_xml, '%s.uvmpw' % self.workspace['settings']['name'], self.workspace['settings']['path'])
         return project_path, uvmpw
 
-    def _export_single_project(self, project):
-        expanded_dic = project.copy()
+    def _export_single_project(self):
+        expanded_dic = self.workspace.copy()
 
-        groups = self._get_groups(project)
+        groups = self._get_groups(self.workspace)
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
 
-        # TODO 0xc0170: fix misc , its a list with a dictionary
-        if 'misc' in expanded_dic and bool(expanded_dic['misc']):
-            print ("Using deprecated misc options for uvision. Please use template project files.")
-
         # get relative path and fix all paths within a project
-        self._iterate(project, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._iterate(self.workspace, expanded_dic, expanded_dic['output_dir']['rel_path'])
         self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
@@ -302,7 +297,7 @@ class Uvision(Builder, Exporter):
 
         # Project file
         uvproj_xml = xmltodict.unparse(uvproj_dic, pretty=True)
-        path, files = self.gen_file_raw(uvproj_xml, '%s.uvproj' % project['name'], expanded_dic['output_dir']['path'])
+        path, files = self.gen_file_raw(uvproj_xml, '%s.uvproj' % expanded_dic['name'], expanded_dic['output_dir']['path'])
         return path, files
 
     def export_workspace(self):
@@ -313,7 +308,7 @@ class Uvision(Builder, Exporter):
         generated_projects = {
             'projects': {},
         }
-        path, files = self._export_single_project(self.workspace)
+        path, files = self._export_single_project()
         generated_projects['projects'][self.workspace['name']] = copy.deepcopy(self.generated_project)
         generated_projects['projects'][self.workspace['name']]['path'] = path
         generated_projects['projects'][self.workspace['name']]['files']['uvproj'] = files
