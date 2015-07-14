@@ -319,10 +319,10 @@ class Uvision(Builder, Exporter):
     def supports_target(self, target):
         return target in self.definitions.mcu_def
 
-    def build_project(self, project_name, project_files, env_settings):
+    def build_project(self):
         # > UV4 -b [project_path]
-        path = join(os.getcwd(), project_files[0])
-        if path.split('.')[-1] != '.uvproj':
+        path = join(os.getcwd(), self.workspace.generated_files['projects']['uvision']['files']['uvproj'])
+        if path.split('.')[-1] != 'uvproj':
             path = path + '.uvproj'
         if not os.path.exists(path):
             logging.debug("The file: %s does not exists, exported prior building?" % path)
@@ -330,14 +330,14 @@ class Uvision(Builder, Exporter):
 
         logging.debug("Building uVision project: %s" % path)
 
-        args = [env_settings.get_env_settings('uvision'), '-r', '-j0', '-o', './build/build_log.txt', path]
+        args = [self.env_settings.get_env_settings('uvision'), '-r', '-j0', '-o', './build/build_log.txt', path]
 
         try:
             ret_code = None
             ret_code = subprocess.call(args)
         except:
             logging.error(
-                "Error whilst calling UV4: '%s'. Please set uvision path in the projects.yaml file." % env_settings.get_env_settings('uvision'))
+                "Error whilst calling UV4: '%s'. Please set uvision path in the projects.yaml file." % self.env_settings.get_env_settings('uvision'))
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
@@ -345,9 +345,9 @@ class Uvision(Builder, Exporter):
             else:
                 logging.info("Build succeeded with the status: %s" % self.ERRORLEVEL[ret_code])
 
-    def flash_project(self, proj_dic, project_name, project_files, env_settings):
+    def flash_project(self):
         # > UV4 -f [project_path]
-        path = join(os.getcwd(), project_files[0])
+        path = join(os.getcwd(), self.workspace.generated_files['projects']['uvision']['files']['uvproj'])
         if path.split('.')[-1] != '.uvproj':
             path = path + '.uvproj'
         logging.debug("Building uVision project: %s" % path)

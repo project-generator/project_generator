@@ -17,8 +17,8 @@ import shutil
 import yaml
 from unittest import TestCase
 
-from project_generator.project import Project
 from project_generator.workspace import PgenWorkspace
+from project_generator.project import Project, ProjectWorkspace
 
 project_1_yaml = {
     'common': {
@@ -36,17 +36,15 @@ project_1_yaml = {
 
 projects_yaml = {
     'projects': {
-        'project_1' : ['test_workspace/project_1.yaml']
-    },
-    'settings' : {
-        'definitions_dir': ['notpg/path/somewhere'],
-        # 'export_dir': ['not_generated_projects']
+        'workspace_project_1' : {
+            'project_1' : ['test_workspace/project_1.yaml']
+        }
     }
 }
 
-class TestProject(TestCase):
+class TestPgenWorkspace(TestCase):
 
-    """test things related to the Project class"""
+    """test things related to the PgenWorkspace class"""
 
     def setUp(self):
         if not os.path.exists('test_workspace'):
@@ -58,9 +56,10 @@ class TestProject(TestCase):
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_yaml, default_flow_style=False))
 
-        # now that Project and PgenWorkspace accepts dictionaries, we dont need to
-        # create yaml files!
         self.project = Project('project_1',[project_1_yaml],
+            PgenWorkspace(projects_yaml))
+
+        self.workspace = ProjectWorkspace('workspace_project_1', [self.project],
             PgenWorkspace(projects_yaml))
 
         # create 3 files to test project
@@ -76,21 +75,8 @@ class TestProject(TestCase):
         shutil.rmtree('test_workspace', ignore_errors=True)
         shutil.rmtree('generated_projects', ignore_errors=True)
 
-    def test_project_yaml(self):
-        # test using yaml files and compare basic data
-        project = Project('project_1',['test_workspace/project_1.yaml'],
-            PgenWorkspace('test_workspace/projects.yaml'))
-        self.assertEqual(self.project.name, project.name)
-        # fix this one, they should be equal
-        #self.assertDictEqual(self.project.project, project.project)
-
-    def test_name(self):
-        assert self.project.name == 'project_1'
-
-    def test_copy(self):
-        # test copy method which shojld copy all files to generated project dir by default
-        self.project.customize_project_for_tool('uvision')
-        self.project._set_output_dir_path('uvision', None)
-
-        self.project._set_output_dir()
-        self.project.copy_sources_to_generated_destination()
+    def test_member_variables(self):
+        # basic test if name and projects are set properly
+        assert self.workspace.name == 'workspace_project_1'
+        assert self.workspace.projects == [self.project]
+        assert bool(self.workspace.generated_files) == False

@@ -66,3 +66,7 @@ class TestProject(TestCase):
 
         assert os.path.isdir('create_this_folder')
         shutil.rmtree('create_this_folder')
+
+    def test_build_project(self):
+        self.project.export('uvision', False)
+        self.project.build('uvision')

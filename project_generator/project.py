@@ -398,11 +398,11 @@ class Project:
 
         for build_tool in tools:
             builder = self.tools.get_value(build_tool, 'builder')
-            build(builder, self.name, self._get_project_files(), build_tool, self.pgen_workspace.settings)
+            builder(self, self.pgen_workspace.settings).build_project()
 
     def flash(self, tool):
         """flash the project"""
-        # flashing via various tools does not make much usefulness?
+        # TODO: flashing via various tools does not make much usefulness?
         if not tool:
             logging.debug("No tool set for flashing, default is set: %s", self.pgen_workspace.settings.DEFAULT_TOOL)
             tool = self.pgen_workspace.settings.DEFAULT_TOOL
@@ -410,7 +410,7 @@ class Project:
         flasher = self.tools.get_value(tool, 'flasher')
         self.customize_project_for_tool(tool)
         self._set_output_dir_path(tool, None) # TODO: fix flashing for workspaces
-        flash(flasher, self.project, self.name, self._get_project_files(), tool, self.pgen_workspace.settings)
+        flasher(self, self.pgen_workspace.settings).flash_project()
 
     def copy_sources_to_generated_destination(self):
         self.project['copy_sources'] = True
@@ -435,12 +435,6 @@ class Project:
                 rel_path_output = os.path.join('..', rel_path_output)
                 count -= 1
             self.project['output_dir']['rel_path'] = rel_path_output
-
-    def _get_project_files(self):
-        if self.project['export_dir']:
-            return [os.path.join(self.project['export_dir']['path'], self.project['name'])]
-        else:
-            return [os.path.join(self.project['output_dir']['path'], self.project['name'])]
 
     def source_of_type(self, filetype):
         """return a dictionary of groups and the sources of a specified type within them"""

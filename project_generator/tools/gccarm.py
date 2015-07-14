@@ -172,10 +172,10 @@ class MakefileGccArm(Exporter):
         if 'optimization_level' not in data:
             data['optimization_level'] = self.optimization_options[0]
 
-    def build_project(self, project_name, project_files, env_settings):
+    def build_project(self):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
-        path = dirname(project_files[0])
+        path = dirname(self.workspace.generated_files['projects']['make_gcc_arm']['files']['makefile'])
         logging.debug("Building GCC ARM project: %s" % path)
 
         args = ['make', 'all']
