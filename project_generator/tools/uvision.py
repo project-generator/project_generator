@@ -311,13 +311,8 @@ class Uvision(Builder, Exporter):
         generated_projects['files']['uvproj'] = files
         return generated_projects
 
-    def fixup_executable(self, exe_path):
-        new_exe_path = exe_path + '.axf'
-        shutil.copy(exe_path, new_exe_path)
-        return new_exe_path
-
-    def get_generated_project_files(self, generated_files):
-        return [generated_files['files']['uvproj']]
+    def get_generated_project_files(self):
+        return [self.workspace.generated_files['projects']['uvision']['files']['uvproj']]
 
     def supports_target(self, target):
         return target in self.definitions.mcu_def

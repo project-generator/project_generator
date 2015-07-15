@@ -142,6 +142,10 @@ class MakefileGccArm(Exporter):
         generated_projects['path'], generated_projects['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', self.workspace, 'Makefile', self.workspace['output_dir']['path'])
         return generated_projects
 
+    def get_generated_project_files(self):
+        return [self.workspace.generated_files['projects']['make_gcc_arm']['files']['makefile']]
+
+
     def process_data_for_makefile(self, data):
         self._fix_paths(data)
         self._list_files(data, 'source_files_c', data['output_dir']['rel_path'])

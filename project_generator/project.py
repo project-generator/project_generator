@@ -414,14 +414,10 @@ class Project:
         self._set_output_dir_path(tool, None) # TODO: fix flashing for workspaces
         flasher(self, self.pgen_workspace.settings).flash_project()
 
-    def fixup_executable(self, executable, tool):
-        exporter = ToolsSupported().get_value(tool, 'exporter')
-        exporter(self.project, self.pgen_workspace.settings).fixup_executable(executable)
-
     def get_generated_project_files(self, tool):
         # returns list of project files which were generated
         exporter = ToolsSupported().get_value(tool, 'exporter')
-        return exporter(self.project, self.pgen_workspace.settings).get_generated_project_files(self.generated_files['projects'][tool])
+        return exporter(self.project, self.pgen_workspace.settings).get_generated_project_files()
 
     def copy_sources_to_generated_destination(self):
         self.project['copy_sources'] = True
