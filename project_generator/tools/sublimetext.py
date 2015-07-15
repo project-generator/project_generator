@@ -48,10 +48,10 @@ class SublimeTextMakeGccARM(MakefileGccArm):
         self.workspace['buildsys_name'] = 'Make'
         self.workspace['buildsys_cmd'] = 'make all'
 
-        output['files']['sublimetext'] = self.gen_file_jinja(
+        path, output['files']['sublimetext'] = self.gen_file_jinja(
             'sublimetext.sublime-project.tmpl', self.workspace, '%s.sublime-project' % self.workspace['name'], self.workspace['output_dir']['path'])
         generated_projects = output
         return generated_projects
 
     def get_generated_project_files(self):
-        return [self.workspace['files']['sublime'], self.workspace['files']['makefile']]
+        return [self.workspace['files']['sublimetext'], self.workspace['files']['makefile']]
