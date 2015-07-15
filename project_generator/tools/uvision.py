@@ -316,6 +316,9 @@ class Uvision(Builder, Exporter):
         shutil.copy(exe_path, new_exe_path)
         return new_exe_path
 
+    def get_generated_project_files(self, generated_files):
+        return [generated_files['files']['uvproj']]
+
     def supports_target(self, target):
         return target in self.definitions.mcu_def
 
