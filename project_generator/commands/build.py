@@ -42,11 +42,7 @@ def run(args):
             workspace.build_projects(args.tool)
     else:
         # not project known by pgen
-        project_settings = ProjectSettings()
-        project_files = [os.path.join(args.directory, args.project)]
-        builder = ToolsSupported().get_value(args.tool, 'builder')
-        build(builder, args.project, project_files, args.tool, project_settings)
-
+        logging.info("Currently not supported.")
 
 def setup(subparser):
     subparser.add_argument(
