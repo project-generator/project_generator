@@ -179,7 +179,7 @@ class MakefileGccArm(Exporter):
     def build_project(self):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
-        path = dirname(self.workspace.generated_files['projects']['make_gcc_arm']['files']['makefile'])
+        path = dirname(self.workspace['files']['makefile'])
         logging.debug("Building GCC ARM project: %s" % path)
 
         args = ['make', 'all']

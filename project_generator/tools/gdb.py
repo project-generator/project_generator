@@ -58,6 +58,10 @@ class ARMNoneEABIGDB(GDB):
         generated_projects['files']['startupfile'] = startupfile
         return generated_projects
 
+    def get_generated_project_files(self):
+        return [self.workspace['files']['startupfile']]
+
+
     def supports_target(self, target):
         return target in self.SUPPORTED
 

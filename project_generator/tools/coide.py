@@ -271,7 +271,7 @@ class Coide(Exporter):
         return generated_projects
 
     def get_generated_project_files(self):
-        return [self.workspace.generated_files['projects']['coide']['files']['coproj']]
+        return [self.workspace['files']['coproj']]
 
     def get_mcu_definition(self, project_file):
         """ Parse project file to get mcu definition """

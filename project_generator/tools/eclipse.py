@@ -111,7 +111,6 @@ class EclipseGnuARM(Exporter):
         return output
 
     def get_generated_project_files(self):
-        return [self.workspace.generated_files['projects']['eclipse_make_gcc_arm']['files']['proj_file'],
-            self.workspace.generated_files['projects']['eclipse_make_gcc_arm']['files']['cproj'],
-            self.workspace.generated_files['projects']['eclipse_make_gcc_arm']['files']['makefile']]
+        return [self.workspace['files']['proj_file'], self.workspace['files']['cproj'],
+            self.workspace['files']['makefile']]
 

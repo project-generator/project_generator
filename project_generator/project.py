@@ -374,9 +374,7 @@ class Project:
         else:
             tools = [tool]
 
-        generated_files = {
-            'projects': {}
-        }
+        generated_files = {}
         for export_tool in tools:
             exporter = ToolsSupported().get_value(export_tool, 'exporter')
 
@@ -387,7 +385,7 @@ class Project:
                 self.copy_sources_to_generated_destination()
 
             files = exporter(self.project, self.pgen_workspace.settings).export_project()
-            generated_files['projects'][export_tool] = files
+            generated_files[export_tool] = files
         self.generated_files = generated_files
 
     def build(self, tool):
@@ -400,7 +398,7 @@ class Project:
 
         for build_tool in tools:
             builder = self.tools.get_value(build_tool, 'builder')
-            builder(self, self.pgen_workspace.settings).build_project()
+            builder(self.generated_files[tool], self.pgen_workspace.settings).build_project()
 
     def flash(self, tool):
         """flash the project"""
@@ -417,7 +415,7 @@ class Project:
     def get_generated_project_files(self, tool):
         # returns list of project files which were generated
         exporter = ToolsSupported().get_value(tool, 'exporter')
-        return exporter(self.project, self.pgen_workspace.settings).get_generated_project_files()
+        return exporter(self.generated_files[tool], self.pgen_workspace.settings).get_generated_project_files()
 
     def copy_sources_to_generated_destination(self):
         self.project['copy_sources'] = True

@@ -54,5 +54,4 @@ class SublimeTextMakeGccARM(MakefileGccArm):
         return generated_projects
 
     def get_generated_project_files(self):
-        return [self.workspace.generated_files['projects']['sublimetext']['files']['sublime'],
-            self.workspace.generated_files['projects']['sublimetext']['files']['makefile']]
+        return [self.workspace['files']['sublime'], self.workspace['files']['makefile']]

@@ -312,14 +312,14 @@ class Uvision(Builder, Exporter):
         return generated_projects
 
     def get_generated_project_files(self):
-        return [self.workspace.generated_files['projects']['uvision']['files']['uvproj']]
+        return [self.workspace['files']['uvproj']]
 
     def supports_target(self, target):
         return target in self.definitions.mcu_def
 
     def build_project(self):
         # > UV4 -b [project_path]
-        path = join(os.getcwd(), self.workspace.generated_files['projects']['uvision']['files']['uvproj'])
+        path = join(os.getcwd(), self.workspace['files']['uvproj'])
         if path.split('.')[-1] != 'uvproj':
             path = path + '.uvproj'
         if not os.path.exists(path):
@@ -345,7 +345,7 @@ class Uvision(Builder, Exporter):
 
     def flash_project(self):
         # > UV4 -f [project_path]
-        path = join(os.getcwd(), self.workspace.generated_files['projects']['uvision']['files']['uvproj'])
+        path = join(os.getcwd(), self.workspace['files']['uvproj'])
         if path.split('.')[-1] != '.uvproj':
             path = path + '.uvproj'
         logging.debug("Building uVision project: %s" % path)
