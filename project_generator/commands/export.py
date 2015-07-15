@@ -33,8 +33,6 @@ def run(args):
             workspace.build_project(args.project, args.tool)
         if args.flash:
             workspace.flash_project(args.project, args.tool)
-    elif args.workspace:
-        workspace.export_project(args.workspace, args.tool, args.copy)
     else:
         workspace.export_projects(args.tool, args.copy)
 

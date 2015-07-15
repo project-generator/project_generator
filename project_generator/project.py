@@ -150,7 +150,7 @@ class ProjectWorkspace:
 
         tools = []
         if not tool:
-            tools = ToolsSupported()
+            tools = self.project['tools_supported']
         else:
             tools = [tool]
 
@@ -296,16 +296,18 @@ class Project:
     def _process_include_files(self, files):
         # If it's dic add it , if file, add it to files
         for include_file in files:
-            if os.path.isfile(include_file):
-                # file, add it to the list (for copying or if tool requires it)
-                if not include_file in self.project['include_files']:
-                    self.project['include_files'].append(os.path.normpath(include_file))
-                dir_path = os.path.dirname(include_file)
-            else:
-                # its a directory
-                dir_path = include_file
-            if not os.path.dirname(include_file) in self.project['includes']:
-                self.project['includes'].append(os.path.normpath(dir_path))
+            # include might be set to None - empty yaml list
+            if include_file:
+                if os.path.isfile(include_file):
+                    # file, add it to the list (for copying or if tool requires it)
+                    if not include_file in self.project['include_files']:
+                        self.project['include_files'].append(os.path.normpath(include_file))
+                    dir_path = os.path.dirname(include_file)
+                else:
+                    # its a directory
+                    dir_path = include_file
+                if not os.path.dirname(include_file) in self.project['includes']:
+                    self.project['includes'].append(os.path.normpath(dir_path))
 
     def _process_source_files(self, files, group_name):
         extensions = ['cpp', 'c', 's', 'obj', 'lib']
@@ -368,7 +370,7 @@ class Project:
 
         tools = []
         if not tool:
-            tools = ToolsSupported()
+            tools = self.project['tools_supported']
         else:
             tools = [tool]
 
