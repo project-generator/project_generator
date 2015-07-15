@@ -49,3 +49,7 @@ class TestProject(TestCase):
 
     def test_export_project(self):
         self.project.export('sublime_make_gcc_arm', False)
+       # it should get generated files from the last export
+        projectfiles = self.project.get_generated_project_files('sublime_make_gcc_arm')
+        assert projectfiles
+        assert os.path.splitext(projectfiles[0])[1] == '.sublime-project'

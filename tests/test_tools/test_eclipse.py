@@ -49,3 +49,5 @@ class TestProject(TestCase):
 
     def test_export_project(self):
         self.project.export('eclipse_make_gcc_arm', False)
+        projectfiles = self.project.get_generated_project_files('eclipse_make_gcc_arm')
+        assert projectfiles

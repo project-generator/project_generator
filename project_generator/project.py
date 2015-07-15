@@ -19,7 +19,7 @@ import logging
 import operator
 
 from collections import defaultdict
-from .tool import build, export, flash, fixup_executable, ToolsSupported
+from .tool import ToolsSupported
 from .util import merge_recursive, flatten
 from string import Template
 
@@ -251,42 +251,42 @@ class Project:
 
     def _set_project_attributes(self,project_file_data):
         if 'common' in project_file_data:
-                if 'output' in project_file_data['common']:
-                    if project_file_data['common']['output'][0] not in self.output_types:
-                        raise RuntimeError("Invalid Output Type.")
+            if 'output' in project_file_data['common']:
+                if project_file_data['common']['output'][0] not in self.output_types:
+                    raise RuntimeError("Invalid Output Type.")
 
-                    self.project['output_type'] = self.output_types[project_file_data['common']['output'][0]]
+                self.project['output_type'] = self.output_types[project_file_data['common']['output'][0]]
 
-                if 'includes' in project_file_data['common']:
-                    self._process_include_files(project_file_data['common']['includes'])
-                    # self.project['includes'].extend(
-                        # [os.path.normpath(x) for x in project_file_data['common']['includes'] if x is not None])
+            if 'includes' in project_file_data['common']:
+                self._process_include_files(project_file_data['common']['includes'])
+                # self.project['includes'].extend(
+                    # [os.path.normpath(x) for x in project_file_data['common']['includes'] if x is not None])
 
-                if 'sources' in project_file_data['common']:
-                    if type(project_file_data['common']['sources']) == type(dict()):
-                        for group_name, sources in project_file_data['common']['sources'].items():
-                            self._process_source_files(sources, group_name)
-                    else:
-                        self._process_source_files(project_file_data['common']['sources'], 'default')
-                    for source_path in self.project['source_paths']:
-                        if os.path.normpath(source_path) not in self.project['includes']:
-                            self.project['includes'].extend([source_path])
+            if 'sources' in project_file_data['common']:
+                if type(project_file_data['common']['sources']) == type(dict()):
+                    for group_name, sources in project_file_data['common']['sources'].items():
+                        self._process_source_files(sources, group_name)
+                else:
+                    self._process_source_files(project_file_data['common']['sources'], 'default')
+                for source_path in self.project['source_paths']:
+                    if os.path.normpath(source_path) not in self.project['includes']:
+                        self.project['includes'].extend([source_path])
 
-                if 'macros' in project_file_data['common']:
-                    self.project['macros'].extend(
-                        [x for x in project_file_data['common']['macros'] if x is not None])
+            if 'macros' in project_file_data['common']:
+                self.project['macros'].extend(
+                    [x for x in project_file_data['common']['macros'] if x is not None])
 
-                if 'export_dir' in project_file_data['common']:
-                    self.project['export_dir'] = os.path.normpath(project_file_data['common']['export_dir'][0])
+            if 'export_dir' in project_file_data['common']:
+                self.project['export_dir'] = os.path.normpath(project_file_data['common']['export_dir'][0])
 
-                for key in ['debugger','build_dir','mcu','name','target','core', 'linker_file']:
-                    if key in project_file_data['common']:
-                        self.project[key] = project_file_data['common'][key][0]
+            for key in ['debugger','build_dir','mcu','name','target','core', 'linker_file']:
+                if key in project_file_data['common']:
+                    self.project[key] = project_file_data['common'][key][0]
 
-                if 'tools_supported' in project_file_data['common']:
-                    self.project['tools_supported'] = []
-                    self.project['tools_supported'].extend(
-                        [x for x in project_file_data['common']['tools_supported'] if x is not None])
+            if 'tools_supported' in project_file_data['common']:
+                self.project['tools_supported'] = []
+                self.project['tools_supported'].extend(
+                    [x for x in project_file_data['common']['tools_supported'] if x is not None])
 
         if 'tool_specific' in project_file_data:
             group_name = 'default'
@@ -374,9 +374,7 @@ class Project:
         else:
             tools = [tool]
 
-        generated_files = {
-            'projects': {}
-        }
+        generated_files = {}
         for export_tool in tools:
             exporter = ToolsSupported().get_value(export_tool, 'exporter')
 
@@ -387,7 +385,7 @@ class Project:
                 self.copy_sources_to_generated_destination()
 
             files = exporter(self.project, self.pgen_workspace.settings).export_project()
-            generated_files['projects'][export_tool] = files
+            generated_files[export_tool] = files
         self.generated_files = generated_files
 
     def build(self, tool):
@@ -400,7 +398,7 @@ class Project:
 
         for build_tool in tools:
             builder = self.tools.get_value(build_tool, 'builder')
-            builder(self, self.pgen_workspace.settings).build_project()
+            builder(self.generated_files[tool], self.pgen_workspace.settings).build_project()
 
     def flash(self, tool):
         """flash the project"""
@@ -413,6 +411,11 @@ class Project:
         self.customize_project_for_tool(tool)
         self._set_output_dir_path(tool, None) # TODO: fix flashing for workspaces
         flasher(self, self.pgen_workspace.settings).flash_project()
+
+    def get_generated_project_files(self, tool):
+        # returns list of project files which were generated
+        exporter = ToolsSupported().get_value(tool, 'exporter')
+        return exporter(self.generated_files[tool], self.pgen_workspace.settings).get_generated_project_files()
 
     def copy_sources_to_generated_destination(self):
         self.project['copy_sources'] = True
@@ -517,11 +520,6 @@ class Project:
             self.pgen_workspace.settings.generated_projects_dir_default
         # After all adjusting , set the output_dir path, which tools will use to export a project
         self.project['output_dir']['path'] = os.path.normpath(output_dir)
-
-    @staticmethod
-    def fixup_executable(executable_path, tool):
-        exporter = ToolsSupported().get_value(tool, 'exporter')
-        fixup_executable(exporter, executable_path, tool)
 
     def _copy_files(self, file, output_dir, valid_files_group):
         file = os.path.normpath(file)

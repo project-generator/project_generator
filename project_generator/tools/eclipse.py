@@ -109,3 +109,8 @@ class EclipseGnuARM(Exporter):
         project_path, output['files']['proj_file'] = self.gen_file_jinja(
             'eclipse.project.tmpl', expanded_dic, '.project', data_for_make['output_dir']['path'])
         return output
+
+    def get_generated_project_files(self):
+        return [self.workspace['files']['proj_file'], self.workspace['files']['cproj'],
+            self.workspace['files']['makefile']]
+

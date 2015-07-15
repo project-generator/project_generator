@@ -382,7 +382,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
     def build_project(self):
         """ Build IAR project. """
         # > IarBuild [project_path] -build [project_name]
-        proj_path = join(getcwd(), self.workspace.generated_files['projects']['iar_arm']['files']['ewp'])
+        proj_path = join(getcwd(), self.workspace['files']['ewp'])
         if proj_path.split('.')[-1] != 'ewp':
             proj_path += '.ewp'
         if not os.path.exists(proj_path):
@@ -404,7 +404,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
     def flash_project(self):
         """ Flash IAR project. """
         # > [project_path]/settings/[project_name].[project_name].bat
-        proj_path = join(getcwd(), self.workspace.generated_files['projects']['iar_arm']['files']['eww'])
+        proj_path = join(getcwd(), self.workspace['files']['eww'])
         if proj_path.split('.')[-1] != 'eww':
             proj_path = proj_path + '.eww'
         # to be able to flash, open and close IAR, to generate .bat - is there other way around this? IAR help
@@ -427,6 +427,10 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
                 logging.info("Flashing completed.")
             else:
                 logging.info("Flashing failed.")
+ 
+    def get_generated_project_files(self):
+        return [self.workspace['files']['ewp'], self.workspace['files']['eww'],
+            self.workspace['files']['ewd']]
 
     def get_mcu_definition(self, project_file):
         """ Parse project file to get mcu definition """
