@@ -114,20 +114,6 @@ class ToolsSupported:
     def get_supported(self):
         return self.TOOLS.keys()
 
-def export(exporter, project_workspace, tool, env_settings):
-    """ Invokes tool generator. """
-    if exporter not in ToolsSupported().EXPORTERS:
-        raise RuntimeError("Exporter does not support specified tool: %s" % tool)
-    else:
-        return exporter(project_workspace, env_settings).export_project()
-
-def fixup_executable(exporter, executable_path, tool):
-    """ Perform any munging of the executable necessary to debug it with the specified tool. """
-    if exporter not in ToolsSupported().EXPORTERS:
-        raise RuntimeError("Exporter does not support specified tool: %s" % tool)
-    else:
-        return exporter().fixup_executable(executable_path)
-
 def target_supported(exporter, target, tool, env_settings):
     # TODO 0xc0170: fix, target supported goes to the tool, not exporter
     if exporter not in ToolsSupported().EXPORTERS:
@@ -139,20 +125,6 @@ def target_supported(exporter, target, tool, env_settings):
             Target = Targets(env_settings.get_env_settings('definitions'))
             supported = Target.is_supported(target, tool)
         return supported
-
-def build(builder, project_name, project_files, tool, env_settings):
-    """ Invokes builder for specified tool. """
-    if builder not in ToolsSupported().BUILDERS:
-        raise RuntimeError("Builder does not support specified tool: %s" % tool)
-    else:
-        builder(project_workspace, env_settings).build_project()
-
-def flash(flasher, proj_dic, project_name, project_files, tool, env_settings):
-    """ Invokes flasher for specified tool. """
-    if flasher not in ToolsSupported().FLASHERS:
-        raise RuntimeError("Flasher does not support specified tool: %s" % tool)
-    else:
-        flasher().flash_project(proj_dic, project_name, project_files, env_settings)
 
 def mcu_create(ToolParser, mcu_name, proj_file, tool):
     data = ToolParser(None, None).get_mcu_definition(proj_file)
