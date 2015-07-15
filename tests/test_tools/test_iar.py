@@ -49,3 +49,8 @@ class TestProject(TestCase):
 
     def test_export_project(self):
         self.project.export('iar_arm', False)
+        projectfiles = self.project.get_generated_project_files('iar_arm')
+        assert projectfiles
+        assert os.path.splitext(projectfiles[0])[1] == '.ewp'
+        assert os.path.splitext(projectfiles[1])[1] == '.eww'
+        assert os.path.splitext(projectfiles[2])[1] == '.ewd'

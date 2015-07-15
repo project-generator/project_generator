@@ -428,7 +428,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             else:
                 logging.info("Flashing failed.")
  
-    def get_generated_project_files(self, generated_files):
+    def get_generated_project_files(self):
         return [self.workspace['files']['ewp'], self.workspace['files']['eww'],
             self.workspace['files']['ewd']]
 
