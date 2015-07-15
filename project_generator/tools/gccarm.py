@@ -143,7 +143,7 @@ class MakefileGccArm(Exporter):
         return generated_projects
 
     def get_generated_project_files(self):
-        return [self.workspace.generated_files['projects']['make_gcc_arm']['files']['makefile']]
+        return [self.workspace['files']['makefile']]
 
 
     def process_data_for_makefile(self, data):
