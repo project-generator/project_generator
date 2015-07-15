@@ -58,7 +58,7 @@ class TestProject(TestCase):
         # it should get generated files from the last export
         projectfiles = self.project.get_generated_project_files('uvision')
         assert projectfiles
-        assert os.path.splitext(projectfiles[0])[1] == '.uvproj'
+        assert os.path.splitext(projectfiles['files'][0])[1] == '.uvproj'
 
     def test_export_project_to_diff_directory(self):
         project_1_yaml['common']['export_dir'] = ['create_this_folder']

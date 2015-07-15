@@ -429,8 +429,8 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
                 logging.info("Flashing failed.")
  
     def get_generated_project_files(self):
-        return [self.workspace['files']['ewp'], self.workspace['files']['eww'],
-            self.workspace['files']['ewd']]
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['ewp'], self.workspace['files']['eww'],
+            self.workspace['files']['ewd']]}
 
     def get_mcu_definition(self, project_file):
         """ Parse project file to get mcu definition """
