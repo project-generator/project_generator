@@ -49,3 +49,6 @@ class TestProject(TestCase):
 
     def test_export_project(self):
         self.project.export('coide', False)
+        projectfiles = self.project.get_generated_project_files('coide')
+        assert projectfiles
+        assert os.path.splitext(projectfiles[0])[1] == '.coproj'
