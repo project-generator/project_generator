@@ -19,7 +19,7 @@ import logging
 import operator
 
 from collections import defaultdict
-from .tool import build, export, flash, fixup_executable, ToolsSupported
+from .tool import ToolsSupported
 from .util import merge_recursive, flatten
 from string import Template
 
