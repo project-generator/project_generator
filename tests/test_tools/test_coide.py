@@ -51,4 +51,4 @@ class TestProject(TestCase):
         self.project.export('coide', False)
         projectfiles = self.project.get_generated_project_files('coide')
         assert projectfiles
-        assert os.path.splitext(projectfiles[0])[1] == '.coproj'
+        assert os.path.splitext(projectfiles['files'][0])[1] == '.coproj'

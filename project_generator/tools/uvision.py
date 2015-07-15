@@ -312,7 +312,7 @@ class Uvision(Builder, Exporter):
         return generated_projects
 
     def get_generated_project_files(self):
-        return [self.workspace['files']['uvproj']]
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvproj']]}
 
     def supports_target(self, target):
         return target in self.definitions.mcu_def
