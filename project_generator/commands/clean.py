@@ -19,12 +19,16 @@ help = 'Clean generated projects'
 
 
 def run(args):
-    workspace = PgenWorkspace(args.file, os.getcwd())
+    if os.path.exists(args.file):
+        workspace = PgenWorkspace(args.file, os.getcwd())
 
-    if args.project:
-        workspace.clean_project(args.project, args.tool)
+        if args.project:
+            workspace.clean_project(args.project, args.tool)
+        else:
+            workspace.clean_projects(args.tool)
     else:
-        workspace.clean_projects(args.tool)
+        # not project known by pgen
+        logging.warning("%s not found." % args.file)
 
 def setup(subparser):
     subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')

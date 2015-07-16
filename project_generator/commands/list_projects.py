@@ -21,7 +21,7 @@ help = 'List general pgen data as projects, tools or targets'
 
 
 def run(args):
-    if args.file:
+    if os.path.exists(args.file):
         workspace = PgenWorkspace(args.file, os.getcwd())
         if args.section == 'targets':
             print(workspace.list_targets())
@@ -33,13 +33,12 @@ def run(args):
         elif args.section == 'tools':
             print(workspace.list_tools())
     else:
-        if args.section == 'projects':
-            logging.info("No projects file set, can't read projects (-f).")
-        print(PgenWorkspace.pgen_list(args.section.lower()))
+        # not project known by pgen
+        logging.warning("%s not found." % args.file)
 
 
 def setup(subparser):
     subparser.add_argument("section", choices = ['targets','tools','projects'],
                            help="What section you would like listed", default='projects')
-    subparser.add_argument("-f", "--file", help="YAML projects file")
+    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-u", "--no-unicode", help="Use ASCII characters only", action='store_true')
