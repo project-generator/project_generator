@@ -50,7 +50,7 @@ def update(force=False, settings=ProjectSettings()):
 
 
 def run(args):
-    update(args.source, args.force, args.copy)
+    update(args.force)
 
 
 def setup(subparser):

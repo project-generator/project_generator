@@ -35,11 +35,11 @@ def run(args):
             workspace.build_projects(args.tool)
     else:
         # not project known by pgen
-        logging.info("Currently not supported.")
+        logging.warning("%s not found." % args.file)
 
 def setup(subparser):
     subparser.add_argument(
-        "-f", "--file", help="YAML projects file")
+        "-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-p", "--project", help="Name of the project to build")
     subparser.add_argument(
         "-t", "--tool", help="Build a project files for provided tool")
