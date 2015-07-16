@@ -151,8 +151,6 @@ class ProjectWorkspace:
 
         for export_tool in tools:
             exporter = ToolsSupported().get_value(export_tool, 'exporter')
-
-            self.pgen_workspace.settings.update(self.settings_dict)
             workspace_dic = {
                 'projects': [],
                 'settings': {
@@ -186,6 +184,7 @@ class ProjectWorkspace:
 
             # all projects are genereated, now generate workspace files
             generated_files['workspaces'] = exporter(workspace_dic, self.pgen_workspace.settings).export_workspace()
+            self.generated_files[export_tool] = generated_files
 
 class Project:
 
