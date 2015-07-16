@@ -134,12 +134,14 @@ class PgenWorkspace:
             target = Targets(ProjectSettings().get_env_settings('definitions'))
             print ("pgen supports the following targets:")
             return '\n'.join(target.targets)
+        elif type == 'projects':
+            return '\n'.join('')
 
     def list_projects(self, width = 1, use_unicode = True):
         # List the projects in a PgenWorkspace. If flat is true, don't display
         # as a tree.
 
-        workspace_names = list(self.workspaces)
+        workspace_names = list(self.workspaces) + list(self.projects)
         lines = []
 
         unicode_chars = {

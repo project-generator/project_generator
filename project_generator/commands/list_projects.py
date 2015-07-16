@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import logging
 
 from ..workspace import PgenWorkspace
 from ..util import unicode_available
@@ -22,7 +23,6 @@ help = 'List general pgen data as projects, tools or targets'
 def run(args):
     if args.file:
         workspace = PgenWorkspace(args.file, os.getcwd())
-
         if args.section == 'targets':
             print(workspace.list_targets())
         elif args.section == 'projects':
@@ -33,6 +33,8 @@ def run(args):
         elif args.section == 'tools':
             print(workspace.list_tools())
     else:
+        if args.section == 'projects':
+            logging.info("No projects file set, can't read projects (-f).")
         print(PgenWorkspace.pgen_list(args.section.lower()))
 
 
