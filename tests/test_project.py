@@ -40,9 +40,15 @@ projects_yaml = {
     },
     'settings' : {
         'definitions_dir': ['notpg/path/somewhere'],
-        # 'export_dir': ['not_generated_projects']
+        'export_dir': ['projects/{workspace}/{tool}_{target}/{name}']
     }
 }
+
+def test_output_directory_formatting():
+    path, depth = Project._generate_output_dir('aaa/bbb/cccc/ddd/eee/ffff/ggg')
+
+    assert depth == 7
+    assert path == '../../../../../../../'
 
 class TestProject(TestCase):
 
@@ -80,7 +86,7 @@ class TestProject(TestCase):
         # test using yaml files and compare basic data
         project = Project('project_1',['test_workspace/project_1.yaml'],
             PgenWorkspace('test_workspace/projects.yaml'))
-        self.assertEqual(self.project.name, project.name)
+        assert self.project.name == project.name
         # fix this one, they should be equal
         #self.assertDictEqual(self.project.project, project.project)
 
@@ -94,3 +100,7 @@ class TestProject(TestCase):
 
         self.project._set_output_dir()
         self.project.copy_sources_to_generated_destination()
+
+    def test_set_output_dir_path(self):
+        self.project._set_output_dir_path('uvision')
+        assert self.project.project['output_dir']['path'] == 'projects/uvision_target1/project_1'

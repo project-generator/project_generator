@@ -415,12 +415,17 @@ class Project:
         self.project['copy_sources'] = True
         self.copy_files()
 
+    @staticmethod
+    def _generate_output_dir(path):
+        """this is a separate function, so that it can be more easily tested."""
+
+        count = path.count(os.sep) + 1
+
+        return (os.sep.join('..' for _ in range(count)) + os.sep), count
+
     def _set_output_dir(self):
         path = self.project['output_dir']['path']
-        count = path.count('/') + 1
-
-        self.project['output_dir']['rel_path'] = ('/'.join('..' for _ in range(count)) + '/')
-        self.project['output_dir']['rel_count'] = count
+        self.project['output_dir']['rel_path'], self.project['output_dir']['rel_count'] = self._generate_output_dir(path)
 
     def source_of_type(self, filetype):
         """return a dictionary of groups and the sources of a specified type within them"""
