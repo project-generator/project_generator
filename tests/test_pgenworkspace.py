@@ -58,7 +58,7 @@ class TestPgenWorkspace(TestCase):
     def test_settings(self):
         # only check things which are affected by projects.yaml
         assert self.workspace.settings.paths['definitions'] == os.path.normpath('notpg/path/somewhere')
-        assert self.workspace.settings.generated_projects_dir == 'not_generated_projects'
+        assert self.workspace.settings.export_location_format == 'not_generated_projects'
 
     def test_project(self):
         # project should not be empty and project_1 should exist, not empty neither

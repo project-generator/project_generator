@@ -25,15 +25,13 @@ help = 'Build a project'
 def run(args):
     # Export if we know how, otherwise return
     if os.path.exists(args.file):
-        args.copy = False
-        args.build = False
-        export.run(args)
-
         # known project from records
         workspace = PgenWorkspace(args.file, os.getcwd())
         if args.project:
+            workspace.export_project(args.project, args.tool, False)
             workspace.build_project(args.project, args.tool)
         else:
+            workspace.export_projects(args.tool, False)
             workspace.build_projects(args.tool)
     else:
         # not project known by pgen
