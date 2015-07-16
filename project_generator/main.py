@@ -15,7 +15,13 @@
 import argparse
 import os
 import logging
-import chromalog
+
+colourful = True
+
+try:
+    import chromalog
+except ImportError:
+    colourful = False
 
 import pkg_resources
 
@@ -59,7 +65,11 @@ def main():
     verbosity = args.verbosity - args.quietness
 
     logging_level = max(logging.INFO - (10 * verbosity), 0)
-    chromalog.basicConfig(format="%(levelname)s\t%(message)s", level=logging_level)
+
+    if colourful:
+        chromalog.basicConfig(format="%(levelname)s\t%(message)s", level=logging_level)
+    else:
+        logging.basicConfig(format="%(levelname)s\t%(message)s", level=logging_level)
 
     logging.debug('This should be the project root: %s', os.getcwd())
 
