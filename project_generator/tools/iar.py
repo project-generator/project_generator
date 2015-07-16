@@ -18,6 +18,7 @@ import xmltodict
 import subprocess
 import logging
 import time
+import copy
 
 import os
 from os import getcwd
@@ -134,8 +135,19 @@ class IAREmbeddedWorkbenchProject:
     def _ewp_set_name(self, ewp_dic, name):
         ewp_dic['project']['configuration']['name'] = name
 
-    def _eww_set_path(self, eww_dic, name):
+    def _eww_set_path_single_project(self, eww_dic, name):
         eww_dic['workspace']['project']['path'] = join('$WS_DIR$', name + '.ewp')
+
+    def _eww_set_path_multiple_project(self, eww_dic):
+        eww_dic['workspace']['project'] = []
+        for project in self.workspace['projects']:
+            # We check how far is project from root and workspace. IF they dont match,
+            # get relpath for project and inject it into workspace
+            path_project = os.path.dirname(project['files']['ewp'])
+            path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
+            if path_project != path_workspace:
+                rel_path = os.path.relpath(os.getcwd(), path_workspace)
+            eww_dic['workspace']['project'].append( { 'path' : join('$WS_DIR$', os.path.join(rel_path, project['files']['ewp'])) })
 
     def _ewp_set_target(self, ewp_dic, mcu_def_dic):
         index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
@@ -163,8 +175,20 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         "cortex-m4f": 40,
     }
 
-    def __init__(self):
+    generated_project = {
+        'path': '',
+        'files': {
+            'ewp': '',
+            'ewd': '',
+            'eww': '',
+        }
+    }
+
+
+    def __init__(self, workspace, env_settings):
         self.definitions = IARDefinitions()
+        self.workspace = workspace
+        self.env_settings = env_settings
 
     def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ Groups expansion for Sources. """
@@ -249,19 +273,14 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             if option['name'] == find_key:
                 return settings.index(option)
 
-    def export_project(self, data, env_settings):
-        """ Processes groups and misc options specific for IAR, and run generator """
-        expanded_dic = data.copy()
+    def _export_single_project(self):
+        expanded_dic = self.workspace.copy()
 
-        # TODO 0xc0170: fix misc , its a list with a dictionary
-        if 'misc' in expanded_dic and bool(expanded_dic['misc'][0]):
-            print ("Using deprecated misc options for iar. Please use template project files.")
-
-        groups = self._get_groups(data)
+        groups = self._get_groups(expanded_dic)
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self._iterate(data, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._iterate(self.workspace, expanded_dic, expanded_dic['output_dir']['rel_path'])
         self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         # generic tool template specified or project
@@ -269,17 +288,29 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             # TODO 0xc0170: template list !
             project_file = join(getcwd(), expanded_dic['template'][0])
             ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-        elif 'iar' in env_settings.templates.keys():
+        elif 'iar' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
             # TODO 0xc0170: extension check/expansion
-            project_file = join(getcwd(), env_settings.templates['iar'][0])
+            project_file = join(getcwd(), self.env_settings.templates['iar'][0])
             ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
         else:
             ewp_dic = self.definitions.ewp_file
 
         # TODO 0xc0170: add ewd file parsing and support
         ewd_dic = self.definitions.ewd_file
-        eww_dic = self.definitions.eww_file
+
+        eww = None
+        if self.workspace['singular']:
+            eww_dic = self.definitions.eww_file
+            # set eww
+            self._eww_set_path_single_project(eww_dic, expanded_dic['name'])
+            eww_xml = xmltodict.unparse(eww_dic, pretty=True)
+            project_path, eww = self.gen_file_raw(eww_xml, '%s.eww' % expanded_dic['name'], expanded_dic['output_dir']['path'])
+
+        try:
+            self._ewp_set_name(ewp_dic, expanded_dic['name'])
+        except KeyError:
+            raise RuntimeError("The IAR template is not valid .ewp file")
 
         # replace all None with empty strings ''
         self._clean_xmldict_ewp(ewp_dic)
@@ -287,10 +318,6 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
 
         # set ARM toolchain and project name\
         self._ewp_set_toolchain(ewp_dic, 'ARM')
-        self._ewp_set_name(ewp_dic, expanded_dic['name'])
-
-        # set eww
-        self._eww_set_path(eww_dic, expanded_dic['name'])
 
         # set common things we have for IAR
         self._ewp_general_set(ewp_dic, expanded_dic)
@@ -302,7 +329,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         # set target only if defined, otherwise use from template/default one
         if expanded_dic['target']:
             # get target definition (target + mcu)
-            target = Targets(env_settings.get_env_settings('definitions'))
+            target = Targets(self.env_settings.get_env_settings('definitions'))
             if not target.is_supported(expanded_dic['target'].lower(), 'iar'):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
             mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'iar')
@@ -324,18 +351,39 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         ewp_xml = xmltodict.unparse(ewp_dic, pretty=True)
         project_path, ewp = self.gen_file_raw(ewp_xml, '%s.ewp' % expanded_dic['name'], expanded_dic['output_dir']['path'])
 
-        eww_xml = xmltodict.unparse(eww_dic, pretty=True)
-        project_path, eww = self.gen_file_raw(eww_xml, '%s.eww' % expanded_dic['name'], expanded_dic['output_dir']['path'])
-
         ewd_xml = xmltodict.unparse(ewd_dic, pretty=True)
         project_path, ewd = self.gen_file_raw(ewd_xml, '%s.ewd' % expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww, ewd]
 
-    def build_project(self, project_name, project_files, env_settings):
+    def _generate_eww_file(self):
+        eww_dic = self.definitions.eww_file
+        self._eww_set_path_multiple_project(eww_dic)
+
+        # generate the file
+        eww_xml = xmltodict.unparse(eww_dic, pretty=True)
+        project_path, eww = self.gen_file_raw(eww_xml, '%s.eww' % self.workspace['settings']['name'], self.workspace['settings']['path'])
+        return project_path, [eww]
+
+    def export_workspace(self):
+        # we got a workspace defined, therefore one ewp generated only
+        path, workspace = self._generate_eww_file()
+        return path, [workspace]
+
+    def export_project(self):
+        """ Processes groups and misc options specific for IAR, and run generator """
+        path, files = self._export_single_project()
+        generated_projects = copy.deepcopy(self.generated_project)
+        generated_projects['path'] = path
+        generated_projects['files']['ewp'] = files[0]
+        generated_projects['files']['eww'] = files[1]
+        generated_projects['files']['ewd'] = files[2]
+        return generated_projects
+
+    def build_project(self):
         """ Build IAR project. """
         # > IarBuild [project_path] -build [project_name]
-        proj_path = join(getcwd(), project_files[0])
-        if proj_path.split('.')[-1] != '.ewp':
+        proj_path = join(getcwd(), self.workspace['files']['ewp'])
+        if proj_path.split('.')[-1] != 'ewp':
             proj_path += '.ewp'
         if not os.path.exists(proj_path):
             logging.debug("The file: %s does not exists, exported prior building?" % proj_path)
@@ -343,6 +391,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         logging.debug("Building IAR project: %s" % proj_path)
 
         args = [join(env_settings.get_env_settings('iar'), 'IarBuild.exe'), proj_path, '-build', project_name]
+        logging.debug(args)
 
         try:
             ret_code = None
@@ -353,20 +402,21 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             # no IAR doc describes errors from IarBuild
             logging.info("Build completed.")
 
-    def flash_project(self, proj_dic, project_name, project_files, env_settings):
+    def flash_project(self):
         """ Flash IAR project. """
         # > [project_path]/settings/[project_name].[project_name].bat
-        proj_path = join(getcwd(), project_files[0])
-        if proj_path.split('.')[-1] != '.eww':
+        proj_path = join(getcwd(), self.workspace['files']['eww'])
+        if proj_path.split('.')[-1] != 'eww':
             proj_path = proj_path + '.eww'
         # to be able to flash, open and close IAR, to generate .bat - is there other way around this? IAR help
         child = subprocess.Popen([join(env_settings.get_env_settings('iar'), 'IarIdePm.exe'), proj_path])
         time.sleep(5)
         child.terminate()
-        path = join(os.path.dirname(proj_path), 'settings', project_name) + '.' + project_name + '.cspy.bat'
+        path = join(os.path.dirname(proj_path), 'settings', self.workspace.project['name']) + '.' + self.workspace.project['name'] + '.cspy.bat'
         logging.debug("Flashing IAR project: %s" % proj_path)
 
-        args = [proj_path, join('.', proj_dic['build_dir'], 'Exe', project_name + '.out')]
+        args = [proj_path, join('.', self.workspace.project['build_dir'], 'Exe', self.workspace.project['name'] + '.out')]
+        logging.debug(args)
 
         try:
             ret_code = None
@@ -379,3 +429,37 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
                 logging.info("Flashing completed.")
             else:
                 logging.info("Flashing failed.")
+ 
+    def get_generated_project_files(self):
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['ewp'], self.workspace['files']['eww'],
+            self.workspace['files']['ewd']]}
+
+    def get_mcu_definition(self, project_file):
+        """ Parse project file to get mcu definition """
+        project_file = join(getcwd(), project_file)
+        ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+
+        mcu = Targets().get_mcu_definition()
+
+        # we take 0 configuration or just configuration, as multiple configuration possibl
+        # debug, release, for mcu - does not matter, try and adjust
+        try:
+            index_general = self._get_option(ewp_dic['project']['configuration'][0]['settings'], 'General')
+            configuration = ewp_dic['project']['configuration'][0]
+        except KeyError:
+            index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
+            configuration = ewp_dic['project']['configuration']
+        index_option = self._get_option(configuration['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
+        OGChipSelectEditMenu = configuration['settings'][index_general]['data']['option'][index_option]
+
+        mcu['tool_specific'] = {
+            'iar' : {
+                'OGChipSelectEditMenu' : {
+                    'state' : [OGChipSelectEditMenu['state'].replace('\t', ' ', 1)],
+                },
+                'OGCoreOrChip' : {
+                    'state' : [1],
+                },
+            }
+        }
+        return mcu

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import copy
+import logging
 
 # eclipse works with linux paths
 from posixpath import normpath, join, basename
@@ -26,9 +27,20 @@ class EclipseGnuARM(Exporter):
                         'source_files_cpp', 'source_files_obj']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
 
-    def __init__(self):
+    generated_project = {
+        'path': '',
+        'files': {
+            'proj_file': '',
+            'cproj': '',
+            'makefile': '',
+        }
+    }
+
+    def __init__(self, workspace, env_settings):
         self.definitions = 0
-        self.exporter = MakefileGccArm()
+        self.exporter = MakefileGccArm(workspace, env_settings)
+        self.workspace = workspace
+        self.env_settings = env_settings
 
     def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ data expansion - uvision needs filename and path separately. """
@@ -69,24 +81,36 @@ class EclipseGnuARM(Exporter):
                         group = k
                     self._expand_data(dic, expanded_data, attribute, group, rel_path)
 
-    def export_project(self, data, settings):
+    def export_workspace(self):
+        logging.debug("Current version of CoIDE does not support workspaces")
+
+    def export_project(self):
         """ Processes groups and misc options specific for eclipse, and run generator """
-        data_for_make = data.copy()
 
-        self.exporter.process_data_for_makefile(data_for_make, settings, "eclipse_makefile")
-        project_path, makefile = self.gen_file_jinja('makefile_gcc.tmpl', data_for_make, 'Makefile', data_for_make['output_dir']['path'])
+        generated_projects = {}
 
-        expanded_dic = data.copy()
+        output = copy.deepcopy(self.generated_project)
+        data_for_make = self.workspace.copy()
+
+        self.exporter.process_data_for_makefile(data_for_make)
+        output['path'], output['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', data_for_make, 'Makefile', data_for_make['output_dir']['path'])
+
+        expanded_dic = self.workspace.copy()
         expanded_dic['rel_path'] = data_for_make['output_dir']['rel_path']
         groups = self._get_groups(expanded_dic)
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self._iterate(data, expanded_dic, data_for_make['rel_path'])
+        self._iterate(self.workspace, expanded_dic, expanded_dic['rel_path'])
 
         # Project file
-        project_path, cproj = self.gen_file_jinja(
+        project_path, output['files']['cproj'] = self.gen_file_jinja(
             'eclipse_makefile.cproject.tmpl', expanded_dic, '.cproject', data_for_make['output_dir']['path'])
-        project_path, projfile = self.gen_file_jinja(
+        project_path, output['files']['proj_file'] = self.gen_file_jinja(
             'eclipse.project.tmpl', expanded_dic, '.project', data_for_make['output_dir']['path'])
-        return project_path, [projfile, cproj, makefile]
+        return output
+
+    def get_generated_project_files(self):
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['proj_file'], self.workspace['files']['cproj'],
+            self.workspace['files']['makefile']]}
+

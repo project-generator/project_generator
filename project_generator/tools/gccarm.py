@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import join, normpath
+import copy
+
+from os.path import join, normpath,dirname
+import subprocess
 from .exporter import Exporter
 from ..targets import Targets
+import logging
 
 
 class MakefileGccArm(Exporter):
@@ -29,6 +33,17 @@ class MakefileGccArm(Exporter):
     SUCCESSVALUE = 0
 
     optimization_options = ['O0', 'O1', 'O2', 'O3', 'Os']
+
+    generated_projects = {
+        'path': '',
+        'files': {
+            'makefile' : '',
+        }
+    }
+
+    def __init__(self, workspace, env_settings):
+        self.workspace = workspace
+        self.env_settings = env_settings
 
     def _list_files(self, data, attribute, rel_path):
         """ Creates a list of all files based on the attribute. """
@@ -92,7 +107,7 @@ class MakefileGccArm(Exporter):
             for k, v in dic.items():
                 self._linker_options(k, v, data)
 
-    def _fix_paths(self, data, name, env_settings):
+    def _fix_paths(self, data):
         # get relative path and fix all paths within a project
         fixed_paths = []
         for path in data['includes']:
@@ -117,23 +132,31 @@ class MakefileGccArm(Exporter):
         if data['linker_file']:
             data['linker_file'] = join(data['output_dir']['rel_path'], normpath(data['linker_file']))
 
-    def export_project(self, data, env_settings):
-        """ Processes misc options specific for GCC ARM, and run generator. """
-        self.process_data_for_makefile(data, env_settings, "make_gcc_arm")
-        project_path, makefile = self.gen_file_jinja('makefile_gcc.tmpl', data, 'Makefile', data['output_dir']['path'])
-        return project_path, [makefile]
+    def export_workspace(self):
+        logging.debug("Current version of CoIDE does not support workspaces")
 
-    def process_data_for_makefile(self, data, env_settings, name):
-        self._fix_paths(data, name, env_settings)
+    def export_project(self):
+        """ Processes misc options specific for GCC ARM, and run generator. """
+        generated_projects = copy.deepcopy(self.generated_projects)
+        self.process_data_for_makefile(self.workspace)
+        generated_projects['path'], generated_projects['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', self.workspace, 'Makefile', self.workspace['output_dir']['path'])
+        return generated_projects
+
+    def get_generated_project_files(self):
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['makefile']]}
+
+
+    def process_data_for_makefile(self, data):
+        self._fix_paths(data)
         self._list_files(data, 'source_files_c', data['output_dir']['rel_path'])
         self._list_files(data, 'source_files_cpp', data['output_dir']['rel_path'])
         self._list_files(data, 'source_files_s', data['output_dir']['rel_path'])
 
         self._parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'
-        data['toolchain_bin_path'] = env_settings.get_env_settings('gcc')
+        data['toolchain_bin_path'] = self.env_settings.get_env_settings('gcc')
 
-        target = Targets(env_settings.get_env_settings('definitions'))
+        target = Targets(self.env_settings.get_env_settings('definitions'))
 
         if target.get_mcu_core(data['target'].lower()):
             data['core'] = target.get_mcu_core(data['target'].lower())[0]
@@ -153,13 +176,14 @@ class MakefileGccArm(Exporter):
         if 'optimization_level' not in data:
             data['optimization_level'] = self.optimization_options[0]
 
-    def build_project(self, project_name, project_files, env_settings):
+    def build_project(self):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
-        path = dirname(project_files[0])
+        path = dirname(self.workspace['files']['makefile'])
         logging.debug("Building GCC ARM project: %s" % path)
 
         args = ['make', 'all']
+        logging.debug(args)
 
         try:
             ret_code = None
