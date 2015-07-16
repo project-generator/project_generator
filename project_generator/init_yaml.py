@@ -41,9 +41,9 @@ def _scan(section, root, directory, extensions, is_path):
 def _generate_file(filename,root,directory,data):
         logging.debug('Generating yaml file')
         if os.path.isfile(os.path.join(directory, filename)):
-            print("Project file already exists")
+            print("Project file " +filename+  " already exists")
             while True:
-                answer = input('Should I overwrite it? (Y/n)')
+                answer = raw_input('Should I overwrite it? (Y/n)')
                 try:
                     overwrite = answer.lower() in ('y', 'yes')
                     if not overwrite:

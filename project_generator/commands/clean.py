@@ -14,6 +14,7 @@
 import os
 
 from ..workspace import PgenWorkspace
+import logging
 
 help = 'Clean generated projects'
 

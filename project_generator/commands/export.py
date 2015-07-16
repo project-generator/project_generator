@@ -15,6 +15,7 @@ import os
 
 from .update import update
 from ..workspace import PgenWorkspace
+import logging
 
 help = 'Export a project record'
 
