@@ -464,7 +464,6 @@ class Project:
                 k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
 
     def customize_project_for_tool(self, tool):
-        """for backwards compatibility"""
         toolchain_specific_settings =  self.tool_specific[self.tools.get_value(tool, 'toolchain')]
         tool_specific_settings = []
         toolnames = self.tools.get_value(tool, 'toolnames')

@@ -16,7 +16,7 @@ import os
 from ..workspace import PgenWorkspace
 from ..util import unicode_available
 
-help = 'List all projects'
+help = 'List general pgen data as projects, tools or targets'
 
 
 def run(args):

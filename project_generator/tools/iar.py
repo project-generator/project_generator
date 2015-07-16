@@ -391,6 +391,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         logging.debug("Building IAR project: %s" % proj_path)
 
         args = [join(env_settings.get_env_settings('iar'), 'IarBuild.exe'), proj_path, '-build', project_name]
+        logging.debug(args)
 
         try:
             ret_code = None
@@ -415,6 +416,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         logging.debug("Flashing IAR project: %s" % proj_path)
 
         args = [proj_path, join('.', self.workspace.project['build_dir'], 'Exe', self.workspace.project['name'] + '.out')]
+        logging.debug(args)
 
         try:
             ret_code = None

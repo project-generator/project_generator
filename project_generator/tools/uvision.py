@@ -329,6 +329,7 @@ class Uvision(Builder, Exporter):
         logging.debug("Building uVision project: %s" % path)
 
         args = [self.env_settings.get_env_settings('uvision'), '-r', '-j0', '-o', './build/build_log.txt', path]
+        logging.debug(args)
 
         try:
             ret_code = None
@@ -351,6 +352,7 @@ class Uvision(Builder, Exporter):
         logging.debug("Building uVision project: %s" % path)
 
         args = [env_settings.get_env_settings('uvision'), '-f', '-j0', path]
+        logging.debug(args)
 
         try:
             ret_code = None

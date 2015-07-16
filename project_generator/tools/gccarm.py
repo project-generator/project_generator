@@ -183,6 +183,7 @@ class MakefileGccArm(Exporter):
         logging.debug("Building GCC ARM project: %s" % path)
 
         args = ['make', 'all']
+        logging.debug(args)
 
         try:
             ret_code = None
