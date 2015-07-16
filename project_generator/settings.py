@@ -29,6 +29,8 @@ class ProjectSettings:
     PROJECT_ROOT = os.environ.get('PROJECT_GENERATOR_ROOT') or join(pardir, pardir)
     DEFAULT_TOOL = os.environ.get('PROJECT_GENERATOR_DEFAULT_TOOL') or 'uvision'
 
+    DEFAULT_EXPORT_LOCATION_FORMAT = join('generated_projects', '{tool}_{name}')
+
     def __init__(self):
         """ This are default enviroment settings for build tools. To override,
         define them in the projects.yaml file. """
@@ -45,8 +47,8 @@ class ProjectSettings:
         self.paths['definitions'] = self.paths['definitions_default']
         if not os.path.exists(join(expanduser('~/.pg'))):
             os.mkdir(join(expanduser('~/.pg')))
-        self.generated_projects_dir_default = 'generated_projects'
-        self.generated_projects_dir = self.generated_projects_dir_default
+
+        self.export_location_format = self.DEFAULT_EXPORT_LOCATION_FORMAT
 
     def update(self, settings):
         if settings:
@@ -62,7 +64,7 @@ class ProjectSettings:
                 self.paths['definitions'] = normpath(settings['definitions_dir'][0])
 
             if 'export_dir' in settings:
-                self.generated_projects_dir = normpath(settings['export_dir'][0])
+                self.export_location_format = normpath(settings['export_dir'][0])
 
     def update_definitions_dir(self, def_dir):
         self.paths['definitions'] = normpath(def_dir)

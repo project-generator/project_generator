@@ -23,11 +23,6 @@ from .tool import ToolsSupported
 from .util import merge_recursive, flatten
 from string import Template
 
-try:
-    input = raw_input
-except:
-    pass
-
 FILES_EXTENSIONS = {
     'includes': ['h', 'hpp', 'inc'],
     'source_files_s': ['s'],
@@ -235,7 +230,6 @@ class Project:
             'source_files_lib': [{}],   # [internal] libraries
             'macros': [],               # macros (defines)
             'misc': {},                 # misc tools settings, which are parsed by tool
-            'export_dir': self.pgen_workspace.settings.generated_projects_dir_default, # Export path for a project
             'output_dir': {             # [internal] The generated path dict
                 'path': '',             # path with all name mangling we add to export_dir
                 'rel_path': '',         # how far we are from root
@@ -422,24 +416,11 @@ class Project:
         self.copy_files()
 
     def _set_output_dir(self):
-        """Set paths"""
-        self.project['output_dir']['rel_path'] = ''
+        path = self.project['output_dir']['path']
+        count = path.count('/') + 1
 
-        if not self.project['copy_sources']:
-            # Get number of how far we are from root, to set paths in the project
-            # correctly
-            count = 1
-            pdir = self.project['output_dir']['path']
-            while os.path.split(pdir)[0]:
-                pdir = os.path.split(pdir)[0]
-                count += 1
-            rel_path_output = ''
-
-            self.project['output_dir']['rel_count'] = count
-            while count:
-                rel_path_output = os.path.join('..', rel_path_output)
-                count -= 1
-            self.project['output_dir']['rel_path'] = rel_path_output
+        self.project['output_dir']['rel_path'] = ('/'.join('..' for _ in range(count)) + '/')
+        self.project['output_dir']['rel_count'] = count
 
     def source_of_type(self, filetype):
         """return a dictionary of groups and the sources of a specified type within them"""
@@ -499,26 +480,27 @@ class Project:
         if len(self.project['linker_file']) == 0 and self.project['output_type'] == 'exe':
             raise RuntimeError("Executable - no linker command found.")
 
-    def _set_output_dir_path(self, tool, workspace_path):
-        if self.pgen_workspace.settings.generated_projects_dir != self.pgen_workspace.settings.generated_projects_dir_default:
-            # global settings defined, replace keys pgen is familiar, this overrides anything in the project
-            output_dir = Template(self.pgen_workspace.settings.generated_projects_dir)
-            output_dir = output_dir.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
-                                               project_name=self.name, tool=tool)
+    def _set_output_dir_path(self, tool, workspace_path = None):
+        if self.pgen_workspace.settings.export_location_format != self.pgen_workspace.settings.DEFAULT_EXPORT_LOCATION_FORMAT:
+            location_format = self.pgen_workspace.settings.export_location_format
         else:
-            if self.project['export_dir'] == self.pgen_workspace.settings.generated_projects_dir_default:
-                # if export_dir is not defined we use tool_name for a project
-                project_name = "%s_%s" % (tool, self.name)
+            if 'export_dir' in self.project:
+                location_format = self.project['export_dir']
             else:
-                project_name = ""
-            # TODO: below works only if we are using default export dir, will blow up with user defined paths
-            if workspace_path:
-                output_dir = os.path.join(self.project['export_dir'], workspace_path, project_name)
-            else:
-                output_dir = os.path.join(self.project['export_dir'], project_name)
-            self.pgen_workspace.settings.generated_projects_dir_default
-        # After all adjusting , set the output_dir path, which tools will use to export a project
-        self.project['output_dir']['path'] = os.path.normpath(output_dir)
+                location_format = self.pgen_workspace.settings.export_location_format
+
+        # substitute all of the different dynamic values
+        location = location_format.format(**{
+            'name': self.name,
+            'tool': tool,
+            'target': self.project['target'],
+            'workspace': self._get_workspace_name() or '.'
+        })
+
+        # I'm hoping that having the workspace variable will remove the need for workspace_path
+
+        # TODO (matthewelse): make this return a value directly
+        self.project['output_dir']['path'] = os.path.normpath(location)
 
     def _copy_files(self, file, output_dir, valid_files_group):
         file = os.path.normpath(file)
