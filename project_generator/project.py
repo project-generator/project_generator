@@ -398,7 +398,7 @@ class Project:
 
         for build_tool in tools:
             builder = self.tools.get_value(build_tool, 'builder')
-            builder(self.generated_files[tool], self.pgen_workspace.settings).build_project()
+            builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project()
 
     def flash(self, tool):
         """flash the project"""
