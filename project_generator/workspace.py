@@ -141,7 +141,10 @@ class PgenWorkspace:
         # List the projects in a PgenWorkspace. If flat is true, don't display
         # as a tree.
 
-        workspace_names = list(self.workspaces) + list(self.projects)
+        # TODO: (matthewelse) tidy this up, along with other Workspace stuff
+
+        names = list(self.workspaces) + [k for k, v in self.projects.items() if v.project['singular']]
+
         lines = []
 
         unicode_chars = {
@@ -166,16 +169,19 @@ class PgenWorkspace:
         chars = unicode_chars if use_unicode else ascii_chars
         width = width if use_unicode else 0
 
-        for i in range(len(workspace_names)):
-            name = workspace_names[i]
-            workspace = self.workspaces[name]
+        for i, name in enumerate(names):
+            if name in self.workspaces:
+                workspace = self.workspaces[name]
+            else:
+                workspace = self.projects[name]
+
             line = u"" if unicode else ''
 
-            if len(workspace_names) == 1:
+            if len(names) == 1:
                 line += chars['.']
             elif i == 0:
                 line += chars['tl']
-            elif i == len(workspace_names) - 1:
+            elif i == len(names) - 1:
                 line += chars['bl']
             else:
                 line += chars['rt']
@@ -186,7 +192,7 @@ class PgenWorkspace:
             line += name
             lines.append(line)
 
-            if not workspace.singular:
+            if type(workspace) is ProjectWorkspace:
                 # it's not a placeholder workspace for a single project
                 for j in range(len(workspace.projects)):
                     project = workspace.projects[j]
