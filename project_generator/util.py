@@ -12,10 +12,12 @@
 # limitations under the License.
 
 import os
-import shutil
-import locale
-import operator
 import yaml
+import locale
+import shutil
+import string
+import operator
+
 from functools import reduce
 
 def rmtree_if_exists(directory):
@@ -58,3 +60,12 @@ def load_yaml_records(yaml_files):
         except IOError:
            raise IOError("The file %s referenced in main yaml doesn't exist." % project_file)
     return dictionaries
+
+class PartialFormatter(string.Formatter):
+    def get_field(self, field_name, args, kwargs):
+        try:
+            val = super(PartialFormatter, self).get_field(field_name, args, kwargs)
+        except (IndexError, KeyError, AttributeError):
+            first, _ = field_name._formatter_field_name_split()
+            val = '{' + field_name + '}', first
+        return val

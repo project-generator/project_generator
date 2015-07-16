@@ -20,7 +20,7 @@ import operator
 
 from collections import defaultdict
 from .tool import ToolsSupported
-from .util import merge_recursive, flatten
+from .util import merge_recursive, flatten, PartialFormatter
 from string import Template
 
 FILES_EXTENSIONS = {
@@ -495,8 +495,8 @@ class Project:
                 location_format = self.pgen_workspace.settings.export_location_format
 
         # substitute all of the different dynamic values
-        location = location_format.format(**{
-            'name': self.name,
+        location = PartialFormatter().format(location_format, **{
+            'project_name': self.name,
             'tool': tool,
             'target': self.project['target'],
             'workspace': self._get_workspace_name() or '.'

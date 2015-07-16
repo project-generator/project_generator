@@ -40,7 +40,7 @@ projects_yaml = {
     },
     'settings' : {
         'definitions_dir': ['notpg/path/somewhere'],
-        'export_dir': ['projects/{workspace}/{tool}_{target}/{name}']
+        'export_dir': ['projects/{workspace}/{tool}_{target}/{project_name}']
     }
 }
 
@@ -80,7 +80,7 @@ class TestProject(TestCase):
     def tearDown(self):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
-        shutil.rmtree('generated_projects', ignore_errors=True)
+        shutil.rmtree('projects', ignore_errors=True)
 
     def test_project_yaml(self):
         # test using yaml files and compare basic data
