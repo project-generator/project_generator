@@ -44,8 +44,9 @@ class PgenWorkspace:
 
         # so that we can test things independently of eachother
         self.workspaces = {}
+        self.projects = {}
 
-        # We support grouping of projects or just a project for ProjectWorkspace
+        # We support grouping of projects which is a workspace
         #
         # [projects.yaml]
         #   projects:
@@ -68,57 +69,62 @@ class PgenWorkspace:
                 settings_dict = {}
                 if type(records) is dict:
                     # workspace
-                    if "workspace_settings" in records:
-                        settings_dict = self.projects_dict['projects'][name]['workspace_settings']
-                    projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()
-                                if n != "workspace_settings"]
-
+                    projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
+                    self.workspaces[name] = ProjectWorkspace(name, projects, self)
                 else:
                     # single project
-                    projects = [Project(name, load_yaml_records(uniqify(flatten(records))), self)]
-                self.workspaces[name] = ProjectWorkspace(name, projects, self, settings_dict, type(records) is not dict)
+                    self.projects[name] = Project(name, load_yaml_records(uniqify(flatten(records))), self)
         else:
             logging.debug("No projects found in the main record file.")
 
+    def _is_project(self, proj_name):
+        return proj_name in [name for name, v in self.projects.items()]
+
+    def _is_workspace(self, workspace_name):
+        return workspace_name in [name for name, v in self.workspaces.items()]
+
     def export_project(self, project_name, tool, copy):
-        if project_name not in self.workspaces:
+        """ Export a project or a workspace """
+        if self._is_project(project_name):
+            self.projects[project_name].export(tool, copy)
+        elif self._is_workspace(project_name):
+            self.workspaces[project_name].export(tool, copy)
+        else:
             raise RuntimeError("Invalid Project Name: %s" % project_name)
 
-        logging.debug("Exporting Project %s" % project_name)
-        self.workspaces[project_name].export(tool, copy)
-
     def export_projects(self, tool, copy):
-        for name, project in self.workspace.items():
-            logging.debug("Exporting Project %s" % name)
-
+        # Export all, projects and workspaces
+        for name, project in self.projects.items():
+            logging.debug("Exporting project: %s" % name)
             project.export(tool, copy)
 
-    def build_projects(self, tool):
-        for name, project in self.workspace.items():
-            logging.debug("Building Project %s" % name)
-
-            project.build(tool)
-
-    def flash_projects(self, tool):
-
-        for name, project in self.workspace.items():
-            logging.debug("Flashing Project %s" % name)
-
-            project.flash(tool)
+        for name, project in self.workspaces.items():
+            logging.debug("Exporting workspace: %s" % name)
+            project.export(tool, copy)
 
     def build_project(self, project_name, tool):
-        if project_name not in self.workspace:
+        if project_name not in self.projects:
             raise RuntimeError("Invalid Project Name")
 
         logging.debug("Building Project %s" % project_name)
-        self.workspace[project_name].build(tool)
+        self.projects[project_name].build(tool)
+
+    def build_projects(self, tool):
+        for name, project in self.projects.items():
+            logging.debug("Building Project %s" % name)
+            project.build(tool)
 
     def flash_project(self, project_name, tool):
-        if project_name not in self.workspace:
+        if project_name not in self.projects:
             raise RuntimeError("Invalid Project Name")
 
         logging.debug("Flashing Project %s" % project_name)
-        self.workspace[project_name].flash(tool)
+        self.projects[project_name].flash(tool)
+
+    def flash_projects(self, tool):
+        for name, project in self.projects.items():
+            logging.debug("Flashing Project %s" % name)
+            project.flash(tool)
 
     @staticmethod
     def pgen_list(type):
@@ -129,12 +135,17 @@ class PgenWorkspace:
             target = Targets(ProjectSettings().get_env_settings('definitions'))
             print ("pgen supports the following targets:")
             return '\n'.join(target.targets)
+        elif type == 'projects':
+            return '\n'.join('')
 
     def list_projects(self, width = 1, use_unicode = True):
         # List the projects in a PgenWorkspace. If flat is true, don't display
         # as a tree.
 
-        workspace_names = list(self.workspaces)
+        # TODO: (matthewelse) tidy this up, along with other Workspace stuff
+
+        names = list(self.workspaces) + [k for k, v in self.projects.items() if v.project['singular']]
+
         lines = []
 
         unicode_chars = {
@@ -159,16 +170,19 @@ class PgenWorkspace:
         chars = unicode_chars if use_unicode else ascii_chars
         width = width if use_unicode else 0
 
-        for i in range(len(workspace_names)):
-            name = workspace_names[i]
-            workspace = self.workspaces[name]
+        for i, name in enumerate(names):
+            if name in self.workspaces:
+                workspace = self.workspaces[name]
+            else:
+                workspace = self.projects[name]
+
             line = u"" if unicode else ''
 
-            if len(workspace_names) == 1:
+            if len(names) == 1:
                 line += chars['.']
             elif i == 0:
                 line += chars['tl']
-            elif i == len(workspace_names) - 1:
+            elif i == len(names) - 1:
                 line += chars['bl']
             else:
                 line += chars['rt']
@@ -179,7 +193,7 @@ class PgenWorkspace:
             line += name
             lines.append(line)
 
-            if not workspace.singular:
+            if type(workspace) is ProjectWorkspace:
                 # it's not a placeholder workspace for a single project
                 for j in range(len(workspace.projects)):
                     project = workspace.projects[j]

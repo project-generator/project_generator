@@ -12,10 +12,12 @@
 # limitations under the License.
 
 import os
-import shutil
-import locale
-import operator
 import yaml
+import locale
+import shutil
+import string
+import operator
+
 from functools import reduce
 
 def rmtree_if_exists(directory):
@@ -59,13 +61,11 @@ def load_yaml_records(yaml_files):
            raise IOError("The file %s referenced in main yaml doesn't exist." % project_file)
     return dictionaries
 
-def longest_common_substring(str1, str2):
-    def _yield_chars():
-        for char1, char2 in zip(str1, str2):
-            if char1 == char2:
-                yield char1
-            else:
-                return
-    return ''.join(_yield_chars())
-
-
+class PartialFormatter(string.Formatter):
+    def get_field(self, field_name, args, kwargs):
+        try:
+            val = super(PartialFormatter, self).get_field(field_name, args, kwargs)
+        except (IndexError, KeyError, AttributeError):
+            first, _ = field_name._formatter_field_name_split()
+            val = '{' + field_name + '}', first
+        return val

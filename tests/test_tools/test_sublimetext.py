@@ -18,6 +18,7 @@ import shutil
 from unittest import TestCase
 
 from project_generator.workspace import PgenWorkspace
+from project_generator.project import Project
 from project_generator.settings import ProjectSettings
 from project_generator.tools.sublimetext import SublimeTextMakeGccARM
 
@@ -36,21 +37,19 @@ class TestProject(TestCase):
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_1_yaml, default_flow_style=False))
-        self.workspace = PgenWorkspace('test_workspace/projects.yaml')
+        self.project = Project('project_1',[project_1_yaml],
+            PgenWorkspace(projects_1_yaml))
 
-        workspace_dic = {
-            'projects': [],
-            'settings': {},
-        }
-        self.sublimetext = SublimeTextMakeGccARM(workspace_dic, ProjectSettings())
+        self.sublimetext = SublimeTextMakeGccARM(self.project.project, ProjectSettings())
 
     def tearDown(self):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
         shutil.rmtree('generated_projects', ignore_errors=True)
 
-    def test_export(self):
-        self.sublimetext.export_project()
-
     def test_export_project(self):
-        self.workspace.export_project('project_1', 'sublime_make_gcc_arm', False)
+        self.project.export('sublime_make_gcc_arm', False)
+       # it should get generated files from the last export
+        projectfiles = self.project.get_generated_project_files('sublime_make_gcc_arm')
+        assert projectfiles
+        assert os.path.splitext(projectfiles['files'][0])[1] == '.sublime-project'

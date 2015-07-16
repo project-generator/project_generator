@@ -132,14 +132,19 @@ class MakefileGccArm(Exporter):
         if data['linker_file']:
             data['linker_file'] = join(data['output_dir']['rel_path'], normpath(data['linker_file']))
 
+    def export_workspace(self):
+        logging.debug("Current version of CoIDE does not support workspaces")
+
     def export_project(self):
         """ Processes misc options specific for GCC ARM, and run generator. """
-        generated_projects = {}
-        for project in self.workspace['projects']:
-            generated_projects[project['name']] = copy.deepcopy(self.generated_projects)
-            self.process_data_for_makefile(project)
-            generated_projects[project['name']]['path'], generated_projects[project['name']]['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', project, 'Makefile', project['output_dir']['path'])
+        generated_projects = copy.deepcopy(self.generated_projects)
+        self.process_data_for_makefile(self.workspace)
+        generated_projects['path'], generated_projects['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', self.workspace, 'Makefile', self.workspace['output_dir']['path'])
         return generated_projects
+
+    def get_generated_project_files(self):
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['makefile']]}
+
 
     def process_data_for_makefile(self, data):
         self._fix_paths(data)
@@ -171,13 +176,14 @@ class MakefileGccArm(Exporter):
         if 'optimization_level' not in data:
             data['optimization_level'] = self.optimization_options[0]
 
-    def build_project(self, project_name, project_files, env_settings):
+    def build_project(self):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
-        path = dirname(project_files[0])
+        path = dirname(self.workspace['files']['makefile'])
         logging.debug("Building GCC ARM project: %s" % path)
 
         args = ['make', 'all']
+        logging.debug(args)
 
         try:
             ret_code = None

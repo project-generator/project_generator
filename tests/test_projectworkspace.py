@@ -18,21 +18,27 @@ import yaml
 from unittest import TestCase
 
 from project_generator.workspace import PgenWorkspace
+from project_generator.project import Project, ProjectWorkspace
 
 project_1_yaml = {
     'common': {
-        'sources': ['sources/main.cpp'],
-        'includes': ['includes/header1.h']
+        'sources': ['test_workspace/main.cpp'],
+        'includes': ['test_workspace/header1.h'],
+        'macros': ['MACRO1', 'MACRO2'],
+        'target': ['target1'],
+        'core': ['core1'],
+        'tools_supported': ['iar_arm', 'uvision', 'coide', 'unknown'],
+        'output_type': ['exe'],
+        'debugger': ['debugger_1'],
+        'linker_file': ['test_workspace/linker.ld'],
     }
 }
 
 projects_yaml = {
     'projects': {
-        'project_1' : ['test_workspace/project_1.yaml']
-    },
-    'settings' : {
-        'definitions_dir': ['notpg/path/somewhere'],
-        'export_dir': ['not_generated_projects']
+        'workspace_project_1' : {
+            'project_1' : ['test_workspace/project_1.yaml']
+        }
     }
 }
 
@@ -49,23 +55,28 @@ class TestPgenWorkspace(TestCase):
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_yaml, default_flow_style=False))
-        self.workspace = PgenWorkspace('test_workspace/projects.yaml')
+
+        self.project = Project('project_1',[project_1_yaml],
+            PgenWorkspace(projects_yaml))
+
+        self.workspace = ProjectWorkspace('workspace_project_1', [self.project],
+            PgenWorkspace(projects_yaml))
+
+        # create 3 files to test project
+        with open(os.path.join(os.getcwd(), 'test_workspace/main.cpp'), 'wt') as f:
+            pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/header1.h'), 'wt') as f:
+            pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/linker.ld'), 'wt') as f:
+            pass
 
     def tearDown(self):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
+        shutil.rmtree('generated_projects', ignore_errors=True)
 
-    def test_settings(self):
-        # only check things which are affected by projects.yaml
-        assert self.workspace.settings.paths['definitions'] == os.path.normpath('notpg/path/somewhere')
-        assert self.workspace.settings.generated_projects_dir == 'not_generated_projects'
-
-    def test_workspaces(self):
-        # workspace should not be empty and project_1 should exist, not empty neither
-        assert bool(self.workspace.workspaces) == True
-        assert bool(self.workspace.workspaces['project_1']) == True
-
-    def test_projects_dict(self):
-        # check projects yaml file, if they match
-        assert bool(self.workspace.projects_dict) == True
-        assert self.workspace.projects_dict == projects_yaml
+    def test_member_variables(self):
+        # basic test if name and projects are set properly
+        assert self.workspace.name == 'workspace_project_1'
+        assert self.workspace.projects == [self.project]
+        assert bool(self.workspace.generated_files) == False

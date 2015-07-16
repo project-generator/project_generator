@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import logging
 
 from ..workspace import PgenWorkspace
 from ..util import unicode_available
 
-help = 'List all projects'
+help = 'List general pgen data as projects, tools or targets'
 
 
 def run(args):
-    if args.file:
+    if os.path.exists(args.file):
         workspace = PgenWorkspace(args.file, os.getcwd())
-
         if args.section == 'targets':
             print(workspace.list_targets())
         elif args.section == 'projects':
@@ -33,11 +33,12 @@ def run(args):
         elif args.section == 'tools':
             print(workspace.list_tools())
     else:
-        print(PgenWorkspace.pgen_list(args.section.lower()))
+        # not project known by pgen
+        logging.warning("%s not found." % args.file)
 
 
 def setup(subparser):
     subparser.add_argument("section", choices = ['targets','tools','projects'],
                            help="What section you would like listed", default='projects')
-    subparser.add_argument("-f", "--file", help="YAML projects file")
+    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-u", "--no-unicode", help="Use ASCII characters only", action='store_true')

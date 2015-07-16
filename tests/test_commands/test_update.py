@@ -1,4 +1,4 @@
-# Copyright 2014 0xc0170
+# Copyright 2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest import TestCase
 
-class Builder:
-    """ Template to be subclassed """
+from project_generator.commands.update import update
 
-    def build_project(self):
-        raise NotImplementedError
+class TestProject(TestCase):
+
+    """test things related to the Project class"""
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_update(self):
+        # force update. This assumes that repository is alive and that travis has
+        # internet connection
+        update(True)

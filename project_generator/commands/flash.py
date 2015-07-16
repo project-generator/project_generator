@@ -21,10 +21,11 @@ from ..settings import ProjectSettings
 help = 'Flash a project'
 
 def run(args):
-    #first build a project then flash it
-    build.run(args)
-    # time to flash
-    if args.file:
+    if os.path.exists(args.file):
+        # first build a project then flash it
+        build.run(args)
+
+        # time to flash
         # known project from records
         workspace = PgenWorkspace(args.file, os.getcwd())
         if args.project:
@@ -33,14 +34,11 @@ def run(args):
             workspace.flash_projects(args.tool)
     else:
         # not project known by pgen
-        project_settings = ProjectSettings()
-        project_files = [os.path.join(args.directory, args.project)]
-        flasher = ToolsSupported().get_value(args.tool, 'flasher')
-        build(flasher, args.project, project_files, args.tool, project_settings)
+        logging.warning("%s not found." % args.file)
 
 def setup(subparser):
     subparser.add_argument(
-        "-f", "--file", help="YAML projects file")
+        "-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-p", "--project", help="Name of the project to flash")
     subparser.add_argument(
         "-t", "--tool", help="Flash a project files for provided tool")

@@ -20,28 +20,30 @@ help = 'Export a project record'
 
 
 def run(args):
-    workspace = PgenWorkspace(args.file, os.getcwd())
-    if args.defdirectory:
-        workspace.settings.update_definitions_dir(os.path.join(os.getcwd(), args.defdirectory))
+    if os.path.exists(args.file):
+        workspace = PgenWorkspace(args.file, os.getcwd())
+        if args.defdirectory:
+            workspace.settings.update_definitions_dir(os.path.join(os.getcwd(), args.defdirectory))
+        else:
+            update(False, workspace.settings)
+
+        if args.project:
+            workspace.export_project(args.project, args.tool, args.copy)
+
+            if args.build:
+                workspace.build_project(args.project, args.tool)
+            if args.flash:
+                workspace.flash_project(args.project, args.tool)
+        else:
+            workspace.export_projects(args.tool, args.copy)
+
+            if args.build:
+                workspace.build_projects(args.tool)
+            if args.flash:
+                workspace.flash_projects(args.tool)
     else:
-        update(False, workspace.settings)
-
-    if args.project:
-        workspace.export_project(args.project, args.tool, args.copy)
-
-        if args.build:
-            workspace.build_project(args.project, args.tool)
-        if args.flash:
-            workspace.flash_project(args.project, args.tool)
-    elif args.workspace:
-        workspace.export_project(args.workspace, args.tool, args.copy)
-    else:
-        workspace.export_projects(args.tool, args.copy)
-
-        if args.build:
-            workspace.build_projects(args.tool)
-        if args.flash:
-            workspace.flash_projects(args.tool)
+        # not project known by pgen
+        logging.warning("%s not found." % args.file)
 
 def setup(subparser):
     subparser.add_argument(

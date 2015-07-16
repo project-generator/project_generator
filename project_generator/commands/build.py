@@ -15,7 +15,7 @@ import os
 import export
 import logging
 
-from ..tool import build, ToolsSupported
+from ..tool import ToolsSupported
 from ..workspace import PgenWorkspace
 from ..settings import ProjectSettings
 
@@ -24,33 +24,22 @@ help = 'Build a project'
 
 def run(args):
     # Export if we know how, otherwise return
-    if args.file:
-        args.copy = False
-        args.build = False
-        export.run(args)
-    else:
-        if not os.path.exists(os.path.join(args.directory, args.project)):
-            logging.debug("The project: %s does not exist." % os.path.join(args.directory, args.project))
-            return
-
-    if args.file:
+    if os.path.exists(args.file):
         # known project from records
         workspace = PgenWorkspace(args.file, os.getcwd())
         if args.project:
+            workspace.export_project(args.project, args.tool, False)
             workspace.build_project(args.project, args.tool)
         else:
+            workspace.export_projects(args.tool, False)
             workspace.build_projects(args.tool)
     else:
         # not project known by pgen
-        project_settings = ProjectSettings()
-        project_files = [os.path.join(args.directory, args.project)]
-        builder = ToolsSupported().get_value(args.tool, 'builder')
-        build(builder, args.project, project_files, args.tool, project_settings)
-
+        logging.warning("%s not found." % args.file)
 
 def setup(subparser):
     subparser.add_argument(
-        "-f", "--file", help="YAML projects file")
+        "-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-p", "--project", help="Name of the project to build")
     subparser.add_argument(
         "-t", "--tool", help="Build a project files for provided tool")
