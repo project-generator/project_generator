@@ -15,6 +15,7 @@
 import argparse
 import os
 import logging
+import chromalog
 
 import pkg_resources
 
@@ -58,7 +59,7 @@ def main():
     verbosity = args.verbosity - args.quietness
 
     logging_level = max(logging.INFO - (10 * verbosity), 0)
-    logging.basicConfig(level=logging_level)
+    chromalog.basicConfig(format="%(levelname)s\t%(message)s", level=logging_level)
 
     logging.debug('This should be the project root: %s', os.getcwd())
 

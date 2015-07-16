@@ -341,19 +341,16 @@ class Project:
                     return workspace
 
     def clean(self, project_name, tool):
-        if tool is None:
-            tools = list(self.TOOLCHAINS)
+        tools = []
+        if not tool:
+            tools = self.project['tools_supported']
         else:
             tools = [tool]
 
         for current_tool in tools:
-            if self.pgen_workspace.settings.generated_projects_dir != self.pgen_workspace.settings.generated_projects_dir_default:
-                # TODO: same as in exporters.py - create keyword parser
-                path = Template(self.pgen_workspace.settings.generated_projects_dir)
-                path = path.substitute(target=self.project['target'], workspace=self._get_workspace_name(),
-                                        project_name=self.name, tool=tool)
-            else:
-                 path = os.path.join(self.project['export_dir'], "%s_%s" % (current_tool, self.name))
+            self._set_output_dir_path(current_tool)
+            path = self.project['output_dir']['path']
+
             if os.path.isdir(path):
                 logging.info("Cleaning directory %s" % path)
 
@@ -392,6 +389,8 @@ class Project:
 
         for build_tool in tools:
             builder = self.tools.get_value(build_tool, 'builder')
+            logging.debug("Building for tool: %s", build_tool)
+            logging.debug(self.generated_files)
             builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project()
 
     def flash(self, tool):

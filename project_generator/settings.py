@@ -29,7 +29,7 @@ class ProjectSettings:
     PROJECT_ROOT = os.environ.get('PROJECT_GENERATOR_ROOT') or join(pardir, pardir)
     DEFAULT_TOOL = os.environ.get('PROJECT_GENERATOR_DEFAULT_TOOL') or 'uvision'
 
-    DEFAULT_EXPORT_LOCATION_FORMAT = join('generated_projects', '{tool}_{name}')
+    DEFAULT_EXPORT_LOCATION_FORMAT = join('generated_projects', '{tool}_{project_name}')
 
     def __init__(self):
         """ This are default enviroment settings for build tools. To override,
