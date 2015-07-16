@@ -66,7 +66,6 @@ class PgenWorkspace:
 
         if 'projects' in self.projects_dict:
             for name, records in self.projects_dict['projects'].items():
-                settings_dict = {}
                 if type(records) is dict:
                     # workspace
                     projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
