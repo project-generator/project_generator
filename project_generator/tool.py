@@ -119,7 +119,7 @@ def target_supported(exporter, target, tool, env_settings):
     if exporter not in ToolsSupported().EXPORTERS:
         raise RuntimeError("Target does not support specified tool: %s" % tool)
     else:
-        supported = exporter().is_supported_by_default(target)
+        supported = exporter.is_supported_by_default(target)
         # target requires further definitions for exporter
         if not supported:
             Target = Targets(env_settings.get_env_settings('definitions'))

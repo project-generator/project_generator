@@ -67,6 +67,7 @@ class ARMNoneEABIGDB(GDB):
     def supports_target(self, target):
         return target in self.SUPPORTED
 
-    def is_supported_by_default(self, target):
+    @staticmethod
+    def is_supported_by_default(target):
         # does not require additional information
         return True

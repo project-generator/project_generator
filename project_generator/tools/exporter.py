@@ -54,5 +54,6 @@ class Exporter(object):
     def fixup_executable(self, exe_path):
         return exe_path
 
-    def is_supported_by_default(self, target):
+    @staticmethod
+    def is_supported_by_default(target):
         return False
