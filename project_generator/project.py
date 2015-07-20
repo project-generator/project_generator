@@ -184,7 +184,6 @@ class ProjectWorkspace:
 
             # all projects are genereated, now generate workspace files
             generated_files['workspaces'] = exporter(workspace_dic, self.pgen_workspace.settings).export_workspace()
-
             self.generated_files[export_tool] = generated_files
 
 class Project:
@@ -214,7 +213,7 @@ class Project:
     def _fill_project_defaults(self):
 
         self.project = {
-            'name': self.name,          # project name
+            'name': '',          # project name
             'core': '',                 # core
             'linker_file': None,        # linker command file
             'build_dir' : 'build',      # Build output path
