@@ -113,18 +113,6 @@ class PgenWorkspace:
             logging.debug("Building Project %s" % name)
             project.build(tool)
 
-    def flash_project(self, project_name, tool):
-        if project_name not in self.projects:
-            raise RuntimeError("Invalid Project Name")
-
-        logging.debug("Flashing Project %s" % project_name)
-        self.projects[project_name].flash(tool)
-
-    def flash_projects(self, tool):
-        for name, project in self.projects.items():
-            logging.debug("Flashing Project %s" % name)
-            project.flash(tool)
-
     @staticmethod
     def pgen_list(type):
         if type == 'tools':

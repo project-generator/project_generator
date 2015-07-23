@@ -402,34 +402,6 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             # no IAR doc describes errors from IarBuild
             logging.info("Build completed.")
 
-    def flash_project(self):
-        """ Flash IAR project. """
-        # > [project_path]/settings/[project_name].[project_name].bat
-        proj_path = join(getcwd(), self.workspace['files']['eww'])
-        if proj_path.split('.')[-1] != 'eww':
-            proj_path = proj_path + '.eww'
-        # to be able to flash, open and close IAR, to generate .bat - is there other way around this? IAR help
-        child = subprocess.Popen([join(env_settings.get_env_settings('iar'), 'IarIdePm.exe'), proj_path])
-        time.sleep(5)
-        child.terminate()
-        path = join(os.path.dirname(proj_path), 'settings', self.workspace.project['name']) + '.' + self.workspace.project['name'] + '.cspy.bat'
-        logging.debug("Flashing IAR project: %s" % proj_path)
-
-        args = [proj_path, join('.', self.workspace.project['build_dir'], 'Exe', self.workspace.project['name'] + '.out')]
-        logging.debug(args)
-
-        try:
-            ret_code = None
-            ret_code = subprocess.call(args)
-        except:
-            logging.error("Error whilst calling: %s. Please check IARBUILD path in the user_settings.py file." % path)
-        else:
-            # cspy returns 0 for success, 1 for error
-            if ret_code == 0:
-                logging.info("Flashing completed.")
-            else:
-                logging.info("Flashing failed.")
- 
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['ewp'], self.workspace['files']['eww'],
             self.workspace['files']['ewd']]}

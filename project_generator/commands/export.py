@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import logging 
+import logging
 
 from .update import update
 from ..workspace import PgenWorkspace
@@ -33,15 +33,11 @@ def run(args):
 
             if args.build:
                 workspace.build_project(args.project, args.tool)
-            if args.flash:
-                workspace.flash_project(args.project, args.tool)
         else:
             workspace.export_projects(args.tool, args.copy)
 
             if args.build:
                 workspace.build_projects(args.tool)
-            if args.flash:
-                workspace.flash_projects(args.tool)
     else:
         # not project known by pgen
         logging.warning("%s not found." % args.file)
@@ -55,8 +51,6 @@ def setup(subparser):
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     subparser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects")
-    subparser.add_argument(
-        "-fl", "--flash", action="store_true", help="Flash defined projects")
     subparser.add_argument(
         "-defdir", "--defdirectory",
         help="Path to the definitions, otherwise default (~/.pg/definitions) is used")

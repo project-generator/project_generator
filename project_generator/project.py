@@ -393,18 +393,6 @@ class Project:
             logging.debug(self.generated_files)
             builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project()
 
-    def flash(self, tool):
-        """flash the project"""
-        # TODO: flashing via various tools does not make much usefulness?
-        if not tool:
-            logging.debug("No tool set for flashing, default is set: %s", self.pgen_workspace.settings.DEFAULT_TOOL)
-            tool = self.pgen_workspace.settings.DEFAULT_TOOL
-
-        flasher = self.tools.get_value(tool, 'flasher')
-        self.customize_project_for_tool(tool)
-        self._set_output_dir_path(tool, None) # TODO: fix flashing for workspaces
-        flasher(self, self.pgen_workspace.settings).flash_project()
-
     def get_generated_project_files(self, tool):
         # returns list of project files which were generated
         exporter = ToolsSupported().get_value(tool, 'exporter')
