@@ -27,7 +27,7 @@ setup(
     author='Martin Kojtal, Matthew Else',
     author_email='c0170@rocketmail.com, matthewelse1997@gmail.com',
     keywords="c cpp project generator embedded",
-    url="https://github.com/0xc0170/project_generator",
+    url="https://github.com/project-generator/project_generator",
     classifiers= [
         "Development Status :: 3 - Alpha",
         "Environment :: Console",
