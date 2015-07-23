@@ -32,7 +32,6 @@ subcommands = {
     'export': export,
     'clean': clean,
     'list': list_projects,
-    'update': update,
     'build': build,
     'import': import_command,
 }

@@ -14,7 +14,7 @@
 import os
 import logging
 
-from .update import update
+from .targets import Targets
 from ..workspace import PgenWorkspace
 
 help = 'Export a project record'
@@ -26,7 +26,7 @@ def run(args):
         if args.defdirectory:
             workspace.settings.update_definitions_dir(os.path.join(os.getcwd(), args.defdirectory))
         else:
-            update(False, workspace.settings)
+            Targets().update_definitions(False, workspace.settings)
 
         if args.project:
             workspace.export_project(args.project, args.tool, args.copy)
