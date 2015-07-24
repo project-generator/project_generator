@@ -344,31 +344,6 @@ class Uvision(Builder, Exporter):
             else:
                 logging.info("Build succeeded with the status: %s" % self.ERRORLEVEL[ret_code])
 
-    def flash_project(self):
-        # > UV4 -f [project_path]
-        path = join(os.getcwd(), self.workspace['files']['uvproj'])
-        if path.split('.')[-1] != '.uvproj':
-            path = path + '.uvproj'
-        logging.debug("Building uVision project: %s" % path)
-
-        args = [env_settings.get_env_settings('uvision'), '-f', '-j0', path]
-        logging.debug(args)
-
-        try:
-            ret_code = None
-            ret_code = subprocess.call(args)
-        except:
-            logging.error(
-                "Error whilst calling UV4: '%s'. Please set uvision path in the projects.yaml file." % env_settings.get_env_settings('uvision'))
-        else:
-            if ret_code != self.SUCCESSVALUE:
-                # Seems like something went wrong.
-                logging.error("Flashing failed with the status: %s" %
-                              self.ERRORLEVEL[ret_code])
-            else:
-                logging.info("Flashing succeeded with the status: %s" %
-                             self.ERRORLEVEL[ret_code])
-
     def get_mcu_definition(self, project_file):
         """ Parse project file to get target definition """
         project_file = join(getcwd(), project_file)

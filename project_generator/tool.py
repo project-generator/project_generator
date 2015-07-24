@@ -39,70 +39,60 @@ class ToolsSupported:
             'toolnames': ['iar_arm'],
             'exporter': IAREmbeddedWorkbench,
             'builder': IAREmbeddedWorkbench,
-            'flasher': IAREmbeddedWorkbench,
         },
         'uvision': {
             'toolchain': 'uvision',
             'toolnames': ['uvision'],
             'exporter': Uvision,
             'builder': Uvision,
-            'flasher': Uvision,
         },
         'coide': {
             'toolchain': 'gcc_arm',
             'toolnames': ['coide'],
             'exporter': Coide,
             'builder': None,
-            'flasher': None,
         },
         'make_gcc_arm': {
             'toolchain': 'gcc_arm',
             'toolnames': ['make_gcc_arm'],
             'exporter': MakefileGccArm,
             'builder': MakefileGccArm,
-            'flasher': None,
         },
         'eclipse_make_gcc_arm': {
             'toolchain': 'gcc_arm',
             'toolnames': ['eclipse_make_gcc_arm', 'make_gcc_arm'],
             'exporter': EclipseGnuARM,
             'builder': None,
-            'flasher': None,
         },
         'sublime_make_gcc_arm': {
             'toolchain': 'gcc_arm',
             'toolnames': ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
             'exporter': SublimeTextMakeGccARM,
             'builder': MakefileGccArm,
-            'flasher': None,
         },
         'sublime': {
             'toolchain': None,
             'toolnames': ['sublime'],
             'exporter': None,
             'builder': None,
-            'flasher': None,
         },
         'gdb': {
             'toolchain': None,
             'toolnames': ['gdb'],
             'exporter': GDB,
             'builder': None,
-            'flasher': None,
         },
         'arm_none_eabi_gdb': {
             'toolchain': None,
             'toolnames': ['gdb'],
             'exporter': ARMNoneEABIGDB,
             'builder': None,
-            'flasher': None,
         },
     }
 
     TOOLCHAINS = list(set([v['toolchain'] for k, v in TOOLS.items() if v['toolchain'] is not None]))
     EXPORTERS = list(set([v['exporter'] for k, v in TOOLS.items() if v['exporter'] is not None]))
     BUILDERS = list(set([v['builder'] for k, v in TOOLS.items() if v['builder'] is not None]))
-    FLASHERS = list(set([v['flasher'] for k, v in TOOLS.items() if v['flasher'] is not None]))
 
     def get_value(self, tool, key):
         try:
