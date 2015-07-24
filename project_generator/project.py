@@ -300,7 +300,7 @@ class Project:
                 else:
                     # its a directory
                     dir_path = include_file
-                if not os.path.dirname(include_file) in self.project['includes']:
+                if not os.path.normpath(dir_path) in self.project['includes']:
                     self.project['includes'].append(os.path.normpath(dir_path))
 
     def _process_source_files(self, files, group_name):
