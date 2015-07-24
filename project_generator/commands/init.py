@@ -23,17 +23,15 @@ def run(args):
     logging.debug("Generating the records.")
 
     root = os.getcwd()
-
     directory = root if not args.directory else os.path.join(root, args.directory)
-    create_yaml(root, directory, args.name, args.target.lower(), args.sources)
+    name = os.path.split(directory)[1] if not args.name else args.name
+    create_yaml(root, directory, name, args.target.lower())
 
 
 def setup(subparser):
     subparser.add_argument(
         '-name', help='Project name')
     subparser.add_argument(
-        '-tar', '--target', action='store', help='Target definition')
+        '-tar', '--target', action='store', help='Target definition', default = "cortex-m0")
     subparser.add_argument(
         '-dir', '--directory', action='store', help='Directory selection', default=None)
-    subparser.add_argument(
-        '-s', '--sources', action='store_true', help='List all files, otherwise only folders for sources.')
