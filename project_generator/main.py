@@ -25,18 +25,16 @@ except ImportError:
 
 import pkg_resources
 
-from .commands import build, clean, export, init, list_projects, update, import_command
+from .commands import build, clean, export, init, list_projects, import_command
 
 subcommands = {
     'init': init,
     'export': export,
     'clean': clean,
     'list': list_projects,
-    'update': update,
     'build': build,
     'import': import_command,
 }
-
 
 def main():
     # Parse Options
