@@ -43,6 +43,7 @@ class TestBuildCommand(TestCase):
         self.parser = argparse.ArgumentParser()
         subparsers = self.parser.add_subparsers(help='commands')
         self.subparser = subparsers.add_parser('build', help=build.help)
+        build.setup(self.subparser)
 
     def tearDown(self):
         # remove created directory
@@ -51,8 +52,6 @@ class TestBuildCommand(TestCase):
 
     @raises(RuntimeError)
     def test_build_project_unknown_tool(self):
-        # we pass unknown tool which should raise RuntimeError
-        build.setup(self.subparser)
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2'])
         result = build.run(args)
@@ -61,8 +60,6 @@ class TestBuildCommand(TestCase):
         # assert result == 0
 
     def test_build_project_uvision_tool(self):
-        # we pass unknown tool which should raise RuntimError
-        build.setup(self.subparser)
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'uvision'])
         result = build.run(args)
@@ -71,8 +68,6 @@ class TestBuildCommand(TestCase):
         # assert result == 0
 
     def test_build_project_iar_arm_tool(self):
-        # we pass unknown tool which should raise RuntimError
-        build.setup(self.subparser)
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'iar_arm'])
         result = build.run(args)
@@ -82,15 +77,11 @@ class TestBuildCommand(TestCase):
 
     @raises(NotImplementedError)
     def test_build_project_coide_tool(self):
-        # we pass unknown tool which should raise RuntimeError
-        build.setup(self.subparser)
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'coide'])
         result = build.run(args)
 
     def test_build_project_make_gcc_arm_tool(self):
-        # we pass unknown tool which should raise RuntimError
-        build.setup(self.subparser)
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'make_gcc_arm'])
         result = build.run(args)
@@ -100,38 +91,28 @@ class TestBuildCommand(TestCase):
 
     @raises(NotImplementedError)
     def test_build_project_eclipse_tool(self):
-        # we pass unknown tool which should raise RuntimeError
-        build.setup(self.subparser)
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'eclipse_make_gcc_arm'])
         result = build.run(args)
 
     @raises(NotImplementedError)
     def test_build_project_gdb_tool(self):
-        # we pass unknown tool which should raise RuntimeError
-        build.setup(self.subparser)
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'gdb'])
         result = build.run(args)
 
     @raises(NotImplementedError)
     def test_build_project_arm_none_eabi_gdb_tool(self):
-        # we pass unknown tool which should raise RuntimeError
-        build.setup(self.subparser)
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'arm_none_eabi_gdb'])
         result = build.run(args)
 
     def test_build_project_sublime_tool(self):
-        # we pass unknown tool which should raise RuntimeError
-        build.setup(self.subparser)
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'sublime'])
         result = build.run(args)
 
     def test_build_project_sublime_tool(self):
-        # we pass unknown tool which should raise RuntimeError
-        build.setup(self.subparser)
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'sublime_make_gcc_arm'])
         result = build.run(args)
