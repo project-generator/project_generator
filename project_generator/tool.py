@@ -92,7 +92,7 @@ class ToolsSupported:
         return value
 
     def get_supported(self):
-        return self.TOOLS.keys()
+        return self.TOOLS_DICT.keys()
 
 def target_supported(exporter, target, tool, env_settings):
     # TODO 0xc0170: fix, target supported goes to the tool, not exporter
