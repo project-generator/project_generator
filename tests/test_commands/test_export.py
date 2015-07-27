@@ -53,7 +53,10 @@ class TestExportCommand(TestCase):
         export.setup(self.subparser)
         args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'uvision'])
-        export.run(args)
+        result = export.run(args)
+
+        # TODO 0xc0170: we need to return valid values, then we enable this assert
+        # assert result == 0
 
         # this should export a project to generated_projects/uvision_project_2/project_2.uvproj
         assert os.path.isfile('generated_projects/uvision_project_2/project_2.uvproj')
@@ -62,7 +65,10 @@ class TestExportCommand(TestCase):
         export.setup(self.subparser)
         args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'iar_arm'])
-        export.run(args)
+        result = export.run(args)
+
+        # TODO 0xc0170: we need to return valid values, then we enable this assert
+        # assert result == 0
 
         # this should export a project to generated_projects/uvision_project_2/project_2.ewp/ewd/eww
         assert os.path.isfile('generated_projects/iar_arm_project_2/project_2.ewp')
@@ -73,8 +79,10 @@ class TestExportCommand(TestCase):
         export.setup(self.subparser)
         args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'make_gcc_arm'])
-        export.run(args)
+        result = export.run(args)
 
+        # TODO 0xc0170: we need to return valid values, then we enable this assert
+        # assert result == 0
         # this should export a project to generated_projects/uvision_project_2/Makefile
         assert os.path.isfile('generated_projects/make_gcc_arm_project_2/Makefile')
 
@@ -82,7 +90,10 @@ class TestExportCommand(TestCase):
         export.setup(self.subparser)
         args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'coide'])
-        export.run(args)
+        result = export.run(args)
+
+        # TODO 0xc0170: we need to return valid values, then we enable this assert
+        # assert result == 0
 
         # this should export a project to generated_projects/uvision_project_2/project_2.coproj
         assert os.path.isfile('generated_projects/coide_project_2/project_2.coproj')
