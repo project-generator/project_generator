@@ -22,7 +22,7 @@ from unittest import TestCase
 from project_generator.commands import export
 from .simple_project import project_1_yaml, projects_yaml, project_2_yaml
 
-class TestProject(TestCase):
+class TestExportCommand(TestCase):
 
     """test export command"""
 
@@ -75,5 +75,15 @@ class TestProject(TestCase):
             '-t', 'make_gcc_arm'])
         export.run(args)
 
-        # this should export a project to generated_projects/uvision_project_2/project_2.uvproj
+        # this should export a project to generated_projects/uvision_project_2/Makefile
         assert os.path.isfile('generated_projects/make_gcc_arm_project_2/Makefile')
+
+    def test_export_one_project_coide(self):
+        export.setup(self.subparser)
+        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+            '-t', 'coide'])
+        export.run(args)
+
+        # this should export a project to generated_projects/uvision_project_2/project_2.coproj
+        assert os.path.isfile('generated_projects/coide_project_2/project_2.coproj')
+
