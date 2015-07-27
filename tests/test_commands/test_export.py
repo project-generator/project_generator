@@ -45,7 +45,6 @@ class TestExportCommand(TestCase):
 
     def tearDown(self):
         # remove created directory
-        pass
         shutil.rmtree('test_workspace', ignore_errors=True)
         shutil.rmtree('generated_projects', ignore_errors=True)
 

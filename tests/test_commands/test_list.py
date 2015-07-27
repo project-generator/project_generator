@@ -40,7 +40,6 @@ class TestListCommand(TestCase):
 
     def tearDown(self):
         # remove created directory
-        pass
         shutil.rmtree('test_workspace', ignore_errors=True)
 
     def test_list_projects(self):
