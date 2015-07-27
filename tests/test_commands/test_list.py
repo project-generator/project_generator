@@ -24,17 +24,12 @@ from .simple_project import project_1_yaml, projects_yaml, project_2_yaml
 
 class TestListCommand(TestCase):
 
-    """test export command"""
+    """test list command"""
 
     def setUp(self):
+        # we produce some files, to check if list projects listing the projects we defined
         if not os.path.exists('test_workspace'):
             os.makedirs('test_workspace')
-        # write project file
-        with open(os.path.join(os.getcwd(), 'test_workspace/project_1.yaml'), 'wt') as f:
-            f.write(yaml.dump(project_1_yaml, default_flow_style=False))
-        # write project file
-        with open(os.path.join(os.getcwd(), 'test_workspace/project_2.yaml'), 'wt') as f:
-            f.write(yaml.dump(project_2_yaml, default_flow_style=False))
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_yaml, default_flow_style=False))
