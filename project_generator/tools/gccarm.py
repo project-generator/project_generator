@@ -193,8 +193,12 @@ class MakefileGccArm(Exporter):
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
-                logging.error("Build failed with the status: %s" %
-                              self.ERRORLEVEL[ret_code])
+                if ret_code < 3:
+                    logging.error("Build failed with the status: %s" %
+                                  self.ERRORLEVEL[ret_code])
+                else:
+                    logging.error("Build failed with unknown error. Returned: %s" %
+                                   ret_code)
             else:
                 logging.info("Build succeeded with the status: %s" %
                              self.ERRORLEVEL[ret_code])
