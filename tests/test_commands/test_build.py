@@ -114,7 +114,6 @@ class TestBuildCommand(TestCase):
             'project_2', '-t', 'gdb'])
         result = build.run(args)
 
-
     @raises(NotImplementedError)
     def test_build_project_arm_none_eabi_gdb_tool(self):
         # we pass unknown tool which should raise RuntimeError
@@ -123,3 +122,16 @@ class TestBuildCommand(TestCase):
             'project_2', '-t', 'arm_none_eabi_gdb'])
         result = build.run(args)
 
+    def test_build_project_sublime_tool(self):
+        # we pass unknown tool which should raise RuntimeError
+        build.setup(self.subparser)
+        args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
+            'project_2', '-t', 'sublime'])
+        result = build.run(args)
+
+    def test_build_project_sublime_tool(self):
+        # we pass unknown tool which should raise RuntimeError
+        build.setup(self.subparser)
+        args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
+            'project_2', '-t', 'sublime_make_gcc_arm'])
+        result = build.run(args)

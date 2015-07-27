@@ -369,6 +369,10 @@ class Project:
         for export_tool in tools:
             exporter = ToolsSupported().get_value(export_tool, 'tool')
 
+            # None is an error
+            if exporter is None:
+                return -1
+
             self.customize_project_for_tool(export_tool)
             self._set_output_dir_path(export_tool, '')
             self._set_output_dir()
@@ -389,6 +393,10 @@ class Project:
 
         for build_tool in tools:
             builder = self.tools.get_value(build_tool, 'tool')
+            # None is an error
+            if builder is None:
+                return -1
+
             logging.debug("Building for tool: %s", build_tool)
             logging.debug(self.generated_files)
             builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project()
