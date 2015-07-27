@@ -97,3 +97,30 @@ class TestExportCommand(TestCase):
         # this should export a project to generated_projects/uvision_project_2/project_2.coproj
         assert os.path.isfile('generated_projects/coide_project_2/project_2.coproj')
 
+    def test_export_one_project_arm_none_eabi_gdb(self):
+        export.setup(self.subparser)
+        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+            '-t', 'arm_none_eabi_gdb'])
+        result = export.run(args)
+
+        # TODO 0xc0170: we need to return valid values, then we enable this assert
+        # assert result == 0
+
+    def test_export_one_project_sublime_make_gcc_arm(self):
+        export.setup(self.subparser)
+        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+            '-t', 'sublime_make_gcc_arm'])
+        result = export.run(args)
+
+        # TODO 0xc0170: we need to return valid values, then we enable this assert
+        # assert result == 0
+
+    def test_export_one_project_eclipse_make_gcc_arm(self):
+        export.setup(self.subparser)
+        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+            '-t', 'eclipse_make_gcc_arm'])
+        result = export.run(args)
+
+        # TODO 0xc0170: we need to return valid values, then we enable this assert
+        # assert result == 0
+
