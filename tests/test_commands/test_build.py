@@ -87,3 +87,13 @@ class TestBuildCommand(TestCase):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'coide'])
         result = build.run(args)
+
+    def test_build_project_make_gcc_arm_tool(self):
+        # we pass unknown tool which should raise RuntimError
+        build.setup(self.subparser)
+        args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
+            'project_2', '-t', 'make_gcc_arm'])
+        result = build.run(args)
+
+        # TODO 0xc0170: we need to return valid values, then we enable this assert
+        # assert result == 0
