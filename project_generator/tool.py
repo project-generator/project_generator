@@ -50,7 +50,7 @@ class ToolsSupported:
             'toolchain': 'gcc_arm',
             'toolnames': ['coide'],
             'exporter': Coide,
-            'builder': None,
+            'builder': Coide,
         },
         'make_gcc_arm': {
             'toolchain': 'gcc_arm',
