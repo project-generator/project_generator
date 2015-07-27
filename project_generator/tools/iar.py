@@ -390,7 +390,7 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
             return
         logging.debug("Building IAR project: %s" % proj_path)
 
-        args = [join(env_settings.get_env_settings('iar'), 'IarBuild.exe'), proj_path, '-build', project_name]
+        args = [join(self.env_settings.get_env_settings('iar'), 'IarBuild.exe'), proj_path, '-build', os.path.splitext(os.path.basename(self.workspace['files']['ewp']))[0]]
         logging.debug(args)
 
         try:
