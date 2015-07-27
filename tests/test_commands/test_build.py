@@ -79,3 +79,11 @@ class TestBuildCommand(TestCase):
 
         # TODO 0xc0170: we need to return valid values, then we enable this assert
         # assert result == 0
+
+    @raises(NotImplementedError)
+    def test_build_project_coide_tool(self):
+        # we pass unknown tool which should raise RuntimeError
+        build.setup(self.subparser)
+        args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
+            'project_2', '-t', 'coide'])
+        result = build.run(args)
