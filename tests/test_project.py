@@ -103,4 +103,4 @@ class TestProject(TestCase):
 
     def test_set_output_dir_path(self):
         self.project._set_output_dir_path('uvision')
-        assert self.project.project['output_dir']['path'] == 'projects/uvision_target1/project_1'
+        assert self.project.project['output_dir']['path'] == os.path.join('projects','uvision_target1','project_1')
