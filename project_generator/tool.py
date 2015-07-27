@@ -33,70 +33,60 @@ class ToolsSupported:
     """ Represents all tools available """
 
     # Tools dictionary, defines toolchain and all tools used
-    TOOLS = {
+    TOOLS_DICT = {
         'iar_arm': {
             'toolchain': 'iar',
             'toolnames': ['iar_arm'],
-            'exporter': IAREmbeddedWorkbench,
-            'builder': IAREmbeddedWorkbench,
+            'tool': IAREmbeddedWorkbench,
         },
         'uvision': {
             'toolchain': 'uvision',
             'toolnames': ['uvision'],
-            'exporter': Uvision,
-            'builder': Uvision,
+            'tool': Uvision,
         },
         'coide': {
             'toolchain': 'gcc_arm',
             'toolnames': ['coide'],
-            'exporter': Coide,
-            'builder': Coide,
+            'tool': Coide,
         },
         'make_gcc_arm': {
             'toolchain': 'gcc_arm',
             'toolnames': ['make_gcc_arm'],
-            'exporter': MakefileGccArm,
-            'builder': MakefileGccArm,
+            'tool': MakefileGccArm,
         },
         'eclipse_make_gcc_arm': {
             'toolchain': 'gcc_arm',
             'toolnames': ['eclipse_make_gcc_arm', 'make_gcc_arm'],
-            'exporter': EclipseGnuARM,
-            'builder': None,
+            'tool': EclipseGnuARM,
         },
         'sublime_make_gcc_arm': {
             'toolchain': 'gcc_arm',
             'toolnames': ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
-            'exporter': SublimeTextMakeGccARM,
-            'builder': MakefileGccArm,
+            'tool': SublimeTextMakeGccARM,
         },
         'sublime': {
             'toolchain': None,
             'toolnames': ['sublime'],
-            'exporter': None,
-            'builder': None,
+            'tool': None,
         },
         'gdb': {
             'toolchain': None,
             'toolnames': ['gdb'],
-            'exporter': GDB,
-            'builder': None,
+            'tool': GDB,
         },
         'arm_none_eabi_gdb': {
             'toolchain': None,
             'toolnames': ['gdb'],
-            'exporter': ARMNoneEABIGDB,
-            'builder': None,
+            'tool': ARMNoneEABIGDB,
         },
     }
 
-    TOOLCHAINS = list(set([v['toolchain'] for k, v in TOOLS.items() if v['toolchain'] is not None]))
-    EXPORTERS = list(set([v['exporter'] for k, v in TOOLS.items() if v['exporter'] is not None]))
-    BUILDERS = list(set([v['builder'] for k, v in TOOLS.items() if v['builder'] is not None]))
+    TOOLCHAINS = list(set([v['toolchain'] for k, v in TOOLS_DICT.items() if v['toolchain'] is not None]))
+    TOOLS = list(set([v['tool'] for k, v in TOOLS_DICT.items() if v['tool'] is not None]))
 
     def get_value(self, tool, key):
         try:
-            value = self.TOOLS[tool][key]
+            value = self.TOOLS_DICT[tool][key]
         except (KeyError, TypeError):
             raise RuntimeError("%s does not support specified tool: %s" % (key, tool))
         return value

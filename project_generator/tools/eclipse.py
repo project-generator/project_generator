@@ -19,10 +19,11 @@ import logging
 from posixpath import normpath, join, basename
 
 from .exporter import Exporter
+from .builder import Builder
 from .gccarm import MakefileGccArm
 
 
-class EclipseGnuARM(Exporter):
+class EclipseGnuARM(Exporter, Builder):
     source_files_dic = ['source_files_c', 'source_files_s',
                         'source_files_cpp', 'source_files_obj']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}

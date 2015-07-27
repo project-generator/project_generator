@@ -150,7 +150,7 @@ class ProjectWorkspace:
             tools = [tool]
 
         for export_tool in tools:
-            exporter = ToolsSupported().get_value(export_tool, 'exporter')
+            exporter = ToolsSupported().get_value(export_tool, 'tool')
             workspace_dic = {
                 'projects': [],
                 'settings': {
@@ -367,7 +367,7 @@ class Project:
 
         generated_files = {}
         for export_tool in tools:
-            exporter = ToolsSupported().get_value(export_tool, 'exporter')
+            exporter = ToolsSupported().get_value(export_tool, 'tool')
 
             self.customize_project_for_tool(export_tool)
             self._set_output_dir_path(export_tool, '')
@@ -388,14 +388,14 @@ class Project:
             tools = [tool]
 
         for build_tool in tools:
-            builder = self.tools.get_value(build_tool, 'builder')
+            builder = self.tools.get_value(build_tool, 'tool')
             logging.debug("Building for tool: %s", build_tool)
             logging.debug(self.generated_files)
             builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project()
 
     def get_generated_project_files(self, tool):
         # returns list of project files which were generated
-        exporter = ToolsSupported().get_value(tool, 'exporter')
+        exporter = ToolsSupported().get_value(tool, 'tool')
         return exporter(self.generated_files[tool], self.pgen_workspace.settings).get_generated_project_files()
 
     def copy_sources_to_generated_destination(self):
