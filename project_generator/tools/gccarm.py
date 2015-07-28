@@ -17,9 +17,8 @@ import subprocess
 import logging
 from os.path import join, normpath,dirname
 
-from .exporter import Exporter
+from .tool import Tool, Exporter
 from ..targets import Targets
-from .tool import Tool
 
 class MakefileGccArm(Tool, Exporter):
 

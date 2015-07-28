@@ -20,9 +20,7 @@ import copy
 from os.path import basename, join, normpath
 from os import getcwd
 
-from .builder import Builder
-from .tool import Tool
-from .exporter import Exporter
+from .tool import Tool, Builder, Exporter
 from ..targets import Targets
 
 class CoIDEdefinitions():

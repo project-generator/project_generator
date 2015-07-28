@@ -22,9 +22,7 @@ import copy
 from os.path import basename, join, normpath
 from os import getcwd
 from collections import OrderedDict
-from .exporter import Exporter
-from .builder import Builder
-from .tool import Tool
+from .tool import Tool, Builder, Exporte
 from ..targets import Targets
 
 class uVisionDefinitions():
