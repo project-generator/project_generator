@@ -208,7 +208,6 @@ class Project:
             'library': 'lib',
             'lib': 'lib',
         }
-        self.tools = ToolsSupported()
         self.source_groups = {}
         self.project = {}
         self._fill_project_defaults()
@@ -403,7 +402,7 @@ class Project:
         result = 0
 
         for build_tool in tools:
-            builder = self.tools.get_tool(build_tool)
+            builder = ToolsSupported().get_tool(build_tool)
             # None is an error
             if builder is None:
                 result = -1
@@ -458,11 +457,11 @@ class Project:
                 k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
 
     def customize_project_for_tool(self, tool):
-        toolchain_specific_settings =  self.tool_specific[self.tools.get_toolchain(tool)]
+        toolchain_specific_settings =  self.tool_specific[ToolsSupported().get_toolchain(tool)]
         tool_specific_settings = []
-        toolnames = self.tools.get_toolnames(tool)
+        toolnames = ToolsSupported().get_toolnames(tool)
         for tool_spec in toolnames:
-            if self.tools.get_toolchain(tool) != tool_spec:
+            if ToolsSupported().get_toolchain(tool) != tool_spec:
                 tool_specific_settings.append(self.tool_specific[tool_spec])
 
         self.project['includes'] =  self.project['includes'] + list(flatten([settings.includes for settings in tool_specific_settings]))
