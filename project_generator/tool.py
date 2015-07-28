@@ -27,76 +27,42 @@ from .tools.sublimetext import SublimeTextMakeGccARM
 from .tools.gdb import GDB
 from .tools.gdb import ARMNoneEABIGDB
 
-
-
 class ToolsSupported:
     """ Represents all tools available """
 
-    # Tools dictionary, defines toolchain and all tools used
+    # Tools dictionary
+    # Each of this tool needs to support at least:
+    # - get_toolchain (toolchain is a list of toolchains supported by tool)
+    # - get_toolname (returns name string)
+    # - export_project (basic functionality to be covered by a tool)
     TOOLS_DICT = {
-        'iar_arm': {
-            'toolchain': 'iar',
-            'toolnames': ['iar_arm'],
-            'tool': IAREmbeddedWorkbench,
-        },
-        'uvision': {
-            'toolchain': 'uvision',
-            'toolnames': ['uvision'],
-            'tool': Uvision,
-        },
-        'coide': {
-            'toolchain': 'gcc_arm',
-            'toolnames': ['coide'],
-            'tool': Coide,
-        },
-        'make_gcc_arm': {
-            'toolchain': 'gcc_arm',
-            'toolnames': ['make_gcc_arm'],
-            'tool': MakefileGccArm,
-        },
-        'eclipse_make_gcc_arm': {
-            'toolchain': 'gcc_arm',
-            'toolnames': ['eclipse_make_gcc_arm', 'make_gcc_arm'],
-            'tool': EclipseGnuARM,
-        },
-        'sublime_make_gcc_arm': {
-            'toolchain': 'gcc_arm',
-            'toolnames': ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime'],
-            'tool': SublimeTextMakeGccARM,
-        },
-        'sublime': {
-            'toolchain': None,
-            'toolnames': ['sublime'],
-            'tool': None,
-        },
-        'gdb': {
-            'toolchain': None,
-            'toolnames': ['gdb'],
-            'tool': GDB,
-        },
-        'arm_none_eabi_gdb': {
-            'toolchain': None,
-            'toolnames': ['gdb'],
-            'tool': ARMNoneEABIGDB,
-        },
+        'iar_arm':              IAREmbeddedWorkbench,
+        'uvision':              Uvision,
+        'coide':                Coide,
+        'make_gcc_arm':         MakefileGccArm,
+        'eclipse_make_gcc_arm': EclipseGnuARM,
+        'sublime_make_gcc_arm': SublimeTextMakeGccARM,
+        'gdb':                  GDB,
+        'arm_none_eabi_gdb':    ARMNoneEABIGDB,
     }
 
-    TOOLCHAINS = list(set([v['toolchain'] for k, v in TOOLS_DICT.items() if v['toolchain'] is not None]))
-    TOOLS = list(set([v['tool'] for k, v in TOOLS_DICT.items() if v['tool'] is not None]))
+    TOOLCHAINS = list(set([v.get_toolchain() for k, v in TOOLS_DICT.items() if v.get_toolchain() is not None]))
+    TOOLS = list(set([v for k, v in TOOLS_DICT.items() if v is not None]))
 
-    def get_value(self, tool, key):
-        try:
-            value = self.TOOLS_DICT[tool][key]
-        except (KeyError, TypeError):
-            raise RuntimeError("%s does not support specified tool: %s" % (key, tool))
-        return value
+    def get_tool(self, tool):
+        return self.TOOLS_DICT[tool]
+
+    def get_toolnames(self, tool):
+        return self.TOOLS_DICT[tool].get_toolnames()
+
+    def get_toolchain(self, tool):
+        return self.TOOLS_DICT[tool].get_toolchain()
 
     def get_supported(self):
         return self.TOOLS_DICT.keys()
 
 def target_supported(exporter, target, tool, env_settings):
-    # TODO 0xc0170: fix, target supported goes to the tool, not exporter
-    if exporter not in ToolsSupported().EXPORTERS:
+    if exporter not in ToolsSupported().get_supported():
         raise RuntimeError("Target does not support specified tool: %s" % tool)
     else:
         supported = exporter.is_supported_by_default(target)

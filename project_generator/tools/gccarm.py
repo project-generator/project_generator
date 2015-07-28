@@ -45,6 +45,14 @@ class MakefileGccArm(Exporter):
         self.workspace = workspace
         self.env_settings = env_settings
 
+    @staticmethod
+    def get_toolnames():
+        return ['make_gcc_arm']
+
+    @staticmethod
+    def get_toolchain():
+        return 'gcc_arm'
+
     def _list_files(self, data, attribute, rel_path):
         """ Creates a list of all files based on the attribute. """
         file_list = []

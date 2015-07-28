@@ -150,7 +150,7 @@ class ProjectWorkspace:
             tools = [tool]
 
         for export_tool in tools:
-            exporter = ToolsSupported().get_value(export_tool, 'tool')
+            exporter = ToolsSupported().get_tool(export_tool)
             workspace_dic = {
                 'projects': [],
                 'settings': {
@@ -367,7 +367,7 @@ class Project:
 
         generated_files = {}
         for export_tool in tools:
-            exporter = ToolsSupported().get_value(export_tool, 'tool')
+            exporter = ToolsSupported().get_tool(export_tool)
 
             # None is an error
             if exporter is None:
@@ -392,7 +392,7 @@ class Project:
             tools = [tool]
 
         for build_tool in tools:
-            builder = self.tools.get_value(build_tool, 'tool')
+            builder = self.tools.get_tool(build_tool)
             # None is an error
             if builder is None:
                 return -1
@@ -403,7 +403,7 @@ class Project:
 
     def get_generated_project_files(self, tool):
         # returns list of project files which were generated
-        exporter = ToolsSupported().get_value(tool, 'tool')
+        exporter = ToolsSupported().get_tool(tool)
         return exporter(self.generated_files[tool], self.pgen_workspace.settings).get_generated_project_files()
 
     def copy_sources_to_generated_destination(self):
@@ -445,11 +445,12 @@ class Project:
                 k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
 
     def customize_project_for_tool(self, tool):
-        toolchain_specific_settings =  self.tool_specific[self.tools.get_value(tool, 'toolchain')]
+        print self.tools.get_toolchain(tool)
+        toolchain_specific_settings =  self.tool_specific[self.tools.get_toolchain(tool)]
         tool_specific_settings = []
-        toolnames = self.tools.get_value(tool, 'toolnames')
+        toolnames = self.tools.get_toolnames(tool)
         for tool_spec in toolnames:
-            if self.tools.get_value(tool, 'toolchain') != tool_spec:
+            if self.tools.get_toolchain(tool) != tool_spec:
                 tool_specific_settings.append(self.tool_specific[tool_spec])
 
         self.project['includes'] =  self.project['includes'] + list(flatten([settings.includes for settings in tool_specific_settings]))

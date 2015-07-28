@@ -79,6 +79,14 @@ class Uvision(Builder, Exporter):
         self.workspace = workspace
         self.env_settings = env_settings
 
+    @staticmethod
+    def get_toolnames():
+        return ['uvision']
+
+    @staticmethod
+    def get_toolchain():
+        return 'uvision'
+
     def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ data expansion - uvision needs filename and path separately. """
         if group == 'Sources':

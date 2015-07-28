@@ -29,6 +29,14 @@ class SublimeTextMakeGccARM(MakefileGccArm):
     def __init__(self, workspace, env_settings):
         super(SublimeTextMakeGccARM, self).__init__(workspace, env_settings)
 
+    @staticmethod
+    def get_toolnames():
+        return ['sublime_make_gcc_arm', 'make_gcc_arm', 'sublime']
+
+    @staticmethod
+    def get_toolchain():
+        return 'gcc_arm'
+
     def _fix_sublime_paths(self, data):
         fixed_paths = []
         for path in data['source_paths']:
