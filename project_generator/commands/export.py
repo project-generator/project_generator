@@ -35,9 +35,11 @@ def run(args):
 
             if args.build:
                 workspace.build_projects(args.tool)
+        return 0
     else:
         # not project known by pgen
         logging.warning("%s not found." % args.file)
+        return -1
 
 def setup(subparser):
     subparser.add_argument(

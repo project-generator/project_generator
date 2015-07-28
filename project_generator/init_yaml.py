@@ -98,6 +98,7 @@ def create_yaml(root, directory, project_name, board):
         }
         _generate_file("projects.yaml", root, directory, projects_yaml)
         _generate_file("project.yaml", root, directory, project_yaml)
+        return 0
 
 
 

@@ -27,9 +27,11 @@ def run(args):
             workspace.clean_project(args.project, args.tool)
         else:
             workspace.clean_projects(args.tool)
+        return 0
     else:
         # not project known by pgen
         logging.warning("%s not found." % args.file)
+        return -1
 
 def setup(subparser):
     subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')

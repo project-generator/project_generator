@@ -70,7 +70,7 @@ def main():
 
     logging.debug('This should be the project root: %s', os.getcwd())
 
-    args.func(args)
+    return args.func(args)
 
 if __name__ == '__main__':
     main()
