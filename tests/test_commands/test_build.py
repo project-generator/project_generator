@@ -18,7 +18,7 @@ import yaml
 import shutil
 
 from unittest import TestCase
-#from nose.tools import *
+from nose.tools import *
 
 from project_generator.commands import build
 from simple_project import project_1_yaml, projects_yaml, project_2_yaml
