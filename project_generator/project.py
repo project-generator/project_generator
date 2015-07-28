@@ -193,6 +193,10 @@ class ProjectWorkspace:
             self.generated_files[export_tool] = generated_files
             return result
 
+    def build(self, tool):
+        logging.debug("Building a workspace is not currently not supported")
+        return -1
+
 class Project:
 
     """represents a project, which can be formed of many yaml files"""
@@ -412,7 +416,7 @@ class Project:
             logging.debug("Building for tool: %s", build_tool)
             logging.debug(self.generated_files)
             builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project()
-            return result
+        return result
 
     def get_generated_project_files(self, tool):
         # returns list of project files which were generated

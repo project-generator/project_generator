@@ -117,7 +117,7 @@ class PgenWorkspace:
             return self.workspaces[project_name].build(tool)
         else:
             logging.warning("Invalid Project Name")
-            return - 1
+            return -1
 
         logging.debug("Building Project %s" % project_name)
         return self.projects[project_name].build(tool)
