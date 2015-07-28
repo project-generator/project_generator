@@ -41,12 +41,11 @@ class TestImportCommand(TestCase):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
 
-    @raises(RuntimeError)
     def test_import_empty_command(self):
-        # Should raise None
         import_command.setup(self.subparser)
         args = self.parser.parse_args(['import'])
-        import_command.run(args)
+        result = import_command.run(args)
+        assert result == -1
 
     # TODO 0xc0170: add all tools import and also template files
     # def test_import_uvision(self):

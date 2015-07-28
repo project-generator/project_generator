@@ -458,7 +458,6 @@ class Project:
                 k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
 
     def customize_project_for_tool(self, tool):
-        print self.tools.get_toolchain(tool)
         toolchain_specific_settings =  self.tool_specific[self.tools.get_toolchain(tool)]
         tool_specific_settings = []
         toolnames = self.tools.get_toolnames(tool)
