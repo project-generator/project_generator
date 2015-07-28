@@ -12,14 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import yaml
-import logging
-
-from .project import Project, ProjectWorkspace
 from .settings import ProjectSettings
-from .tools_supported import ToolsSupported
-from .targets import Targets
 from .util import flatten, uniqify, load_yaml_records
 from project import *
 

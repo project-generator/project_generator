@@ -27,7 +27,7 @@ def run(args):
             if args.section == 'targets':
                 print("%s supports: %s"%(project.project['name'],project.project['target']))
             elif args.section == 'projects':
-                print project.project['name']
+                print (project.project['name'])
             elif args.section == 'tools':
                 tools = [tool for tool, value in project.tool_specific.items() if value.linker_file is not None]
                 tools = ", ".join(tools)
