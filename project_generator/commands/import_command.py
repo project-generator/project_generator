@@ -22,8 +22,7 @@ from ..tool import ToolsSupported, mcu_create
 def run(args):
     root = os.getcwd()
 
-    # exporter - fix TOOLS please
-    tool = ToolsSupported().get_value(args.tool, 'tool')
+    tool = ToolsSupported().get_tool(args.tool)
     mcu_create(tool, args.mcu, args.file, args.tool)
 
 def setup(subparser):
