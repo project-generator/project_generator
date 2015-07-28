@@ -113,19 +113,6 @@ class Targets:
                     cmd = ('git', 'pull', '--rebase', '--quiet', 'origin', 'master')
                     subprocess.call(cmd, cwd=settings.paths['definitions'])
 
-# These 2 methods are related to Targets. One is to help with creating new
-# targets - mcu_create, the target_supported is to check if target is supported
-
-# This method checks if target is supported by default (nothing more needed)
-# or requires additional target definitions
-def target_supported(exporter, target, tool, env_settings):
-    supported = exporter.is_supported_by_default(target)
-    # target requires further definitions for exporter
-    if not supported:
-        Target = Targets(env_settings.get_env_settings('definitions'))
-        supported = Target.is_supported(target, tool)
-    return supported
-
 # This helps to create a new target. As target consists of mcu, this function
 # parses the provided proj_file and creates a valid yaml file, which can be pushed
 # to pgen definitions.
