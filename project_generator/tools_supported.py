@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .targets import Targets
 from .tools.iar import IAREmbeddedWorkbench
 from .tools.uvision import Uvision
 from .tools.coide import Coide

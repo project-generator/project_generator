@@ -19,7 +19,6 @@ from os.path import join, normpath, splitext, isfile, exists
 from os import listdir, mkdir
 
 from .settings import ProjectSettings
-from .tools_supported import ToolsSupported
 
 class Targets:
 
@@ -120,16 +119,12 @@ class Targets:
 # This method checks if target is supported by default (nothing more needed)
 # or requires additional target definitions
 def target_supported(exporter, target, tool, env_settings):
-    if exporter not in ToolsSupported().get_supported():
-        logging.debug("Target does not support specified tool: %s" % tool)
-        return None
-    else:
-        supported = exporter.is_supported_by_default(target)
-        # target requires further definitions for exporter
-        if not supported:
-            Target = Targets(env_settings.get_env_settings('definitions'))
-            supported = Target.is_supported(target, tool)
-        return supported
+    supported = exporter.is_supported_by_default(target)
+    # target requires further definitions for exporter
+    if not supported:
+        Target = Targets(env_settings.get_env_settings('definitions'))
+        supported = Target.is_supported(target, tool)
+    return supported
 
 # This helps to create a new target. As target consists of mcu, this function
 # parses the provided proj_file and creates a valid yaml file, which can be pushed
