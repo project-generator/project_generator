@@ -14,7 +14,7 @@
 import os
 import logging
 
-from ..tool import ToolsSupported
+from ..tools import ToolsSupported
 from ..workspace import PgenWorkspace
 from ..settings import ProjectSettings
 

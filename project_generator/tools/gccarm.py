@@ -13,15 +13,15 @@
 # limitations under the License.
 
 import copy
-
-from os.path import join, normpath,dirname
 import subprocess
+import logging
+from os.path import join, normpath,dirname
+
 from .exporter import Exporter
 from ..targets import Targets
-import logging
+from .tool import Tool
 
-
-class MakefileGccArm(Exporter):
+class MakefileGccArm(Tool, Exporter):
 
     # http://www.gnu.org/software/make/manual/html_node/Running.html
     ERRORLEVEL = {

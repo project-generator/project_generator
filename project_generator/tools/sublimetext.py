@@ -15,7 +15,6 @@ import copy
 
 from .gccarm import MakefileGccArm
 
-
 class SublimeTextMakeGccARM(MakefileGccArm):
 
     generated_project = {

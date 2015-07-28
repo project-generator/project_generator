@@ -24,7 +24,16 @@ class Exporter(object):
     """Just a template for subclassing"""
 
     TEMPLATE_DIR = join(dirname(__file__), '..', 'templates')
-    DOT_IN_RELATIVE_PATH = False
+
+    # Any tool which exports should implement these methods
+    def export_workspace(self):
+        raise NotImplementedError
+
+    def export_project(self):
+        raise NotImplementedError
+
+    def get_generated_project_files(self):
+        raise NotImplementedError
 
     # Exporter supports currently 2 methods for exporting. Raw data, which can be
     # for example xml. Or jinja2 templates, not always possible to generate valid

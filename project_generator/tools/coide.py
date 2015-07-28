@@ -21,6 +21,7 @@ from os.path import basename, join, normpath
 from os import getcwd
 
 from .builder import Builder
+from .tool import Tool
 from .exporter import Exporter
 from ..targets import Targets
 
@@ -45,7 +46,7 @@ class CoIDEdefinitions():
         },
     }
 
-class Coide(Exporter, Builder):
+class Coide(Tool, Exporter, Builder):
 
     source_files_dic = [
         'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']

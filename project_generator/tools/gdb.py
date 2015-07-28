@@ -8,6 +8,7 @@ import copy
 
 from .exporter import Exporter
 from .builder import Builder
+from .tool import Tool
 
 class gdb_definitions():
 
@@ -17,7 +18,7 @@ class gdb_definitions():
     }
 
 
-class GDB(Exporter, Builder):
+class GDB(Tool, Exporter, Builder):
     def __init__(self, workspace, env_settings):
         self.workspace = workspace
         self.env_settings = env_settings
