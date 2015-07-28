@@ -54,8 +54,7 @@ class TestExportCommand(TestCase):
             '-t', 'uvision'])
         result = export.run(args)
 
-        # TODO 0xc0170: we need to return valid values, then we enable this assert
-        # assert result == 0
+        assert result == 0
 
         # this should export a project to generated_projects/uvision_project_2/project_2.uvproj
         assert os.path.isfile('generated_projects/uvision_project_2/project_2.uvproj')
@@ -66,8 +65,7 @@ class TestExportCommand(TestCase):
             '-t', 'iar_arm'])
         result = export.run(args)
 
-        # TODO 0xc0170: we need to return valid values, then we enable this assert
-        # assert result == 0
+        assert result == 0
 
         # this should export a project to generated_projects/uvision_project_2/project_2.ewp/ewd/eww
         assert os.path.isfile('generated_projects/iar_arm_project_2/project_2.ewp')
@@ -80,8 +78,7 @@ class TestExportCommand(TestCase):
             '-t', 'make_gcc_arm'])
         result = export.run(args)
 
-        # TODO 0xc0170: we need to return valid values, then we enable this assert
-        # assert result == 0
+        assert result == 0
         # this should export a project to generated_projects/uvision_project_2/Makefile
         assert os.path.isfile('generated_projects/make_gcc_arm_project_2/Makefile')
 
@@ -91,8 +88,7 @@ class TestExportCommand(TestCase):
             '-t', 'coide'])
         result = export.run(args)
 
-        # TODO 0xc0170: we need to return valid values, then we enable this assert
-        # assert result == 0
+        assert result == 0
 
         # this should export a project to generated_projects/uvision_project_2/project_2.coproj
         assert os.path.isfile('generated_projects/coide_project_2/project_2.coproj')
@@ -103,8 +99,7 @@ class TestExportCommand(TestCase):
             '-t', 'arm_none_eabi_gdb'])
         result = export.run(args)
 
-        # TODO 0xc0170: we need to return valid values, then we enable this assert
-        # assert result == 0
+        assert result == 0
 
     def test_export_one_project_sublime_make_gcc_arm(self):
         export.setup(self.subparser)
@@ -112,8 +107,7 @@ class TestExportCommand(TestCase):
             '-t', 'sublime_make_gcc_arm'])
         result = export.run(args)
 
-        # TODO 0xc0170: we need to return valid values, then we enable this assert
-        # assert result == 0
+        assert result == 0
 
     def test_export_one_project_eclipse_make_gcc_arm(self):
         export.setup(self.subparser)
@@ -121,6 +115,5 @@ class TestExportCommand(TestCase):
             '-t', 'eclipse_make_gcc_arm'])
         result = export.run(args)
 
-        # TODO 0xc0170: we need to return valid values, then we enable this assert
-        # assert result == 0
+        assert result == 0
 
