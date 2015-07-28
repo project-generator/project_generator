@@ -14,26 +14,24 @@
 import os
 import logging
 
-from ..workspace import PgenWorkspace
+from ..generate import Generator
 
 help = 'Clean generated projects'
 
 
 def run(args):
     if os.path.exists(args.file):
-        workspace = PgenWorkspace(args.file, os.getcwd())
-
-        if args.project:
-            return workspace.clean(args.project, args.tool)
-        else:
-            return workspace.clean_all(args.tool)
+        generator = Generator(args.file)
+        for project in generator.generate(args.project):
+            project.clean(args.tool)
     else:
         # not project known by pgen
         logging.warning("%s not found." % args.file)
         return -1
+    return 0
 
 def setup(subparser):
     subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
-    subparser.add_argument("-p", "--project", help="Specify which project to be removed")
+    subparser.add_argument("-p", "--project", help="Specify which project to be removed", default = '')
     subparser.add_argument(
         "-t", "--tool", help="Clean project files for specified tool (uvision by default)")

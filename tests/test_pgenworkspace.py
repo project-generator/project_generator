@@ -17,7 +17,7 @@ import shutil
 import yaml
 from unittest import TestCase
 
-from project_generator.workspace import PgenWorkspace
+from project_generator.generate import Generator
 
 project_1_yaml = {
     'common': {
@@ -49,7 +49,7 @@ class TestPgenWorkspace(TestCase):
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_yaml, default_flow_style=False))
-        self.workspace = PgenWorkspace('test_workspace/projects.yaml')
+        self.workspace = Generator('test_workspace/projects.yaml')
 
     def tearDown(self):
         # remove created directory
@@ -59,13 +59,3 @@ class TestPgenWorkspace(TestCase):
         # only check things which are affected by projects.yaml
         assert self.workspace.settings.paths['definitions'] == os.path.normpath('notpg/path/somewhere')
         assert self.workspace.settings.export_location_format == 'not_generated_projects'
-
-    def test_project(self):
-        # project should not be empty and project_1 should exist, not empty neither
-        assert bool(self.workspace.projects) == True
-        assert bool(self.workspace.projects['project_1']) == True
-
-    def test_projects_dict(self):
-        # check projects yaml file, if they match
-        assert bool(self.workspace.projects_dict) == True
-        assert self.workspace.projects_dict == projects_yaml

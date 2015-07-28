@@ -14,28 +14,21 @@
 import os
 import logging
 
-from ..workspace import PgenWorkspace
+from ..generate import Generator
 
 help = 'Export a project record'
 
 
 def run(args):
     if os.path.exists(args.file):
-        workspace = PgenWorkspace(args.file, os.getcwd())
-        if args.defdirectory:
-            workspace.settings.update_definitions_dir(os.path.join(os.getcwd(), args.defdirectory))
-
+        generator = Generator(args.file)
         build_result = 0
-        if args.project:
-            export_result = workspace.export(args.project, args.tool, args.copy)
-
+        if args.defdirectory:
+            generator.settings.update_definitions_dir(os.path.join(os.getcwd(), args.defdirectory))
+        for project in generator.generate(args.project):
+            export_result = project.export(args.tool, args.copy)
             if args.build:
-                build_result = workspace.build(args.project, args.tool)
-        else:
-            export_result = workspace.export_all(args.tool, args.copy)
-
-            if args.build:
-                build_result = workspace.build_all(args.tool)
+                build_result = project.build(args.tool)
         if build_result == 0 and export_result == 0:
             return 0
         else:
@@ -49,7 +42,7 @@ def setup(subparser):
     subparser.add_argument(
         "-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument(
-        "-p", "--project", help="Project to be generated")
+        "-p", "--project", help="Project to be generated", default = '')
     subparser.add_argument(
         "-t", "--tool", help="Create project files for provided tool (uvision by default)")
     subparser.add_argument(
