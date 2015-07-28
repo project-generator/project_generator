@@ -26,6 +26,12 @@ class Exporter(object):
     TEMPLATE_DIR = join(dirname(__file__), '..', 'templates')
     DOT_IN_RELATIVE_PATH = False
 
+    # Exporter supports currently 2 methods for exporting. Raw data, which can be
+    # for example xml. Or jinja2 templates, not always possible to generate valid
+    # xml/json/etc.. output, then jinja2 helps as it's just injects data to predefined
+    # valid format. The easiest way is use raw, as we can template a project, take a valid
+    # project, parse it and inject pgen data into and generate a file which tool understands
+
     def gen_file_raw(self, target_text, output, dest_path):
         if not os.path.exists(dest_path):
             os.makedirs(dest_path)
