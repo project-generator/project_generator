@@ -19,7 +19,6 @@ project_2_yaml = {
         'macros': ['MACRO1', 'MACRO2'],
         'target': ['mbed-lpc1768'],
         'core': ['core2'],
-        'tools_supported': ['iar_arm', 'uvision', 'coide', 'unknown'],
         'output_type': ['exe'],
         'debugger': ['j-link'],
         'linker_file': ['test_workspace/linker.ld'],

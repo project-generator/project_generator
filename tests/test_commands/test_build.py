@@ -50,7 +50,6 @@ class TestBuildCommand(TestCase):
         shutil.rmtree('test_workspace', ignore_errors=True)
         shutil.rmtree('generated_projects', ignore_errors=True)
 
-    @raises(RuntimeError)
     def test_build_project_unknown_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2'])

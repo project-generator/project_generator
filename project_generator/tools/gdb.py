@@ -22,6 +22,14 @@ class GDB(Exporter, Builder):
         self.workspace = workspace
         self.env_settings = env_settings
 
+    @staticmethod
+    def get_toolnames():
+        return ['gdb']
+
+    @staticmethod
+    def get_toolchain():
+        return None
+
     def export_project(self):
         # for native debugging, no command files are necessary
         return None, []
@@ -47,6 +55,14 @@ class ARMNoneEABIGDB(GDB):
 
     def __init__(self, workspace, env_settings):
         super(ARMNoneEABIGDB, self).__init__(workspace, env_settings)
+
+    @staticmethod
+    def get_toolnames():
+        return ['gdb']
+
+    @staticmethod
+    def get_toolchain():
+        return None
 
     def export_project(self):
         generated_projects = copy.deepcopy(self.generated_project)

@@ -48,7 +48,7 @@ def test_output_directory_formatting():
     path, depth = Project._generate_output_dir('aaa/bbb/cccc/ddd/eee/ffff/ggg')
 
     assert depth == 7
-    assert path == '../../../../../../../'
+    assert os.path.normpath(path) == os.path.normpath('../../../../../../../')
 
 class TestProject(TestCase):
 

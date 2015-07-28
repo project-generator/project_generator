@@ -184,11 +184,18 @@ class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
         }
     }
 
-
     def __init__(self, workspace, env_settings):
         self.definitions = IARDefinitions()
         self.workspace = workspace
         self.env_settings = env_settings
+
+    @staticmethod
+    def get_toolnames():
+        return ['iar_arm']
+
+    @staticmethod
+    def get_toolchain():
+        return 'iar'
 
     def _expand_data(self, old_data, new_data, attribute, group, rel_path):
         """ Groups expansion for Sources. """
