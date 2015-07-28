@@ -45,6 +45,8 @@ class TestImportCommand(TestCase):
         import_command.setup(self.subparser)
         args = self.parser.parse_args(['import'])
         result = import_command.run(args)
+
+        # this should fail
         assert result == -1
 
     # TODO 0xc0170: add all tools import and also template files
