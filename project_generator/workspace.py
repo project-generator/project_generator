@@ -18,7 +18,7 @@ import logging
 
 from .project import Project, ProjectWorkspace
 from .settings import ProjectSettings
-from .tools import ToolsSupported
+from .tools_supported import ToolsSupported
 from .targets import Targets
 from .util import flatten, uniqify, load_yaml_records
 

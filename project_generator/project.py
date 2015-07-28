@@ -19,7 +19,7 @@ import logging
 import operator
 
 from collections import defaultdict
-from .tools import ToolsSupported
+from .tools_supported import ToolsSupported
 from .util import merge_recursive, flatten, PartialFormatter
 from string import Template
 
