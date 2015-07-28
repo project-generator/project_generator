@@ -56,3 +56,15 @@ class TestInitCommand(TestCase):
         # Should create 2 files
         assert os.path.isfile('projects.yaml')
         assert os.path.isfile('project.yaml')
+
+    def test_init_small_project(self):
+        init.setup(self.subparser)
+        args = self.parser.parse_args(['init', '-dir', 'test_workspace'])
+        init.run(args)
+
+        # Should create 2 files
+        assert os.path.isfile('projects.yaml')
+        assert os.path.isfile('project.yaml')
+
+        # TODO 0xc0170: add checking yaml files if they contain 3 files we created.
+        # we should also export using those to check validity (or export bugs :) )
