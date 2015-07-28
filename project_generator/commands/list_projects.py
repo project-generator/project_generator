@@ -34,6 +34,7 @@ def run(args):
             print(workspace.list_tools())
     else:
         print(PgenWorkspace.pgen_list(args.section))
+    return 0
 
 
 def setup(subparser):
