@@ -26,7 +26,7 @@ class Targets:
         'mcu' : {
             'vendor' : ['Manually add vendor (st, freescale, etc) instead of this text'],
             'name' : [''],
-            'core' : ['Manually add core (cortex-mX)instead of this text'],
+            'core' : ['Manually add core (cortex-mX) instead of this text'],
         },
     }
 
@@ -113,3 +113,15 @@ class Targets:
                     cmd = ('git', 'pull', '--rebase', '--quiet', 'origin', 'master')
                     subprocess.call(cmd, cwd=settings.paths['definitions'])
 
+# This helps to create a new target. As target consists of mcu, this function
+# parses the provided proj_file and creates a valid yaml file, which can be pushed
+# to pgen definitions.
+def mcu_create(ToolParser, mcu_name, proj_file, tool):
+    data = ToolParser(None, None).get_mcu_definition(proj_file)
+    data['mcu']['name'] = [mcu_name]
+    # we got target, now damp it to root using target.yaml file
+    # we can make it better, and ask for definitions repo clone, and add it
+    # there, at least to MCU folder
+    with open(os.path.join(os.getcwd(), mcu_name + '.yaml'), 'wt') as f:
+        f.write(yaml.safe_dump(data, default_flow_style=False, width=200))
+    return 0

@@ -37,7 +37,8 @@ class GDB(Tool, Exporter, Builder):
         # !!! TODO: should be yes for native targets
         return False
 
-    def is_supported_by_default(self, target):
+    @staticmethod
+    def is_supported_by_default(target):
         # does not require additional information
         return True
 
