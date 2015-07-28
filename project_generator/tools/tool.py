@@ -41,13 +41,13 @@ class Builder:
     def build_project(self):
         raise NotImplementedError
 
-# Exporter class for exportin a project or a workspace
+# Exporter class for exporting a project or a workspace
 class Exporter(object):
     """Just an exporter template for subclassing"""
 
     TEMPLATE_DIR = join(dirname(__file__), '..', 'templates')
 
-    # Any tool which exports should implement these methods
+    # Any tool which exports should implement these methods 3 methods
     def export_workspace(self):
         raise NotImplementedError
 
@@ -62,6 +62,11 @@ class Exporter(object):
     # xml/json/etc.. output, then jinja2 helps as it's just injects data to predefined
     # valid format. The easiest way is use raw, as we can template a project, take a valid
     # project, parse it and inject pgen data into and generate a file which tool understands
+
+    # jinja2 is quite a work for more advanced tools as there are many options and support all of
+    # them requires lot of time. On the other hand, use a template file provided by a user (expecting
+    # a valid template project file) is easier to implement and then we can support 100 percent of what
+    # tool provides.
 
     def gen_file_raw(self, target_text, output, dest_path):
         if not os.path.exists(dest_path):
