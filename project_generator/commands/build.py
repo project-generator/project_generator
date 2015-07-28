@@ -27,11 +27,11 @@ def run(args):
         # known project from records
         workspace = PgenWorkspace(args.file, os.getcwd())
         if args.project:
-            export_result = workspace.export_project(args.project, args.tool, False)
-            build_result = workspace.build_project(args.project, args.tool)
+            export_result = workspace.export(args.project, args.tool, False)
+            build_result = workspace.build(args.project, args.tool)
         else:
-            export_result = workspace.export_projects(args.tool, False)
-            build_result = workspace.build_projects(args.tool)
+            export_result = workspace.export_all(args.tool, False)
+            build_result = workspace.build_all(args.tool)
 
         if build_result == 0 and export_result == 0:
             return 0

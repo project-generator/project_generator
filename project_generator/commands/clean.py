@@ -24,9 +24,9 @@ def run(args):
         workspace = PgenWorkspace(args.file, os.getcwd())
 
         if args.project:
-            return workspace.clean_project(args.project, args.tool)
+            return workspace.clean(args.project, args.tool)
         else:
-            return workspace.clean_projects(args.tool)
+            return workspace.clean_all(args.tool)
     else:
         # not project known by pgen
         logging.warning("%s not found." % args.file)

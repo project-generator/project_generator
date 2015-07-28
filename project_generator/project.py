@@ -345,7 +345,7 @@ class Project:
                 if self is p:
                     return workspace
 
-    def clean(self, project_name, tool):
+    def clean(self, tool):
         tools = []
         if not tool:
             tools = self.project['tools_supported']
@@ -360,6 +360,7 @@ class Project:
                 logging.info("Cleaning directory %s" % path)
 
                 shutil.rmtree(path)
+        return 0
 
     def export(self, tool, copy):
         """ Exports a project """
