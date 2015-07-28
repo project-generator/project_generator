@@ -42,7 +42,7 @@ class TestCleanCommand(TestCase):
         self.parser = argparse.ArgumentParser()
         subparsers = self.parser.add_subparsers(help='commands')
         self.export_subparser = subparsers.add_parser('export', help=export.help)
-        self.clean_subparser = subparsers.add_parser('clean', help=export.help)
+        self.clean_subparser = subparsers.add_parser('clean', help=clean.help)
 
     def tearDown(self):
         # remove created directory
