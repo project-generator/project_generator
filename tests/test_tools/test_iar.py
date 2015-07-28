@@ -48,8 +48,10 @@ class TestProject(TestCase):
         shutil.rmtree('generated_projects', ignore_errors=True)
 
     def test_export_project(self):
-        self.project.export('iar_arm', False)
+        result = self.project.export('iar_arm', False)
         projectfiles = self.project.get_generated_project_files('iar_arm')
+
+        assert result == 0
         assert projectfiles
         assert os.path.splitext(projectfiles['files'][0])[1] == '.ewp'
         assert os.path.splitext(projectfiles['files'][1])[1] == '.eww'

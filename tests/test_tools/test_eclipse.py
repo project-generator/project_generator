@@ -48,6 +48,8 @@ class TestProject(TestCase):
         shutil.rmtree('generated_projects', ignore_errors=True)
 
     def test_export_project(self):
-        self.project.export('eclipse_make_gcc_arm', False)
+        result = self.project.export('eclipse_make_gcc_arm', False)
         projectfiles = self.project.get_generated_project_files('eclipse_make_gcc_arm')
+
+        assert result == 0
         assert projectfiles
