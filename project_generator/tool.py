@@ -89,6 +89,7 @@ def mcu_create(ToolParser, mcu_name, proj_file, tool):
     # there, at least to MCU folder
     with open(os.path.join(os.getcwd(), mcu_name + '.yaml'), 'wt') as f:
         f.write(yaml.safe_dump(data, default_flow_style=False, width=200))
+    return 0
 
 def load_definitions(def_dir=None):
     definitions_directory = def_dir

@@ -23,7 +23,9 @@ def run(args):
     root = os.getcwd()
 
     tool = ToolsSupported().get_tool(args.tool)
-    mcu_create(tool, args.mcu, args.file, args.tool)
+    if tool is None:
+        return -1
+    return mcu_create(tool, args.mcu, args.file, args.tool)
 
 def setup(subparser):
     subparser.add_argument(
