@@ -50,13 +50,22 @@ class ToolsSupported:
     TOOLS = list(set([v for k, v in TOOLS_DICT.items() if v is not None]))
 
     def get_tool(self, tool):
-        return self.TOOLS_DICT[tool]
+        try:
+            return self.TOOLS_DICT[tool]
+        except KeyError:
+            return None
 
     def get_toolnames(self, tool):
-        return self.TOOLS_DICT[tool].get_toolnames()
+        try:
+            return self.TOOLS_DICT[tool].get_toolnames()
+        except KeyError:
+            return None
 
     def get_toolchain(self, tool):
-        return self.TOOLS_DICT[tool].get_toolchain()
+        try:
+            return self.TOOLS_DICT[tool].get_toolchain()
+        except KeyError:
+            return None
 
     def get_supported(self):
         return self.TOOLS_DICT.keys()
