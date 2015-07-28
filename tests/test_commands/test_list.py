@@ -48,8 +48,7 @@ class TestListCommand(TestCase):
         args = self.parser.parse_args(['list','projects'])
         result = list_projects.run(args)
 
-        # TODO 0xc0170: we need to return valid values, then we enable this assert
-        # assert result == 0
+        assert result == 0
 
     def test_list_targets(self):
         # For now list projects should not fail, we should add checking stdout if targets match
@@ -57,8 +56,7 @@ class TestListCommand(TestCase):
         args = self.parser.parse_args(['list','targets'])
         result = list_projects.run(args)
 
-        # TODO 0xc0170: we need to return valid values, then we enable this assert
-        # assert result == 0
+        assert result == 0
 
     def test_list_tools(self):
         # For now list projects should not fail, we should add checking stdout if tools match
@@ -66,5 +64,4 @@ class TestListCommand(TestCase):
         args = self.parser.parse_args(['list','tools'])
         result = list_projects.run(args)
 
-        # TODO 0xc0170: we need to return valid values, then we enable this assert
-        # assert result == 0
+        assert result == 0
