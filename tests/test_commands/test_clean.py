@@ -47,6 +47,8 @@ class TestCleanCommand(TestCase):
     def tearDown(self):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
+        shutil.rmtree('generated_projects', ignore_errors=True)
+
 
     def test_clean_one_project(self):
         # We first export project, then clean it
