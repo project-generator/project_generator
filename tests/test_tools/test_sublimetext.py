@@ -48,8 +48,10 @@ class TestProject(TestCase):
         shutil.rmtree('generated_projects', ignore_errors=True)
 
     def test_export_project(self):
-        self.project.export('sublime_make_gcc_arm', False)
+        result = self.project.export('sublime_make_gcc_arm', False)
        # it should get generated files from the last export
         projectfiles = self.project.get_generated_project_files('sublime_make_gcc_arm')
+
+        assert result == 0
         assert projectfiles
         assert os.path.splitext(projectfiles['files'][0])[1] == '.sublime-project'

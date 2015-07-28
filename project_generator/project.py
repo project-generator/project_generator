@@ -19,7 +19,7 @@ import logging
 import operator
 
 from collections import defaultdict
-from .tool import ToolsSupported
+from .tools_supported import ToolsSupported
 from .util import merge_recursive, flatten, PartialFormatter
 from string import Template
 
@@ -193,6 +193,10 @@ class ProjectWorkspace:
             self.generated_files[export_tool] = generated_files
             return result
 
+    def build(self, tool):
+        logging.debug("Building a workspace is not currently not supported")
+        return -1
+
 class Project:
 
     """represents a project, which can be formed of many yaml files"""
@@ -345,7 +349,7 @@ class Project:
                 if self is p:
                     return workspace
 
-    def clean(self, project_name, tool):
+    def clean(self, tool):
         tools = []
         if not tool:
             tools = self.project['tools_supported']
@@ -360,6 +364,7 @@ class Project:
                 logging.info("Cleaning directory %s" % path)
 
                 shutil.rmtree(path)
+        return 0
 
     def export(self, tool, copy):
         """ Exports a project """
@@ -411,7 +416,7 @@ class Project:
             logging.debug("Building for tool: %s", build_tool)
             logging.debug(self.generated_files)
             builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project()
-            return result
+        return result
 
     def get_generated_project_files(self, tool):
         # returns list of project files which were generated

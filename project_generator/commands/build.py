@@ -14,7 +14,7 @@
 import os
 import logging
 
-from ..tool import ToolsSupported
+from ..tools_supported import ToolsSupported
 from ..workspace import PgenWorkspace
 from ..settings import ProjectSettings
 
@@ -27,14 +27,20 @@ def run(args):
         # known project from records
         workspace = PgenWorkspace(args.file, os.getcwd())
         if args.project:
-            workspace.export_project(args.project, args.tool, False)
-            workspace.build_project(args.project, args.tool)
+            export_result = workspace.export(args.project, args.tool, args.copy)
+            build_result = workspace.build(args.project, args.tool)
         else:
-            workspace.export_projects(args.tool, False)
-            workspace.build_projects(args.tool)
+            export_result = workspace.export_all(args.tool, args.copy)
+            build_result = workspace.build_all(args.tool)
+
+        if build_result == 0 and export_result == 0:
+            return 0
+        else:
+            return -1
     else:
         # not project known by pgen
         logging.warning("%s not found." % args.file)
+        return -1
 
 def setup(subparser):
     subparser.add_argument(
@@ -44,3 +50,5 @@ def setup(subparser):
         "-t", "--tool", help="Build a project files for provided tool")
     subparser.add_argument(
         "-dir", "--directory", help="The projects directory")
+    subparser.add_argument(
+        "-c", "--copy", action="store_true", help="Copy all files to the exported directory")

@@ -20,8 +20,7 @@ import copy
 from os.path import basename, join, normpath
 from os import getcwd
 
-from .builder import Builder
-from .exporter import Exporter
+from .tool import Tool, Builder, Exporter
 from ..targets import Targets
 
 class CoIDEdefinitions():
@@ -45,7 +44,7 @@ class CoIDEdefinitions():
         },
     }
 
-class Coide(Exporter, Builder):
+class Coide(Tool, Exporter, Builder):
 
     source_files_dic = [
         'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']

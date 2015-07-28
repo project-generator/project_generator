@@ -18,7 +18,7 @@ import logging
 
 from .project import Project, ProjectWorkspace
 from .settings import ProjectSettings
-from .tool import ToolsSupported
+from .tools_supported import ToolsSupported
 from .targets import Targets
 from .util import flatten, uniqify, load_yaml_records
 
@@ -82,36 +82,60 @@ class PgenWorkspace:
     def _is_workspace(self, workspace_name):
         return workspace_name in [name for name, v in self.workspaces.items()]
 
-    def export_project(self, project_name, tool, copy):
+    def export(self, name, tool, copy):
         """ Export a project or a workspace """
-        if self._is_project(project_name):
-            self.projects[project_name].export(tool, copy)
-        elif self._is_workspace(project_name):
-            self.workspaces[project_name].export(tool, copy)
+        if self._is_project(name):
+            logging.debug("Exporting project: %s" % name)
+            return self.projects[name].export(tool, copy)
+        elif self._is_workspace(name):
+            logging.debug("Exporting workspace: %s" % name)
+            return self.workspaces[name].export(tool, copy)
         else:
-            raise RuntimeError("Invalid Project Name: %s" % project_name)
+            logging.warning("Invalid Project Name: %s" % name)
+            return -1
 
-    def export_projects(self, tool, copy):
+    def export_all(self, tool, copy):
         # Export all, projects and workspaces
+        result = 0
         for name, project in self.projects.items():
             logging.debug("Exporting project: %s" % name)
-            project.export(tool, copy)
+            export_result = project.export(tool, copy)
+            if export_result == -1:
+                result = -1
 
-        for name, project in self.workspaces.items():
+        for name, workspace in self.workspaces.items():
             logging.debug("Exporting workspace: %s" % name)
-            project.export(tool, copy)
+            export_result = workspace.export(tool, copy)
+            if export_result == -1:
+                result = -1
+        return result
 
-    def build_project(self, project_name, tool):
-        if project_name not in self.projects:
-            raise RuntimeError("Invalid Project Name")
+    def build(self, project_name, tool):
+        if self._is_project(project_name):
+            return self.projects[project_name].build(tool)
+        elif self._is_workspace(project_name):
+            return self.workspaces[project_name].build(tool)
+        else:
+            logging.warning("Invalid Project Name")
+            return -1
 
         logging.debug("Building Project %s" % project_name)
-        self.projects[project_name].build(tool)
+        return self.projects[project_name].build(tool)
 
-    def build_projects(self, tool):
+    def build_all(self, tool):
+        result = 0
         for name, project in self.projects.items():
-            logging.debug("Building Project %s" % name)
-            project.build(tool)
+            logging.debug("Exporting project: %s" % name)
+            build_result = project.build(tool)
+            if build_result == -1:
+                result = -1
+
+        for name, workspace in self.workspaces.items():
+            logging.debug("Exporting workspace: %s" % name)
+            build_result = workspace.build(tool)
+            if build_result == -1:
+                result = -1
+        return result
 
     @staticmethod
     def pgen_list(type):
@@ -224,12 +248,29 @@ class PgenWorkspace:
 
         return '\n'.join(output)
 
-    def clean_project(self, project_name, tool):
-        if project_name not in self.projects:
-            raise RuntimeError("Invalid Project Name")
-        logging.debug("Cleaning Project %s" % project_name)
-        self.projects[project_name].clean(project_name, tool)
+    def clean(self, name, tool):
+        """ Export a project or a workspace """
+        if self._is_project(name):
+            logging.debug("Cleaning project: %s" % name)
+            return self.projects[name].clean(tool)
+        elif self._is_workspace(name):
+            logging.debug("Cleaning workspace: %s" % name)
+            return self.workspaces[name].clean(tool)
+        else:
+            logging.warning("Invalid Project Name: %s" % name)
+            return -1
 
-    def clean_projects(self, tool):
+    def clean_all(self, tool):
+        result = 0
         for name, project in self.projects.items():
-            self.clean_project(name,tool)
+            logging.debug("Cleaning project: %s" % name)
+            clean_result = project.clean(tool)
+            if clean_result == -1:
+                result = -1
+
+        for name, workspace in self.workspaces.items():
+            logging.debug("Cleaning workspace: %s" % name)
+            clean_result = workspace.clean(tool)
+            if clean_result == -1:
+                result = -1
+        return result

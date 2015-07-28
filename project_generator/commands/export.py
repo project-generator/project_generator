@@ -25,19 +25,25 @@ def run(args):
         if args.defdirectory:
             workspace.settings.update_definitions_dir(os.path.join(os.getcwd(), args.defdirectory))
 
+        build_result = 0
         if args.project:
-            workspace.export_project(args.project, args.tool, args.copy)
+            export_result = workspace.export(args.project, args.tool, args.copy)
 
             if args.build:
-                workspace.build_project(args.project, args.tool)
+                build_result = workspace.build(args.project, args.tool)
         else:
-            workspace.export_projects(args.tool, args.copy)
+            export_result = workspace.export_all(args.tool, args.copy)
 
             if args.build:
-                workspace.build_projects(args.tool)
+                build_result = workspace.build_all(args.tool)
+        if build_result == 0 and export_result == 0:
+            return 0
+        else:
+            return -1
     else:
         # not project known by pgen
         logging.warning("%s not found." % args.file)
+        return -1
 
 def setup(subparser):
     subparser.add_argument(

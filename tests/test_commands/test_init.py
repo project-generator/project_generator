@@ -51,8 +51,9 @@ class TestInitCommand(TestCase):
     def test_init_empty_project(self):
         init.setup(self.subparser)
         args = self.parser.parse_args(['init'])
-        init.run(args)
+        result = init.run(args)
 
+        assert result == 0
         # Should create 2 files
         assert os.path.isfile('projects.yaml')
         assert os.path.isfile('project.yaml')
@@ -60,8 +61,9 @@ class TestInitCommand(TestCase):
     def test_init_small_project(self):
         init.setup(self.subparser)
         args = self.parser.parse_args(['init', '-dir', 'test_workspace'])
-        init.run(args)
+        result = init.run(args)
 
+        assert result == 0
         # Should create 2 files
         assert os.path.isfile('projects.yaml')
         assert os.path.isfile('project.yaml')

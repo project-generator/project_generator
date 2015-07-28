@@ -54,9 +54,11 @@ class TestProject(TestCase):
     #     self.uvision.export_project()
 
     def test_export_project(self):
-        self.project.export('uvision', False)
+        result = self.project.export('uvision', False)
         # it should get generated files from the last export
         projectfiles = self.project.get_generated_project_files('uvision')
+
+        assert result == 0
         assert projectfiles
         assert os.path.splitext(projectfiles['files'][0])[1] == '.uvproj'
 
@@ -66,11 +68,15 @@ class TestProject(TestCase):
             f.write(yaml.dump(project_1_yaml, default_flow_style=False))
         project = Project('project_1',[project_1_yaml],
             PgenWorkspace(projects_1_yaml))
-        project.export('uvision', False)
+        result = project.export('uvision', False)
 
+        assert result == 0
         assert os.path.isdir('create_this_folder')
         shutil.rmtree('create_this_folder')
 
     def test_build_project(self):
-        self.project.export('uvision', False)
-        self.project.build('uvision')
+        result_export = self.project.export('uvision', False)
+        result_build = self.project.build('uvision')
+
+        assert result_export == 0
+        assert result_build == 0

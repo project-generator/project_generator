@@ -22,8 +22,7 @@ import copy
 from os.path import basename, join, normpath
 from os import getcwd
 from collections import OrderedDict
-from .exporter import Exporter
-from .builder import Builder
+from .tool import Tool, Builder, Exporter
 from ..targets import Targets
 
 class uVisionDefinitions():
@@ -47,7 +46,7 @@ class uVisionDefinitions():
     }
 
 
-class Uvision(Builder, Exporter):
+class Uvision(Tool, Builder, Exporter):
 
     optimization_options = ['O0', 'O1', 'O2', 'O3']
     source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_lib', 'source_files_obj']

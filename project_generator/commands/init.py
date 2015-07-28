@@ -25,7 +25,7 @@ def run(args):
     root = os.getcwd()
     directory = root if not args.directory else os.path.join(root, args.directory)
     name = os.path.split(directory)[1] if not args.name else args.name
-    create_yaml(root, directory, name, args.target.lower())
+    return create_yaml(root, directory, name, args.target.lower())
 
 
 def setup(subparser):

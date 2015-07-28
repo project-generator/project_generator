@@ -55,10 +55,11 @@ class TestCleanCommand(TestCase):
         export.setup(self.export_subparser)
         args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'uvision'])
-        export.run(args)
+        result = export.run(args)
 
         # this should export a project to generated_projects/uvision_project_2/project_2.uvproj
         assert os.path.isfile('generated_projects/uvision_project_2/project_2.uvproj')
+        assert result == 0
 
         # now clean
         clean.setup(self.clean_subparser)
@@ -68,3 +69,4 @@ class TestCleanCommand(TestCase):
 
         assert not os.path.isfile('generated_projects/uvision_project_2/project_2.uvproj')
         assert not os.path.isdir('generated_projects/uvision_project_2')
+        assert result == 0

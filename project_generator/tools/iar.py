@@ -24,8 +24,7 @@ import os
 from os import getcwd
 from os.path import join, normpath
 
-from .builder import Builder
-from .exporter import Exporter
+from .tool import Tool, Builder, Exporter
 from ..targets import Targets
 
 
@@ -162,7 +161,7 @@ class IAREmbeddedWorkbenchProject:
         index_option = self._get_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OCDynDriverList')
         self._set_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], debugger_def_dic['OCDynDriverList']['state'])
 
-class IAREmbeddedWorkbench(Builder, Exporter, IAREmbeddedWorkbenchProject):
+class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject):
 
     source_files_dic = [
         'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
