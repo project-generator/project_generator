@@ -17,7 +17,8 @@ import logging
 
 help = 'Import to pgen'
 
-from ..tools_supported import ToolsSupported, mcu_create
+from ..tools_supported import ToolsSupported
+from ..targets import mcu_create
 
 def run(args):
     root = os.getcwd()
