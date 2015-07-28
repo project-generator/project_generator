@@ -35,15 +35,22 @@ class TestImportCommand(TestCase):
 
         self.parser = argparse.ArgumentParser()
         subparsers = self.parser.add_subparsers(help='commands')
-        self.subparser = subparsers.add_parser('import_command', help=import_command.help)
+        self.subparser = subparsers.add_parser('import', help=import_command.help)
 
     def tearDown(self):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
 
     @raises(RuntimeError)
-    def test_import(self):
-        # Should raise
+    def test_import_empty_command(self):
+        # Should raise None
         import_command.setup(self.subparser)
         args = self.parser.parse_args(['import'])
         import_command.run(args)
+
+    # TODO 0xc0170: add all tools import and also template files
+    # def test_import_uvision(self):
+    #     # Should raise None
+    #     import_command.setup(self.subparser)
+    #     args = self.parser.parse_args(['import', '-t', 'uvision'])
+    #     import_command.run(args)
