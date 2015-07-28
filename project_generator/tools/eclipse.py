@@ -18,7 +18,7 @@ import logging
 # eclipse works with linux paths
 from posixpath import normpath, join, basename
 
-from .tool import Tool, Builder, Exporte
+from .tool import Tool, Builder, Exporter
 from .gccarm import MakefileGccArm
 
 

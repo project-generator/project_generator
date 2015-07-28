@@ -6,7 +6,7 @@
 
 import copy
 
-from .tool import Tool, Builder, Exporte
+from .tool import Tool, Builder, Exporter
 
 class gdb_definitions():
 

@@ -24,7 +24,7 @@ import os
 from os import getcwd
 from os.path import join, normpath
 
-from .tool import Tool, Builder, Exporte
+from .tool import Tool, Builder, Exporter
 from ..targets import Targets
 
 
