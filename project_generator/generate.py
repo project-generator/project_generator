@@ -14,7 +14,7 @@
 
 from .settings import ProjectSettings
 from .util import flatten, uniqify, load_yaml_records
-from project import *
+from .project import *
 
 class Generator:
     def __init__(self, projects_file):
