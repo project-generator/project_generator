@@ -20,7 +20,7 @@ import shutil
 from unittest import TestCase
 
 from project_generator.commands import export
-from simple_project import project_1_yaml, projects_yaml, project_2_yaml
+from .simple_project import project_1_yaml, projects_yaml, project_2_yaml
 
 class TestExportCommand(TestCase):
 
