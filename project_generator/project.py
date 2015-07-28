@@ -149,8 +149,13 @@ class ProjectWorkspace:
         else:
             tools = [tool]
 
+        result = 0
         for export_tool in tools:
-            exporter = ToolsSupported().get_tool(export_tool)
+            tool_export = ToolsSupported().get_tool(export_tool)
+            if tool_export is None:
+                result = -1
+                continue
+
             workspace_dic = {
                 'projects': [],
                 'settings': {
@@ -177,15 +182,16 @@ class ProjectWorkspace:
                 if copy:
                     project.copy_sources_to_generated_destination
                 project.project['singular'] = False
-                files = exporter(project.project, self.pgen_workspace.settings).export_project()
+                files = tool_export(project.project, self.pgen_workspace.settings).export_project()
                 # we gather all generated files, needed for workspace files
                 workspace_dic['projects'].append(files)
                 generated_files['projects'].append(files)
 
             # all projects are genereated, now generate workspace files
-            generated_files['workspaces'] = exporter(workspace_dic, self.pgen_workspace.settings).export_workspace()
+            generated_files['workspaces'] = tool_export(workspace_dic, self.pgen_workspace.settings).export_workspace()
 
             self.generated_files[export_tool] = generated_files
+            return result
 
 class Project:
 
@@ -366,12 +372,14 @@ class Project:
             tools = [tool]
 
         generated_files = {}
+        result = 0
         for export_tool in tools:
             exporter = ToolsSupported().get_tool(export_tool)
 
             # None is an error
             if exporter is None:
-                return -1
+                result = -1
+                continue
 
             self.customize_project_for_tool(export_tool)
             self._set_output_dir_path(export_tool, '')
@@ -382,6 +390,7 @@ class Project:
             files = exporter(self.project, self.pgen_workspace.settings).export_project()
             generated_files[export_tool] = files
         self.generated_files = generated_files
+        return result
 
     def build(self, tool):
         """build the project"""
@@ -391,15 +400,19 @@ class Project:
         else:
             tools = [tool]
 
+        result = 0
+
         for build_tool in tools:
             builder = self.tools.get_tool(build_tool)
             # None is an error
             if builder is None:
-                return -1
+                result = -1
+                continue
 
             logging.debug("Building for tool: %s", build_tool)
             logging.debug(self.generated_files)
             builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project()
+            return result
 
     def get_generated_project_files(self, tool):
         # returns list of project files which were generated
