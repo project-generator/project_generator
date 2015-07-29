@@ -307,7 +307,9 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
 
         eww = None
         if self.workspace['singular']:
-            eww_dic = self.definitions.eww_file
+            # TODO 0xc0170: if we use here self.definitions.eww, travis fails. I cant reproduce it and dont see
+            # eww used anywhere prior to exporting this.
+            eww_dic = {u'workspace': {u'project': {u'path': u''}, u'batchBuild': None}}
             # set eww
             self._eww_set_path_single_project(eww_dic, expanded_dic['name'])
             eww_xml = xmltodict.unparse(eww_dic, pretty=True)
