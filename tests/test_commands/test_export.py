@@ -133,3 +133,13 @@ class TestExportCommand(TestCase):
 
         assert result == 0
 
+    def test_export_workspace_all_tools(self):
+        export.setup(self.subparser)
+        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p',
+            'project_workspace'])
+        result = export.run(args)
+
+        # we dont specify tool to export, which is not valid for workspace.
+        # we don't know which tool we should build worksapce for as it consists
+        # of projects, and each can speficify tools supported.
+        assert result == -1
