@@ -161,7 +161,7 @@ class ProjectWorkspace:
                 'projects': [],
                 'settings': {
                     'name': self.name,
-                    'path': os.path.join(self.pgen_workspace.settings.generated_projects_dir_default, export_tool + '_' + self.name),
+                    'path': self.pgen_workspace.settings.export_location_format,
                 },
             }
 
