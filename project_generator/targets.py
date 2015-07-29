@@ -31,7 +31,6 @@ class Targets:
     }
 
     def __init__(self, directory=None):
-        self.update_definitions(False)
         if directory:
             self.definitions_directory = directory
             target_dir = join(self.definitions_directory, 'target')
