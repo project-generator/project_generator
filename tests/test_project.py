@@ -66,8 +66,7 @@ class TestProject(TestCase):
 
         # now that Project and PgenWorkspace accepts dictionaries, we dont need to
         # create yaml files!
-        for project in Generator(projects_yaml).generate('project_1'):
-            self.project = project
+        self.project = next(Generator(projects_yaml).generate('project_1'))
 
         # create 3 files to test project
         with open(os.path.join(os.getcwd(), 'test_workspace/main.cpp'), 'wt') as f:
@@ -84,9 +83,8 @@ class TestProject(TestCase):
 
     def test_project_yaml(self):
         # test using yaml files and compare basic data
-        for project in Generator('test_workspace/projects.yaml').generate('project_1'):
-            self.project = project
-            assert self.project.name == project.name
+        project = next(Generator('test_workspace/projects.yaml').generate('project_1'))
+        self.project.name == project.name
         # fix this one, they should be equal
         #self.assertDictEqual(self.project.project, project.project)
 

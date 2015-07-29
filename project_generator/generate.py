@@ -33,7 +33,6 @@ class Generator:
 
     def generate(self, name = ''):
         if 'projects' in self.projects_dict:
-            projects = []
             if name != '':
                 if name in self.projects_dict['projects'].keys():
                     records = self.projects_dict['projects'][name]
@@ -42,11 +41,10 @@ class Generator:
                     raise RuntimeError("You specified an invalid project name.")
             else:
                 for name, records in self.projects_dict['projects'].items():
+                    projects = []
                     if type(records) is dict:
                         # workspace
-                        for n, r in records.items():
-                            project = Project(n, load_yaml_records(uniqify(flatten(r))), self)
-                            projects.append(project)
+                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
                         self.workspaces[name] = ProjectWorkspace(name, projects, self)
                         yield self.workspaces[name]
                     else:
