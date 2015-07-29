@@ -36,7 +36,12 @@ class Generator:
             if name != '':
                 if name in self.projects_dict['projects'].keys():
                     records = self.projects_dict['projects'][name]
-                    yield Project(name, load_yaml_records(uniqify(flatten(records))), self)
+                    if type(records) is dict:
+                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
+                        self.workspaces[name] = ProjectWorkspace(name, projects, self)
+                        yield self.workspaces[name]
+                    else:
+                        yield Project(name, load_yaml_records(uniqify(flatten(records))), self)
                 else:
                     raise RuntimeError("You specified an invalid project name.")
             else:
