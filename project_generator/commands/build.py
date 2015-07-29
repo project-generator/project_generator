@@ -15,7 +15,7 @@ import os
 import logging
 
 from ..tools_supported import ToolsSupported
-from ..workspace import PgenWorkspace
+from ..generate import Generator
 from ..settings import ProjectSettings
 
 help = 'Build a project'
@@ -24,14 +24,10 @@ help = 'Build a project'
 def run(args):
     # Export if we know how, otherwise return
     if os.path.exists(args.file):
-        # known project from records
-        workspace = PgenWorkspace(args.file, os.getcwd())
-        if args.project:
-            export_result = workspace.export(args.project, args.tool, args.copy)
-            build_result = workspace.build(args.project, args.tool)
-        else:
-            export_result = workspace.export_all(args.tool, args.copy)
-            build_result = workspace.build_all(args.tool)
+        generator = Generator(args.file)
+        for project in generator.generate(args.project):
+            export_result = project.export(args.tool, args.copy)
+            build_result = project.build(args.tool)
 
         if build_result == 0 and export_result == 0:
             return 0
@@ -45,7 +41,7 @@ def run(args):
 def setup(subparser):
     subparser.add_argument(
         "-f", "--file", help="YAML projects file", default='projects.yaml')
-    subparser.add_argument("-p", "--project", help="Name of the project to build")
+    subparser.add_argument("-p", "--project", help="Name of the project to build", default = '')
     subparser.add_argument(
         "-t", "--tool", help="Build a project files for provided tool")
     subparser.add_argument(

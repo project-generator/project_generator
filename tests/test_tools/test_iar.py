@@ -17,7 +17,7 @@ import shutil
 
 from unittest import TestCase
 
-from project_generator.workspace import PgenWorkspace
+from project_generator.generate import Generator
 from project_generator.project import Project
 from project_generator.settings import ProjectSettings
 from project_generator.tools.iar import IARDefinitions, IAREmbeddedWorkbench
@@ -37,8 +37,8 @@ class TestProject(TestCase):
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_1_yaml, default_flow_style=False))
-        self.project = Project('project_1',[project_1_yaml],
-            PgenWorkspace(projects_1_yaml))
+
+        self.project = next(Generator(projects_1_yaml).generate('project_1'))
 
         self.iar = IAREmbeddedWorkbench(self.project.project, ProjectSettings())
 

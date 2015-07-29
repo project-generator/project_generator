@@ -13,8 +13,8 @@
 # limitations under the License.
 import os
 import logging
-
-from ..workspace import PgenWorkspace
+from ..tools_supported import ToolsSupported
+from ..generate import Generator
 from ..util import unicode_available
 
 help = 'List general pgen data as projects, tools or targets'
@@ -22,18 +22,19 @@ help = 'List general pgen data as projects, tools or targets'
 
 def run(args):
     if args.file and os.path.exists(args.file):
-        workspace = PgenWorkspace(args.file, os.getcwd())
-        if args.section == 'targets':
-            print(workspace.list_targets())
-        elif args.section == 'projects':
-            if not args.no_unicode and unicode_available():
-                print(workspace.list_projects())
-            else:
-                print(workspace.list_projects(use_unicode=False))
-        elif args.section == 'tools':
-            print(workspace.list_tools())
+        generator = Generator(args.file)
+        for project in generator.generate():
+            if args.section == 'targets':
+                print("%s supports: %s"%(project.project['name'],project.project['target']))
+            elif args.section == 'projects':
+                print (project.project['name'])
+            elif args.section == 'tools':
+                tools = [tool for tool, value in project.tool_specific.items() if value.linker_file is not None]
+                tools = ", ".join(tools)
+                print("%s supports: %s\n"%(project.project['name'], tools))
     else:
-        print(PgenWorkspace.pgen_list(args.section))
+        print("\nPgen supports the following tools:\n")
+        print("\n".join(ToolsSupported().get_supported()))
     return 0
 
 

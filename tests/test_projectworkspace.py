@@ -17,7 +17,7 @@ import shutil
 import yaml
 from unittest import TestCase
 
-from project_generator.workspace import PgenWorkspace
+from project_generator.generate import Generator
 from project_generator.project import Project, ProjectWorkspace
 
 project_1_yaml = {
@@ -57,10 +57,11 @@ class TestPgenWorkspace(TestCase):
             f.write(yaml.dump(projects_yaml, default_flow_style=False))
 
         self.project = Project('project_1',[project_1_yaml],
-            PgenWorkspace(projects_yaml))
+            Generator(projects_yaml))
 
         self.workspace = ProjectWorkspace('workspace_project_1', [self.project],
-            PgenWorkspace(projects_yaml))
+            Generator(projects_yaml))
+
 
         # create 3 files to test project
         with open(os.path.join(os.getcwd(), 'test_workspace/main.cpp'), 'wt') as f:
