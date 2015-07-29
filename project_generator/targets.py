@@ -16,7 +16,7 @@ import yaml
 import subprocess
 
 from os.path import join, normpath, splitext, isfile, exists
-from os import listdir, mkdir
+from os import listdir, makedirs
 
 from .settings import ProjectSettings
 
@@ -31,7 +31,6 @@ class Targets:
     }
 
     def __init__(self, directory=None):
-        self.update_definitions(False)
         if directory:
             self.definitions_directory = directory
             target_dir = join(self.definitions_directory, 'target')
@@ -89,7 +88,7 @@ class Targets:
         defdir_exists = True
         if not exists(settings.paths['definitions']):
             defdir_exists = False
-            mkdir(settings.paths['definitions'])
+            makedirs(settings.paths['definitions'])
 
         # For default, use up to date repo from github
         if settings.get_env_settings('definitions') == settings.get_env_settings('definitions_default'):
