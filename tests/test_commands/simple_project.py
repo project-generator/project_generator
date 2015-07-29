@@ -31,6 +31,6 @@ projects_yaml = {
             'project_1': ['test_workspace/project_1.yaml'],
         },
         'project_2': ['test_workspace/project_2.yaml'],
-    
+        'project_3': ['test_workspace/project_1.yaml'],
     }
 }
