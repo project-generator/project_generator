@@ -46,9 +46,9 @@ class Generator:
                         # workspace
                         for n, r in records.items():
                             project = Project(n, load_yaml_records(uniqify(flatten(r))), self)
-                            yield project
-                            projects.append(projects)
+                            projects.append(project)
                         self.workspaces[name] = ProjectWorkspace(name, projects, self)
+                        yield self.workspaces[name]
                     else:
                         yield Project(name, load_yaml_records(uniqify(flatten(records))), self)
         else:

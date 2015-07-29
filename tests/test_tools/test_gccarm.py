@@ -38,7 +38,8 @@ class TestProject(TestCase):
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_1_yaml, default_flow_style=False))
 
-        self.project = Generator(projects_1_yaml).generate('project_1').next()
+        for project in Generator(projects_1_yaml).generate('project_1'):
+            self.project = project
 
         self.gccarm = MakefileGccArm(self.project.project, ProjectSettings())
 

@@ -38,7 +38,8 @@ class TestProject(TestCase):
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_1_yaml, default_flow_style=False))
 
-        self.project = Generator(projects_1_yaml).generate('project_1').next()
+        for project in Generator(projects_1_yaml).generate('project_1'):
+            self.project = project
 
         self.defintions = uVisionDefinitions()
         self.uvision = Uvision(self.project.project, ProjectSettings())
@@ -66,8 +67,8 @@ class TestProject(TestCase):
         project_1_yaml['common']['export_dir'] = ['create_this_folder']
         with open(os.path.join(os.getcwd(), 'test_workspace/project_1.yaml'), 'wt') as f:
             f.write(yaml.dump(project_1_yaml, default_flow_style=False))
-        project = Generator(projects_1_yaml).generate('project_1').next()
-        result = project.export('uvision', False)
+        for project in Generator(projects_1_yaml).generate('project_1'):
+            result = project.export('uvision', False)
 
         assert result == 0
         assert os.path.isdir('create_this_folder')
