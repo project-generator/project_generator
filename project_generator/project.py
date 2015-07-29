@@ -145,7 +145,8 @@ class ProjectWorkspace:
 
         tools = []
         if not tool:
-            tools = self.project['tools_supported']
+            logging.info("Workspace supports one tool for all projects within.")
+            return -1
         else:
             tools = [tool]
 
