@@ -41,7 +41,6 @@ class Generator:
                     raise RuntimeError("You specified an invalid project name.")
             else:
                 for name, records in self.projects_dict['projects'].items():
-                    projects = []
                     if type(records) is dict:
                         # workspace
                         projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]

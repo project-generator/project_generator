@@ -84,7 +84,7 @@ class TestProject(TestCase):
     def test_project_yaml(self):
         # test using yaml files and compare basic data
         project = next(Generator('test_workspace/projects.yaml').generate('project_1'))
-        self.project.name == project.name
+        assert self.project.name == project.name
         # fix this one, they should be equal
         #self.assertDictEqual(self.project.project, project.project)
 
