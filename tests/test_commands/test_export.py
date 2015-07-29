@@ -143,3 +143,19 @@ class TestExportCommand(TestCase):
         # we don't know which tool we should build worksapce for as it consists
         # of projects, and each can speficify tools supported.
         assert result == -1
+
+    def test_export_workspace_uvision(self):
+        export.setup(self.subparser)
+        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p',
+            'project_workspace', '-t', 'uvision'])
+        result = export.run(args)
+
+        assert result == 0
+
+    def test_export_workspace_iar_arm(self):
+        export.setup(self.subparser)
+        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p',
+            'project_workspace', '-t', 'iar_arm'])
+        result = export.run(args)
+
+        assert result == 0
