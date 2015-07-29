@@ -170,14 +170,11 @@ class ProjectWorkspace:
                     'projects' : [],
                     'workspaces': [],
                 }
-                # projects are part of a workspace, by default fix output dir path to
-                # workspace_output_dir/project_1, workspace_output_dir/project_2, ..
-                workspace_path = export_tool + '_' + self.name
 
                 # Merge all dics, copy sources if required, correct output dir. This happens here
                 # because we need tool to set proper path (tool might be used as string template)
                 project.customize_project_for_tool(export_tool)
-                project._set_output_dir_path(export_tool, workspace_path)
+                project._set_output_dir_path(export_tool)
 
                 project._set_output_dir()
                 if copy:
@@ -391,7 +388,7 @@ class Project:
                 continue
 
             self.customize_project_for_tool(export_tool)
-            self._set_output_dir_path(export_tool, '')
+            self._set_output_dir_path(export_tool)
             self._set_output_dir()
             if copy:
                 self.copy_sources_to_generated_destination()
@@ -502,7 +499,7 @@ class Project:
         if len(self.project['linker_file']) == 0 and self.project['output_type'] == 'exe':
             raise RuntimeError("Executable - no linker command found.")
 
-    def _set_output_dir_path(self, tool, workspace_path = None):
+    def _set_output_dir_path(self, tool):
         if self.pgen_workspace.settings.export_location_format != self.pgen_workspace.settings.DEFAULT_EXPORT_LOCATION_FORMAT:
             location_format = self.pgen_workspace.settings.export_location_format
         else:
@@ -518,8 +515,6 @@ class Project:
             'target': self.project['target'],
             'workspace': self._get_workspace_name() or '.'
         })
-
-        # I'm hoping that having the workspace variable will remove the need for workspace_path
 
         # TODO (matthewelse): make this return a value directly
         self.project['output_dir']['path'] = os.path.normpath(location)

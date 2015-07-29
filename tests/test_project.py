@@ -94,7 +94,7 @@ class TestProject(TestCase):
     def test_copy(self):
         # test copy method which shojld copy all files to generated project dir by default
         self.project.customize_project_for_tool('uvision')
-        self.project._set_output_dir_path('uvision', None)
+        self.project._set_output_dir_path('uvision')
 
         self.project._set_output_dir()
         self.project.copy_sources_to_generated_destination()
