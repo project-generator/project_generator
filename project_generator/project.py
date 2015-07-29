@@ -194,7 +194,11 @@ class ProjectWorkspace:
             return result
 
     def build(self, tool):
-        logging.debug("Building a workspace is not currently not supported")
+        logging.info("Building a workspace is not currently not supported")
+        return -1
+
+    def clean(self, tool):
+        logging.info("Building a workspace is not currently not supported")
         return -1
 
 class Project:
