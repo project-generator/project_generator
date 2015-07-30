@@ -277,6 +277,7 @@ class Uvision(Tool, Builder, Exporter):
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities'], expanded_dic)
 
         # set target only if defined, otherwise use from template/default one
+        extension = 'uvproj'
         if expanded_dic['target']:
             target = Targets(self.env_settings.get_env_settings('definitions'))
             if not target.is_supported(expanded_dic['target'].lower(), 'uvision'):
@@ -295,6 +296,13 @@ class Uvision(Tool, Builder, Exporter):
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
 
+            # Support new device packs, we just need probably one of the new features for
+            # uvision to notice it's using software packs
+            if 'RegisterFile' in  mcu_def_dic['TargetOption']:
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['RegisterFile'] = mcu_def_dic['TargetOption']['RegisterFile'][0]
+                # Add x for the new one so it does not need to convert it
+                extension = 'uvprojx'
+
         # load debugger
         if expanded_dic['debugger']:
             try:
@@ -304,7 +312,7 @@ class Uvision(Tool, Builder, Exporter):
 
         # Project file
         uvproj_xml = xmltodict.unparse(uvproj_dic, pretty=True)
-        path, files = self.gen_file_raw(uvproj_xml, '%s.uvproj' % expanded_dic['name'], expanded_dic['output_dir']['path'])
+        path, files = self.gen_file_raw(uvproj_xml, '%s.%s' % (expanded_dic['name'], extension), expanded_dic['output_dir']['path'])
         return path, files
 
     def export_workspace(self):
