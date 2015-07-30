@@ -335,8 +335,9 @@ class Uvision(Tool, Builder, Exporter):
     def build_project(self):
         # > UV4 -b [project_path]
         path = join(os.getcwd(), self.workspace['files']['uvproj'])
-        if path.split('.')[-1] != 'uvproj':
+        if path.split('.')[-1] != 'uvproj' and path.split('.')[-1] != 'uvprojx':
             path = path + '.uvproj'
+
         if not os.path.exists(path):
             logging.debug("The file: %s does not exists, exported prior building?" % path)
             return
