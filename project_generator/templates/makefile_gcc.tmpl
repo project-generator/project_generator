@@ -120,7 +120,11 @@ $(OBJ_FOLDER)%.o : %.s
 all: create_outputdir $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) print_info
 
 create_outputdir:
+ifeq ($(OS),Windows_NT)
+	mkdir $(OUT_DIR)
+else
 	$(shell mkdir $(OBJ_FOLDER) 2>/dev/null)
+endif
 
 {% if output_type == 'exe' %}
 # Tool invocations
