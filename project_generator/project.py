@@ -259,8 +259,8 @@ class Project:
             'target': '',       # target
             'template' : '',    # tool template
             'output_type': self.output_types['executable'],           # output type, default - exe
-            'tools_supported': [self.pgen_workspace.settings.DEFAULT_TOOL], # Tools which are supported
-            'singular': True,  # singular project or part of a workspace
+            'tools_supported': [], # Tools which are supported
+            'singular': True,      # singular project or part of a workspace
 
         }
 
@@ -364,6 +364,9 @@ class Project:
     def clean(self, tool):
         tools = []
         if not tool:
+            if len(self.project['tools_supported']) == 0:
+                logging.info("No tool defined.")
+                return -1
             tools = self.project['tools_supported']
         else:
             tools = [tool]
@@ -383,6 +386,9 @@ class Project:
 
         tools = []
         if not tool:
+            if len(self.project['tools_supported']) == 0:
+                logging.error("No tool defined.")
+                return -1
             tools = self.project['tools_supported']
         else:
             tools = [tool]
@@ -412,6 +418,9 @@ class Project:
         """build the project"""
         tools = []
         if not tool:
+            if len(self.project['tools_supported']) == 0:
+                logging.error("No tool defined.")
+                return -1
             tools = self.project['tools_supported']
         else:
             tools = [tool]
