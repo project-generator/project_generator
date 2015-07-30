@@ -157,13 +157,21 @@ class ProjectWorkspace:
                 result = -1
                 continue
 
+            # substitute all of the different dynamic values
+            location = PartialFormatter().format(self.pgen_workspace.settings.export_location_format, **{
+                'project_name': self.name,
+                'tool': tool,
+                'workspace': self.name
+            })
+
             workspace_dic = {
                 'projects': [],
                 'settings': {
                     'name': self.name,
-                    'path': self.pgen_workspace.settings.export_location_format,
+                    'path': location,
                 },
             }
+
 
             for project in self.projects:
                 generated_files = {

@@ -222,7 +222,7 @@ class Uvision(Tool, Builder, Exporter):
             path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
             if path_project != path_workspace:
                 rel_path = os.path.relpath(os.getcwd(), path_workspace)
-            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(rel_path, project['path'])})
+            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(rel_path,project['files']['uvproj'])})
 
         # generate the file
         uvmpw_xml = xmltodict.unparse(uvmpw_dic, pretty=True)
@@ -335,8 +335,9 @@ class Uvision(Tool, Builder, Exporter):
     def build_project(self):
         # > UV4 -b [project_path]
         path = join(os.getcwd(), self.workspace['files']['uvproj'])
-        if path.split('.')[-1] != 'uvproj':
+        if path.split('.')[-1] != 'uvproj' and path.split('.')[-1] != 'uvprojx':
             path = path + '.uvproj'
+
         if not os.path.exists(path):
             logging.debug("The file: %s does not exists, exported prior building?" % path)
             return
@@ -379,4 +380,8 @@ class Uvision(Tool, Builder, Exporter):
                 }
             }
         }
+
+        if 'RegisterFile' in uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']:
+            mcu['tool_specific']['uvision']['TargetOption']['RegisterFile'] = [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['RegisterFile']]
+
         return mcu
