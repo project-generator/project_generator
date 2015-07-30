@@ -379,4 +379,8 @@ class Uvision(Tool, Builder, Exporter):
                 }
             }
         }
+
+        if 'RegisterFile' in uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']:
+            mcu['tool_specific']['uvision']['TargetOption']['RegisterFile'] = [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['RegisterFile']]
+
         return mcu

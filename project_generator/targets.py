@@ -16,7 +16,7 @@ import yaml
 import subprocess
 
 from os.path import join, normpath, splitext, isfile, exists
-from os import listdir, makedirs
+from os import listdir, makedirs, getcwd
 
 from .settings import ProjectSettings
 
@@ -121,6 +121,6 @@ def mcu_create(ToolParser, mcu_name, proj_file, tool):
     # we got target, now damp it to root using target.yaml file
     # we can make it better, and ask for definitions repo clone, and add it
     # there, at least to MCU folder
-    with open(os.path.join(os.getcwd(), mcu_name + '.yaml'), 'wt') as f:
+    with open(join(getcwd(), mcu_name + '.yaml'), 'wt') as f:
         f.write(yaml.safe_dump(data, default_flow_style=False, width=200))
     return 0
