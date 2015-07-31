@@ -61,8 +61,8 @@ class TestExportCommand(TestCase):
         args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2'])
         result = export.run(args)
 
-        # tools are defined as supported, thus result should be 0
-        assert result == 0
+        # No tools defined
+        assert result == -1
 
     def test_export_one_project_uvision(self):
         export.setup(self.subparser)

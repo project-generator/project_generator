@@ -55,7 +55,7 @@ class TestBuildCommand(TestCase):
             'project_2'])
         result = build.run(args)
 
-        assert result == 0
+        assert result == -1
 
     def test_build_project_uvision_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
