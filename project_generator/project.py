@@ -159,19 +159,14 @@ class Project:
         self.project = {
             'name': self.name,          # project name
             'core': '',                 # core
-            # 'linker_file': None,        # linker command file
             'build_dir' : 'build',      # Build output path
             'debugger' : 'cmsis-dap',   # Debugger
-            # 'includes': [],             # include paths
             'copy_sources': False,      # [internal] Copy sources to destination flag
-            # 'include_files': [],        # [internal] files to be included
-            # 'source_paths': [],         # [internal] source paths
             'source_files_c': [],       # [internal] c source files
             'source_files_cpp': [],     # [internal] c++ source files
             'source_files_s': [],       # [internal] assembly source files
-            'source_files_obj': [{}],   # [internal] object files
-            'source_files_lib': [{}],   # [internal] libraries
-            # 'macros': [],               # macros (defines)
+            'source_files_obj': {},   # [internal] object files
+            'source_files_lib': {},   # [internal] libraries
             'output_dir': {             # [internal] The generated path dict
                 'path': '',             # path with all name mangling we add to export_dir
                 'rel_path': '',         # how far we are from root
@@ -182,12 +177,11 @@ class Project:
             'output_type': self.output_types['executable'],           # output type, default - exe
             'tools_supported': [], # Tools which are supported
             'singular': True,      # singular project or part of a workspace
-            # 'source_groups': {}
         }
         self.project.update(copy.deepcopy(self.COMMON_DICT))
 
     # Project data have the some keys the same, therefore we process them here
-    # and they own keys, are processed in common/tool attributes
+    # and their own keys, are processed in common/tool attributes
     def _set_project_attributes(self, project_dic, key_value , project_file_data):
         if key_value in project_file_data:
             if 'includes' in project_file_data[key_value]:
@@ -334,9 +328,7 @@ class Project:
                 result = -1
                 continue
 
-            # TODO: fix this custom
-            # self.customize_project_for_tool(export_tool)
-            self._merge_data_for_tool(export_tool)
+            self._merge_common_data_with_tool(export_tool)
             self._set_output_dir_path(export_tool)
             self._set_output_dir()
             if copy:
@@ -393,27 +385,14 @@ class Project:
         path = self.project['output_dir']['path']
         self.project['output_dir']['rel_path'], self.project['output_dir']['rel_count'] = self._generate_output_dir(path)
 
-    def _source_of_type(self, filetype):
+    def _source_of_type(self, dict_type, filetype):
         """return a dictionary of groups and the sources of a specified type within them"""
         files = {}
-        for group, group_contents in self.source_groups.items():
+        for group, group_contents in dict_type.items():
             files[group] = []
             if filetype in group_contents:
                 files[group].extend(group_contents[filetype])
         return files
-
-    # def all_sources_of_type(self, filetype):
-    #     """return a list of the sources of a specified type"""
-    #     files = []
-    #     for group, group_contents in self.source_groups.items():
-    #         if filetype in group_contents:
-    #             files.extend(group_contents[filetype])
-    #     return files
-
-    # def format_source_files(self, ext, tool_specific_settings, toolchain_specific_settings):
-    #     return [merge_recursive(self.source_of_type(ext), {k: v for settings in
-    #             [settings.source_of_type(ext) for settings in tool_specific_settings] for
-    #             k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
 
     def _get_tool_data(self, key, tool_keywords):
         data = []
@@ -434,14 +413,14 @@ class Project:
                 continue
         return sources
 
-    def _merge_data_for_tool(self, tool):
+    def _merge_common_data_with_tool(self, tool):
         tool_keywords = []
-        # get all keywords valid for the toool
+        # get all keywords valid for the tool
         tool_keywords.append(ToolsSupported().get_toolchain(tool))
         tool_keywords.append(ToolsSupported().get_toolnames(tool))
         tool_keywords = list(set(flatten(tool_keywords)))
 
-        # common data + tools data
+        # Merge common project data with tool specific data
         self.project['includes'] = self.project['includes'] + self._get_tool_data('includes', tool_keywords)
         self.project['include_files'] =  self.project['include_files'] + self._get_tool_data('include_files', tool_keywords)
         self.project['source_paths'] =  self.project['source_paths'] + self._get_tool_data('source_paths', tool_keywords)
@@ -451,16 +430,21 @@ class Project:
         self.project['misc'] =  self._get_tool_data('misc', tool_keywords)
 
         # This is magic with sources as they have groups
-        self.project['source_files'] = merge_recursive(self.project['source_groups'], self._get_tool_sources(tool_keywords))
+        tool_sources = self._get_tool_sources(tool_keywords)
+        self.project['source_files'] = merge_recursive(self.project['source_groups'], tool_sources)
 
         for ext in ["c","cpp","s","lib, obj"]:
            key = "source_files_" + ext
-           self.project[key] = [merge_recursive(self._source_of_type(ext), {k: v for settings in
-                [settings.source_of_type(ext) for settings in tool_specific_settings] for
-                k, v in settings.items()},toolchain_specific_settings.source_of_type(ext))]
+           self.project[key] = merge_recursive(self._source_of_type(self.project['source_groups'], ext), self._source_of_type(tool_sources, ext))
 
         if len(self.project['linker_file']) == 0 and self.project['output_type'] == 'exe':
             raise RuntimeError("Executable - no linker command found.")
+        elif self.project['output_type'] == 'exe':
+            # There might be a situation when there are more linkers. warn user and choose the first one
+            if type(self.project['linker_file']) == type(list()):
+                if len(self.project['linker_file']) > 1:
+                    logging.debug("More than one linker command file for the project: %s" % self.name)
+                self.project['linker_file'] = self.project['linker_file'][0]
 
     def _set_output_dir_path(self, tool):
         if self.pgen_workspace.settings.export_location_format != self.pgen_workspace.settings.DEFAULT_EXPORT_LOCATION_FORMAT:
@@ -510,23 +494,23 @@ class Project:
                                  os.path.join(os.getcwd(), self.project['output_dir']['path'], path))
 
         # all sources are grouped, therefore treat them as dict
-        for k, v in self.project['source_files_c'][0].items():
+        for k, v in self.project['source_files_c'].items():
             for file in v:
                 self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_c'])
 
-        for k, v in self.project['source_files_cpp'][0].items():
+        for k, v in self.project['source_files_cpp'].items():
             for file in v:
                 self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_cpp'])
 
-        for k, v in self.project['source_files_s'][0].items():
+        for k, v in self.project['source_files_s'].items():
             for file in v:
                 self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_s'])
 
-        for k,v in self.project['source_files_obj'][0].items():
+        for k,v in self.project['source_files_obj'].items():
             for file in v:
                 self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_obj'])
 
-        for k,v in self.project['source_files_lib'][0].items():
+        for k,v in self.project['source_files_lib'].items():
             for file in v:
                 self._copy_files(file, self.project['output_dir']['path'], FILES_EXTENSIONS['source_files_lib'])
 
