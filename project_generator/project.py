@@ -205,7 +205,7 @@ class Project:
                 project_dic['export_dir'] = os.path.normpath(project_file_data[key_value]['export_dir'][0])
 
             if 'linker_file' in project_file_data[key_value]:
-                project_dic['linker_file'] = project_file_data[key_value]['linker_file'][0]
+                project_dic['linker_file'] = os.path.normpath(project_file_data[key_value]['linker_file'][0])
 
     def _set_common_attributes(self, project_file_data):
         if 'common' in project_file_data:
