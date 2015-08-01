@@ -84,7 +84,7 @@ class ProjectWorkspace:
 
                 # Merge all dics, copy sources if required, correct output dir. This happens here
                 # because we need tool to set proper path (tool might be used as string template)
-                project.customize_project_for_tool(export_tool)
+                project._merge_common_data_with_tool(export_tool)
                 project._set_output_dir_path(export_tool)
 
                 project._set_output_dir()
