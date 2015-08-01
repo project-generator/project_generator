@@ -162,9 +162,9 @@ class Project:
             'build_dir' : 'build',      # Build output path
             'debugger' : 'cmsis-dap',   # Debugger
             'copy_sources': False,      # [internal] Copy sources to destination flag
-            'source_files_c': [],       # [internal] c source files
-            'source_files_cpp': [],     # [internal] c++ source files
-            'source_files_s': [],       # [internal] assembly source files
+            'source_files_c': {},       # [internal] c source files
+            'source_files_cpp': {},     # [internal] c++ source files
+            'source_files_s': {},       # [internal] assembly source files
             'source_files_obj': {},   # [internal] object files
             'source_files_lib': {},   # [internal] libraries
             'output_dir': {             # [internal] The generated path dict
@@ -408,7 +408,7 @@ class Project:
         sources = {}
         for tool_name in tool_keywords:
             try:
-                merge_recursive(sources, self.project_tools[tool_name]['source_groups'])
+                sources = merge_recursive(sources, self.project_tools[tool_name]['source_groups'])
             except KeyError:
                 continue
         return sources
@@ -432,11 +432,11 @@ class Project:
         # This is magic with sources as they have groups
         tool_sources = self._get_tool_sources(tool_keywords)
         self.project['source_files'] = merge_recursive(self.project['source_groups'], tool_sources)
-
         for ext in ["c","cpp","s","lib, obj"]:
            key = "source_files_" + ext
            self.project[key] = merge_recursive(self._source_of_type(self.project['source_groups'], ext), self._source_of_type(tool_sources, ext))
 
+        # linker checkup
         if len(self.project['linker_file']) == 0 and self.project['output_type'] == 'exe':
             raise RuntimeError("Executable - no linker command found.")
         elif self.project['output_type'] == 'exe':
