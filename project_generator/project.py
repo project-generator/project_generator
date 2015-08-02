@@ -300,6 +300,8 @@ class Project:
             tools = [tool]
 
         for current_tool in tools:
+            # We get the export dict formed, then use it for cleaning
+            self._fill_project_for_tool(current_tool)
             self._set_output_dir_path(current_tool)
             path = self.project['common']['output_dir']['path']
 
