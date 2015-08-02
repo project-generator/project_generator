@@ -336,6 +336,10 @@ class Project:
             self._set_output_dir()
             if copy:
                 self._copy_sources_to_generated_destination()
+            # Print debug info prior exporting
+            logging.debug("Project common data: %s" % self.project['common'])
+            logging.debug("Project tool_specific data: %s" % self.project['tool_specific'])
+            logging.debug("Project export data: %s" % self.project['export'])
 
             files = exporter(self.project['export'], self.pgen_workspace.settings).export_project()
             generated_files[export_tool] = files
