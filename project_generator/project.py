@@ -243,7 +243,7 @@ class Project:
             if include_file:
                 if os.path.isfile(include_file):
                     # file, add it to the list (for copying or if tool requires it)
-                    if not include_file in self.project['include_files']:
+                    if not include_file in project_dic['include_files']:
                         project_dic['include_files'].append(os.path.normpath(include_file))
                     dir_path = os.path.dirname(include_file)
                 else:
