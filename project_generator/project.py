@@ -216,7 +216,7 @@ class Project:
                 if project_file_data['common']['output'][0] not in self.output_types:
                     raise RuntimeError("Invalid Output Type.")
 
-                self.project['output_type'] = self.output_types[project_file_data['common']['output'][0]]
+                self.project['common']['output_type'] = self.output_types[project_file_data['common']['output'][0]]
 
             self._set_project_attributes(self.project['common'], 'common', project_file_data)
 
