@@ -69,25 +69,22 @@ class EclipseGnuARM(Tool, Exporter, Builder):
         """ Get all groups defined. """
         groups = []
         for attribute in self.source_files_dic:
-            for dic in data[attribute]:
-                if dic:
-                    for k, v in dic.items():
-                        if k == None:
-                            k = 'Sources'
-                        if k not in groups:
-                            groups.append(k)
+            for k, v in data[attribute].items():
+                if k == None:
+                    k = 'Sources'
+                if k not in groups:
+                    groups.append(k)
         return groups
 
     def _iterate(self, data, expanded_data, rel_path):
         """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
-            for dic in data[attribute]:
-                for k, v in dic.items():
-                    if k == None:
-                        group = 'Sources'
-                    else:
-                        group = k
-                    self._expand_data(dic, expanded_data, attribute, group, rel_path)
+            for k, v in data[attribute].items():
+                if k == None:
+                    group = 'Sources'
+                else:
+                    group = k
+                self._expand_data(data[attribute], expanded_data, attribute, group, rel_path)
 
     def export_workspace(self):
         logging.debug("Current version of CoIDE does not support workspaces")

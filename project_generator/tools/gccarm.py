@@ -123,14 +123,14 @@ class MakefileGccArm(Tool, Exporter):
         data['includes'] = fixed_paths
 
         libs = []
-        for k in data['source_files_lib'][0].keys():
+        for k in data['source_files_lib'].keys():
             libs.extend([join(data['output_dir']['rel_path'],
-                                                   normpath(path)) for path in data['source_files_lib'][0][k]])
+                                                   normpath(path)) for path in data['source_files_lib'][k]])
         data['source_files_lib'] = libs
 
-        for k in data['source_files_obj'][0].keys():
-            data['source_files_obj'][0][k] = [join(data['output_dir']['rel_path'],
-                                                   normpath(path)) for path in data['source_files_obj'][0][k]]
+        for k in data['source_files_obj'].keys():
+            data['source_files_obj'][k] = [join(data['output_dir']['rel_path'],
+                                                   normpath(path)) for path in data['source_files_obj'][k]]
         fixed_paths = []
         for path in data['source_paths']:
             fixed_paths.append(join(data['output_dir']['rel_path'], normpath(path)))
