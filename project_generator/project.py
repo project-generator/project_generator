@@ -301,6 +301,8 @@ class Project:
 
     def clean(self, tool):
         tools = self._validate_tools(tool)
+        if tools == -1:
+            return -1
 
         for current_tool in tools:
             # We get the export dict formed, then use it for cleaning
@@ -316,6 +318,8 @@ class Project:
     def export(self, tool, copy):
         """ Exports a project """
         tools = self._validate_tools(tool)
+        if tools == -1:
+            return -1
 
         generated_files = {}
         result = 0
@@ -343,6 +347,8 @@ class Project:
     def build(self, tool):
         """build the project"""
         tools = self._validate_tools(tool)
+        if tools == -1:
+            return -1
 
         result = 0
 
