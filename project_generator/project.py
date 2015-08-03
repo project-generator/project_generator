@@ -234,7 +234,8 @@ class Project:
             for tool_name, tool_settings in project_file_data['tool_specific'].items():
                 self._set_project_attributes(self.project['tool_specific'][tool_name], tool_name, project_file_data['tool_specific'])
 
-    def _process_include_files(self, project_dic, files):
+    @staticmethod
+    def _process_include_files(project_dic, files):
         # If it's dic add it , if file, add it to files
         for include_file in files:
             # include might be set to None - empty yaml list
@@ -250,7 +251,8 @@ class Project:
                 if not os.path.normpath(dir_path) in project_dic['includes']:
                     project_dic['includes'].append(os.path.normpath(dir_path))
 
-    def _process_source_files(self, project_dic, files, group_name):
+    @staticmethod
+    def _process_source_files(project_dic, files, group_name):
         extensions = ['cpp', 'c', 's', 'obj', 'lib']
         mappings = defaultdict(lambda: None)
         mappings['o'] = 'obj'
