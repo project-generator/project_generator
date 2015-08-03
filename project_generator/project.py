@@ -287,7 +287,8 @@ class Project:
                 if self is p:
                     return workspace
 
-    def clean(self, tool):
+    def _validate_tools(self, tool):
+        """ Use tool_supported or tool """
         tools = []
         if not tool:
             if len(self.project['common']['tools_supported']) == 0:
@@ -296,6 +297,10 @@ class Project:
             tools = self.project['common']['tools_supported']
         else:
             tools = [tool]
+        return tools
+
+    def clean(self, tool):
+        tools = self._validate_tools(tool)
 
         for current_tool in tools:
             # We get the export dict formed, then use it for cleaning
@@ -310,15 +315,7 @@ class Project:
 
     def export(self, tool, copy):
         """ Exports a project """
-
-        tools = []
-        if not tool:
-            if len(self.project['common']['tools_supported']) == 0:
-                logging.error("No tool defined.")
-                return -1
-            tools = self.project['common']['tools_supported']
-        else:
-            tools = [tool]
+        tools = self._validate_tools(tool)
 
         generated_files = {}
         result = 0
@@ -345,14 +342,7 @@ class Project:
 
     def build(self, tool):
         """build the project"""
-        tools = []
-        if not tool:
-            if len(self.project['common']['tools_supported']) == 0:
-                logging.error("No tool defined.")
-                return -1
-            tools = self.project['common']['tools_supported']
-        else:
-            tools = [tool]
+        tools = self._validate_tools(tool)
 
         result = 0
 
