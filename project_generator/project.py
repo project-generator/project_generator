@@ -84,9 +84,7 @@ class ProjectWorkspace:
 
                 # Merge all dics, copy sources if required, correct output dir. This happens here
                 # because we need tool to set proper path (tool might be used as string template)
-                project._fill_project_for_tool(export_tool)
-                project._set_output_dir_path(export_tool)
-                project._set_output_dir()
+                project._fill_export_dict(export_tool)
 
                 if copy:
                     project._copy_sources_to_generated_destination()
@@ -301,8 +299,7 @@ class Project:
 
         for current_tool in tools:
             # We get the export dict formed, then use it for cleaning
-            self._fill_project_for_tool(current_tool)
-            self._set_output_dir_path(current_tool)
+            self._fill_export_dict(current_tool)
             path = self.project['common']['output_dir']['path']
 
             if os.path.isdir(path):
@@ -333,9 +330,7 @@ class Project:
                 result = -1
                 continue
 
-            self._fill_project_for_tool(export_tool)
-            self._set_output_dir_path(export_tool)
-            self._set_output_dir()
+            self._fill_export_dict(export_tool)
             if copy:
                 self._copy_sources_to_generated_destination()
             # Print debug info prior exporting
@@ -386,10 +381,6 @@ class Project:
 
         return relpath+os.path.sep, count
 
-    def _set_output_dir(self):
-        path = self.project['export']['output_dir']['path']
-        self.project['export']['output_dir']['rel_path'], self.project['export']['output_dir']['rel_count'] = self._generate_output_dir(path)
-
     def _source_of_type(self, dict_type, filetype):
         """return a dictionary of groups and the sources of a specified type within them"""
         files = {}
@@ -418,7 +409,7 @@ class Project:
                 continue
         return sources
 
-    def _fill_project_for_tool(self, tool):
+    def _fill_export_dict(self, tool):
         tool_keywords = []
         # get all keywords valid for the tool
         tool_keywords.append(ToolsSupported().get_toolchain(tool))
@@ -427,6 +418,8 @@ class Project:
 
         # Copy common to export, as a base. We then add tool data
         self.project['export'].update(self.project['common'])
+
+        self._set_output_dir_path(tool)
         # Merge common project data with tool specific data
         self.project['export']['includes'] = self.project['export']['includes'] + self._get_tool_data('includes', tool_keywords)
         self.project['export']['include_files'] =  self.project['export']['include_files'] + self._get_tool_data('include_files', tool_keywords)
@@ -472,6 +465,8 @@ class Project:
 
         # TODO (matthewelse): make this return a value directly
         self.project['export']['output_dir']['path'] = os.path.normpath(location)
+        path = self.project['export']['output_dir']['path']
+        self.project['export']['output_dir']['rel_path'], self.project['export']['output_dir']['rel_count'] = self._generate_output_dir(path)
 
     def _copy_files(self, file, output_dir, valid_files_group):
         file = os.path.normpath(file)

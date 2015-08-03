@@ -93,13 +93,9 @@ class TestProject(TestCase):
 
     def test_copy(self):
         # test copy method which shojld copy all files to generated project dir by default
-        self.project._fill_project_for_tool('uvision')
-        self.project._set_output_dir_path('uvision')
-
-        self.project._set_output_dir()
+        self.project._fill_export_dict('uvision')
         self.project._copy_sources_to_generated_destination()
 
     def test_set_output_dir_path(self):
-        self.project._fill_project_for_tool('uvision')
-        self.project._set_output_dir_path('uvision')
+        self.project._fill_export_dict('uvision')
         assert self.project.project['export']['output_dir']['path'] == os.path.join('projects', 'uvision_target1','project_1')
