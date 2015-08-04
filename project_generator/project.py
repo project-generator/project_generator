@@ -331,6 +331,7 @@ class Project:
             # None is an error
             if exporter is None:
                 result = -1
+                logging.debug("Tool: %s was not found" % export_tool)
                 continue
 
             self._fill_export_dict(export_tool)
@@ -358,6 +359,7 @@ class Project:
             builder = ToolsSupported().get_tool(build_tool)
             # None is an error
             if builder is None:
+                logging.debug("Tool: %s was not found" % builder)
                 result = -1
                 continue
 
