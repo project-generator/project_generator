@@ -439,12 +439,12 @@ class Project:
         # linker checkup
         if len(self.project['export']['linker_file']) == 0 and self.project['export']['output_type'] == 'exe':
             logging.debug("Executable - no linker command found.")
-        elif self.project['export']['output_type'] == 'exe':
-            # There might be a situation when there are more linkers. warn user and choose the first one
-            if type(self.project['export']['linker_file']) == type(list()):
-                if len(self.project['export']['linker_file']) > 1:
-                    logging.debug("More than one linker command files: %s" % self.project['export']['linker_file'])
-                self.project['export']['linker_file'] = self.project['export']['linker_file'][0]
+
+        # There might be a situation when there are more linkers. warn user and choose the first one
+        if type(self.project['export']['linker_file']) == type(list()):
+            if len(self.project['export']['linker_file']) > 1:
+                logging.debug("More than one linker command files: %s" % self.project['export']['linker_file'])
+            self.project['export']['linker_file'] = self.project['export']['linker_file'][0]
 
     def _set_output_dir_path(self, tool):
         if self.pgen_workspace.settings.export_location_format != self.pgen_workspace.settings.DEFAULT_EXPORT_LOCATION_FORMAT:
