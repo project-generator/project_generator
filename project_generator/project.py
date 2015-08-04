@@ -438,12 +438,12 @@ class Project:
 
         # linker checkup
         if len(self.project['export']['linker_file']) == 0 and self.project['export']['output_type'] == 'exe':
-            raise RuntimeError("Executable - no linker command found.")
+            logging.debug("Executable - no linker command found.")
         elif self.project['export']['output_type'] == 'exe':
             # There might be a situation when there are more linkers. warn user and choose the first one
             if type(self.project['export']['linker_file']) == type(list()):
                 if len(self.project['export']['linker_file']) > 1:
-                    logging.debug("More than one linker command file for the project: %s" % self.name)
+                    logging.debug("More than one linker command files: %s" % self.project['export']['linker_file'])
                 self.project['export']['linker_file'] = self.project['export']['linker_file'][0]
 
     def _set_output_dir_path(self, tool):
