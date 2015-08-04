@@ -55,13 +55,9 @@ class MakefileGccArm(Tool, Exporter):
     def _list_files(self, data, attribute, rel_path):
         """ Creates a list of all files based on the attribute. """
         file_list = []
-        for groups in data[attribute]:
-            try:
-                for k, v in groups.items():
-                    for file in v:
-                        file_list.append(join(rel_path, normpath(file)))
-            except:
-                continue
+        for k, v in data[attribute].items():
+            for file in v:
+                file_list.append(join(rel_path, normpath(file)))
         data[attribute] = file_list
 
     def _libraries(self, key, value, data):

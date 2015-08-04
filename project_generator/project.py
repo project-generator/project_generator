@@ -233,7 +233,8 @@ class Project:
         if 'tool_specific' in project_file_data:
             for tool_name, tool_settings in project_file_data['tool_specific'].items():
                 self._set_project_attributes(self.project['tool_specific'][tool_name], tool_name, project_file_data['tool_specific'])
-
+                if 'misc' in project_file_data['tool_specific'][tool_name]:
+                    self.project['tool_specific'][tool_name]['misc'] = project_file_data['tool_specific'][tool_name]['misc']
     @staticmethod
     def _process_include_files(project_dic, files):
         # If it's dic add it , if file, add it to files
