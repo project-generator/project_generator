@@ -45,6 +45,4 @@ def setup(subparser):
     subparser.add_argument(
         "-t", "--tool", help="Build a project files for provided tool")
     subparser.add_argument(
-        "-dir", "--directory", help="The projects directory")
-    subparser.add_argument(
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")
