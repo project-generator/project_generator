@@ -15,7 +15,7 @@
 import os
 import logging
 
-help = 'Import to pgen'
+help = 'Import mcu to pgen. Provide a valid project file, pgen will parse to create mcu definition'
 
 from ..tools_supported import ToolsSupported
 from ..targets import mcu_create
@@ -30,9 +30,9 @@ def run(args):
 
 def setup(subparser):
     subparser.add_argument(
-        '-mcu', action='store', help='MCU name')
+        '-mcu', action='store', required = True, help='MCU name')
     # we need tool as some tools have same extensions and we might have problems
     subparser.add_argument(
-        '-t', '--tool', action='store', help='Tool to be set')
+        '-t', '--tool', action='store', required = True, help='Tool to be set')
     subparser.add_argument(
-        '-f', '--file', action='store', help='File to be parsed')
+        '-f', '--file', action='store', required = True, help='Project file to be parsed (a valid tool project)')
