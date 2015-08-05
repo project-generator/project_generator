@@ -83,7 +83,11 @@ OBJCPFLAGS = -O ihex
 
 ARFLAGS = cr
 
-RM = rm -rf
+ifeq ($(OS),Windows_NT)
+	RM = rmdir /s /q
+else
+	RM = rm -rf
+endif
 
 C_SRCS := {% for file in source_files_c %} {{file}} {% endfor %}
 C_OBJS := $(patsubst %.c,$(OBJ_FOLDER)%.o,$(notdir $(C_SRCS)))
