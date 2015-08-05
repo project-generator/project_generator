@@ -233,7 +233,8 @@ class Project:
         if 'tool_specific' in project_file_data:
             for tool_name, tool_settings in project_file_data['tool_specific'].items():
                 self._set_project_attributes(self.project['tool_specific'][tool_name], tool_name, project_file_data['tool_specific'])
-
+                if 'misc' in project_file_data['tool_specific'][tool_name]:
+                    self.project['tool_specific'][tool_name]['misc'] = project_file_data['tool_specific'][tool_name]['misc']
     @staticmethod
     def _process_include_files(project_dic, files):
         # If it's dic add it , if file, add it to files
@@ -265,7 +266,7 @@ class Project:
         for source_file in files:
             if os.path.isdir(source_file):
                 project_dic['source_paths'].append(os.path.normpath(source_file))
-                self._process_source_files(project_dic, [os.path.join(os.path.normpath(source_file), f) for f in os.listdir(
+                Project._process_source_files(project_dic, [os.path.join(os.path.normpath(source_file), f) for f in os.listdir(
                     source_file) if os.path.isfile(os.path.join(os.path.normpath(source_file), f))], group_name)
 
             extension = source_file.split('.')[-1]
@@ -331,6 +332,7 @@ class Project:
             # None is an error
             if exporter is None:
                 result = -1
+                logging.debug("Tool: %s was not found" % export_tool)
                 continue
 
             self._fill_export_dict(export_tool)
@@ -358,6 +360,7 @@ class Project:
             builder = ToolsSupported().get_tool(build_tool)
             # None is an error
             if builder is None:
+                logging.debug("Tool: %s was not found" % builder)
                 result = -1
                 continue
 
@@ -436,13 +439,13 @@ class Project:
 
         # linker checkup
         if len(self.project['export']['linker_file']) == 0 and self.project['export']['output_type'] == 'exe':
-            raise RuntimeError("Executable - no linker command found.")
-        elif self.project['export']['output_type'] == 'exe':
-            # There might be a situation when there are more linkers. warn user and choose the first one
-            if type(self.project['export']['linker_file']) == type(list()):
-                if len(self.project['export']['linker_file']) > 1:
-                    logging.debug("More than one linker command file for the project: %s" % self.name)
-                self.project['export']['linker_file'] = self.project['export']['linker_file'][0]
+            logging.debug("Executable - no linker command found.")
+
+        # There might be a situation when there are more linkers. warn user and choose the first one
+        if type(self.project['export']['linker_file']) == type(list()):
+            if len(self.project['export']['linker_file']) > 1:
+                logging.debug("More than one linker command files: %s" % self.project['export']['linker_file'])
+            self.project['export']['linker_file'] = self.project['export']['linker_file'][0]
 
     def _set_output_dir_path(self, tool):
         if self.pgen_workspace.settings.export_location_format != self.pgen_workspace.settings.DEFAULT_EXPORT_LOCATION_FORMAT:
