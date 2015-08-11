@@ -20,8 +20,9 @@ from ..targets import Targets
 import logging
 import ntpath
 import subprocess
+from .tool import Tool, Exporter
 
-class MakefileGccArm():
+class MakefileGccArm(Tool, Exporter):
 
     # http://www.gnu.org/software/make/manual/html_node/Running.html
     ERRORLEVEL = {
