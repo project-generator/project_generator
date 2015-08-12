@@ -16,11 +16,11 @@ import copy
 
 from os.path import join, normpath,dirname
 import os
-from .builder import Builder
-from .exporter import Exporter
+from .tool import Tool,Exporter
 from ..targets import Targets
 import logging
 import ntpath
+import subprocess
 
 class MakefileGccArm(Tool, Exporter):
 
