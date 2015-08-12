@@ -209,24 +209,22 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
     def _iterate(self, data, expanded_data, rel_path):
         """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in self.source_files_dic:
-            for dic in data[attribute]:
-                for k, v in dic.items():
-                    if k == None:
-                        group = 'Sources'
-                    else:
-                        group = k
-                    self._expand_data(dic, expanded_data, attribute, group, rel_path)
+            for k, v in data[attribute].items():
+                if k == None:
+                    group = 'Sources'
+                else:
+                    group = k
+                self._expand_data(data[attribute], expanded_data, attribute, group, rel_path)
 
     def _get_groups(self, data):
         """ Get all groups defined. """
         groups = []
         for attribute in self.source_files_dic:
-            for dic in data[attribute]:
-                for k, v in dic.items():
-                    if k == None:
-                        k = 'Sources'
-                    if k not in groups:
-                        groups.append(k)
+            for k, v in data[attribute].items():
+                if k == None:
+                    k = 'Sources'
+                if k not in groups:
+                    groups.append(k)
         return groups
 
     def _find_target_core(self, data):
@@ -263,13 +261,13 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         """ All paths needs to be fixed - add PROJ_DIR prefix + normalize """
         data['includes'] = [join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['includes']]
 
-        for k in data['source_files_lib'][0].keys():
-            data['source_files_lib'][0][k] = [
-                join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['source_files_lib'][0][k]]
+        for k in data['source_files_lib'].keys():
+            data['source_files_lib'][k] = [
+                join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['source_files_lib'][k]]
 
-        for k in data['source_files_obj'][0].keys():
-            data['source_files_obj'][0][k] = [
-                join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['source_files_obj'][0][k]]
+        for k in data['source_files_obj'].keys():
+            data['source_files_obj'][k] = [
+                join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['source_files_obj'][k]]
             
         if data['linker_file']:
             data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))

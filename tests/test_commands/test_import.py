@@ -41,6 +41,7 @@ class TestImportCommand(TestCase):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
 
+    @raises(SystemExit)
     def test_import_empty_command(self):
         import_command.setup(self.subparser)
         args = self.parser.parse_args(['import'])

@@ -22,7 +22,7 @@ import logging
 import ntpath
 import subprocess
 
-class MakefileGccArm(Tool, Exporter):
+class MakefileGccArm():
 
     # http://www.gnu.org/software/make/manual/html_node/Running.html
     ERRORLEVEL = {
