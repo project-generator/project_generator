@@ -44,7 +44,9 @@ LD_SCRIPT = {{linker_file}}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 
-LIBS = {% for library in source_files_lib %} -l{{library}} {% endfor %}
+LIBS = {% for library in libraries %} {{library}} {% endfor %}
+LIB_PATHS = {% for path in lib_paths %} {{path}} {% endfor %}
+
 
 # directories
 INC_DIRS = {% for path in includes %} {{path}} {% endfor %}
@@ -62,22 +64,19 @@ else
 endif
 
 COMPILER_OPTIONS  = {% for option in compiler_options %} -{{option}} {% endfor %}
-COMPILER_OPTIONS += -m$(INSTRUCTION_MODE)
-COMPILER_OPTIONS += -mcpu=$(CPU) -MMD -MP $(CC_SYMBOLS)
-
-DEPEND_OPTS = -MF $(OBJ_FOLDER)$(@F:.o=.d)
+COMPILER_OPTIONS += -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -c -g -MMD -MP $(CC_SYMBOLS)
 
 # Flags
-CFLAGS = $(COMPILER_OPTIONS) $(DEPEND_OPTS) $(INC_DIRS_F) -std={{ c_standard|default('gnu99') }} -c
+CFLAGS = $(COMPILER_OPTIONS) -std={{ c_standard|default('gnu99') }} $(INC_DIRS_F)
 
-CXXFLAGS = $(COMPILER_OPTIONS) $(DEPEND_OPTS) $(INC_DIRS_F) -std={{ cc_standard|default('gnu++98') }} -c
+CXXFLAGS = $(COMPILER_OPTIONS) -std={{ cc_standard|default('gnu++98') }} -fno-rtti $(INC_DIRS_F)
 
-ASFLAGS = $(COMPILER_OPTIONS) $(INC_DIRS_F) -c
+ASFLAGS = $(COMPILER_OPTIONS) $(INC_DIRS_F)
 
 # Linker options
-LD_OPTIONS = -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -{{optimization_level}} -T $(LD_SCRIPT) $(INC_DIRS_F)
+LD_OPTIONS = -mcpu=$(CPU) -m$(INSTRUCTION_MODE)
 LD_OPTIONS += -specs=nano.specs {% for option in linker_options %}-{{option}} {% endfor %}
-LD_OPTIONS += -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map
+LD_OPTIONS += -Wl,--wrap,main -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T$(LD_SCRIPT)
 
 OBJCPFLAGS = -O ihex
 
@@ -97,6 +96,8 @@ CPP_OBJS := $(patsubst %.cpp,$(OBJ_FOLDER)%.o,$(notdir $(CPP_SRCS)))
 
 S_SRCS := {% for file in source_files_s %} {{file}} {% endfor %}
 S_OBJS := $(patsubst %.s,$(OBJ_FOLDER)%.o,$(notdir $(S_SRCS)))
+
+O_OBJS := {% for file in source_files_obj %} {{file}} {% endfor %}
 
 VPATH := $(SRC_DIRS)
 
@@ -135,7 +136,7 @@ endif
 $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	$(LD) $(LD_OPTIONS) $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(LIBS) -o $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT)
+	$(LD) $(LD_OPTIONS) $(LIB_PATHS) -o $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS)$(LIBS) 
 	@echo 'Finished building target: $@'
 	@echo ' '
 

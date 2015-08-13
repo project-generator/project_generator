@@ -13,14 +13,16 @@
 # limitations under the License.
 
 import copy
-import subprocess
-import logging
+
 from os.path import join, normpath,dirname
-
-from .tool import Tool, Exporter
+import os
+from .tool import Tool,Exporter
 from ..targets import Targets
+import logging
+import ntpath
+import subprocess
 
-class MakefileGccArm(Tool, Exporter):
+class MakefileGccArm(Tool,Exporter):
 
     # http://www.gnu.org/software/make/manual/html_node/Running.html
     ERRORLEVEL = {
@@ -110,6 +112,16 @@ class MakefileGccArm(Tool, Exporter):
             for k, v in dic.items():
                 self._linker_options(k, v, data)
 
+    def _lib_names(self, libs):
+        for lib in libs:
+            head, tail = ntpath.split(lib)
+            file = tail
+            if (os.path.splitext(file)[1] != ".a"):
+                continue
+            else:
+                file = file.replace(".a","")
+                yield ("-L"+head,file.replace("lib","-l"))
+
     def _fix_paths(self, data):
         # get relative path and fix all paths within a project
         fixed_paths = []
@@ -120,13 +132,15 @@ class MakefileGccArm(Tool, Exporter):
 
         libs = []
         for k in data['source_files_lib'].keys():
-            libs.extend([join(data['output_dir']['rel_path'],
-                                                   normpath(path)) for path in data['source_files_lib'][k]])
-        data['source_files_lib'] = libs
+            libs.extend([normpath(join(data['output_dir']['rel_path'], path))
+                         for path in data['source_files_lib'][k]])
 
-        for k in data['source_files_obj'].keys():
-            data['source_files_obj'][k] = [join(data['output_dir']['rel_path'],
-                                                   normpath(path)) for path in data['source_files_obj'][k]]
+        data['lib_paths'] =[]
+        data['libraries'] =[]
+        for path, lib in self._lib_names(libs):
+            data['lib_paths'].append(path)
+            data['libraries'].append(lib)
+
         fixed_paths = []
         for path in data['source_paths']:
             fixed_paths.append(join(data['output_dir']['rel_path'], normpath(path)))
@@ -154,6 +168,7 @@ class MakefileGccArm(Tool, Exporter):
         self._list_files(data, 'source_files_c', data['output_dir']['rel_path'])
         self._list_files(data, 'source_files_cpp', data['output_dir']['rel_path'])
         self._list_files(data, 'source_files_s', data['output_dir']['rel_path'])
+        self._list_files(data, 'source_files_obj', data['output_dir']['rel_path'])
 
         self._parse_specific_options(data)
         data['toolchain'] = 'arm-none-eabi-'
