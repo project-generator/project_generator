@@ -16,13 +16,14 @@ import copy
 
 from os.path import join, normpath,dirname
 import os
+from .tool import Tool,Exporter
 from ..targets import Targets
 import logging
 import ntpath
 import subprocess
 from .tool import Tool, Exporter
 
-class MakefileGccArm(Tool, Exporter):
+class MakefileGccArm(Tool,Exporter):
 
     # http://www.gnu.org/software/make/manual/html_node/Running.html
     ERRORLEVEL = {
@@ -64,6 +65,7 @@ class MakefileGccArm(Tool, Exporter):
 
     def _libraries(self, key, value, data):
         """ Add defined GCC libraries. """
+        print data['source_files_lib']
         for option in value:
             if key == "libraries":
                 data['source_files_lib'].append(option)
@@ -101,6 +103,8 @@ class MakefileGccArm(Tool, Exporter):
         data['compiler_options'] = []
         for dic in data['misc']:
             for k, v in dic.items():
+                print k
+                print v
                 self._libraries(k, v, data)
                 self._compiler_options(k, v, data)
                 self._optimization(k, v, data)
