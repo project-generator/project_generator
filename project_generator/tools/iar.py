@@ -96,9 +96,16 @@ class IAREmbeddedWorkbenchProject:
         index_ilink = self._get_option(ewp_dic['project']['configuration']['settings'], 'ILINK')
         index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkIcfFile')
         self._set_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], project_dic['linker_file'])
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkAdditionalLibs')
-        self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], project_dic['source_files_lib'])
-        self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], project_dic['source_files_obj'])
+        additional_libs = []
+        for k,v in project_dic['source_files_lib'].items():
+            if len(v):
+                additional_libs.append(v)
+        for k,v in project_dic['source_files_obj'].items():
+            if len(v):
+                additional_libs.append(v)
+        if len(additional_libs):
+            index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkAdditionalLibs')
+            self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], additional_libs)
 
     def _ewp_files_set(self, ewp_dic, project_dic):
         ewp_dic['project']['group'] = []
