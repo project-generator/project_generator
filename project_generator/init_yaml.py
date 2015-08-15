@@ -27,7 +27,7 @@ def _determine_tool(linker_ext):
             return "iar_arm"
 
 
-def _scan(section, root, directory, extensions):
+def _scan(section, root, directory, extensions, list_files):
         if section == "sources":
             data_dict = {}
         else:
@@ -38,11 +38,14 @@ def _scan(section, root, directory, extensions):
                 relpath = os.path.relpath(dirpath, root)
                 if ext in extensions:
                     if section == "sources":
+                        p = relpath
+                        if list_files:
+                            p = os.path.join(p,filename)
                         dir = directory.split(os.path.sep)[-1] if dirpath == directory else dirpath.replace(directory,'').split(os.path.sep)[1]
                         if dir in data_dict and relpath not in data_dict[dir]:
-                            bisect.insort(data_dict[dir], relpath)
+                            bisect.insort(data_dict[dir], p)
                         else:
-                            data_dict[dir] = [(relpath)]
+                            data_dict[dir] = [(p)]
                     elif section == 'includes':
                         dirs = relpath.split(os.path.sep)
                         for i in range(1, len(dirs)+1):
@@ -80,7 +83,7 @@ def _generate_file(filename,root,directory,data):
         p.close()
 
 
-def create_yaml(root, directory, project_name, board):
+def create_yaml(root, directory, project_name, board, files):
         common_section = {
             'linker_file': FILES_EXTENSIONS['linker_file'],
             'sources': FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] +
@@ -101,7 +104,7 @@ def create_yaml(root, directory, project_name, board):
 
         for section in common_section:
             if len(common_section[section]) > 0:
-                project_yaml['common'][section] = _scan(section, root, directory,common_section[section])
+                project_yaml['common'][section] = _scan(section, root, directory,common_section[section], files)
 
         project_yaml['common']['target'] = [board]
         tool = _determine_tool(str(project_yaml['common']['linker_file']).split('.')[-1])

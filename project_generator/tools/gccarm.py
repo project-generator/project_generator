@@ -21,6 +21,7 @@ from ..targets import Targets
 import logging
 import ntpath
 import subprocess
+from .tool import Tool, Exporter
 
 class MakefileGccArm(Tool,Exporter):
 

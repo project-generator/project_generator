@@ -18,6 +18,7 @@ import logging
 from os.path import join, dirname
 from jinja2 import Template
 
+
 # Each new tool should at least support this Tool class methods
 # and Exporter class. The build is optional as not every tool supports building
 # via command line.
