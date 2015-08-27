@@ -44,7 +44,7 @@ def setup(subparser):
     subparser.add_argument(
         "-p", "--project", help="Project to be generated", default = '')
     subparser.add_argument(
-        "-t", "--tool", help="Create project files for provided tool (uvision by default)")
+        "-t", "--tool", help="Create project files for provided tool")
     subparser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects")
     subparser.add_argument(
