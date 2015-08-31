@@ -63,12 +63,6 @@ class MakefileGccArm(Tool,Exporter):
                 file_list.append(join(rel_path, normpath(file)))
         data[attribute] = file_list
 
-    def _libraries(self, key, value, data):
-        """ Add defined GCC libraries. """
-        for option in value:
-            if key == "libraries":
-                data['source_files_lib'].append(option)
-
     def _compiler_options(self, key, value, data):
         """ Compiler flags """
         for option in value:
@@ -99,10 +93,10 @@ class MakefileGccArm(Tool,Exporter):
 
     def _parse_specific_options(self, data):
         """ Parse all uvision specific setttings. """
+        # TODO 0xc0170: remove completely all this functionality, map to misc
         data['compiler_options'] = []
         for dic in data['misc']:
             for k, v in dic.items():
-                self._libraries(k, v, data)
                 self._compiler_options(k, v, data)
                 self._optimization(k, v, data)
                 self._cc_standard(k, v, data)
