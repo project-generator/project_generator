@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import copy
+from os import getcwd
 
 from .tool import Tool, Exporter
 from .gccarm import MakefileGccArm
@@ -42,18 +43,22 @@ class CMakeGccArm(Tool,Exporter):
     def fix_paths_unix(self, data):
         # cmake seems to require unix paths
         # This might do proper handling in the gcc arm, pass there a param (force normpath to unix)
-        for key in ['includes', 'linker_file', 'source_files_c', 'source_files_cpp', 'source_files_s',
+        for key in ['includes', 'source_files_c', 'source_files_cpp', 'source_files_s',
                     'source_files_obj']:
             paths = []
             for value in data[key]:
-                paths.append(value.replace('\\', '/'))
+                # TODO: this needs to be fixed
+                paths.append(getcwd().replace('\\', '/') + '/' + value.replace('\\', '/'))
             data[key] = paths
+        data['linker_file'] = getcwd().replace('\\', '/') + '/' + data['linker_file'].replace('\\', '/')
 
     def export_project(self):
         generated_projects = {}
         generated_projects = copy.deepcopy(self.generated_project)
 
         data_for_make = self.workspace.copy()
+        # we dont use rel path for cmake, we inject there root and use paths within root
+        data_for_make['output_dir']['rel_path'] = ""
         self.exporter.process_data_for_makefile(data_for_make)
 
         self.fix_paths_unix(data_for_make)
