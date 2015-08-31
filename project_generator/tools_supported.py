@@ -20,7 +20,7 @@ from .tools.gccarm import MakefileGccArm
 from .tools.sublimetext import SublimeTextMakeGccARM
 from .tools.gdb import GDB
 from .tools.gdb import ARMNoneEABIGDB
-from .tools.cmake import CMake
+from .tools.cmake import CMakeGccArm
 
 class ToolsSupported:
     """ Represents all tools available """
@@ -39,7 +39,7 @@ class ToolsSupported:
         'sublime_make_gcc_arm': SublimeTextMakeGccARM,
         'gdb':                  GDB,
         'arm_none_eabi_gdb':    ARMNoneEABIGDB,
-        'cmake':                CMake,
+        'cmake_gcc_arm':        CMakeGccArm,
     }
 
     TOOLCHAINS = list(set([v.get_toolchain() for k, v in TOOLS_DICT.items() if v.get_toolchain() is not None]))
