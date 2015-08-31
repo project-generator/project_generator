@@ -92,8 +92,6 @@ class EclipseGnuARM(Tool, Exporter, Builder):
     def export_project(self):
         """ Processes groups and misc options specific for eclipse, and run generator """
 
-        generated_projects = {}
-
         output = copy.deepcopy(self.generated_project)
         data_for_make = self.workspace.copy()
 
