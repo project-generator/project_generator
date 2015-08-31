@@ -48,11 +48,11 @@ set(LIBRARIES {{library}}){% endfor %}
 link_directories("{{path}}"){% endfor %}
 
 {% for file in source_files_c %}
-set(SOURCES "${SOURCES} {{file}}"){% endfor %}
+set(SOURCES "${SOURCES} \"{{file}}\""){% endfor %}
 {% for file in source_files_cpp %}
-set(SOURCES "${SOURCES} {{file}}"){% endfor %}
+set(SOURCES "${SOURCES} \"{{file}}\""){% endfor %}
 {% for file in source_files_s %}
-set(SOURCES "${SOURCES} {{file}}"){% endfor %}
+set(SOURCES "${SOURCES} \"{{file}}\""){% endfor %}
 
 {% for file in source_files_obj %}
 set(OBJECTS "{{file}}"){% endfor %}
