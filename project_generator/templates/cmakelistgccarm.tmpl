@@ -87,3 +87,4 @@ set_target_properties({{name}} PROPERTIES LINKER_LANGUAGE C)
 {% if misc['standard_libraries'] %}
 target_link_libraries({{name}} ${LIBRARIES}){% endif %}
 
+add_custom_command(TARGET {{name}} COMMAND "${ARM_NONE_EABI_OBJCOPY}" -O binary ${CMAKE_CURRENT_SOURCE_DIR}/{{build_dir}}/{{name}} ${CMAKE_CURRENT_SOURCE_DIR}/{{build_dir}}/{{name}}.bin)
