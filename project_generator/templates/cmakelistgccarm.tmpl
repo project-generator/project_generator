@@ -1,4 +1,4 @@
-#
+{#
 # Copyright (c) 2015 0xc0170
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+#}
 # This project was exported via the project generator.  More information https://github.com/project-generator/project_generator
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
@@ -45,9 +45,11 @@ include_directories("{{path}}"){% endfor %}
 {% for library in misc['standard_libraries'] %}
 set(LIBRARIES ${LIBRARIES} {{library}}){% endfor %}
 
+{#
 # TODO 0xc0170: fix this dict
 #{% for library in source_files_lib %}
 #set(LIBRARIES ${LIBRARIES} {{library}}){% endfor %}
+#}
 
 {% for path in lib_paths %}
 link_directories("{{path}}"){% endfor %}
@@ -74,9 +76,13 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \"-T{{linker_file}}\" -sta
 set(EXECUTABLE_OUTPUT_PATH {{build_dir}})
 # set(PROJECT_FOLDER {{name}})
 
-# Lib or exe
-# add_library
+{# Lib or exe #}
+{% if output_type == 'exe' %}
 add_executable({{name}} ${SOURCES_C} ${SOURCES_CPP} ${SOURCES_S}{% if source_files_obj %} ${OBJECT_FILES}{% endif %})
+{% else %}
+add_library({{name}} STATIC ${SOURCES_C} ${SOURCES_CPP} ${SOURCES_S}{% if source_files_obj %} ${OBJECT_FILES}{% endif %})
+{% endif %}
+
 set_target_properties({{name}} PROPERTIES LINKER_LANGUAGE C)
 {% if misc['standard_libraries'] %}
 target_link_libraries({{name}} ${LIBRARIES}){% endif %}
