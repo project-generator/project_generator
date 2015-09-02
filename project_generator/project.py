@@ -269,7 +269,7 @@ class Project:
                 Project._process_source_files(project_dic, [os.path.join(os.path.normpath(source_file), f) for f in os.listdir(
                     source_file) if os.path.isfile(os.path.join(os.path.normpath(source_file), f))], group_name)
 
-            extension = source_file.split('.')[-1]
+            extension = source_file.split('.')[-1].lower()
             extension = mappings[extension] or extension
 
             if extension not in extensions:
