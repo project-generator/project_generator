@@ -14,12 +14,12 @@
 
 import yaml
 import subprocess
+import logging
 
 from os.path import join, normpath, splitext, isfile, exists
 from os import listdir, makedirs, getcwd
 
 from .settings import ProjectSettings
-import logging
 
 class Targets:
 

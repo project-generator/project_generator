@@ -13,6 +13,7 @@
 # limitations under the License.
 import os
 import logging
+
 from ..tools_supported import ToolsSupported
 from ..generate import Generator
 from ..util import unicode_available
