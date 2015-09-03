@@ -22,6 +22,7 @@ import copy
 from os.path import basename, join, normpath
 from os import getcwd
 from collections import OrderedDict
+
 from .tool import Tool, Builder, Exporter
 from ..targets import Targets
 

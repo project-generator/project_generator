@@ -14,9 +14,10 @@
 
 import os
 import yaml
-from .project import FILES_EXTENSIONS
 import logging
 import bisect
+
+from .project import FILES_EXTENSIONS
 
 def _determine_tool(linker_ext):
         if "sct" in linker_ext or "lin" in linker_ext:

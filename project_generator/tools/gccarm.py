@@ -13,14 +13,14 @@
 # limitations under the License.
 
 import copy
-
-from os.path import join, normpath,dirname
 import os
-from .tool import Tool,Exporter
-from ..targets import Targets
 import logging
 import ntpath
 import subprocess
+
+from os.path import join, normpath,dirname
+from .tool import Tool,Exporter
+from ..targets import Targets
 from .tool import Tool, Exporter
 
 class MakefileGccArm(Tool,Exporter):
