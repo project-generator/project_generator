@@ -62,7 +62,7 @@ class EclipseGnuARM(Tool, Exporter, Builder):
                 # TODO: fix - workaround for windows, seems posixpath does not work
                 source = source.replace('\\', '/')
                 new_file = {"path": join('PARENT-%s-PROJECT_LOC' % new_data['output_dir']['rel_path'], normpath(source)), "name": basename(
-                    source), "type": self.file_types[extension]}
+                    source), "type": self.file_types[extension.lower()]}
                 new_data['groups'][group].append(new_file)
 
     def _get_groups(self, data):
