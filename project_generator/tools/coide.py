@@ -81,7 +81,7 @@ class Coide(Tool, Exporter, Builder):
             if file:
                 extension = file.split(".")[-1]
                 new_file = {
-                    '@path': rel_path + normpath(file), '@name': basename(file), '@type': str(self.file_types[extension])
+                    '@path': rel_path + normpath(file), '@name': basename(file), '@type': str(self.file_types[extension.lower()])
                 }
                 new_data['groups'][group].append(new_file)
 

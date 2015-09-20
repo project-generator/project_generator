@@ -102,7 +102,7 @@ class Uvision(Tool, Builder, Exporter):
             if file:
                 extension = file.split(".")[-1]
                 new_file = {"FilePath": rel_path + normpath(file), "FileName": basename(file),
-                            "FileType": self.file_types[extension]}
+                            "FileType": self.file_types[extension.lower()]}
                 new_data['groups'][group].append(new_file)
 
     def _iterate(self, data, expanded_data, rel_path):
