@@ -15,8 +15,10 @@ import os
 import logging
 
 from ..tools_supported import ToolsSupported
+from ..targets import Targets
 from ..generate import Generator
 from ..util import unicode_available
+from ..settings import ProjectSettings
 
 help = 'List general pgen data as projects, tools or targets'
 
@@ -26,7 +28,7 @@ def run(args):
         generator = Generator(args.file)
         for project in generator.generate():
             if args.section == 'targets':
-                print("%s supports: %s"%(project.project['name'],project.project['target']))
+                print("%s supports: %s"%(project.project['name'], project.project['target']))
             elif args.section == 'projects':
                 print (project.name)
             elif args.section == 'tools':
@@ -34,8 +36,14 @@ def run(args):
                 tools = ", ".join(tools)
                 print("%s supports: %s\n"%(project.project['name'], tools))
     else:
-        print("\nPgen supports the following tools:\n")
-        print("\n".join(ToolsSupported().get_supported()))
+        if args.section == 'targets':
+            print("\nPgen supports the following targets:\n")
+            print("\n".join(Targets(ProjectSettings().get_env_settings('definitions')).get_targets()))
+        elif args.section == 'tools':
+            print("\nPgen supports the following tools:\n")
+            print("\n".join(ToolsSupported().get_supported()))
+        elif args.section == 'projects':
+            print("\nFile needs to be defined for projects.")
     return 0
 
 
