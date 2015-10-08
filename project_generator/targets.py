@@ -43,6 +43,9 @@ class Targets:
         project_file.close()
         return config
 
+    def get_targets(self):
+        return self.targets
+
     def get_mcu_definition(self):
         return self.MCU_TEMPLATE
 
