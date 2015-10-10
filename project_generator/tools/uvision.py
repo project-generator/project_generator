@@ -25,7 +25,6 @@ from collections import OrderedDict
 from project_generator_definitions.mcu import ProGenTarget
 
 from .tool import Tool, Builder, Exporter
-from ..targets import Targets
 
 class uVisionDefinitions():
 
@@ -370,7 +369,7 @@ class Uvision(Tool, Builder, Exporter):
         project_file = join(getcwd(), project_file)
         uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
         # Generic Target, should get from Target class !
-        mcu = Targets().get_mcu_definition()
+        mcu = ProGenTarget().get_mcu_definition()
 
         mcu['tool_specific'] = {
             # legacy device

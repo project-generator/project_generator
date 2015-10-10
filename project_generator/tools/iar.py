@@ -26,7 +26,6 @@ from os.path import join, normpath
 from project_generator_definitions.mcu import ProGenTarget
 
 from .tool import Tool, Builder, Exporter
-from ..targets import Targets
 
 
 class IARDefinitions():
@@ -425,7 +424,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         project_file = join(getcwd(), project_file)
         ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
 
-        mcu = Targets().get_mcu_definition()
+        mcu = ProGenTarget().get_mcu_definition()
 
         # we take 0 configuration or just configuration, as multiple configuration possibl
         # debug, release, for mcu - does not matter, try and adjust

@@ -22,7 +22,6 @@ from os.path import join, normpath,dirname
 from project_generator_definitions.mcu import ProGenTarget
 
 from .tool import Tool,Exporter
-from ..targets import Targets
 from .tool import Tool, Exporter
 
 class MakefileGccArm(Tool,Exporter):
