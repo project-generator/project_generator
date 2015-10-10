@@ -23,7 +23,7 @@ import copy
 import os
 from os import getcwd
 from os.path import join, normpath
-from project_generator_definitions.mcu import ProGenTarget
+from project_generator_definitions.mcu import ProGenDef
 
 from .tool import Tool, Builder, Exporter
 
@@ -342,10 +342,10 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         # set target only if defined, otherwise use from template/default one
         if expanded_dic['target']:
             # get target definition (target + mcu)
-            target = ProGenTarget()
-            if not target.is_supported(expanded_dic['target'].lower(), 'iar'):
+            proj_def = ProGenDef()
+            if not proj_def.is_supported(expanded_dic['target'].lower(), 'iar'):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-            mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'iar')
+            mcu_def_dic = proj_def.get_tool_def(expanded_dic['target'].lower(), 'iar')
             if not mcu_def_dic:
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
