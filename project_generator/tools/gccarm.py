@@ -19,6 +19,8 @@ import ntpath
 import subprocess
 
 from os.path import join, normpath,dirname
+from project_generator_definitions.mcu import ProGenTarget
+
 from .tool import Tool,Exporter
 from ..targets import Targets
 from .tool import Tool, Exporter
@@ -175,7 +177,7 @@ class MakefileGccArm(Tool,Exporter):
         data['toolchain'] = 'arm-none-eabi-'
         data['toolchain_bin_path'] = self.env_settings.get_env_settings('gcc')
 
-        target = Targets(self.env_settings.get_env_settings('definitions'))
+        target = ProGenTarget()
 
         if target.get_mcu_core(data['target'].lower()):
             data['core'] = target.get_mcu_core(data['target'].lower())[0]

@@ -13,9 +13,9 @@
 # limitations under the License.
 import os
 import logging
+from project_generator_definitions.mcu import ProGenTarget
 
 from ..tools_supported import ToolsSupported
-from ..targets import Targets
 from ..generate import Generator
 from ..util import unicode_available
 from ..settings import ProjectSettings
@@ -38,7 +38,7 @@ def run(args):
     else:
         if args.section == 'targets':
             print("\nPgen supports the following targets:\n")
-            print("\n".join(Targets(ProjectSettings().get_env_settings('definitions')).get_targets()))
+            print("\n".join(ProGenTarget().get_targets()))
         elif args.section == 'tools':
             print("\nPgen supports the following tools:\n")
             print("\n".join(ToolsSupported().get_supported()))

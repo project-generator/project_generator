@@ -23,6 +23,7 @@ import copy
 import os
 from os import getcwd
 from os.path import join, normpath
+from project_generator_definitions.mcu import ProGenTarget
 
 from .tool import Tool, Builder, Exporter
 from ..targets import Targets
@@ -342,7 +343,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         # set target only if defined, otherwise use from template/default one
         if expanded_dic['target']:
             # get target definition (target + mcu)
-            target = Targets(self.env_settings.get_env_settings('definitions'))
+            target = ProGenTarget()
             if not target.is_supported(expanded_dic['target'].lower(), 'iar'):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
             mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'iar')

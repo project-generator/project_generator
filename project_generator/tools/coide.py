@@ -19,6 +19,7 @@ import copy
 
 from os.path import basename, join, normpath
 from os import getcwd
+from project_generator_definitions.mcu import ProGenTarget
 
 from .tool import Tool, Builder, Exporter
 from ..targets import Targets
@@ -217,7 +218,7 @@ class Coide(Tool, Exporter, Builder):
 
         # set target only if defined, otherwise use from template/default one
         if expanded_dic['target']:
-            target = Targets(self.env_settings.get_env_settings('definitions'))
+            target = ProGenTarget()
             if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
             mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'coide')

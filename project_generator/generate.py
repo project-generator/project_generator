@@ -33,9 +33,6 @@ class Generator:
         if 'settings' in self.projects_dict:
             self.settings.update(self.projects_dict['settings'])
 
-        # update Target definitions
-        Targets().update_definitions(False, self.settings)
-
     def generate(self, name = ''):
         if 'projects' in self.projects_dict:
             if name != '':
