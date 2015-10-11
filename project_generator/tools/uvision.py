@@ -289,15 +289,8 @@ class Uvision(Tool, Builder, Exporter):
             if not mcu_def_dic:
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
-            # self.normalize_mcu_def(mcu_def_dic)
             logging.debug("Mcu definitions: %s" % mcu_def_dic)
-            # self.append_mcu_def(expanded_dic, mcu_def_dic)
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
 
             # Support new device packs, we just need probably one of the new features for
             # uvision to notice it's using software packs
