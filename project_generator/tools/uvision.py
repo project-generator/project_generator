@@ -22,7 +22,7 @@ import copy
 from os.path import basename, join, normpath
 from os import getcwd
 from collections import OrderedDict
-from project_generator_definitions.mcu import ProGenDef
+from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Builder, Exporter
 
@@ -282,10 +282,10 @@ class Uvision(Tool, Builder, Exporter):
         # set target only if defined, otherwise use from template/default one
         extension = 'uvproj'
         if expanded_dic['target']:
-            pro_def = ProGenDef()
+            pro_def = ProGenDef('uvision')
             if not pro_def.is_supported(expanded_dic['target'].lower(), 'uvision'):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-            mcu_def_dic = pro_def.get_tool_def(expanded_dic['target'].lower(), 'uvision')
+            mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower(), 'uvision')
             if not mcu_def_dic:
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
@@ -356,29 +356,3 @@ class Uvision(Tool, Builder, Exporter):
                 logging.error("Build failed with the status: %s" % self.ERRORLEVEL[ret_code])
             else:
                 logging.info("Build succeeded with the status: %s" % self.ERRORLEVEL[ret_code])
-
-    def get_mcu_definition(self, project_file):
-        """ Parse project file to get target definition """
-        project_file = join(getcwd(), project_file)
-        uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-        # Generic Target, should get from Target class !
-        mcu = ProGenTarget().get_mcu_definition()
-
-        mcu['tool_specific'] = {
-            # legacy device
-            'uvision' : {
-                'TargetOption' : {
-                    'Device' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device']],
-                    'Vendor' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor']],
-                    'Cpu' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu']],
-                    'FlashDriverDll' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll']],
-                    'DeviceId' : [int(uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'])],
-                    'SFDFile' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile']],
-                }
-            }
-        }
-
-        if 'RegisterFile' in uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']:
-            mcu['tool_specific']['uvision']['TargetOption']['RegisterFile'] = [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['RegisterFile']]
-
-        return mcu

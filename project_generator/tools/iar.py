@@ -23,7 +23,7 @@ import copy
 import os
 from os import getcwd
 from os.path import join, normpath
-from project_generator_definitions.mcu import ProGenDef
+from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Builder, Exporter
 
@@ -342,10 +342,10 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         # set target only if defined, otherwise use from template/default one
         if expanded_dic['target']:
             # get target definition (target + mcu)
-            proj_def = ProGenDef()
-            if not proj_def.is_supported(expanded_dic['target'].lower(), 'iar'):
+            proj_def = ProGenDef('iar')
+            if not proj_def.is_supported(expanded_dic['target'].lower()):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-            mcu_def_dic = proj_def.get_tool_def(expanded_dic['target'].lower(), 'iar')
+            mcu_def_dic = proj_def.get_tool_definition(expanded_dic['target'].lower())
             if not mcu_def_dic:
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
@@ -418,33 +418,3 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['ewp'], self.workspace['files']['eww'],
             self.workspace['files']['ewd']]}
-
-    def get_mcu_definition(self, project_file):
-        """ Parse project file to get mcu definition """
-        project_file = join(getcwd(), project_file)
-        ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-
-        mcu = ProGenTarget().get_mcu_definition()
-
-        # we take 0 configuration or just configuration, as multiple configuration possibl
-        # debug, release, for mcu - does not matter, try and adjust
-        try:
-            index_general = self._get_option(ewp_dic['project']['configuration'][0]['settings'], 'General')
-            configuration = ewp_dic['project']['configuration'][0]
-        except KeyError:
-            index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
-            configuration = ewp_dic['project']['configuration']
-        index_option = self._get_option(configuration['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
-        OGChipSelectEditMenu = configuration['settings'][index_general]['data']['option'][index_option]
-
-        mcu['tool_specific'] = {
-            'iar' : {
-                'OGChipSelectEditMenu' : {
-                    'state' : [OGChipSelectEditMenu['state'].replace('\t', ' ', 1)],
-                },
-                'OGCoreOrChip' : {
-                    'state' : [1],
-                },
-            }
-        }
-        return mcu
