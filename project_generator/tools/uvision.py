@@ -283,9 +283,9 @@ class Uvision(Tool, Builder, Exporter):
         extension = 'uvproj'
         if expanded_dic['target']:
             pro_def = ProGenDef('uvision')
-            if not pro_def.is_supported(expanded_dic['target'].lower(), 'uvision'):
+            if not pro_def.is_supported(expanded_dic['target'].lower()):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-            mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower(), 'uvision')
+            mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower())
             if not mcu_def_dic:
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
