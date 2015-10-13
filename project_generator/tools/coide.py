@@ -217,7 +217,7 @@ class Coide(Tool, Exporter, Builder):
 
         # set target only if defined, otherwise use from template/default one
         if expanded_dic['target']:
-            pro_def = ProGenDef()
+            pro_def = ProGenDef('coide')
             if not pro_def.is_supported(expanded_dic['target'].lower(), 'coide'):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
             mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower(), 'coide')
