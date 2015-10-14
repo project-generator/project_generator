@@ -21,12 +21,7 @@ from ..tools_supported import ToolsSupported
 from ..targets import mcu_create
 
 def run(args):
-    root = os.getcwd()
-
-    tool = ToolsSupported().get_tool(args.tool)
-    if tool is None:
-        return -1
-    return mcu_create(tool, args.mcu, args.file, args.tool)
+    logging.info("Import command is depracated, please use https://pypi.python.org/pypi/project_generator_definitions")
 
 def setup(subparser):
     subparser.add_argument(

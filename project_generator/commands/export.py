@@ -24,7 +24,7 @@ def run(args):
         generator = Generator(args.file)
         build_result = 0
         if args.defdirectory:
-            generator.settings.update_definitions_dir(os.path.join(os.getcwd(), args.defdirectory))
+            logging.info("Def directory is deprecated, look at https://pypi.python.org/pypi/project_generator_definitions")
         for project in generator.generate(args.project):
             export_result = project.export(args.tool, args.copy)
             if args.build:
@@ -49,6 +49,6 @@ def setup(subparser):
         "-b", "--build", action="store_true", help="Build defined projects")
     subparser.add_argument(
         "-defdir", "--defdirectory",
-        help="Path to the definitions, otherwise default (~/.pg/definitions) is used")
+        help="Deprecated")
     subparser.add_argument(
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")

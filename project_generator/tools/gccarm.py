@@ -19,8 +19,9 @@ import ntpath
 import subprocess
 
 from os.path import join, normpath,dirname
+from project_generator_definitions.definitions import ProGenDef
+
 from .tool import Tool,Exporter
-from ..targets import Targets
 from .tool import Tool, Exporter
 
 class MakefileGccArm(Tool,Exporter):
@@ -67,7 +68,7 @@ class MakefileGccArm(Tool,Exporter):
         """ Add defined GCC libraries. """
         for option in value:
             if key == "libraries":
-                data['source_files_lib'].append(option)
+                data['libraries'].append(option)
 
     def _compiler_options(self, key, value, data):
         """ Compiler flags """
@@ -98,7 +99,7 @@ class MakefileGccArm(Tool,Exporter):
             data['c_standard'] = value
 
     def _parse_specific_options(self, data):
-        """ Parse all uvision specific setttings. """
+        """ Parse all specific setttings. """
         data['compiler_options'] = []
         for dic in data['misc']:
             for k, v in dic.items():
@@ -175,10 +176,10 @@ class MakefileGccArm(Tool,Exporter):
         data['toolchain'] = 'arm-none-eabi-'
         data['toolchain_bin_path'] = self.env_settings.get_env_settings('gcc')
 
-        target = Targets(self.env_settings.get_env_settings('definitions'))
+        pro_def = ProGenDef()
 
-        if target.get_mcu_core(data['target'].lower()):
-            data['core'] = target.get_mcu_core(data['target'].lower())[0]
+        if pro_def.get_mcu_core(data['target'].lower()):
+            data['core'] = pro_def.get_mcu_core(data['target'].lower())[0]
         else:
             raise RuntimeError(
                 "Target: %s not found, Please add them to https://github.com/project-generator/project_generator_definitions" % data['target'].lower())
