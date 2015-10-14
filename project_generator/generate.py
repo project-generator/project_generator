@@ -15,6 +15,7 @@
 from .settings import ProjectSettings
 from .util import flatten, uniqify, load_yaml_records
 from .project import *
+from .targets import Targets
 
 class Generator:
     def __init__(self, projects_file):
@@ -31,6 +32,9 @@ class Generator:
 
         if 'settings' in self.projects_dict:
             self.settings.update(self.projects_dict['settings'])
+
+        # update Target definitions
+        Targets().update_definitions(False, self.settings)
 
     def generate(self, name = ''):
         if 'projects' in self.projects_dict:
