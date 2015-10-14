@@ -44,6 +44,11 @@ class ProjectSettings:
             'common', 'bin')
         self.paths['gcc'] = os.environ.get('ARM_GCC_PATH') or ''
 
+        # TODO: deprecated, remove for v0.8
+        pg_path = join('~','.pg')
+        self.paths['definitions_default'] = join(expanduser(pg_path), 'definitions')
+        self.paths['definitions'] = self.paths['definitions_default']
+
         self.export_location_format = self.DEFAULT_EXPORT_LOCATION_FORMAT
 
     def update(self, settings):
