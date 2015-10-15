@@ -20,6 +20,7 @@ from os.path import join, normpath, splitext, isfile, exists
 from os import listdir, makedirs, getcwd
 
 from .settings import ProjectSettings
+from project_generator_definitions import ProGenDef, ProGenTargets
 
 # DEPRECATED entire file, will be removed for new minor version
 # replaced by https://pypi.python.org/pypi/project_generator_definitions
@@ -35,10 +36,7 @@ class Targets:
     }
 
     def __init__(self, directory=None):
-        if directory:
-            self.definitions_directory = directory
-            target_dir = join(self.definitions_directory, 'target')
-            self.targets = [ splitext(f)[0] for f in listdir(target_dir) if isfile(join(target_dir,f)) ]
+        pass
 
     def _load_record(self, file):
         project_file = open(file)
@@ -47,49 +45,22 @@ class Targets:
         return config
 
     def get_targets(self):
-        return self.targets
+        return ProGenTargets().get_targets()
 
     def get_mcu_definition(self):
         return self.MCU_TEMPLATE
 
     def get_mcu_record(self, target):
-        target_path = join(self.definitions_directory, 'target', target + '.yaml')
-        target_record = self._load_record(target_path)
-        mcu_path = target_record['target']['mcu']
-        mcu_path = normpath(mcu_path[0])
-        mcu_path = join(self.definitions_directory, mcu_path) + '.yaml'
-        return self._load_record(mcu_path)
+        return ProGenTargets().get_mcu_record(target)
 
     def get_mcu_core(self, target):
-        if target not in self.targets:
-            return None
-        mcu_record = self.get_mcu_record(target)
-        try:
-            return mcu_record['mcu']['core']
-        except KeyError:
-            return None
+        return ProGenDef().get_mcu_core()
 
     def get_tool_def(self, target, tool):
-        if target not in self.targets:
-            return None
-        mcu_record = self.get_mcu_record(target)
-        try:
-            return mcu_record['tool_specific'][tool]
-        except KeyError:
-            return None
+        return ProGenDef(tool).get_tool_definition(target)
 
     def is_supported(self, target, tool):
-        if target.lower() not in self.targets:
-            return False
-        mcu_record = self.get_mcu_record(target)
-        # Look at tool specific options which define tools supported for mcu
-        try:
-            for k,v in mcu_record['tool_specific'].items():
-                if k == tool:
-                    return True
-        except KeyError:
-            pass
-        return False
+        return ProGenDef(tool).is_supported(target)
 
     def update_definitions(self, force=False, settings=ProjectSettings()):
         # TODO: deprecated
