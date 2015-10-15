@@ -20,7 +20,7 @@ from os.path import join, normpath, splitext, isfile, exists
 from os import listdir, makedirs, getcwd
 
 from .settings import ProjectSettings
-from project_generator_definitions import ProGenDef, ProGenTargets
+from project_generator_definitions.definitions import ProGenDef, ProGenTargets
 
 # DEPRECATED entire file, will be removed for new minor version
 # replaced by https://pypi.python.org/pypi/project_generator_definitions
