@@ -290,7 +290,9 @@ class Uvision(Tool, Builder, Exporter):
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
             logging.debug("Mcu definitions: %s" % mcu_def_dic)
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
+
 
             # Support new device packs, we just need probably one of the new features for
             # uvision to notice it's using software packs
