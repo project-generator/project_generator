@@ -30,7 +30,7 @@ def run(args):
         for project in generator.generate(args.project):
             if project.export(args.tool, args.copy) == -1:
                 export_failed = True
-            if project.build(args.tool) != -1:
+            if project.build(args.tool) == -1:
                 build_failed = True
 
         if build_failed or export_failed:

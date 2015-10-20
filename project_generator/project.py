@@ -105,7 +105,7 @@ class ProjectWorkspace:
         return -1
 
     def clean(self, tool):
-        logging.info("Building a workspace is not currently supported")
+        logging.info("Cleaning a workspace is not currently supported")
         return -1
 
 class Project:
