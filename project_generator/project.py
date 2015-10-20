@@ -366,7 +366,9 @@ class Project:
 
             logging.debug("Building for tool: %s", build_tool)
             logging.debug(self.generated_files)
-            builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project()
+            if builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project() == -1:
+                # if one fails, set to -1 to report
+                result = -1
         return result
 
     def get_generated_project_files(self, tool):
