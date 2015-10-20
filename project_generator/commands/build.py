@@ -25,11 +25,15 @@ def run(args):
     # Export if we know how, otherwise return
     if os.path.exists(args.file):
         generator = Generator(args.file)
+        final_build_result = 0
+        final_export_result = 0
         for project in generator.generate(args.project):
-            export_result = project.export(args.tool, args.copy)
-            build_result = project.build(args.tool)
+            if project.export(args.tool, args.copy) == -1:
+                final_export_result = -1
+            if project.build(args.tool) != -1:
+                final_build_result = -1
 
-        if build_result == 0 and export_result == 0:
+        if final_build_result == 0 and export_result == 0:
             return 0
         else:
             return -1
