@@ -26,14 +26,14 @@ def run(args):
     if os.path.exists(args.file):
         generator = Generator(args.file)
         build_failed = False
-        expot_failed = False
+        export_failed = False
         for project in generator.generate(args.project):
             if project.export(args.tool, args.copy) == -1:
-                expot_failed = True
+                export_failed = True
             if project.build(args.tool) != -1:
                 build_failed = True
 
-        if build_failed and expot_failed:
+        if build_failed and export_failed:
             return -1
         else:
             return 0
