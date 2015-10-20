@@ -346,7 +346,7 @@ class Uvision(Tool, Builder, Exporter):
 
         if not os.path.exists(path):
             logging.debug("The file: %s does not exists, exported prior building?" % path)
-            return
+            return -1
 
         logging.debug("Building uVision project: %s" % path)
 
@@ -359,9 +359,12 @@ class Uvision(Tool, Builder, Exporter):
         except:
             logging.error(
                 "Error whilst calling UV4: '%s'. Please set uvision path in the projects.yaml file." % self.env_settings.get_env_settings('uvision'))
+            return -1
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
                 logging.error("Build failed with the status: %s" % self.ERRORLEVEL[ret_code])
+                return -1
             else:
                 logging.info("Build succeeded with the status: %s" % self.ERRORLEVEL[ret_code])
+                return 0
