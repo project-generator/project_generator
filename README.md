@@ -47,6 +47,10 @@ An example how to use pgen [here](https://github.com/project-generator/project_g
 
 To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/project-generator/project_generator/wiki/Getting_started). There are other sections which describe the each blocks of the project generator.
 
+##### Add a new target/mcu
+
+We use project generator definitions, which is separate python module and contains mcu/target database plus parser to obtain those from tools projects, visit github page [here](https://github.com/project-generator/project_generator_definitions/).
+
 Dependencies for Project generator
 -------------------------
 * Python 2.7
@@ -54,3 +58,4 @@ Dependencies for Project generator
  * [Setuptools](https://pypi.python.org/pypi/distribute)
  * [Jinja2](https://pypi.python.org/pypi/Jinja2)
  * [xmltodict](https://pypi.python.org/pypi/xmltodict)
+ * [project generator definitions](https://pypi.python.org/pypi/project_generator_definitions)
