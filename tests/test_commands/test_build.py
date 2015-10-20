@@ -78,7 +78,8 @@ class TestBuildCommand(TestCase):
             'project_2', '-t', 'iar_arm'])
         result = build.run(args)
 
-        assert result == 0
+        # CI does not have IAR ARM tool installed should fail , or even a project is not valid
+        assert result == -1
 
     @raises(NotImplementedError)
     def test_build_project_coide_tool(self):
