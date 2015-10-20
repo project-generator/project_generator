@@ -32,7 +32,7 @@ def run(args):
             if args.build:
                 if project.build(args.tool) == -1:
                     build_failed = True
-        if build_failed and export_failed:
+        if build_failed or export_failed:
             return -1
         else:
             return 0
