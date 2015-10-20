@@ -78,4 +78,5 @@ class TestProject(TestCase):
         result_build = self.project.build('uvision')
 
         assert result_export == 0
-        assert result_build == 0
+        # nonvalid project, should fail with errors
+        assert result_build == -1
