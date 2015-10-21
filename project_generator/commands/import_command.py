@@ -15,13 +15,13 @@
 import os
 import logging
 
-help = 'Import mcu to pgen. Provide a valid project file, pgen will parse to create mcu definition'
-
 from ..tools_supported import ToolsSupported
 from ..targets import mcu_create
 
+help = 'Import mcu to pgen. Provide a valid project file, pgen will parse to create mcu definition'
+
 def run(args):
-    logging.info("Import command is depracated, please use https://pypi.python.org/pypi/project_generator_definitions")
+    logging.info("Import command is deprecated, please use https://pypi.python.org/pypi/project_generator_definitions")
 
 def setup(subparser):
     subparser.add_argument(
