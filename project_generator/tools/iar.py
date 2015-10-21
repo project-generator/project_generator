@@ -400,7 +400,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             proj_path += '.ewp'
         if not os.path.exists(proj_path):
             logging.debug("The file: %s does not exists, exported prior building?" % proj_path)
-            return
+            return -1
         logging.debug("Building IAR project: %s" % proj_path)
 
         args = [join(self.env_settings.get_env_settings('iar'), 'IarBuild.exe'), proj_path, '-build', os.path.splitext(os.path.basename(self.workspace['files']['ewp']))[0]]
@@ -411,9 +411,11 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             ret_code = subprocess.call(args)
         except:
             logging.error("Error whilst calling IarBuild. Please check IARBUILD path in the user_settings.py file.")
+            return -1
         else:
             # no IAR doc describes errors from IarBuild
             logging.info("Build completed.")
+            return 0
 
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['ewp'], self.workspace['files']['eww'],

@@ -62,7 +62,8 @@ class TestBuildCommand(TestCase):
             'project_2', '-t', 'uvision'])
         result = build.run(args)
 
-        assert result == 0
+        # not valid project, should fail with errors
+        assert result == -1
 
     def test_build_workspace_uvision_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
@@ -77,7 +78,8 @@ class TestBuildCommand(TestCase):
             'project_2', '-t', 'iar_arm'])
         result = build.run(args)
 
-        assert result == 0
+        # CI does not have IAR ARM tool installed should fail , or even a project is not valid
+        assert result == -1
 
     @raises(NotImplementedError)
     def test_build_project_coide_tool(self):
@@ -90,7 +92,7 @@ class TestBuildCommand(TestCase):
             'project_2', '-t', 'make_gcc_arm'])
         result = build.run(args)
 
-        assert result == 0
+        assert result == -1
 
     @raises(NotImplementedError)
     def test_build_project_eclipse_tool(self):
@@ -115,11 +117,11 @@ class TestBuildCommand(TestCase):
             'project_2', '-t', 'sublime'])
         result = build.run(args)
 
-        assert result == 0
+        assert result == -1
 
     def test_build_project_sublime_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'sublime_make_gcc_arm'])
         result = build.run(args)
 
-        assert result == 0
+        assert result == -1

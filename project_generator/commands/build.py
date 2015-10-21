@@ -25,14 +25,18 @@ def run(args):
     # Export if we know how, otherwise return
     if os.path.exists(args.file):
         generator = Generator(args.file)
+        build_failed = False
+        export_failed = False
         for project in generator.generate(args.project):
-            export_result = project.export(args.tool, args.copy)
-            build_result = project.build(args.tool)
+            if project.export(args.tool, args.copy) == -1:
+                export_failed = True
+            if project.build(args.tool) == -1:
+                build_failed = True
 
-        if build_result == 0 and export_result == 0:
-            return 0
-        else:
+        if build_failed or export_failed:
             return -1
+        else:
+            return 0
     else:
         # not project known by pgen
         logging.warning("%s not found." % args.file)

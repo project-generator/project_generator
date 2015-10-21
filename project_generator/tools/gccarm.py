@@ -210,6 +210,7 @@ class MakefileGccArm(Tool,Exporter):
             ret_code = subprocess.call(args, cwd=path)
         except:
             logging.error("Error whilst calling make. Is it in your PATH?")
+            return -1
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
@@ -219,6 +220,8 @@ class MakefileGccArm(Tool,Exporter):
                 else:
                     logging.error("Build failed with unknown error. Returned: %s" %
                                    ret_code)
+                return -1
             else:
                 logging.info("Build succeeded with the status: %s" %
                              self.ERRORLEVEL[ret_code])
+                return 0
