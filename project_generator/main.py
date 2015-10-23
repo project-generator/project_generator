@@ -18,7 +18,7 @@ import logging
 
 import pkg_resources
 
-from .commands import build, clean, generate, init, list_projects, import_command
+from .commands import build, clean, generate, init, list_projects
 
 subcommands = {
     'init': init,
@@ -26,7 +26,6 @@ subcommands = {
     'clean': clean,
     'list': list_projects,
     'build': build,
-    'import': import_command,
 }
 
 def main():
