@@ -19,12 +19,12 @@ import shutil
 
 from unittest import TestCase
 
-from project_generator.commands import export
+from project_generator.commands import generate
 from .simple_project import project_1_yaml, projects_yaml, project_2_yaml
 
 class TestExportCommand(TestCase):
 
-    """test export command"""
+    """test generate command"""
 
     def setUp(self):
         if not os.path.exists('test_workspace'):
@@ -41,121 +41,121 @@ class TestExportCommand(TestCase):
 
         self.parser = argparse.ArgumentParser()
         subparsers = self.parser.add_subparsers(help='commands')
-        self.subparser = subparsers.add_parser('export', help=export.help)
+        self.subparser = subparsers.add_parser('generate', help=generate.help)
 
     def tearDown(self):
         # remove created directory
         shutil.rmtree('test_workspace', ignore_errors=True)
         shutil.rmtree('generated_projects', ignore_errors=True)
 
-    def test_export_project3_all_tools(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_3'])
-        result = export.run(args)
+    def test_generate_project3_all_tools(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p','project_3'])
+        result = generate.run(args)
 
         # one of the tools is unknown , should return -1
         assert result == -1
 
-    def test_export_project2_all_tools(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2'])
-        result = export.run(args)
+    def test_generate_project2_all_tools(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p','project_2'])
+        result = generate.run(args)
 
         # No tools defined
         assert result == -1
 
-    def test_export_one_project_uvision(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+    def test_generate_one_project_uvision(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'uvision'])
-        result = export.run(args)
+        result = generate.run(args)
 
         assert result == 0
 
-        # this should export a project to generated_projects/uvision_project_2/project_2.uvproj
+        # this should generate a project to generated_projects/uvision_project_2/project_2.uvproj
         assert os.path.isfile('generated_projects/uvision_project_2/project_2.uvproj')
 
-    def test_export_one_project_iar_arm(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+    def test_generate_one_project_iar_arm(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'iar_arm'])
-        result = export.run(args)
+        result = generate.run(args)
 
         assert result == 0
 
-        # this should export a project to generated_projects/uvision_project_2/project_2.ewp/ewd/eww
+        # this should generate a project to generated_projects/uvision_project_2/project_2.ewp/ewd/eww
         assert os.path.isfile('generated_projects/iar_arm_project_2/project_2.ewp')
         assert os.path.isfile('generated_projects/iar_arm_project_2/project_2.ewd')
         assert os.path.isfile('generated_projects/iar_arm_project_2/project_2.eww')
 
-    def test_export_one_project_make_gcc_arm(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+    def test_generate_one_project_make_gcc_arm(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'make_gcc_arm'])
-        result = export.run(args)
+        result = generate.run(args)
 
         assert result == 0
-        # this should export a project to generated_projects/uvision_project_2/Makefile
+        # this should generate a project to generated_projects/uvision_project_2/Makefile
         assert os.path.isfile('generated_projects/make_gcc_arm_project_2/Makefile')
 
-    def test_export_one_project_coide(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+    def test_generate_one_project_coide(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'coide'])
-        result = export.run(args)
+        result = generate.run(args)
 
         assert result == 0
 
-        # this should export a project to generated_projects/uvision_project_2/project_2.coproj
+        # this should generate a project to generated_projects/uvision_project_2/project_2.coproj
         assert os.path.isfile('generated_projects/coide_project_2/project_2.coproj')
 
-    def test_export_one_project_arm_none_eabi_gdb(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+    def test_generate_one_project_arm_none_eabi_gdb(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'arm_none_eabi_gdb'])
-        result = export.run(args)
+        result = generate.run(args)
 
         assert result == 0
 
-    def test_export_one_project_sublime_make_gcc_arm(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+    def test_generate_one_project_sublime_make_gcc_arm(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'sublime_make_gcc_arm'])
-        result = export.run(args)
+        result = generate.run(args)
 
         assert result == 0
 
-    def test_export_one_project_eclipse_make_gcc_arm(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+    def test_generate_one_project_eclipse_make_gcc_arm(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'eclipse_make_gcc_arm'])
-        result = export.run(args)
+        result = generate.run(args)
 
         assert result == 0
 
-    def test_export_workspace_all_tools(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p',
+    def test_generate_workspace_all_tools(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p',
             'project_workspace'])
-        result = export.run(args)
+        result = generate.run(args)
 
-        # we dont specify tool to export, which is not valid for workspace.
+        # we dont specify tool to generate, which is not valid for workspace.
         # we don't know which tool we should build worksapce for as it consists
         # of projects, and each can speficify tools supported.
         assert result == -1
 
-    def test_export_workspace_uvision(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p',
+    def test_generate_workspace_uvision(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p',
             'project_workspace', '-t', 'uvision'])
-        result = export.run(args)
+        result = generate.run(args)
 
         assert result == 0
 
-    def test_export_workspace_iar_arm(self):
-        export.setup(self.subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p',
+    def test_generate_workspace_iar_arm(self):
+        generate.setup(self.subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p',
             'project_workspace', '-t', 'iar_arm'])
-        result = export.run(args)
+        result = generate.run(args)
 
         assert result == 0
