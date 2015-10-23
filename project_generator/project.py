@@ -18,21 +18,11 @@ import shutil
 import logging
 import operator
 import copy
-
-from collections import defaultdict
-from .tools_supported import ToolsSupported
-from .util import merge_recursive, flatten, PartialFormatter
 from string import Template
+from collections import defaultdict
 
-FILES_EXTENSIONS = {
-    'includes': ['h', 'hpp', 'inc'],
-    'source_files_s': ['s'],
-    'source_files_c': ['c'],
-    'source_files_cpp': ['cpp', 'cc'],
-    'source_files_lib': ['lib', 'ar', 'a'],
-    'source_files_obj': ['o', 'obj'],
-    'linker_file': ['sct', 'ld', 'lin', 'icf'],
-}
+from .tools_supported import ToolsSupported
+from .util import merge_recursive, flatten, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP
 
 class ProjectWorkspace:
     """represents a workspace (multiple projects) """
