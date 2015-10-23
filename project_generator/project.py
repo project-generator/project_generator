@@ -147,7 +147,6 @@ class Project:
         """initialise a project with a yaml file"""
         self.pgen_workspace = pgen_workspace
         self.name = name
-        self.output_types = OUTPUT_TYPES
 
         # project dictionaries, set them to default values
         self.project = {}
@@ -202,10 +201,10 @@ class Project:
     def _set_common_attributes(self, project_file_data):
         if 'common' in project_file_data:
             if 'output' in project_file_data['common']:
-                if project_file_data['common']['output'][0] not in self.output_types:
+                if project_file_data['common']['output'][0] not in OUTPUT_TYPES:
                     raise RuntimeError("Invalid Output Type.")
 
-                self.project['common']['output_type'] = self.output_types[project_file_data['common']['output'][0]]
+                self.project['common']['output_type'] = OUTPUT_TYPES[project_file_data['common']['output'][0]]
 
             self._set_project_attributes(self.project['common'], 'common', project_file_data)
 
@@ -244,12 +243,6 @@ class Project:
 
     @staticmethod
     def _process_source_files(project_dic, files, group_name):
-        extensions = ['cpp', 'c', 's', 'obj', 'lib']
-        mappings = defaultdict(lambda: None)
-        mappings['o'] = 'obj'
-        mappings['a'] = 'lib'
-        mappings['ar'] = 'lib'
-        mappings['cc'] = 'cpp'
         if group_name not in project_dic['source_groups']:
             project_dic['source_groups'][group_name] = {}
 
@@ -260,9 +253,7 @@ class Project:
                     source_file) if os.path.isfile(os.path.join(os.path.normpath(source_file), f))], group_name)
 
             extension = source_file.split('.')[-1].lower()
-            extension = mappings[extension] or extension
-
-            if extension not in extensions:
+            if extension not in VALID_EXTENSIONS:
                 continue
 
             if extension not in project_dic['source_groups'][group_name]:
@@ -437,6 +428,9 @@ class Project:
         if type(self.project['export']['linker_file']) == type(list()):
             if len(self.project['export']['linker_file']) > 1:
                 logging.debug("More than one linker command files: %s" % self.project['export']['linker_file'])
+            elif len(self.project['export']['linker_file']) == 0:
+                logging.debug("No linker found for %s tool" % tool)
+                return
             self.project['export']['linker_file'] = self.project['export']['linker_file'][0]
 
     def _set_output_dir_path(self, tool):
