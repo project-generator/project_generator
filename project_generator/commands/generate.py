@@ -16,8 +16,7 @@ import logging
 
 from ..generate import Generator
 
-help = 'Export a project record'
-
+help = 'Generate a project record'
 
 def run(args):
     if os.path.exists(args.file):
