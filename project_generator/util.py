@@ -30,6 +30,13 @@ FILES_EXTENSIONS = {
     'linker_file': ['sct', 'ld', 'lin', 'icf'],
 }
 
+OUTPUT_TYPES = {
+    'executable': 'exe',
+    'exe': 'exe',
+    'library': 'lib',
+    'lib': 'lib',
+}
+
 FILE_MAP = {v:k for k,values in FILES_EXTENSIONS.items() for v in values}
 SOURCE_KEYS = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_lib', 'source_files_obj']
 VALID_EXTENSIONS = reduce(lambda x,y:x+y,[FILES_EXTENSIONS[key] for key in SOURCE_KEYS])
