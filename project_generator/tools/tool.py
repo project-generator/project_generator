@@ -40,6 +40,7 @@ class Builder:
     """ Just a builder template to be subclassed """
 
     def build_project(self):
+        """ Should return 0 if built, otherwise return -1 """
         raise NotImplementedError
 
 # Exporter class for exporting a project or a workspace

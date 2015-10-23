@@ -23,9 +23,9 @@ import copy
 import os
 from os import getcwd
 from os.path import join, normpath
+from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Builder, Exporter
-from ..targets import Targets
 
 
 class IARDefinitions():
@@ -342,10 +342,10 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         # set target only if defined, otherwise use from template/default one
         if expanded_dic['target']:
             # get target definition (target + mcu)
-            target = Targets(self.env_settings.get_env_settings('definitions'))
-            if not target.is_supported(expanded_dic['target'].lower(), 'iar'):
+            proj_def = ProGenDef('iar')
+            if not proj_def.is_supported(expanded_dic['target'].lower()):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-            mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'iar')
+            mcu_def_dic = proj_def.get_tool_definition(expanded_dic['target'].lower())
             if not mcu_def_dic:
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
@@ -400,7 +400,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             proj_path += '.ewp'
         if not os.path.exists(proj_path):
             logging.debug("The file: %s does not exists, exported prior building?" % proj_path)
-            return
+            return -1
         logging.debug("Building IAR project: %s" % proj_path)
 
         args = [join(self.env_settings.get_env_settings('iar'), 'IarBuild.exe'), proj_path, '-build', os.path.splitext(os.path.basename(self.workspace['files']['ewp']))[0]]
@@ -411,40 +411,12 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             ret_code = subprocess.call(args)
         except:
             logging.error("Error whilst calling IarBuild. Please check IARBUILD path in the user_settings.py file.")
+            return -1
         else:
             # no IAR doc describes errors from IarBuild
             logging.info("Build completed.")
+            return 0
 
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['ewp'], self.workspace['files']['eww'],
             self.workspace['files']['ewd']]}
-
-    def get_mcu_definition(self, project_file):
-        """ Parse project file to get mcu definition """
-        project_file = join(getcwd(), project_file)
-        ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-
-        mcu = Targets().get_mcu_definition()
-
-        # we take 0 configuration or just configuration, as multiple configuration possibl
-        # debug, release, for mcu - does not matter, try and adjust
-        try:
-            index_general = self._get_option(ewp_dic['project']['configuration'][0]['settings'], 'General')
-            configuration = ewp_dic['project']['configuration'][0]
-        except KeyError:
-            index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
-            configuration = ewp_dic['project']['configuration']
-        index_option = self._get_option(configuration['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
-        OGChipSelectEditMenu = configuration['settings'][index_general]['data']['option'][index_option]
-
-        mcu['tool_specific'] = {
-            'iar' : {
-                'OGChipSelectEditMenu' : {
-                    'state' : [OGChipSelectEditMenu['state'].replace('\t', ' ', 1)],
-                },
-                'OGCoreOrChip' : {
-                    'state' : [1],
-                },
-            }
-        }
-        return mcu

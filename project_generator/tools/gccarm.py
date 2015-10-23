@@ -19,8 +19,9 @@ import ntpath
 import subprocess
 
 from os.path import join, normpath,dirname
+from project_generator_definitions.definitions import ProGenDef
+
 from .tool import Tool,Exporter
-from ..targets import Targets
 from .tool import Tool, Exporter
 
 class MakefileGccArm(Tool,Exporter):
@@ -63,6 +64,12 @@ class MakefileGccArm(Tool,Exporter):
                 file_list.append(join(rel_path, normpath(file)))
         data[attribute] = file_list
 
+    def _libraries(self, key, value, data):
+        """ Add defined GCC libraries. """
+        for option in value:
+            if key == "libraries":
+                data['libraries'].append(option)
+
     def _compiler_options(self, key, value, data):
         """ Compiler flags """
         for option in value:
@@ -92,11 +99,11 @@ class MakefileGccArm(Tool,Exporter):
             data['c_standard'] = value
 
     def _parse_specific_options(self, data):
-        """ Parse all uvision specific setttings. """
-        # TODO 0xc0170: remove completely all this functionality, map to misc
+        """ Parse all specific setttings. """
         data['compiler_options'] = []
         for dic in data['misc']:
             for k, v in dic.items():
+                self._libraries(k, v, data)
                 self._compiler_options(k, v, data)
                 self._optimization(k, v, data)
                 self._cc_standard(k, v, data)
@@ -169,10 +176,10 @@ class MakefileGccArm(Tool,Exporter):
         data['toolchain'] = 'arm-none-eabi-'
         data['toolchain_bin_path'] = self.env_settings.get_env_settings('gcc')
 
-        target = Targets(self.env_settings.get_env_settings('definitions'))
+        pro_def = ProGenDef()
 
-        if target.get_mcu_core(data['target'].lower()):
-            data['core'] = target.get_mcu_core(data['target'].lower())[0]
+        if pro_def.get_mcu_core(data['target'].lower()):
+            data['core'] = pro_def.get_mcu_core(data['target'].lower())[0]
         else:
             raise RuntimeError(
                 "Target: %s not found, Please add them to https://github.com/project-generator/project_generator_definitions" % data['target'].lower())
@@ -203,6 +210,7 @@ class MakefileGccArm(Tool,Exporter):
             ret_code = subprocess.call(args, cwd=path)
         except:
             logging.error("Error whilst calling make. Is it in your PATH?")
+            return -1
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
@@ -212,6 +220,8 @@ class MakefileGccArm(Tool,Exporter):
                 else:
                     logging.error("Build failed with unknown error. Returned: %s" %
                                    ret_code)
+                return -1
             else:
                 logging.info("Build succeeded with the status: %s" %
                              self.ERRORLEVEL[ret_code])
+                return 0
