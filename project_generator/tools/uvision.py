@@ -22,9 +22,9 @@ import copy
 from os.path import basename, join, normpath
 from os import getcwd
 from collections import OrderedDict
+from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Builder, Exporter
-from ..targets import Targets
 
 class uVisionDefinitions():
 
@@ -282,22 +282,24 @@ class Uvision(Tool, Builder, Exporter):
         # set target only if defined, otherwise use from template/default one
         extension = 'uvproj'
         if expanded_dic['target']:
-            target = Targets(self.env_settings.get_env_settings('definitions'))
-            if not target.is_supported(expanded_dic['target'].lower(), 'uvision'):
+            pro_def = ProGenDef('uvision')
+            if not pro_def.is_supported(expanded_dic['target'].lower()):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-            mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'uvision')
+            mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower())
             if not mcu_def_dic:
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
-            # self.normalize_mcu_def(mcu_def_dic)
             logging.debug("Mcu definitions: %s" % mcu_def_dic)
-            # self.append_mcu_def(expanded_dic, mcu_def_dic)
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
+            try:
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
+            except KeyError:
+                # TODO: remove for next patch
+                logging.debug("Using old definitions which are faulty for uvision, please update >v0.1.3.")
 
             # Support new device packs, we just need probably one of the new features for
             # uvision to notice it's using software packs
@@ -344,7 +346,7 @@ class Uvision(Tool, Builder, Exporter):
 
         if not os.path.exists(path):
             logging.debug("The file: %s does not exists, exported prior building?" % path)
-            return
+            return -1
 
         logging.debug("Building uVision project: %s" % path)
 
@@ -357,35 +359,12 @@ class Uvision(Tool, Builder, Exporter):
         except:
             logging.error(
                 "Error whilst calling UV4: '%s'. Please set uvision path in the projects.yaml file." % self.env_settings.get_env_settings('uvision'))
+            return -1
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
                 logging.error("Build failed with the status: %s" % self.ERRORLEVEL[ret_code])
+                return -1
             else:
                 logging.info("Build succeeded with the status: %s" % self.ERRORLEVEL[ret_code])
-
-    def get_mcu_definition(self, project_file):
-        """ Parse project file to get target definition """
-        project_file = join(getcwd(), project_file)
-        uvproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-        # Generic Target, should get from Target class !
-        mcu = Targets().get_mcu_definition()
-
-        mcu['tool_specific'] = {
-            # legacy device
-            'uvision' : {
-                'TargetOption' : {
-                    'Device' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device']],
-                    'Vendor' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor']],
-                    'Cpu' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu']],
-                    'FlashDriverDll' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll']],
-                    'DeviceId' : [int(uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'])],
-                    'SFDFile' : [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile']],
-                }
-            }
-        }
-
-        if 'RegisterFile' in uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']:
-            mcu['tool_specific']['uvision']['TargetOption']['RegisterFile'] = [uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['RegisterFile']]
-
-        return mcu
+                return 0

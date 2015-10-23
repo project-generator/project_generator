@@ -19,9 +19,9 @@ import copy
 
 from os.path import basename, join, normpath
 from os import getcwd
+from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Builder, Exporter
-from ..targets import Targets
 
 class CoIDEdefinitions():
 
@@ -217,10 +217,10 @@ class Coide(Tool, Exporter, Builder):
 
         # set target only if defined, otherwise use from template/default one
         if expanded_dic['target']:
-            target = Targets(self.env_settings.get_env_settings('definitions'))
-            if not target.is_supported(expanded_dic['target'].lower(), 'coide'):
+            pro_def = ProGenDef('coide')
+            if not pro_def.is_supported(expanded_dic['target'].lower()):
                 raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-            mcu_def_dic = target.get_tool_def(expanded_dic['target'].lower(), 'coide')
+            mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower())
             if not mcu_def_dic:
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/0xc0170/project_generator_definitions"
@@ -279,57 +279,3 @@ class Coide(Tool, Exporter, Builder):
 
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['coproj']]}
-
-    def get_mcu_definition(self, project_file):
-        """ Parse project file to get mcu definition """
-        project_file = join(getcwd(), project_file)
-        coproj_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
-
-        mcu = Targets().get_mcu_definition()
-
-        IROM1_index = self._coproj_find_option(coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'], '@name', 'IROM1')
-        IROM2_index = self._coproj_find_option(coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'], '@name', 'IROM2')
-        IRAM1_index = self._coproj_find_option(coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'], '@name', 'IRAM1')
-        IRAM2_index = self._coproj_find_option(coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'], '@name', 'IRAM2')
-        defaultAlgorithm_index = self._coproj_find_option(coproj_dic['Project']['Target']['DebugOption']['Option'], '@name', 'org.coocox.codebugger.gdbjtag.core.defaultAlgorithm')
-
-        mcu['tool_specific'] = {
-            'coide' : {
-                'Device' : {
-                    'manufacturerId' : [coproj_dic['Project']['Target']['Device']['@manufacturerId']],
-                    'manufacturerName': [coproj_dic['Project']['Target']['Device']['@manufacturerName']],
-                    'chipId': [coproj_dic['Project']['Target']['Device']['@chipId']],
-                    'chipName': [coproj_dic['Project']['Target']['Device']['@chipName']],
-                },
-                'DebugOption': {
-                    'defaultAlgorithm': [coproj_dic['Project']['Target']['DebugOption']['Option'][defaultAlgorithm_index]['@value']],
-                },
-                'MemoryAreas': {
-                    'IROM1': {
-                        'name': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IROM1_index]['@name']],
-                        'size': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IROM1_index]['@size']],
-                        'startValue': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IROM1_index]['@startValue']],
-                        'type': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IROM1_index]['@type']],
-                    },
-                    'IRAM1': {
-                        'name': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IRAM1_index]['@name']],
-                        'size': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IRAM1_index]['@size']],
-                        'startValue': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IRAM1_index]['@startValue']],
-                        'type': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IRAM1_index]['@type']],
-                    },
-                    'IROM2': {
-                        'name': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IROM2_index]['@name']],
-                        'size': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IROM2_index]['@size']],
-                        'startValue': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IROM2_index]['@startValue']],
-                        'type': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IROM2_index]['@type']],
-                    },
-                    'IRAM2': {
-                        'name': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IRAM2_index]['@name']],
-                        'size': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IRAM2_index]['@size']],
-                        'startValue': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IRAM2_index]['@startValue']],
-                        'type': [coproj_dic['Project']['Target']['BuildOption']['Link']['MemoryAreas']['Memory'][IRAM2_index]['@type']],
-                    }
-                }
-            }
-        }
-        return mcu

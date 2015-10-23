@@ -22,17 +22,20 @@ help = 'Export a project record'
 def run(args):
     if os.path.exists(args.file):
         generator = Generator(args.file)
-        build_result = 0
+        build_failed = False
+        export_failed = False
         if args.defdirectory:
-            generator.settings.update_definitions_dir(os.path.join(os.getcwd(), args.defdirectory))
+            logging.info("Def directory is deprecated, look at https://pypi.python.org/pypi/project_generator_definitions")
         for project in generator.generate(args.project):
-            export_result = project.export(args.tool, args.copy)
+            if project.export(args.tool, args.copy) == -1:
+                export_failed = True
             if args.build:
-                build_result = project.build(args.tool)
-        if build_result == 0 and export_result == 0:
-            return 0
-        else:
+                if project.build(args.tool) == -1:
+                    build_failed = True
+        if build_failed or export_failed:
             return -1
+        else:
+            return 0
     else:
         # not project known by pgen
         logging.warning("%s not found." % args.file)
@@ -49,6 +52,6 @@ def setup(subparser):
         "-b", "--build", action="store_true", help="Build defined projects")
     subparser.add_argument(
         "-defdir", "--defdirectory",
-        help="Path to the definitions, otherwise default (~/.pg/definitions) is used")
+        help="Deprecated")
     subparser.add_argument(
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")
