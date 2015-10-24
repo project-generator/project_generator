@@ -134,6 +134,7 @@ class Uvision(Tool, Builder, Exporter):
     def _fix_paths(self, data, rel_path):
         data['includes'] = [join(rel_path, normpath(path)) for path in data['includes']]
 
+        # TODO v0.8 fixme
         if type(data['source_files_lib']) == type(dict()):
             for k in data['source_files_lib'].keys():
                 data['source_files_lib'][k] = [
