@@ -22,7 +22,7 @@ from string import Template
 from collections import defaultdict
 
 from .tools_supported import ToolsSupported
-from .util import merge_recursive, flatten, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES
+from .util import merge_recursive, flatten, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS
 
 class ProjectWorkspace:
     """represents a workspace (multiple projects) """
@@ -102,14 +102,18 @@ class ProjectTemplate:
 
     @staticmethod
     def get_common_template():
-        # Common dictionary for project. Tools and commond data shared this structure
+        # Common dictionary for project. Tool specific + commond data share this structure
         common = {
             'includes': [],      # include paths
             'macros': [],        # macros
             'linker_file': None, # linker script file
             'source_paths': [],  # [internal] source paths derived from sources
             'include_files': [], # [internal] include files - used in the copy function
-            'source_groups': {}, # [internal] sources are here in groups (virtual folders)
+            'source_files_c': {},   # [internal] c source files
+            'source_files_cpp': {},   # [internal] c++ source files
+            'source_files_s': {},     # [internal] assembly source files
+            'source_files_obj': {},   # [internal] object files
+            'source_files_lib': {},   # [internal] libraries
         }
         return common
 
@@ -131,11 +135,6 @@ class ProjectTemplate:
             'template' : '',          # tool template
             'tools_supported': [],    # Tools which are supported,
             'singular': True,         # [internal] singular project or part of a workspace
-            'source_files_c': {},     # [internal] c source files
-            'source_files_cpp': {},   # [internal] c++ source files
-            'source_files_s': {},     # [internal] assembly source files
-            'source_files_obj': {},   # [internal] object files
-            'source_files_lib': {},   # [internal] libraries
         }
         return common_default
 
@@ -243,23 +242,21 @@ class Project:
 
     @staticmethod
     def _process_source_files(project_dic, files, group_name):
-        if group_name not in project_dic['source_groups']:
-            project_dic['source_groups'][group_name] = {}
-
         for source_file in files:
             if os.path.isdir(source_file):
                 project_dic['source_paths'].append(os.path.normpath(source_file))
                 Project._process_source_files(project_dic, [os.path.join(os.path.normpath(source_file), f) for f in os.listdir(
                     source_file) if os.path.isfile(os.path.join(os.path.normpath(source_file), f))], group_name)
 
+            # Based on the extension, create a groups inside source_files_(extension)
             extension = source_file.split('.')[-1].lower()
             if extension not in VALID_EXTENSIONS:
                 continue
+            source_group = FILE_MAP[extension]
+            if group_name not in project_dic[source_group]:
+                project_dic[source_group][group_name] = []
 
-            if extension not in project_dic['source_groups'][group_name]:
-                project_dic['source_groups'][group_name][extension] = []
-
-            project_dic['source_groups'][group_name][extension].append(os.path.normpath(source_file))
+            project_dic[source_group][group_name].append(os.path.normpath(source_file))
 
             if not os.path.dirname(source_file) in project_dic['source_paths']:
                 project_dic['source_paths'].append(os.path.normpath(os.path.dirname(source_file)))
@@ -386,11 +383,13 @@ class Project:
 
     def _get_tool_sources(self, tool_keywords):
         sources = {}
-        for tool_name in tool_keywords:
-            try:
-                sources = merge_recursive(sources, self.project['tool_specific'][tool_name]['source_groups'])
-            except KeyError:
-                continue
+        for source_key in SOURCE_KEYS:
+            sources[source_key] = {}
+            for tool_name in tool_keywords:
+                try:
+                    sources[source_key] = merge_recursive(sources[source_key], self.project['tool_specific'][tool_name][source_key])
+                except KeyError:
+                    continue
         return sources
 
     def _fill_export_dict(self, tool):
@@ -415,10 +414,8 @@ class Project:
 
         # This is magic with sources as they have groups
         tool_sources = self._get_tool_sources(tool_keywords)
-        self.project['export']['source_files'] = merge_recursive(self.project['export']['source_groups'], tool_sources)
-        for ext in ["c","cpp","s","lib", "obj"]:
-           key = "source_files_" + ext
-           self.project['export'][key] = merge_recursive(self._source_of_type(self.project['export']['source_groups'], ext), self._source_of_type(tool_sources, ext))
+        for key in SOURCE_KEYS:
+           self.project['export'][key] = merge_recursive(self.project['export'][key], tool_sources[key])
 
         # linker checkup
         if len(self.project['export']['linker_file']) == 0 and self.project['export']['output_type'] == 'exe':
