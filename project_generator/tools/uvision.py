@@ -25,6 +25,7 @@ from collections import OrderedDict
 from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Builder, Exporter
+from ..util import SOURCE_KEYS
 
 class uVisionDefinitions():
 
@@ -55,7 +56,7 @@ class uVisionDefinitions():
 class Uvision(Tool, Builder, Exporter):
 
     optimization_options = ['O0', 'O1', 'O2', 'O3']
-    source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_lib', 'source_files_obj']
+    # source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_lib', 'source_files_obj']
     file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3,'o':3, 'lib': 4, 'ar': 4}
 
     ERRORLEVEL = {
@@ -107,7 +108,7 @@ class Uvision(Tool, Builder, Exporter):
 
     def _iterate(self, data, expanded_data, rel_path):
         """ Iterate through all data, store the result expansion in extended dictionary. """
-        for attribute in self.source_files_dic:
+        for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     group = 'Sources'
@@ -118,7 +119,7 @@ class Uvision(Tool, Builder, Exporter):
     def _get_groups(self, data):
         """ Get all groups defined. """
         groups = []
-        for attribute in self.source_files_dic:
+        for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     k = 'Sources'
