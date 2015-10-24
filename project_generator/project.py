@@ -99,14 +99,54 @@ class ProjectWorkspace:
         return -1
 
 class ProjectTemplate:
+    """ Public data which can be set in yaml files """
 
     @staticmethod
-    def get_common_template():
-        # Common dictionary for project. Tool specific + commond data share this structure
-        common = {
+    def get_data_template():
+        """ Data for tool specific and common """
+        data_template = {
             'includes': [],      # include paths
-            'macros': [],        # macros
             'linker_file': None, # linker script file
+            'macros': [],        # macros
+        }
+        return data_template
+
+    @staticmethod
+    def get_project_template(name, output_type):
+        """ Project data """
+        project_template = {
+            'build_dir' : 'build',    # Build output path
+            'debugger' : 'cmsis-dap', # Debugger
+            'export_dir': '',         # Export directory path
+            'name': name,             # project name
+            'output_type': output_type, # output type, default - exe
+            'target': '',             # target
+            'template' : '',          # tool template
+            'tools_supported': [],    # Tools which are supported,
+        }
+        return project_template
+
+
+class ProjectTemplateInternal:
+    """ Internal Project data, this are created by Project class and used internally """
+
+    @staticmethod
+    def get_project_template():
+        """ Internal project data """
+        internal_template = {
+            'singular': True,         # [internal] singular project or part of a workspace
+            'output_dir': {           # [internal] The generated path dict
+                'path': '',           # path with all name mangling we add to export_dir
+                'rel_path': '',       # how far we are from root
+                'rel_count': '',      # Contains count of how far we are from root, used for eclipse for example
+            }
+        }
+        return internal_template
+
+    @staticmethod
+    def get_data_template():
+        """ Internal data for common/tool_specific """
+        data_internal_template = {
             'source_paths': [],  # [internal] source paths derived from sources
             'include_files': [], # [internal] include files - used in the copy function
             'source_files_c': {},   # [internal] c source files
@@ -115,28 +155,8 @@ class ProjectTemplate:
             'source_files_obj': {},   # [internal] object files
             'source_files_lib': {},   # [internal] libraries
         }
-        return common
+        return data_internal_template
 
-    @staticmethod
-    def get_common_default(name, output_type):
-        common_default = {
-            'build_dir' : 'build',    # Build output path
-            'core': '',               # core
-            'debugger' : 'cmsis-dap', # Debugger
-            'export_dir': '',         # Export directory path
-            'name': name,        # project name
-            'output_type': output_type, # output type, default - exe
-            'output_dir': {           # [internal] The generated path dict
-                'path': '',           # path with all name mangling we add to export_dir
-                'rel_path': '',       # how far we are from root
-                'rel_count': '',      # Contains count of how far we are from root, used for eclipse for example
-            },
-            'target': '',             # target
-            'template' : '',          # tool template
-            'tools_supported': [],    # Tools which are supported,
-            'singular': True,         # [internal] singular project or part of a workspace
-        }
-        return common_default
 
 class Project:
 
@@ -153,8 +173,10 @@ class Project:
         self.project['tool_specific'] = defaultdict(dict)
         self.project['export'] = defaultdict(dict) # merged common and tool
 
-        self.project['common'] = ProjectTemplate().get_common_default(self.name, OUTPUT_TYPES['exe'])
-        self.project['common'].update(copy.deepcopy(ProjectTemplate().get_common_template()))
+        self.project['common'] = ProjectTemplate().get_project_template(self.name, OUTPUT_TYPES['exe'])
+        self.project['common'].update(copy.deepcopy(ProjectTemplate().get_data_template()))
+        self.project['common'].update(copy.deepcopy(ProjectTemplateInternal().get_data_template()))
+        self.project['common'].update(copy.deepcopy(ProjectTemplateInternal().get_project_template()))
         self._fill_project_tool_specific_defaults(project_dicts)
 
         # process all projects dictionaries
@@ -168,7 +190,8 @@ class Project:
         for project in project_dicts:
             if 'tool_specific' in project:
                 for tool_name, tool_settings in project['tool_specific'].items():
-                    self.project['tool_specific'][tool_name].update(copy.deepcopy(ProjectTemplate().get_common_template()))
+                    self.project['tool_specific'][tool_name].update(copy.deepcopy(ProjectTemplateInternal().get_data_template()))
+                    self.project['tool_specific'][tool_name].update(copy.deepcopy(ProjectTemplate().get_data_template()))
 
     # Project data have the some keys the same, therefore we process them here
     # and their own keys, are processed in common/tool attributes
@@ -207,7 +230,7 @@ class Project:
 
             self._set_project_attributes(self.project['common'], 'common', project_file_data)
 
-            for key in ['debugger','build_dir','mcu','name','target','core']:
+            for key in ['debugger','build_dir','mcu','name','target']:
                 if key in project_file_data['common']:
                     self.project['common'][key] = project_file_data['common'][key][0]
 
