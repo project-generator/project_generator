@@ -12,18 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Settings needed:
-UV4
-IARBUILD
-PROJECT_ROOT
-GCC_BIN_PATH
-"""
-
 import os
 
-from os.path import expanduser, normpath, join, pardir, sep
-
+from os.path import normpath, join, pardir, sep
 
 class ProjectSettings:
     PROJECT_ROOT = os.environ.get('PROJECT_GENERATOR_ROOT') or join(pardir, pardir)
