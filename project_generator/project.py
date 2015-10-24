@@ -22,7 +22,7 @@ from string import Template
 from collections import defaultdict
 
 from .tools_supported import ToolsSupported
-from .util import merge_recursive, flatten, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS
+from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS
 
 class ProjectWorkspace:
     """represents a workspace (multiple projects) """
@@ -137,7 +137,7 @@ class ProjectTemplate:
             'template' : '',          # tool template
             'tools_supported': [],    # Tools which are supported,
         }
-        project_template.update(ProjectTemplate()._get_data_template())
+        project_template.update(ProjectTemplate._get_data_template())
         return project_template
 
 
@@ -155,7 +155,7 @@ class ProjectTemplateInternal:
                 'rel_count': '',      # Contains count of how far we are from root, used for eclipse for example
             }
         }
-        internal_template.update(ProjectTemplateInternal()._get_data_template())
+        internal_template.update(ProjectTemplateInternal._get_data_template())
         return internal_template
 
     @staticmethod
@@ -188,8 +188,8 @@ class Project:
         self.project['tool_specific'] = defaultdict(dict)
         self.project['export'] = defaultdict(dict) # merged common and tool
 
-        self.project['common'] = ProjectTemplate().get_project_template(self.name, OUTPUT_TYPES['exe'])
-        self.project['common'].update(copy.deepcopy(ProjectTemplateInternal()._get_project_template()))
+        self.project['common'] = ProjectTemplate.get_project_template(self.name, OUTPUT_TYPES['exe'])
+        self.project['common'].update(copy.deepcopy(ProjectTemplateInternal._get_project_template()))
         self._fill_project_tool_specific_defaults(project_dicts)
 
         # process all projects dictionaries
@@ -203,8 +203,8 @@ class Project:
         for project in project_dicts:
             if 'tool_specific' in project:
                 for tool_name, tool_settings in project['tool_specific'].items():
-                    self.project['tool_specific'][tool_name].update(copy.deepcopy(ProjectTemplateInternal()._get_data_template()))
-                    self.project['tool_specific'][tool_name].update(copy.deepcopy(ProjectTemplate()._get_data_template()))
+                    self.project['tool_specific'][tool_name].update(copy.deepcopy(ProjectTemplateInternal._get_data_template()))
+                    self.project['tool_specific'][tool_name].update(copy.deepcopy(ProjectTemplate._get_data_template()))
 
     # Project data have the some keys the same, therefore we process them here
     # and their own keys, are processed in common/tool attributes
@@ -448,8 +448,8 @@ class Project:
         tool_keywords = []
         # get all keywords valid for the tool
         tool_keywords.append(ToolsSupported().get_toolchain(tool))
-        tool_keywords.append(ToolsSupported().get_toolnames(tool))
-        tool_keywords = list(set(flatten(tool_keywords)))
+        tool_keywords += ToolsSupported().get_toolnames(tool)
+        tool_keywords = list(set(tool_keywords))
 
         # Copy common to export, as a base. We then add tool data
         self.project['export'].update(self.project['common'])
