@@ -99,7 +99,20 @@ class ProjectWorkspace:
         return -1
 
 class ProjectTemplate:
-    """ Public data which can be set in yaml files """
+    """ Public data which can be set in yaml files
+        Yaml data available are:
+            'includes': [],           # include paths
+            'linker_file': None,      # linker script file
+            'macros': [],             # macros
+            'build_dir' : build_dir,  # Build output path
+            'debugger' : debugger,    # Debugger
+            'export_dir': '',         # Export directory path
+            'name': name,             # project name
+            'output_type': output_type, # output type, default - exe
+            'target': '',             # target
+            'template' : '',          # tool template
+            'tools_supported': [],    # Tools which are supported,
+    """
 
     @staticmethod
     def _get_data_template():
@@ -112,11 +125,11 @@ class ProjectTemplate:
         return data_template
 
     @staticmethod
-    def get_project_template(name, output_type):
+    def get_project_template(name, output_type, debugger='cmsis-dap', build_dir='build'):
         """ Full project data (+data) """
         project_template = {
-            'build_dir' : 'build',    # Build output path
-            'debugger' : 'cmsis-dap', # Debugger
+            'build_dir' : build_dir,  # Build output path
+            'debugger' : debugger,    # Debugger
             'export_dir': '',         # Export directory path
             'name': name,             # project name
             'output_type': output_type, # output type, default - exe
@@ -149,9 +162,9 @@ class ProjectTemplateInternal:
     def _get_data_template():
         """ Internal data for common/tool_specific """
         data_internal_template = {
-            'source_paths': [],  # [internal] source paths derived from sources
-            'include_files': [], # [internal] include files - used in the copy function
-            'source_files_c': {},   # [internal] c source files
+            'source_paths': [],       # [internal] source paths derived from sources
+            'include_files': [],      # [internal] include files - used in the copy function
+            'source_files_c': {},     # [internal] c source files
             'source_files_cpp': {},   # [internal] c++ source files
             'source_files_s': {},     # [internal] assembly source files
             'source_files_obj': {},   # [internal] object files
