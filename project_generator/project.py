@@ -281,7 +281,7 @@ class Project:
                                 include_files.append(os.path.join(os.path.normpath(dir_path), f))
                     except:
                         # TODO: catch only those exceptions which are relevant
-                        logging.debug("The includes is not accesisble: %s" % include_file)
+                        logging.debug("The includes is not accessible: %s" % include_file)
                         continue
                     project_dic['include_files'] += include_files
                 if not os.path.normpath(dir_path) in project_dic['includes']:

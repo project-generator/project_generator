@@ -48,7 +48,7 @@ class TestProject(TestCase):
         shutil.rmtree('generated_projects', ignore_errors=True)
 
     def test_export_project(self):
-        result = self.project.export('iar_arm', False)
+        result = self.project.generate('iar_arm', False)
         projectfiles = self.project.get_generated_project_files('iar_arm')
 
         assert result == 0
