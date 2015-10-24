@@ -28,7 +28,7 @@ def run(args):
         build_failed = False
         export_failed = False
         for project in generator.generate(args.project):
-            if project.export(args.tool, args.copy) == -1:
+            if project.generate(args.tool, args.copy) == -1:
                 export_failed = True
             if project.build(args.tool) == -1:
                 build_failed = True
@@ -45,7 +45,8 @@ def run(args):
 def setup(subparser):
     subparser.add_argument(
         "-f", "--file", help="YAML projects file", default='projects.yaml')
-    subparser.add_argument("-p", "--project", help="Name of the project to build", default = '')
+    subparser.add_argument(
+        "-p", "--project", help="Name of the project to build", default = '')
     subparser.add_argument(
         "-t", "--tool", help="Build a project files for provided tool")
     subparser.add_argument(

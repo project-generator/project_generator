@@ -54,7 +54,7 @@ class TestProject(TestCase):
     #     self.uvision.export_project()
 
     def test_export_project(self):
-        result = self.project.export('uvision', False)
+        result = self.project.generate('uvision', False)
         # it should get generated files from the last export
         projectfiles = self.project.get_generated_project_files('uvision')
 
@@ -67,14 +67,14 @@ class TestProject(TestCase):
         with open(os.path.join(os.getcwd(), 'test_workspace/project_1.yaml'), 'wt') as f:
             f.write(yaml.dump(project_1_yaml, default_flow_style=False))
         for project in Generator(projects_1_yaml).generate('project_1'):
-            result = project.export('uvision', False)
+            result = project.generate('uvision', False)
 
         assert result == 0
         assert os.path.isdir('create_this_folder')
         shutil.rmtree('create_this_folder')
 
     def test_build_project(self):
-        result_export = self.project.export('uvision', False)
+        result_export = self.project.generate('uvision', False)
         result_build = self.project.build('uvision')
 
         assert result_export == 0

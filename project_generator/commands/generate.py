@@ -26,7 +26,7 @@ def run(args):
         if args.defdirectory:
             logging.info("Def directory is deprecated, look at https://pypi.python.org/pypi/project_generator_definitions")
         for project in generator.generate(args.project):
-            if project.export(args.tool, args.copy) == -1:
+            if project.generate(args.tool, args.copy) == -1:
                 export_failed = True
             if args.build:
                 if project.build(args.tool) == -1:

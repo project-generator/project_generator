@@ -20,6 +20,27 @@ import operator
 
 from functools import reduce
 
+FILES_EXTENSIONS = {
+    'include_files': ['h', 'hpp', 'inc'],
+    'source_files_s': ['s'],
+    'source_files_c': ['c'],
+    'source_files_cpp': ['cpp', 'cc'],
+    'source_files_lib': ['lib', 'ar', 'a'],
+    'source_files_obj': ['o', 'obj'],
+    'linker_file': ['sct', 'ld', 'lin', 'icf'],
+}
+
+OUTPUT_TYPES = {
+    'executable': 'exe',
+    'exe': 'exe',
+    'library': 'lib',
+    'lib': 'lib',
+}
+
+FILE_MAP = {v:k for k,values in FILES_EXTENSIONS.items() for v in values}
+SOURCE_KEYS = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_lib', 'source_files_obj']
+VALID_EXTENSIONS = reduce(lambda x,y:x+y,[FILES_EXTENSIONS[key] for key in SOURCE_KEYS])
+
 def rmtree_if_exists(directory):
     if os.path.exists(directory):
         shutil.rmtree(directory)

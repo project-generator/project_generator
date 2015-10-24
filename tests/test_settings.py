@@ -42,12 +42,6 @@ class TestProject(TestCase):
     def test_update(self):
         self.settings.update(settings_dict)
 
-        assert self.settings.get_env_settings('definitions') == settings_dict['definitions_dir'][0]
         assert self.settings.get_env_settings('iar') == settings_dict['tools']['iar']['path'][0]
         assert self.settings.get_env_settings('uvision') == settings_dict['tools']['uvision']['path'][0]
         assert self.settings.export_location_format == settings_dict['export_dir'][0]
-
-    def test_definition(self):
-        self.settings.update(settings_dict)
-        self.settings.update_definitions_dir('new_path')
-        assert self.settings.get_env_settings('definitions') == 'new_path'

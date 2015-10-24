@@ -17,6 +17,7 @@ from os import getcwd
 
 from .tool import Tool, Exporter
 from .gccarm import MakefileGccArm
+from ..util import SOURCE_KEYS
 
 class CMakeGccArm(Tool,Exporter):
 
@@ -43,26 +44,29 @@ class CMakeGccArm(Tool,Exporter):
     def fix_paths_unix(self, data):
         # cmake seems to require unix paths
         # This might do proper handling in the gcc arm, pass there a param (force normpath to unix)
-        for key in ['includes', 'source_files_c', 'source_files_cpp', 'source_files_s',
-                    'source_files_obj']:
+        for key in SOURCE_KEYS:
             paths = []
             for value in data[key]:
                 # TODO: this needs to be fixed
-                paths.append(getcwd().replace('\\', '/') + '/' + value.replace('\\', '/'))
+                paths.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'] + '/' + value.replace('\\', '/'))
             data[key] = paths
-        data['linker_file'] = getcwd().replace('\\', '/') + '/' + data['linker_file'].replace('\\', '/')
+        # fix includes
+        includes = []
+        for key in data['includes']:
+            includes.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'] + '/' + key.replace('\\', '/'))
+        data['includes'] = includes
+        data['linker_file'] = getcwd().replace('\\', '/') + '/' + data['output_dir']['path'] + '/' + data['linker_file'].replace('\\', '/')
 
     def export_project(self):
         generated_projects = {}
         generated_projects = copy.deepcopy(self.generated_project)
 
         data_for_make = self.workspace.copy()
-        # we dont use rel path for cmake, we inject there root and use paths within root
+        # Warning: we dont use rel path for cmake, we inject there root and use paths within root
         data_for_make['output_dir']['rel_path'] = ""
         self.exporter.process_data_for_makefile(data_for_make)
-        # TODO 0xc0170: this misc is a list of dics, fix
         try:
-            data_for_make['misc'] = data_for_make['misc'][0]
+            data_for_make['misc'] = data_for_make['misc']
         except:
             pass
 
