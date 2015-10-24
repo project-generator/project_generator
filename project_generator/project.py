@@ -458,7 +458,10 @@ class Project:
         self.project['export']['macros'] = self.project['export']['macros'] + self._get_tool_data('macros', tool_keywords)
         self.project['export']['linker_file'] =  self.project['export']['linker_file'] or self._get_tool_data('linker_file', tool_keywords)
         self.project['export']['template'] = self._get_tool_data('template', tool_keywords)
-        self.project['export']['misc'] =  self._get_tool_data('misc', tool_keywords)
+        # misc for tools requires dic merge
+        misc = self._get_tool_data('misc', tool_keywords)
+        for m in misc:
+           self.project['export']['misc'] = merge_recursive(self.project['export']['misc'], m)
 
         # This is magic with sources as they have groups
         tool_sources = self._get_tool_sources(tool_keywords)

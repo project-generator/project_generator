@@ -101,18 +101,16 @@ class MakefileGccArm(Tool,Exporter):
     def _parse_specific_options(self, data):
         """ Parse all specific setttings. """
         data['compiler_options'] = []
-        for dic in data['misc']:
-            for k, v in dic.items():
-                self._libraries(k, v, data)
-                self._compiler_options(k, v, data)
-                self._optimization(k, v, data)
-                self._cc_standard(k, v, data)
-                self._c_standard(k, v, data)
+        for k, v in data['misc'].items():
+            self._libraries(k, v, data)
+            self._compiler_options(k, v, data)
+            self._optimization(k, v, data)
+            self._cc_standard(k, v, data)
+            self._c_standard(k, v, data)
 
         data['linker_options'] = []
-        for dic in data['misc']:
-            for k, v in dic.items():
-                self._linker_options(k, v, data)
+        for k, v in data['misc'].items():
+            self._linker_options(k, v, data)
 
     def _lib_names(self, libs):
         for lib in libs:

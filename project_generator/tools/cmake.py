@@ -65,9 +65,8 @@ class CMakeGccArm(Tool,Exporter):
         # Warning: we dont use rel path for cmake, we inject there root and use paths within root
         data_for_make['output_dir']['rel_path'] = ""
         self.exporter.process_data_for_makefile(data_for_make)
-        # TODO 0xc0170: this misc is a list of dics, fix
         try:
-            data_for_make['misc'] = data_for_make['misc'][0]
+            data_for_make['misc'] = data_for_make['misc']
         except:
             pass
 
