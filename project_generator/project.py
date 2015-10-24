@@ -290,10 +290,11 @@ class Project:
     @staticmethod
     def _process_source_files(project_dic, files, group_name):
         for source_file in files:
+            source_file = os.path.normpath(source_file)
             if os.path.isdir(source_file):
-                project_dic['source_paths'].append(os.path.normpath(source_file))
-                Project._process_source_files(project_dic, [os.path.join(os.path.normpath(source_file), f) for f in os.listdir(
-                    source_file) if os.path.isfile(os.path.join(os.path.normpath(source_file), f))], group_name)
+                project_dic['source_paths'].append(source_file)
+                Project._process_source_files(project_dic, [os.path.join(source_file, f) for f in os.listdir(
+                    source_file) if os.path.isfile(os.path.join(source_file, f))], group_name)
 
             # Based on the extension, create a groups inside source_files_(extension)
             extension = source_file.split('.')[-1].lower()
@@ -303,7 +304,7 @@ class Project:
             if group_name not in project_dic[source_group]:
                 project_dic[source_group][group_name] = []
 
-            project_dic[source_group][group_name].append(os.path.normpath(source_file))
+            project_dic[source_group][group_name].append(source_file)
 
             if not os.path.dirname(source_file) in project_dic['source_paths']:
                 project_dic['source_paths'].append(os.path.normpath(os.path.dirname(source_file)))
@@ -424,10 +425,13 @@ class Project:
         for tool_name in tool_keywords:
             try:
                 if self.project['tool_specific'][tool_name][key]:
-                    data.append(self.project['tool_specific'][tool_name][key])
+                    if type(self.project['tool_specific'][tool_name][key]) is list:
+                        data += self.project['tool_specific'][tool_name][key]
+                    else:
+                        data.append(self.project['tool_specific'][tool_name][key])
             except KeyError:
                 continue
-        return flatten(data)
+        return data
 
     def _get_tool_sources(self, tool_keywords):
         sources = {}
