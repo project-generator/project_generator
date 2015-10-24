@@ -332,8 +332,8 @@ class Project:
                 shutil.rmtree(path)
         return 0
 
-    def export(self, tool, copy):
-        """ Exports a project """
+    def generate(self, tool, copy):
+        """ Generates a project """
         tools = self._validate_tools(tool)
         if tools == -1:
             return -1
@@ -351,6 +351,7 @@ class Project:
 
             self._fill_export_dict(export_tool)
             if copy:
+                logging.debug("Copying sources to the output directory")
                 self._copy_sources_to_generated_destination()
             # Print debug info prior exporting
             logging.debug("Project common data: %s" % self.project['common'])
