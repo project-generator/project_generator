@@ -21,7 +21,7 @@ import operator
 from functools import reduce
 
 FILES_EXTENSIONS = {
-    'includes': ['h', 'hpp', 'inc'],
+    'include_files': ['h', 'hpp', 'inc'],
     'source_files_s': ['s'],
     'source_files_c': ['c'],
     'source_files_cpp': ['cpp', 'cc'],

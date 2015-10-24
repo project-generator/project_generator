@@ -273,6 +273,12 @@ class Project:
                 else:
                     # its a directory
                     dir_path = include_file
+                    # get all files from dir
+                    include_files = []
+                    for f in os.listdir(dir_path):
+                        if os.path.isfile(os.path.join(os.path.normpath(dir_path), f)) and f.split('.')[-1].lower() in FILES_EXTENSIONS['include_files']:
+                            include_files.append(os.path.join(os.path.normpath(dir_path), f))
+                    project_dic['include_files'] += include_files
                 if not os.path.normpath(dir_path) in project_dic['includes']:
                     project_dic['includes'].append(os.path.normpath(dir_path))
 
@@ -489,57 +495,28 @@ class Project:
         path = self.project['export']['output_dir']['path']
         self.project['export']['output_dir']['rel_path'], self.project['export']['output_dir']['rel_count'] = self._generate_output_dir(path)
 
-    def _copy_files(self, file, output_dir, valid_files_group):
-        file = os.path.normpath(file)
-        dest_dir = os.path.join(os.getcwd(), output_dir, os.path.dirname(file))
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        if file.split('.')[-1] in valid_files_group:
-            shutil.copy2(os.path.join(os.getcwd(), file), os.path.join(os.getcwd(), output_dir, file))
-
     def _copy_sources_to_generated_destination(self):
-        """" Copies all project files to specified directory - generated dir"""
-        for path in self.project['export']['includes']:
-            if os.path.isdir(path):
-                # directory full of include files
-                path = os.path.normpath(path)
-                files = os.listdir(path)
+        """" Copies all project files to specified directory - generated dir """
+
+        files = []
+        for key in FILES_EXTENSIONS.keys():
+            if type(self.project['export'][key]) is dict:
+                for k,v in self.project['export'][key].items():
+                    files.extend(v)
+            elif type(self.project['export'][key]) is list:
+                files.extend(self.project['export'][key])
             else:
-                # includes is a file, make it valid
-                files = [os.path.basename(path)]
-                path = os.path.dirname(path)
-            dest_dir = os.path.join(os.getcwd(), self.project['export']['output_dir']['path'], path)
-            if not os.path.exists(dest_dir) and len(files):
-                os.makedirs(dest_dir)
-            for filename in files:
-                if filename.split('.')[-1] in FILES_EXTENSIONS['includes']:
-                    shutil.copy2(os.path.join(os.getcwd(), path, filename),
-                                 os.path.join(os.getcwd(), self.project['export']['output_dir']['path'], path))
+                files.append(self.project['export'][key])
 
-        # all sources are grouped, therefore treat them as dict
-        for k, v in self.project['export']['source_files_c'].items():
-            for file in v:
-                self._copy_files(file, self.project['export']['output_dir']['path'], FILES_EXTENSIONS['source_files_c'])
-
-        for k, v in self.project['export']['source_files_cpp'].items():
-            for file in v:
-                self._copy_files(file, self.project['export']['output_dir']['path'], FILES_EXTENSIONS['source_files_cpp'])
-
-        for k, v in self.project['export']['source_files_s'].items():
-            for file in v:
-                self._copy_files(file, self.project['export']['output_dir']['path'], FILES_EXTENSIONS['source_files_s'])
-
-        for k,v in self.project['export']['source_files_obj'].items():
-            for file in v:
-                self._copy_files(file, self.project['export']['output_dir']['path'], FILES_EXTENSIONS['source_files_obj'])
-
-        for k,v in self.project['export']['source_files_lib'].items():
-            for file in v:
-                self._copy_files(file, self.project['export']['output_dir']['path'], FILES_EXTENSIONS['source_files_lib'])
-
-        linker = os.path.normpath(self.project['export']['linker_file'])
-        dest_dir = os.path.join(os.getcwd(), self.project['export']['output_dir']['path'], os.path.dirname(linker))
-        if not os.path.exists(dest_dir):
-            os.makedirs(dest_dir)
-        shutil.copy2(os.path.join(os.getcwd(), linker),
-                     os.path.join(os.getcwd(), self.project['export']['output_dir']['path'], linker))
+        destination = os.path.join(os.getcwd(), self.project['export']['output_dir']['path'])
+        if os.path.exists(destination):
+            shutil.rmtree(destination)
+        for item in files:
+            s = os.path.join(os.getcwd(), item)
+            d = os.path.join(destination, item)
+            if os.path.isdir(s):
+                shutil.copytree(s,d)
+            else:
+                if not os.path.exists(os.path.dirname(d)):
+                    os.makedirs(os.path.join(os.getcwd(), os.path.dirname(d)))
+                shutil.copy2(s,d)
