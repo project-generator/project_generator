@@ -33,7 +33,7 @@ class ProjectWorkspace:
         self.pgen_workspace = pgen_workspace # TODO: FIX me please
         self.generated_files = {}
 
-    def export(self, tool, copy):
+    def generate(self, tool, copy):
         """ Exports workspace """
 
         tools = []
@@ -275,9 +275,14 @@ class Project:
                     dir_path = include_file
                     # get all files from dir
                     include_files = []
-                    for f in os.listdir(dir_path):
-                        if os.path.isfile(os.path.join(os.path.normpath(dir_path), f)) and f.split('.')[-1].lower() in FILES_EXTENSIONS['include_files']:
-                            include_files.append(os.path.join(os.path.normpath(dir_path), f))
+                    try:
+                        for f in os.listdir(dir_path):
+                            if os.path.isfile(os.path.join(os.path.normpath(dir_path), f)) and f.split('.')[-1].lower() in FILES_EXTENSIONS['include_files']:
+                                include_files.append(os.path.join(os.path.normpath(dir_path), f))
+                    except:
+                        # TODO: catch only those exceptions which are relevant
+                        logging.debug("The includes is not accesisble: %s" % include_file)
+                        continue
                     project_dic['include_files'] += include_files
                 if not os.path.normpath(dir_path) in project_dic['includes']:
                     project_dic['includes'].append(os.path.normpath(dir_path))
