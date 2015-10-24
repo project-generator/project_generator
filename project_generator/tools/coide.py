@@ -22,6 +22,7 @@ from os import getcwd
 from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Builder, Exporter
+from ..util import SOURCE_KEYS
 
 class CoIDEdefinitions():
 
@@ -46,8 +47,6 @@ class CoIDEdefinitions():
 
 class Coide(Tool, Exporter, Builder):
 
-    source_files_dic = [
-        'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
 
     generated_project = {
@@ -88,7 +87,7 @@ class Coide(Tool, Exporter, Builder):
     def _get_groups(self):
         """ Get all groups defined. """
         groups = []
-        for attribute in self.source_files_dic:
+        for attribute in SOURCE_KEYS:
                 for k, v in self.workspace[attribute].items():
                     if k == None:
                         k = 'Sources'
@@ -98,7 +97,7 @@ class Coide(Tool, Exporter, Builder):
 
     def _iterate(self, data, expanded_data, rel_path):
         """ _Iterate through all data, store the result expansion in extended dictionary. """
-        for attribute in self.source_files_dic:
+        for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     group = 'Sources'

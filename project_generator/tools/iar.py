@@ -26,7 +26,7 @@ from os.path import join, normpath
 from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Builder, Exporter
-
+from ..util import SOURCE_KEYS
 
 class IARDefinitions():
 
@@ -170,9 +170,6 @@ class IAREmbeddedWorkbenchProject:
 
 class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject):
 
-    source_files_dic = [
-        'source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_obj', 'source_files_lib']
-
     core_dic = {
         "cortex-m0":  34,
         "cortex-m0+": 35,
@@ -215,7 +212,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
 
     def _iterate(self, data, expanded_data, rel_path):
         """ Iterate through all data, store the result expansion in extended dictionary. """
-        for attribute in self.source_files_dic:
+        for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     group = 'Sources'
@@ -226,7 +223,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
     def _get_groups(self, data):
         """ Get all groups defined. """
         groups = []
-        for attribute in self.source_files_dic:
+        for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     k = 'Sources'

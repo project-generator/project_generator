@@ -18,7 +18,7 @@ import shutil
 import logging
 import operator
 import copy
-from string import Template
+
 from collections import defaultdict
 
 from .tools_supported import ToolsSupported

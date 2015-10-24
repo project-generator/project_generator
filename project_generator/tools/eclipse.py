@@ -20,11 +20,10 @@ from posixpath import normpath, join, basename
 
 from .tool import Tool, Builder, Exporter
 from .gccarm import MakefileGccArm
-
+from ..util import SOURCE_KEYS
 
 class EclipseGnuARM(Tool, Exporter, Builder):
-    source_files_dic = ['source_files_c', 'source_files_s',
-                        'source_files_cpp', 'source_files_obj']
+
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
 
     generated_project = {
@@ -68,7 +67,7 @@ class EclipseGnuARM(Tool, Exporter, Builder):
     def _get_groups(self, data):
         """ Get all groups defined. """
         groups = []
-        for attribute in self.source_files_dic:
+        for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     k = 'Sources'
@@ -78,7 +77,7 @@ class EclipseGnuARM(Tool, Exporter, Builder):
 
     def _iterate(self, data, expanded_data, rel_path):
         """ Iterate through all data, store the result expansion in extended dictionary. """
-        for attribute in self.source_files_dic:
+        for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     group = 'Sources'
