@@ -89,7 +89,7 @@ def create_yaml(root, directory, project_name, board, files):
             'linker_file': FILES_EXTENSIONS['linker_file'],
             'sources': FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] +
                         FILES_EXTENSIONS['source_files_s'] + FILES_EXTENSIONS['source_files_obj'],
-            'includes': FILES_EXTENSIONS['includes'],
+            'includes': FILES_EXTENSIONS['include_files'],
             'target': [],
         }
         projects_yaml = {
