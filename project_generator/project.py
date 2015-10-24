@@ -74,7 +74,7 @@ class ProjectWorkspace:
 
                 # Merge all dics, copy sources if required, correct output dir. This happens here
                 # because we need tool to set proper path (tool might be used as string template)
-                project._fill_export_dict(export_tool)
+                project._fill_export_dict(export_tool, copy)
 
                 if copy:
                     project._copy_sources_to_generated_destination()
@@ -355,7 +355,7 @@ class Project:
                 logging.debug("Tool: %s was not found" % export_tool)
                 continue
 
-            self._fill_export_dict(export_tool)
+            self._fill_export_dict(export_tool, copy)
             if copy:
                 logging.debug("Copying sources to the output directory")
                 self._copy_sources_to_generated_destination()
@@ -435,7 +435,7 @@ class Project:
                     continue
         return sources
 
-    def _fill_export_dict(self, tool):
+    def _fill_export_dict(self, tool, copied=False):
         tool_keywords = []
         # get all keywords valid for the tool
         tool_keywords.append(ToolsSupported().get_toolchain(tool))
@@ -445,7 +445,7 @@ class Project:
         # Copy common to export, as a base. We then add tool data
         self.project['export'].update(self.project['common'])
 
-        self._set_output_dir_path(tool)
+        self._set_output_dir_path(tool, copied)
         # Merge common project data with tool specific data
         self.project['export']['includes'] = self.project['export']['includes'] + self._get_tool_data('includes', tool_keywords)
         self.project['export']['include_files'] =  self.project['export']['include_files'] + self._get_tool_data('include_files', tool_keywords)
@@ -473,7 +473,7 @@ class Project:
                 return
             self.project['export']['linker_file'] = self.project['export']['linker_file'][0]
 
-    def _set_output_dir_path(self, tool):
+    def _set_output_dir_path(self, tool, copied):
         if self.pgen_workspace.settings.export_location_format != self.pgen_workspace.settings.DEFAULT_EXPORT_LOCATION_FORMAT:
             location_format = self.pgen_workspace.settings.export_location_format
         else:
@@ -490,10 +490,14 @@ class Project:
             'workspace': self._get_workspace_name() or '.'
         })
 
-        # TODO (matthewelse): make this return a value directly
         self.project['export']['output_dir']['path'] = os.path.normpath(location)
         path = self.project['export']['output_dir']['path']
-        self.project['export']['output_dir']['rel_path'], self.project['export']['output_dir']['rel_count'] = self._generate_output_dir(path)
+        if copied:
+            # Sources were copied, therefore they should be in the exported folder
+            self.project['export']['output_dir']['rel_path'] = ''
+            self.project['export']['output_dir']['rel_count'] = 0
+        else:
+            self.project['export']['output_dir']['rel_path'], self.project['export']['output_dir']['rel_count'] = self._generate_output_dir(path)
 
     def _copy_sources_to_generated_destination(self):
         """" Copies all project files to specified directory - generated dir """
