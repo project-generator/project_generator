@@ -146,26 +146,13 @@ class ProjectTemplate:
 
 
 class ProjectTemplateInternal:
-    """ Internal Project data, this are created by Project class and used internally """
+    """ Internal Project data, used by tools (generators) """
 
     @staticmethod
     def _get_project_template():
-        """ Internal project data. Contains all a project needs (+data)"""
-        internal_template = {
-            'singular': True,         # [internal] singular project or part of a workspace
-            'output_dir': {           # [internal] The generated path dict
-                'path': '',           # path with all name mangling we add to export_dir
-                'rel_path': '',       # how far we are from root
-                'rel_count': '',      # Contains count of how far we are from root, used for eclipse for example
-            }
-        }
-        internal_template.update(ProjectTemplateInternal._get_data_template())
-        return internal_template
+        """ Internal project data """
 
-    @staticmethod
-    def _get_data_template():
-        """ Internal data for common/tool_specific """
-        data_internal_template = {
+        internal_template = {
             'source_paths': [],       # [internal] source paths derived from sources
             'include_files': [],      # [internal] include files - used in the copy function
             'source_files_c': {},     # [internal] c source files
@@ -173,9 +160,14 @@ class ProjectTemplateInternal:
             'source_files_s': {},     # [internal] assembly source files
             'source_files_obj': {},   # [internal] object files
             'source_files_lib': {},   # [internal] libraries
+            'singular': True,         # [internal] singular project or part of a workspace
+            'output_dir': {           # [internal] The generated path dict
+                'path': '',           # path with all name mangling we add to export_dir
+                'rel_path': '',       # how far we are from root
+                'rel_count': '',      # Contains count of how far we are from root, used for eclipse for example
+            }
         }
-        return data_internal_template
-
+        return internal_template
 
 class Project:
 
