@@ -80,9 +80,6 @@ def _generate_file(filename,root,directory,data):
         else:
             with open(os.path.join(root, filename), 'w+') as f:
                 f.write(yaml.dump(data, default_flow_style=False))
-        p = os.popen('attrib +h ' + filename)
-        p.close()
-
 
 def create_yaml(root, directory, project_name, board, files):
         common_section = {
