@@ -210,25 +210,19 @@ class Project:
                         destination[attribute] = data[0]
 
     def _set_internal_common_data(self):
+        # process here includes, sources and set all internal data related to them
         Project._process_include_files(self.project['common'], self.project['export'])
-
         for files in self.project['common']['sources']:
-            if type(files) == dict:
-                for group_name, sources in files.items():
-                    self._process_source_files(sources, group_name)
-            else:
-                self._process_source_files(files, 'default') # no group defined, put it in the default group
+            self._process_source_files(files)
 
     def _set_internal_tool_data(self, tool_keywords):
+        # process here includes, sources and set all internal data related to them for tool_keywords
         for tool in tool_keywords:
-            Project._process_include_files(self.project['tool_specific'][tool], self.project['export'])
-            if 'sources' in self.project['tool_specific'][tool]:
-                for files in self.project['tool_specific'][tool]['sources']:
-                    if type(files) == dict:
-                        for group_name, sources in files.items():
-                            self._process_source_files(sources, group_name)
-                    else:
-                        self._process_source_files(source_files, 'default') # no group defined, put it in the default group
+            if tool in self.project['tool_specific'].keys():
+                Project._process_include_files(self.project['tool_specific'][tool], self.project['export'])
+                if 'sources' in self.project['tool_specific'][tool]:
+                    for files in self.project['tool_specific'][tool]['sources']:
+                        self._self._process_source_files(files)
 
     @staticmethod
     def _process_include_files(source, destination):
@@ -259,23 +253,33 @@ class Project:
                     if not os.path.normpath(dir_path) in destination['includes']:
                         destination['includes'].append(os.path.normpath(dir_path))
 
-    def _process_source_files(self, files, group_name):
-        for source_file in files:
+    def _process_source_files(self, files, use_group_name='default'):
+        use_sources = []
+        if type(files) == dict:
+            for group_name, sources in files.items():
+                use_sources = sources
+                use_group_name = group_name
+        elif type(files) == list:
+            use_sources =files
+        else:
+            use_sources = [files]
+
+        for source_file in use_sources:
             source_file = os.path.normpath(source_file)
             if os.path.isdir(source_file):
                 self.project['export']['source_paths'].append(source_file)
                 self._process_source_files([os.path.join(source_file, f) for f in os.listdir(
-                    source_file) if os.path.isfile(os.path.join(source_file, f))], group_name)
+                    source_file) if os.path.isfile(os.path.join(source_file, f))], use_group_name)
 
             # Based on the extension, create a groups inside source_files_(extension)
             extension = source_file.split('.')[-1].lower()
             if extension not in VALID_EXTENSIONS:
                 continue
             source_group = FILE_MAP[extension]
-            if group_name not in self.project['export'][source_group]:
-                self.project['export'][source_group][group_name] = []
+            if use_group_name not in self.project['export'][source_group]:
+                self.project['export'][source_group][use_group_name] = []
 
-            self.project['export'][source_group][group_name].append(source_file)
+            self.project['export'][source_group][use_group_name].append(source_file)
 
             if not os.path.dirname(source_file) in self.project['export']['source_paths']:
                 self.project['export']['source_paths'].append(os.path.normpath(os.path.dirname(source_file)))
@@ -429,10 +433,10 @@ class Project:
 
         self._set_output_dir_path(tool, copied)
         # Merge common project data with tool specific data
-        self.project['export']['includes'] = self.project['export']['includes'] + self._get_tool_data('includes', tool_keywords)
-        self.project['export']['include_files'] =  self.project['export']['include_files'] + self._get_tool_data('include_files', tool_keywords)
-        self.project['export']['source_paths'] =  self.project['export']['source_paths'] + self._get_tool_data('source_paths', tool_keywords)
-        self.project['export']['macros'] = self.project['export']['macros'] + self._get_tool_data('macros', tool_keywords)
+        self.project['export']['includes'] += self._get_tool_data('includes', tool_keywords)
+        self.project['export']['include_files'] += self._get_tool_data('include_files', tool_keywords)
+        self.project['export']['source_paths'] +=  self._get_tool_data('source_paths', tool_keywords)
+        self.project['export']['macros'] += self._get_tool_data('macros', tool_keywords)
         self.project['export']['linker_file'] =  self.project['export']['linker_file'] or self._get_tool_data('linker_file', tool_keywords)
         self.project['export']['template'] = self._get_tool_data('template', tool_keywords)
         # misc for tools requires dic merge
