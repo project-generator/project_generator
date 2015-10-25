@@ -19,8 +19,6 @@ import logging
 import operator
 import copy
 
-from collections import defaultdict
-
 from .tools_supported import ToolsSupported
 from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS
 
@@ -180,8 +178,8 @@ class Project:
         self.name = name
         self.project = {}
         self.project['common'] = {}
-        self.project['export'] = defaultdict(dict) # merged common and tool
-        self.project['tool_specific'] = defaultdict(dict)
+        self.project['export'] = {} # merged common and tool
+        self.project['tool_specific'] = {}
         self.project['common'] = ProjectTemplate.get_project_template(self.name, OUTPUT_TYPES['exe'])
 
         # fill common + tool_specific dics from the project_dicts
@@ -190,7 +188,11 @@ class Project:
                 self._set_project_attributes('common', self.project['common'], project_data)
             if 'tool_specific' in project_data:
                 for tool_name, tool_settings in project_data['tool_specific'].items():
-                    self.project['tool_specific'][tool_name] = ProjectTemplate._get_data_template()
+                    try:
+                        # if dict does not exist, we initialize it
+                        bool(self.project['tool_specific'][tool_name])
+                    except KeyError:
+                        self.project['tool_specific'][tool_name] = ProjectTemplate._get_data_template()
                     self._set_project_attributes(tool_name, self.project['tool_specific'][tool_name], project_data['tool_specific'])
 
         self.generated_files = {}
@@ -222,7 +224,7 @@ class Project:
                 Project._process_include_files(self.project['tool_specific'][tool], self.project['export'])
                 if 'sources' in self.project['tool_specific'][tool]:
                     for files in self.project['tool_specific'][tool]['sources']:
-                        self._self._process_source_files(files)
+                        self._process_source_files(files)
 
     @staticmethod
     def _process_include_files(source, destination):
@@ -260,7 +262,7 @@ class Project:
                 use_sources = sources
                 use_group_name = group_name
         elif type(files) == list:
-            use_sources =files
+            use_sources = files
         else:
             use_sources = [files]
 
@@ -303,86 +305,6 @@ class Project:
         else:
             tools = [tool]
         return tools
-
-    def clean(self, tool):
-        """ Clean a project """
-
-        tools = self._validate_tools(tool)
-        if tools == -1:
-            return -1
-
-        for current_tool in tools:
-            # We get the export dict formed, then use it for cleaning
-            self._fill_export_dict(current_tool)
-            path = self.project['common']['output_dir']['path']
-
-            if os.path.isdir(path):
-                logging.info("Cleaning directory %s" % path)
-
-                shutil.rmtree(path)
-        return 0
-
-    def generate(self, tool, copy):
-        """ Generates a project """
-
-        tools = self._validate_tools(tool)
-        if tools == -1:
-            return -1
-
-        generated_files = {}
-        result = 0
-        for export_tool in tools:
-            exporter = ToolsSupported().get_tool(export_tool)
-
-            # None is an error
-            if exporter is None:
-                result = -1
-                logging.debug("Tool: %s was not found" % export_tool)
-                continue
-
-            self._fill_export_dict(export_tool, copy)
-            if copy:
-                logging.debug("Copying sources to the output directory")
-                self._copy_sources_to_generated_destination()
-            # Print debug info prior exporting
-            logging.debug("Project common data: %s" % self.project['common'])
-            logging.debug("Project tool_specific data: %s" % self.project['tool_specific'])
-            logging.debug("Project export data: %s" % self.project['export'])
-
-            files = exporter(self.project['export'], self.pgen_workspace.settings).export_project()
-            generated_files[export_tool] = files
-        self.generated_files = generated_files
-        return result
-
-    def build(self, tool):
-        """build the project"""
-
-        tools = self._validate_tools(tool)
-        if tools == -1:
-            return -1
-
-        result = 0
-
-        for build_tool in tools:
-            builder = ToolsSupported().get_tool(build_tool)
-            # None is an error
-            if builder is None:
-                logging.debug("Tool: %s was not found" % builder)
-                result = -1
-                continue
-
-            logging.debug("Building for tool: %s", build_tool)
-            logging.debug(self.generated_files)
-            if builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project() == -1:
-                # if one fails, set to -1 to report
-                result = -1
-        return result
-
-    def get_generated_project_files(self, tool):
-        """ Get generated project files, the content depends on a tool. Look at tool implementation """
-
-        exporter = ToolsSupported().get_tool(tool)
-        return exporter(self.generated_files[tool], self.pgen_workspace.settings).get_generated_project_files()
 
     @staticmethod
     def _generate_output_dir(path):
@@ -513,3 +435,84 @@ class Project:
                 if not os.path.exists(os.path.dirname(d)):
                     os.makedirs(os.path.join(os.getcwd(), os.path.dirname(d)))
                 shutil.copy2(s,d)
+
+    def clean(self, tool):
+        """ Clean a project """
+
+        tools = self._validate_tools(tool)
+        if tools == -1:
+            return -1
+
+        for current_tool in tools:
+            # We get the export dict formed, then use it for cleaning
+            self._fill_export_dict(current_tool)
+            path = self.project['common']['output_dir']['path']
+
+            if os.path.isdir(path):
+                logging.info("Cleaning directory %s" % path)
+
+                shutil.rmtree(path)
+        return 0
+
+    def generate(self, tool, copy):
+        """ Generates a project """
+
+        tools = self._validate_tools(tool)
+        if tools == -1:
+            return -1
+
+        generated_files = {}
+        result = 0
+        for export_tool in tools:
+            exporter = ToolsSupported().get_tool(export_tool)
+
+            # None is an error
+            if exporter is None:
+                result = -1
+                logging.debug("Tool: %s was not found" % export_tool)
+                continue
+
+            self._fill_export_dict(export_tool, copy)
+            if copy:
+                logging.debug("Copying sources to the output directory")
+                self._copy_sources_to_generated_destination()
+            # Print debug info prior exporting
+            logging.debug("Project common data: %s" % self.project['common'])
+            logging.debug("Project tool_specific data: %s" % self.project['tool_specific'])
+            logging.debug("Project export data: %s" % self.project['export'])
+
+            files = exporter(self.project['export'], self.pgen_workspace.settings).export_project()
+            generated_files[export_tool] = files
+        self.generated_files = generated_files
+        return result
+
+    def build(self, tool):
+        """build the project"""
+
+        tools = self._validate_tools(tool)
+        if tools == -1:
+            return -1
+
+        result = 0
+
+        for build_tool in tools:
+            builder = ToolsSupported().get_tool(build_tool)
+            # None is an error
+            if builder is None:
+                logging.debug("Tool: %s was not found" % builder)
+                result = -1
+                continue
+
+            logging.debug("Building for tool: %s", build_tool)
+            logging.debug(self.generated_files)
+            if builder(self.generated_files[build_tool], self.pgen_workspace.settings).build_project() == -1:
+                # if one fails, set to -1 to report
+                result = -1
+        return result
+
+    def get_generated_project_files(self, tool):
+        """ Get generated project files, the content depends on a tool. Look at tool implementation """
+
+        exporter = ToolsSupported().get_tool(tool)
+        return exporter(self.generated_files[tool], self.pgen_workspace.settings).get_generated_project_files()
+
