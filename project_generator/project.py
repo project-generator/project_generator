@@ -25,7 +25,7 @@ from .tools_supported import ToolsSupported
 from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS
 
 class ProjectWorkspace:
-    """represents a workspace (multiple projects) """
+    """ Represents a workspace (multiple projects) """
 
     def __init__(self, name, projects, pgen_workspace):
         self.name = name
@@ -175,10 +175,11 @@ class ProjectTemplateInternal:
 
 class Project:
 
-    """represents a project, which can be formed of many yaml files"""
+    """ Represents a project, which can be formed of many yaml files """
 
     def __init__(self, name, project_dicts, pgen_workspace):
-        """initialise a project with a yaml file"""
+        """ Initialise a project with a yaml file """
+
         self.pgen_workspace = pgen_workspace
         self.name = name
 
@@ -318,6 +319,7 @@ class Project:
 
     def _validate_tools(self, tool):
         """ Use tool_supported or tool """
+
         tools = []
         if not tool:
             if len(self.project['common']['tools_supported']) == 0:
@@ -329,6 +331,8 @@ class Project:
         return tools
 
     def clean(self, tool):
+        """ Clean a project """
+
         tools = self._validate_tools(tool)
         if tools == -1:
             return -1
@@ -346,6 +350,7 @@ class Project:
 
     def generate(self, tool, copy):
         """ Generates a project """
+
         tools = self._validate_tools(tool)
         if tools == -1:
             return -1
@@ -377,6 +382,7 @@ class Project:
 
     def build(self, tool):
         """build the project"""
+
         tools = self._validate_tools(tool)
         if tools == -1:
             return -1
@@ -399,26 +405,19 @@ class Project:
         return result
 
     def get_generated_project_files(self, tool):
-        # returns list of project files which were generated
+        """ Get generated project files, the content depends on a tool. Look at tool implementation """
+
         exporter = ToolsSupported().get_tool(tool)
         return exporter(self.generated_files[tool], self.pgen_workspace.settings).get_generated_project_files()
 
     @staticmethod
     def _generate_output_dir(path):
-        """this is a separate function, so that it can be more easily tested."""
+        """ This is a separate function, so that it can be more easily tested """
+
         relpath = os.path.relpath(os.getcwd(),path)
         count = relpath.count(os.sep) + 1
 
         return relpath+os.path.sep, count
-
-    def _source_of_type(self, dict_type, filetype):
-        """return a dictionary of groups and the sources of a specified type within them"""
-        files = {}
-        for group, group_contents in dict_type.items():
-            files[group] = []
-            if filetype in group_contents:
-                files[group].extend(group_contents[filetype])
-        return files
 
     def _get_tool_data(self, key, tool_keywords):
         data = []
