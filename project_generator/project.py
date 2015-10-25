@@ -106,6 +106,7 @@ class ProjectTemplate:
             'linker_file': None,      # linker script file
             'name': name,             # project name
             'macros': [],             # macros
+            'misc': {},
             'output_type': output_type, # output type, default - exe
             'sources': [],
             'target': '',             # target
@@ -122,6 +123,7 @@ class ProjectTemplate:
             'linker_file': '',   # linker script file
             'macros': [],        # macros
             'sources': [],
+            'misc': {},          # TODO v0.8: this needs fixing
         }
         return data_template
 
@@ -208,6 +210,8 @@ class Project:
                             destination[attribute].extend(data)
                         else:
                             destination[attribute].append(data)
+                    elif type(destination[attribute]) is dict:
+                        destination[attribute].update(data)
                     else:
                         destination[attribute] = data[0]
 
