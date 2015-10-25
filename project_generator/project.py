@@ -450,7 +450,7 @@ class Project:
         for current_tool in tools:
             # We get the export dict formed, then use it for cleaning
             self._fill_export_dict(current_tool)
-            path = self.project['common']['output_dir']['path']
+            path = self.project['export']['output_dir']['path']
 
             if os.path.isdir(path):
                 logging.info("Cleaning directory %s" % path)
