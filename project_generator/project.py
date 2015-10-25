@@ -123,7 +123,7 @@ class ProjectTemplate:
             'linker_file': '',   # linker script file
             'macros': [],        # macros
             'sources': [],
-            'misc': {},          # TODO v0.8: this needs fixing
+            'misc': {},          # misc settings related to tools
         }
         return data_template
 
@@ -143,7 +143,6 @@ class ProjectTemplate:
         }
         project_template.update(ProjectTemplate._get_data_template())
         return project_template
-
 
 class ProjectTemplateInternal:
     """ Internal Project data, used by tools (generators) """

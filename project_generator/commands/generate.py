@@ -23,8 +23,6 @@ def run(args):
         generator = Generator(args.file)
         build_failed = False
         export_failed = False
-        if args.defdirectory:
-            logging.info("Def directory is deprecated, look at https://pypi.python.org/pypi/project_generator_definitions")
         for project in generator.generate(args.project):
             if project.generate(args.tool, args.copy) == -1:
                 export_failed = True
@@ -49,8 +47,5 @@ def setup(subparser):
         "-t", "--tool", help="Create project files for provided tool")
     subparser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects")
-    subparser.add_argument(
-        "-defdir", "--defdirectory",
-        help="Deprecated")
     subparser.add_argument(
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")

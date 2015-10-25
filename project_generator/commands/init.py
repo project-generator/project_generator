@@ -24,16 +24,16 @@ def run(args):
 
     root = os.getcwd()
     directory = root if not args.directory else os.path.join(root, args.directory)
-    name = os.path.split(directory)[1] if not args.name else args.name
-    return create_yaml(root, directory, name, args.target.lower(), args.files)
+    project = os.path.split(directory)[1] if not args.project else args.project
+    return create_yaml(root, directory, project, args.target.lower(), args.files)
 
 
 def setup(subparser):
     subparser.add_argument(
-        '-name', help='Project name')
+        '-p', '--project', help='Project name')
     subparser.add_argument(
         '-tar', '--target', action='store', help='Target definition', default = "cortex-m0")
     subparser.add_argument(
         '-dir', '--directory', action='store', help='Directory selection', default=None)
     subparser.add_argument(
-        '-files', '--files', action='store_true', help='List file names', default=None)
+        '-files', '--files', action='store_true', help='List file names, otherwise only folders are listed', default=None)
