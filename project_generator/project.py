@@ -262,7 +262,7 @@ class Project:
         use_sources = []
         if type(files) == dict:
             for group_name, sources in files.items():
-                use_sources = sources
+                use_sources += sources
                 use_group_name = group_name
         elif type(files) == list:
             use_sources = files
