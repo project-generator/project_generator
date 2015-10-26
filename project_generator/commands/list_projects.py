@@ -17,7 +17,6 @@ from project_generator_definitions.definitions import ProGenTargets
 
 from ..tools_supported import ToolsSupported
 from ..generate import Generator
-from ..util import unicode_available
 from ..settings import ProjectSettings
 
 help = 'List general pgen data as projects, tools or targets'
@@ -51,4 +50,3 @@ def setup(subparser):
     subparser.add_argument("section", choices = ['targets','tools','projects'],
                            help="What section you would like listed", default='projects')
     subparser.add_argument("-f", "--file", help="YAML projects file")
-    subparser.add_argument("-u", "--no-unicode", help="Use ASCII characters only", action='store_true')
