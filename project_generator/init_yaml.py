@@ -131,7 +131,7 @@ def create_yaml(directory, project_name, board,output_dir):
     for tool, linker in linkers.items():
         if len(linker) > 1:
             # The project directory defined more than one linker for a tool
-            print "\nMultipe linkers found for " + tool + "\n"
+            print("\nMultipe linkers found for " + tool + "\n")
             for i, file in enumerate(linker):
                 print(str(i) + ": " + file)
             answer = raw_input('\nWhich file do you want? ')
