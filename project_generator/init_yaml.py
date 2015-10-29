@@ -147,4 +147,5 @@ def create_yaml(directory, project_name, board,output_dir):
     ret = _generate_file("projects.yaml", projects_yaml)
     if ret < 0: # make sure the first file generated correctly
         return -1
-    _generate_file("project.yaml", project_yaml)
+    ret = _generate_file("project.yaml", project_yaml)
+    return ret
