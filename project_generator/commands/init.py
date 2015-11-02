@@ -16,16 +16,19 @@ import os
 import logging
 from ..init_yaml import create_yaml
 
-help = 'Create a project record'
+help = 'Create project records'
 
 
 def run(args):
     logging.debug("Generating the records.")
 
     root = os.getcwd()
-    directory = root if not args.directory else os.path.join(root, args.directory)
+    directory = root if not args.directory else os.path.normpath(os.path.join(root, args.directory))
+    output = directory if not args.output else args.output
+
+    name = os.path.split(directory)[1] if not args.project else args.project
     project = os.path.split(directory)[1] if not args.project else args.project
-    return create_yaml(root, directory, project, args.target.lower(), args.files)
+    return create_yaml(os.path.normpath(directory), name, args.target.lower(), output)
 
 
 def setup(subparser):
@@ -34,6 +37,8 @@ def setup(subparser):
     subparser.add_argument(
         '-tar', '--target', action='store', help='Target definition', default = "cortex-m0")
     subparser.add_argument(
-        '-dir', '--directory', action='store', help='Directory selection', default=None)
+        '-dir', '--directory', action='store', help='Directory selection to be scanned', default=None)
     subparser.add_argument(
-        '-files', '--files', action='store_true', help='List file names, otherwise only folders are listed', default=None)
+        '-o', '--output', action='store', help='Generated project files directory')
+    # subparser.add_argument(
+    #     '-files', '--files', action='store_true', help='List file names, otherwise only folders are listed', default=None)

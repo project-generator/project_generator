@@ -13,14 +13,6 @@
 # limitations under the License.
 from project_generator.util import *
 
-def test_unicode_detection():
-    try:
-        print(u'\U0001F648')
-    except UnicodeEncodeError:
-        assert not unicode_available()
-    else:
-        assert unicode_available()
-
 def test_flatten():
     l1 = [['aa', 'bb', ['cc', 'dd', 'ee'], ['ee', 'ff'], 'gg']]
 

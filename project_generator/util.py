@@ -69,9 +69,6 @@ def flatten(S):
         return flatten(S[0]) + flatten(S[1:])
     return S[:1] + flatten(S[1:])
 
-def unicode_available():
-    return locale.getdefaultlocale()[1] == 'UTF-8'
-
 def load_yaml_records(yaml_files):
     dictionaries = []
     for yaml_file in yaml_files:
