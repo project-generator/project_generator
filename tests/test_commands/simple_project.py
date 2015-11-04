@@ -27,10 +27,13 @@ project_2_yaml = {
 
 projects_yaml = {
     'projects': {
-        'project_workspace': {
-            'project_1': ['test_workspace/project_1.yaml'],
-        },
         'project_2': ['test_workspace/project_2.yaml'],
         'project_3': ['test_workspace/project_1.yaml'],
+    },
+    'workspaces': {
+        'project_workspace': {
+            'projects': ['project_3'],
+        },
     }
+
 }

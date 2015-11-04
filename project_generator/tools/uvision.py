@@ -225,9 +225,10 @@ class Uvision(Tool, Builder, Exporter):
             # get relpath for project and inject it into workspace
             path_project = os.path.dirname(project['files']['uvproj'])
             path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
+            destination = os.path.join(os.path.relpath(os.getcwd(), path_project), project['files']['uvproj'])
             if path_project != path_workspace:
-                rel_path = os.path.relpath(os.getcwd(), path_workspace)
-            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(rel_path,project['files']['uvproj'])})
+                destination = os.path.join(os.path.relpath(os.getcwd(), path_workspace), project['files']['uvproj'])
+            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': destination})
 
         # generate the file
         uvmpw_xml = xmltodict.unparse(uvmpw_dic, pretty=True)

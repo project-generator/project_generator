@@ -35,7 +35,7 @@ projects_yaml = {
     }
 }
 
-class TestPgenWorkspace(TestCase):
+class TestGenerator(TestCase):
 
     """test things related to the PgenWorkspace class"""
 

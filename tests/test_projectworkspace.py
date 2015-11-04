@@ -19,6 +19,7 @@ from unittest import TestCase
 
 from project_generator.generate import Generator
 from project_generator.project import Project, ProjectWorkspace
+from project_generator.settings import ProjectSettings
 
 project_1_yaml = {
     'common': {
@@ -36,13 +37,14 @@ project_1_yaml = {
 
 projects_yaml = {
     'projects': {
-        'workspace_project_1' : {
-            'project_1' : ['test_workspace/project_1.yaml']
-        }
+        'project_1' : ['test_workspace/project_1.yaml']
+    },
+    'workspaces': {
+        'projects': ['project_1']
     }
 }
 
-class TestPgenWorkspace(TestCase):
+class TestWorkspace(TestCase):
 
     """test things related to the PgenWorkspace class"""
 
@@ -57,10 +59,10 @@ class TestPgenWorkspace(TestCase):
             f.write(yaml.dump(projects_yaml, default_flow_style=False))
 
         self.project = Project('project_1',[project_1_yaml],
-            Generator(projects_yaml))
+            ProjectSettings())
 
         self.workspace = ProjectWorkspace('workspace_project_1', [self.project],
-            Generator(projects_yaml))
+            ProjectSettings(), {})
 
 
         # create 3 files to test project

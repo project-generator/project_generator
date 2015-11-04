@@ -38,7 +38,7 @@ def run(args):
         else:
             return 0
     else:
-        # not project known by pgen
+        # not project known by progen
         logging.warning("%s not found." % args.file)
         return -1
 

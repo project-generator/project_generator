@@ -151,9 +151,10 @@ class IAREmbeddedWorkbenchProject:
             # get relpath for project and inject it into workspace
             path_project = os.path.dirname(project['files']['ewp'])
             path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
+            destination =  os.path.join(os.path.relpath(os.getcwd(), path_project), project['files']['ewp'])
             if path_project != path_workspace:
-                rel_path = os.path.relpath(os.getcwd(), path_workspace)
-            eww_dic['workspace']['project'].append( { 'path' : join('$WS_DIR$', os.path.join(rel_path, project['files']['ewp'])) })
+                destination = os.path.join(os.path.relpath(os.getcwd(), path_workspace), project['files']['ewp'])
+            eww_dic['workspace']['project'].append( { 'path' : join('$WS_DIR$', destination) })
 
     def _ewp_set_target(self, ewp_dic, mcu_def_dic):
         index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
