@@ -25,10 +25,11 @@ from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXT
 class ProjectWorkspace:
     """ Represents a workspace (multiple projects) """
 
-    def __init__(self, name, projects, settings):
+    def __init__(self, name, projects, settings, workspace_settings):
         self.name = name
         self.projects = projects
         self.settings = settings
+        self.workspace_settings = workspace_settings
         self.generated_files = {}
 
     def generate(self, tool, copy):
@@ -48,21 +49,30 @@ class ProjectWorkspace:
                 result = -1
                 continue
 
+            project_export_dir_overwrite = False
+            if self.settings.export_location_format != self.settings.DEFAULT_EXPORT_LOCATION_FORMAT:
+                location_format = self.settings.export_location_format
+            else:
+                if 'export_dir' in self.workspace_settings:
+                    location_format = self.workspace_settings['export_dir'][0]
+                    project_export_dir_overwrite = True
+                else:
+                    location_format = self.settings.export_location_format
+
             # substitute all of the different dynamic values
-            location = PartialFormatter().format(self.settings.export_location_format, **{
+            location = PartialFormatter().format(location_format, **{
                 'project_name': self.name,
                 'tool': tool,
-                'workspace': self.name
+                'workspace_name': self.name
             })
 
             workspace_dic = {
                 'projects': [],
                 'settings': {
                     'name': self.name,
-                    'path': location,
+                    'path': os.path.normpath(location),
                 },
             }
-
 
             for project in self.projects:
                 generated_files = {
@@ -70,6 +80,8 @@ class ProjectWorkspace:
                     'workspaces': [],
                 }
 
+                if project_export_dir_overwrite:
+                    project.project['common']['export_dir'] = location
                 # Merge all dics, copy sources if required, correct output dir. This happens here
                 # because we need tool to set proper path (tool might be used as string template)
                 project._fill_export_dict(export_tool, copy)
@@ -336,6 +348,32 @@ class Project:
                     continue
         return sources
 
+    def _set_output_dir_path(self, tool, copied):
+        if self.settings.export_location_format != self.settings.DEFAULT_EXPORT_LOCATION_FORMAT:
+            location_format = self.settings.export_location_format
+        else:
+            if 'export_dir' in self.project['export'] and self.project['export']['export_dir']:
+                location_format = self.project['export']['export_dir']
+            else:
+                location_format = self.settings.export_location_format
+
+        # substitute all of the different dynamic values
+        location = PartialFormatter().format(location_format, **{
+            'project_name': self.name,
+            'tool': tool,
+            'target': self.project['export']['target'],
+            'workspace': self.workspace_name or '.'
+        })
+
+        self.project['export']['output_dir']['path'] = os.path.normpath(location)
+        path = self.project['export']['output_dir']['path']
+        if copied:
+            # Sources were copied, therefore they should be in the exported folder
+            self.project['export']['output_dir']['rel_path'] = ''
+            self.project['export']['output_dir']['rel_count'] = 0
+        else:
+            self.project['export']['output_dir']['rel_path'], self.project['export']['output_dir']['rel_count'] = self._generate_output_dir(path)
+
     def _fill_export_dict(self, tool, copied=False):
         tool_keywords = []
         # get all keywords valid for the tool
@@ -380,32 +418,6 @@ class Project:
                 logging.debug("No linker found for %s tool" % tool)
                 return
             self.project['export']['linker_file'] = self.project['export']['linker_file'][0]
-
-    def _set_output_dir_path(self, tool, copied):
-        if self.settings.export_location_format != self.settings.DEFAULT_EXPORT_LOCATION_FORMAT:
-            location_format = self.settings.export_location_format
-        else:
-            if 'export_dir' in self.project['export'] and self.project['export']['export_dir']:
-                location_format = self.project['export']['export_dir']
-            else:
-                location_format = self.settings.export_location_format
-
-        # substitute all of the different dynamic values
-        location = PartialFormatter().format(location_format, **{
-            'project_name': self.name,
-            'tool': tool,
-            'target': self.project['export']['target'],
-            'workspace': self.workspace_name or '.'
-        })
-
-        self.project['export']['output_dir']['path'] = os.path.normpath(location)
-        path = self.project['export']['output_dir']['path']
-        if copied:
-            # Sources were copied, therefore they should be in the exported folder
-            self.project['export']['output_dir']['rel_path'] = ''
-            self.project['export']['output_dir']['rel_count'] = 0
-        else:
-            self.project['export']['output_dir']['rel_path'], self.project['export']['output_dir']['rel_count'] = self._generate_output_dir(path)
 
     def _copy_sources_to_generated_destination(self):
         """" Copies all project files to specified directory - generated dir """
