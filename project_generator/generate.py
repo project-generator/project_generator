@@ -23,7 +23,7 @@ class Generator:
                 with open(projects_file, 'rt') as f:
                     self.projects_dict = yaml.load(f)
             except IOError:
-               raise IOError("The main pgen projects file %s doesn't exist." % projects_file)
+               raise IOError("The main progen projects file %s doesn't exist." % projects_file)
         else:
             self.projects_dict = projects_file
         self.workspaces = {}

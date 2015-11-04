@@ -25,7 +25,7 @@ def run(args):
         for project in generator.generate(args.project):
             project.clean(args.tool)
     else:
-        # not project known by pgen
+        # not project known by progen
         logging.warning("%s not found." % args.file)
         return -1
     return 0

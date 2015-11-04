@@ -19,7 +19,7 @@ from ..tools_supported import ToolsSupported
 from ..generate import Generator
 from ..settings import ProjectSettings
 
-help = 'List general pgen data as projects, tools or targets'
+help = 'List general progen data as projects, tools or targets'
 
 
 def run(args):
@@ -36,10 +36,10 @@ def run(args):
                 print("%s supports: %s\n"%(project.project['name'], tools))
     else:
         if args.section == 'targets':
-            print("\nPgen supports the following targets:\n")
+            print("\nProgen supports the following targets:\n")
             print("\n".join(ProGenTargets().get_targets()))
         elif args.section == 'tools':
-            print("\nPgen supports the following tools:\n")
+            print("\nProgen supports the following tools:\n")
             print("\n".join(ToolsSupported().get_supported()))
         elif args.section == 'projects':
             print("\nFile needs to be defined for projects.")

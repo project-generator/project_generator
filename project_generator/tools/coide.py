@@ -208,7 +208,7 @@ class Coide(Tool, Exporter, Builder):
         # library/exe
         coproj_dic['Project']['Target']['BuildOption']['Output']['Option'][0]['@value'] = 0 if expanded_dic['output_type'] == 'exe' else 1
 
-        # Fill in pgen data to the coproj_dic
+        # Fill in progen data to the coproj_dic
         self._coproj_set_files(coproj_dic, expanded_dic)
         self._coproj_set_macros(coproj_dic, expanded_dic)
         self._coproj_set_includepaths(coproj_dic, expanded_dic)
