@@ -67,4 +67,4 @@ class Generator:
                     yield self.workspaces[name]
 
         if not found:
-            raise RuntimeError("You specified an invalid project name.")
+            logging.debug("You specified an invalid project name.")
