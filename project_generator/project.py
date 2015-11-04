@@ -88,7 +88,7 @@ class ProjectWorkspace:
 
                 if copy:
                     project._copy_sources_to_generated_destination()
-                project.project['singular'] = False
+                project.project['export']['singular'] = False
                 files = tool_export(project.project['export'], self.settings).export_project()
                 # we gather all generated files, needed for workspace files
                 workspace_dic['projects'].append(files)
