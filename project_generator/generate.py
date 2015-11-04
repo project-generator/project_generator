@@ -38,21 +38,21 @@ class Generator:
                 if name in self.projects_dict['projects'].keys():
                     records = self.projects_dict['projects'][name]
                     if type(records) is dict:
-                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
-                        self.workspaces[name] = ProjectWorkspace(name, projects, self)
+                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self.settings, True) for n, r in records.items()]
+                        self.workspaces[name] = ProjectWorkspace(name, projects, self.settings)
                         yield self.workspaces[name]
                     else:
-                        yield Project(name, load_yaml_records(uniqify(flatten(records))), self)
+                        yield Project(name, load_yaml_records(uniqify(flatten(records))), self.settings)
                 else:
                     raise RuntimeError("You specified an invalid project name.")
             else:
                 for name, records in self.projects_dict['projects'].items():
                     if type(records) is dict:
                         # workspace
-                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
-                        self.workspaces[name] = ProjectWorkspace(name, projects, self)
+                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self.settings, True) for n, r in records.items()]
+                        self.workspaces[name] = ProjectWorkspace(name, projects, self.settings)
                         yield self.workspaces[name]
                     else:
-                        yield Project(name, load_yaml_records(uniqify(flatten(records))), self)
+                        yield Project(name, load_yaml_records(uniqify(flatten(records))), self.settings)
         else:
             logging.debug("No projects found in the main record file.")
