@@ -38,7 +38,7 @@ class Generator:
                 if name in self.projects_dict['projects'].keys():
                     records = self.projects_dict['projects'][name]
                     if type(records) is dict:
-                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self.settings, True) for n, r in records.items()]
+                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self.settings, name) for n, r in records.items()]
                         self.workspaces[name] = ProjectWorkspace(name, projects, self.settings)
                         yield self.workspaces[name]
                     else:
@@ -49,7 +49,7 @@ class Generator:
                 for name, records in self.projects_dict['projects'].items():
                     if type(records) is dict:
                         # workspace
-                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self.settings, True) for n, r in records.items()]
+                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self.settings, name) for n, r in records.items()]
                         self.workspaces[name] = ProjectWorkspace(name, projects, self.settings)
                         yield self.workspaces[name]
                     else:

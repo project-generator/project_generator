@@ -172,12 +172,12 @@ class Project:
 
     """ Represents a project, which can be formed of many yaml files """
 
-    def __init__(self, name, project_dicts, settings, workspace=False):
+    def __init__(self, name, project_dicts, settings, workspace_name=None):
         """ Initialise a project with a yaml file """
 
         self.settings = settings
         self.name = name
-        self.belong_to_workspace = workspace
+        self.workspace_name = workspace_name
         self.project = {}
         self.project['common'] = {}
         self.project['export'] = {} # merged common and tool
@@ -395,7 +395,7 @@ class Project:
             'project_name': self.name,
             'tool': tool,
             'target': self.project['export']['target'],
-            'workspace': self.belong_to_workspace or '.'
+            'workspace': self.workspace_name or '.'
         })
 
         self.project['export']['output_dir']['path'] = os.path.normpath(location)
