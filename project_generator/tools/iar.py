@@ -62,6 +62,13 @@ class IARDefinitions():
 
 class IAREmbeddedWorkbenchProject:
 
+    FLAG_TO_IAR = {
+        'asm_flags': 'AExtraOptionsV2',
+        'c_flags': 'IExtraOptions',
+        'cxx_flags': 'IExtraOptions',
+        'ld_flags':  'IlinkExtraOptions',
+    }
+
     def _set_option(self, settings, value):
         settings['state'] = value
 
@@ -106,6 +113,24 @@ class IAREmbeddedWorkbenchProject:
         if len(additional_libs):
             index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkAdditionalLibs')
             self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], additional_libs)
+
+        # process ld flags
+        if 'ld_flags' in project_dic['misc'].keys():
+            index_ilink = self._get_option(ewp_dic['project']['configuration']['settings'], 'ILINK')
+            # enable commands
+            index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkUseExtraOptions')
+            self._set_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], '1')
+
+            index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], self.FLAG_TO_IAR['ld_flags'])
+
+            if type(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option]['state']) == str:
+                # if it's string, only one state
+                previous_state = ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option]['state']
+                ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option]['state'] = []
+                ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option]['state'].append(previous_state)
+
+            for item in project_dic['misc']['ld_flags']:
+                ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option]['state'].append(item)
 
     def _ewp_files_set(self, ewp_dic, project_dic):
         ewp_dic['project']['group'] = []

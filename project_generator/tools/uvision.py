@@ -60,11 +60,14 @@ class Uvision(Tool, Builder, Exporter):
     file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3,'o':3, 'lib': 4, 'ar': 4}
 
     # flags mapping to uvision uvproj dics
-    # for available flags, check armcc/armasm/armlink command line guide 
+    # for available flags, check armcc/armasm/armlink command line guide
+    # this does not provide all options within a project, most usable options are 
+    # exposed via command line, the rest is covered via template project files
     FLAGS_TO_UVISION = {
-        'c-flags' :  'Cads',
-        'ld-flags':  'LDads',
-        'asm-flags': 'Aads',
+        'asm_flags': 'Aads',
+        'c_flags': 'Cads',
+        'cxx_flags': 'Cads',
+        'ld_flags':  'LDads',
     }
 
     ERRORLEVEL = {
@@ -195,7 +198,7 @@ class Uvision(Tool, Builder, Exporter):
 
         for misc_keys in project_dic['misc'].keys():
             # ld-flags dont follow the same as asm/c flags, why?!? Please KEIL fix this
-            if misc_keys == 'ld-flags':
+            if misc_keys == 'ld_flags':
                 for item in project_dic['misc'][misc_keys]:
                     uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['Misc'] += ' ' + item
             else:
