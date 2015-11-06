@@ -29,6 +29,7 @@ from .tool import Tool, Builder, Exporter
 from ..util import SOURCE_KEYS
 
 class IARDefinitions():
+    """ Definitions for IAR Workbench IDE """
 
     # EWP file template
     ewp_file = {
@@ -62,6 +63,8 @@ class IARDefinitions():
 
 class IAREmbeddedWorkbenchProject:
 
+    # IAR misc contains enable check and then state. Therefore we map here
+    # each flag to dict to know which one to enable and set those options
     FLAG_TO_IAR = {
         'asm_flags' : {
             'enable': 'AExtraOptionsCheckV2',
@@ -90,39 +93,40 @@ class IAREmbeddedWorkbenchProject:
             settings['state'].append(value)
 
     def _ewp_general_set(self, ewp_dic, project_dic):
-        index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ExePath')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'Exe'))
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ObjPath')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'Obj'))
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ListPath')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'List'))
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'GOutputBinary')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], 0 if project_dic['output_type'] == 'exe' else 1)
+        index_general = self._get_option(ewp_dic, 'General')
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'ExePath')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'Exe'))
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'ObjPath')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'Obj'))
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'ListPath')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'List'))
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'GOutputBinary')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], 0 if project_dic['output_type'] == 'exe' else 1)
 
     def _ewp_iccarm_set(self, ewp_dic, project_dic):
         """ C/C++ options (ICCARM) """
-        index_iccarm = self._get_option(ewp_dic['project']['configuration']['settings'], 'ICCARM')
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'], 'CCDefines')
-        self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'][index_option], project_dic['macros'])
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'], 'CCIncludePath2')
-        self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'][index_option], project_dic['includes'])
+        index_iccarm = self._get_option(ewp_dic, 'ICCARM')
+        index_option = self._get_option(ewp_dic[index_iccarm]['data']['option'], 'CCDefines')
+        self._set_multiple_option(ewp_dic[index_iccarm]['data']['option'][index_option], project_dic['macros'])
+        index_option = self._get_option(ewp_dic[index_iccarm]['data']['option'], 'CCIncludePath2')
+        self._set_multiple_option(ewp_dic[index_iccarm]['data']['option'][index_option], project_dic['includes'])
 
-        iccarm_dic = ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option']
+        iccarm_dic = ewp_dic[index_iccarm]['data']['option']
         self._ewp_flags_set(iccarm_dic, project_dic, 'cx_flags', self.FLAG_TO_IAR['cxx_flags'])
         self._ewp_flags_set(iccarm_dic, project_dic, 'c_flags', self.FLAG_TO_IAR['c_flags'])
 
     def _ewp_aarm_set(self, ewp_dic, project_dic):
         """ Assembly options (AARM) """
-        index_aarm = self._get_option(ewp_dic['project']['configuration']['settings'], 'AARM')
+        index_aarm = self._get_option(ewp_dic, 'AARM')
 
-        aarm_dic = ewp_dic['project']['configuration']['settings'][index_aarm]['data']['option']
+        aarm_dic = ewp_dic[index_aarm]['data']['option']
         self._ewp_flags_set(aarm_dic, project_dic, 'asm_flags', self.FLAG_TO_IAR['asm_flags'])
 
     def _ewp_ilink_set(self, ewp_dic, project_dic):
-        index_ilink = self._get_option(ewp_dic['project']['configuration']['settings'], 'ILINK')
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkIcfFile')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], project_dic['linker_file'])
+        """ Linker options (ILINK) """
+        index_ilink = self._get_option(ewp_dic, 'ILINK')
+        index_option = self._get_option(ewp_dic[index_ilink]['data']['option'], 'IlinkIcfFile')
+        self._set_option(ewp_dic[index_ilink]['data']['option'][index_option], project_dic['linker_file'])
         additional_libs = []
         for k,v in project_dic['source_files_lib'].items():
             if len(v):
@@ -131,10 +135,10 @@ class IAREmbeddedWorkbenchProject:
             if len(v):
                 additional_libs.append(v)
         if len(additional_libs):
-            index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkAdditionalLibs')
-            self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], additional_libs)
+            index_option = self._get_option(ewp_dic[index_ilink]['data']['option'], 'IlinkAdditionalLibs')
+            self._set_multiple_option(ewp_dic[index_ilink]['data']['option'][index_option], additional_libs)
 
-        ilink_dic = ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option']
+        ilink_dic = ewp_dic[index_ilink]['data']['option']
         self._ewp_flags_set(ilink_dic, project_dic, 'ld_flags', self.FLAG_TO_IAR['ld_flags'])
 
     def _ewp_flags_set(self, ewp_dic_subset, project_dic, flag_type, flag_dic):
@@ -155,6 +159,7 @@ class IAREmbeddedWorkbenchProject:
                 ewp_dic_subset[index_option]['state'].append(item)
 
     def _ewp_files_set(self, ewp_dic, project_dic):
+        """ Fills files in the ewp dictionary """
         ewp_dic['project']['group'] = []
         i = 0
         for group_name, files in project_dic['groups'].items():
@@ -164,14 +169,16 @@ class IAREmbeddedWorkbenchProject:
             i += 1
 
     def _clean_xmldict_option(self, dictionary):
-            for option in dictionary['data']['option']:
-                if option['state'] is None:
-                    option['state'] = ''
+        """ xml parser puts None to empty fields, this functions replaces them with empty strings """
+        for option in dictionary['data']['option']:
+            if option['state'] is None:
+                option['state'] = ''
 
     def _clean_xmldict_single_dic(self, dictionary):
-            for k, v in dictionary.items():
-                if v is None:
-                    dictionary[k] = ''
+        """ Every None replace by '' in the dic, as xml parsers puts None in those fiels, which is not valid for IAR """
+        for k, v in dictionary.items():
+            if v is None:
+                dictionary[k] = ''
 
     def _clean_xmldict_ewp(self, ewp_dic):
         for setting in ewp_dic['project']['configuration']['settings']:
@@ -204,17 +211,17 @@ class IAREmbeddedWorkbenchProject:
             eww_dic['workspace']['project'].append( { 'path' : join('$WS_DIR$', destination) })
 
     def _ewp_set_target(self, ewp_dic, mcu_def_dic):
-        index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['OGChipSelectEditMenu']['state'])
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGCoreOrChip')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['OGCoreOrChip']['state'])
+        index_general = self._get_option(ewp_dic, 'General')
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'OGChipSelectEditMenu')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['OGChipSelectEditMenu']['state'])
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'OGCoreOrChip')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['OGCoreOrChip']['state'])
 
     def _ewd_set_debugger(self, ewd_dic, ewp_dic, debugger_def_dic):
-        index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
-        index_cspy = self._get_option(ewd_dic['project']['configuration']['settings'], 'C-SPY')
-        index_option = self._get_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OCDynDriverList')
-        self._set_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], debugger_def_dic['OCDynDriverList']['state'])
+        index_general = self._get_option(ewp_dic, 'General')
+        index_cspy = self._get_option(ewd_dic, 'C-SPY')
+        index_option = self._get_option(ewd_dic[index_general]['data']['option'], 'OCDynDriverList')
+        self._set_option(ewd_dic[index_general]['data']['option'][index_option], debugger_def_dic['OCDynDriverList']['state'])
 
 class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject):
 
@@ -378,10 +385,10 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         self._ewp_set_toolchain(ewp_dic, 'ARM')
 
         # set common things we have for IAR
-        self._ewp_general_set(ewp_dic, expanded_dic)
-        self._ewp_iccarm_set(ewp_dic, expanded_dic)
-        self._ewp_aarm_set(ewp_dic, expanded_dic)
-        self._ewp_ilink_set(ewp_dic, expanded_dic)
+        self._ewp_general_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
+        self._ewp_iccarm_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
+        self._ewp_aarm_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
+        self._ewp_ilink_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
         self._ewp_files_set(ewp_dic, expanded_dic)
 
         # set target only if defined, otherwise use from template/default one
@@ -396,13 +403,13 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
             self._normalize_mcu_def(mcu_def_dic)
             logging.debug("Mcu definitions: %s" % mcu_def_dic)
-            self._ewp_set_target(ewp_dic, mcu_def_dic)
+            self._ewp_set_target(ewp_dic['project']['configuration']['settings'], mcu_def_dic)
 
         # overwrite debugger only if defined in the project file, otherwise use either default or from template
         if expanded_dic['debugger']:
             try:
                 debugger = self.definitions.debuggers[expanded_dic['debugger']]
-                self._ewd_set_debugger(ewd_dic, ewp_dic, debugger)
+                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_dic, debugger)
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
