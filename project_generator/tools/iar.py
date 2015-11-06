@@ -62,6 +62,7 @@ class IARDefinitions():
 
 
 class IAREmbeddedWorkbenchProject:
+    """ This class handles all related project settings """
 
     # IAR misc contains enable check and then state. Therefore we map here
     # each flag to dict to know which one to enable and set those options
@@ -256,7 +257,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         return 'iar'
 
     def _expand_data(self, old_data, new_data, attribute, group, rel_path):
-        """ Groups expansion for Sources. """
+        """ Groups expansion for Sources """
         if group == 'Sources':
             old_group = None
         else:
@@ -266,7 +267,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 new_data['groups'][group].append(join('$PROJ_DIR$', rel_path, normpath(file)))
 
     def _iterate(self, data, expanded_data, rel_path):
-        """ Iterate through all data, store the result expansion in extended dictionary. """
+        """ Iterate through all data, store the result expansion in extended dictionary """
         for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
@@ -276,7 +277,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 self._expand_data(data[attribute], expanded_data, attribute, group, rel_path)
 
     def _get_groups(self, data):
-        """ Get all groups defined. """
+        """ Get all groups defined """
         groups = []
         for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
@@ -287,14 +288,14 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         return groups
 
     def _find_target_core(self, data):
-        """ Sets Target core. """
+        """ Sets Target core """
         for k, v in self.core_dic.items():
             if k == data['core']:
                 return v
         return IAREmbeddedWorkbench.core_dic['cortex-m0']  # def cortex-m0 if not defined otherwise
 
     def _parse_specific_options(self, data):
-        """ Parse all IAR specific settings. """
+        """ Parse all IAR specific settings """
         data['iar_settings'].update(copy.deepcopy(
             self.definitions.iar_settings))  # set specific options to default values
         for dic in data['misc']:
@@ -332,11 +333,15 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))
 
     def _get_option(self, settings, find_key):
+        """ Return index for provided key """
+        # This is used as in IAR template, everything 
+        # is as an array with random positions. We look for key with an index
         for option in settings:
             if option['name'] == find_key:
                 return settings.index(option)
 
     def _export_single_project(self):
+        """ A single project export """
         expanded_dic = self.workspace.copy()
 
         groups = self._get_groups(expanded_dic)
@@ -430,6 +435,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         return project_path, [eww]
 
     def export_workspace(self):
+        """ Export a workspace file """
         # we got a workspace defined, therefore one ewp generated only
         path, workspace = self._generate_eww_file()
         return path, [workspace]
@@ -445,7 +451,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         return generated_projects
 
     def build_project(self):
-        """ Build IAR project. """
+        """ Build IAR project """
         # > IarBuild [project_path] -build [project_name]
         proj_path = join(getcwd(), self.workspace['files']['ewp'])
         if proj_path.split('.')[-1] != 'ewp':
