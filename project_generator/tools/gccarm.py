@@ -60,8 +60,11 @@ class MakefileGccArm(Tool, Exporter):
 
     def _parse_specific_options(self, data):
         """ Parse all specific setttings. """
-        data['compiler_options'] = []
-        data['linker_options'] = []
+        data['common_flags'] = []
+        data['ld_flags'] = []
+        data['c_flags'] = []
+        data['cxx_flags'] = []
+        data['asm_flags'] = []
         for k, v in data['misc'].items():
             if type(v) is list:
                 if k not in data:
