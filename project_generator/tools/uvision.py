@@ -59,6 +59,17 @@ class Uvision(Tool, Builder, Exporter):
     # source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_lib', 'source_files_obj']
     file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3,'o':3, 'lib': 4, 'ar': 4}
 
+    # flags mapping to uvision uvproj dics
+    # for available flags, check armcc/armasm/armlink command line guide
+    # this does not provide all options within a project, most usable options are 
+    # exposed via command line, the rest is covered via template project files
+    FLAGS_TO_UVISION = {
+        'asm_flags': 'Aads',
+        'c_flags': 'Cads',
+        'cxx_flags': 'Cads',
+        'ld_flags':  'LDads',
+    }
+
     ERRORLEVEL = {
         0: 'success (0 warnings, 0 errors)',
         1: 'warnings',
@@ -184,6 +195,15 @@ class Uvision(Tool, Builder, Exporter):
         uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['includes']).encode('utf-8')
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
         uvproj_dic['Aads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
+
+        for misc_keys in project_dic['misc'].keys():
+            # ld-flags dont follow the same as asm/c flags, why?!? Please KEIL fix this
+            if misc_keys == 'ld_flags':
+                for item in project_dic['misc'][misc_keys]:
+                    uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['Misc'] += ' ' + item
+            else:
+                for item in project_dic['misc'][misc_keys]:
+                    uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['VariousControls']['MiscControls'] += ' ' + item
 
     def _uvproj_set_TargetCommonOption(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)

@@ -17,18 +17,20 @@ import os
 import logging
 import ntpath
 import subprocess
+from itertools import chain
 
 from os.path import join, normpath,dirname
 from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool,Exporter
 from .tool import Tool, Exporter
+from ..util import SOURCE_KEYS
 
-class MakefileGccArm(Tool,Exporter):
+class MakefileGccArm(Tool, Exporter):
 
     # http://www.gnu.org/software/make/manual/html_node/Running.html
     ERRORLEVEL = {
-        0: 'success (0 warnings, 0 errors)',
+        0: 'no errors)',
         1: 'targets not already up to date',
         2: 'errors'
     }
@@ -56,71 +58,35 @@ class MakefileGccArm(Tool,Exporter):
     def get_toolchain():
         return 'gcc_arm'
 
-    def _list_files(self, data, attribute, rel_path):
-        """ Creates a list of all files based on the attribute. """
-        file_list = []
-        for k, v in data[attribute].items():
-            for file in v:
-                file_list.append(join(rel_path, normpath(file)))
-        data[attribute] = file_list
-
-    def _libraries(self, key, value, data):
-        """ Add defined GCC libraries. """
-        for option in value:
-            if key == "libraries":
-                data['libraries'].append(option)
-
-    def _compiler_options(self, key, value, data):
-        """ Compiler flags """
-        for option in value:
-            if key == "compiler_options":
-                data['compiler_options'].append(option)
-
-    def _linker_options(self, key, value, data):
-        """ Linker flags """
-        for option in value:
-            if key == "linker_options":
-                data['linker_options'].append(option)
-
-    def _optimization(self, key, value, data):
-        """ Optimization setting. """
-        for option in value:
-            if option in self.optimization_options:
-                data['optimization_level'] = option
-
-    def _cc_standard(self, key, value, data):
-        """ C++ Standard """
-        if key == "cc_standard":
-            data['cc_standard'] = value
-
-    def _c_standard(self, key, value, data):
-        """ C Standard """
-        if key == "c_standard":
-            data['c_standard'] = value
-
     def _parse_specific_options(self, data):
         """ Parse all specific setttings. """
-        data['compiler_options'] = []
+        data['common_flags'] = []
+        data['ld_flags'] = []
+        data['c_flags'] = []
+        data['cxx_flags'] = []
+        data['asm_flags'] = []
         for k, v in data['misc'].items():
-            self._libraries(k, v, data)
-            self._compiler_options(k, v, data)
-            self._optimization(k, v, data)
-            self._cc_standard(k, v, data)
-            self._c_standard(k, v, data)
+            if type(v) is list:
+                if k not in data:
+                    data[k] = []
+                data[k].extend(v)
+            else:
+                if k not in data:
+                    data[k] = ''
+                data[k] = v
 
-        data['linker_options'] = []
-        for k, v in data['misc'].items():
-            self._linker_options(k, v, data)
-
-    def _lib_names(self, libs):
-        for lib in libs:
+    def _get_libs(self, project_data):
+        project_data['lib_paths'] =[]
+        project_data['libraries'] =[]
+        for lib in project_data['source_files_lib']:
             head, tail = ntpath.split(lib)
             file = tail
             if (os.path.splitext(file)[1] != ".a"):
                 continue
             else:
                 file = file.replace(".a","")
-                yield ("-L"+head,file.replace("lib","-l"))
+                project_data['lib_paths'].append(head)
+                project_data['libraries'].append(file.replace("lib",''))
 
     def _fix_paths(self, data):
         # get relative path and fix all paths within a project
@@ -135,25 +101,21 @@ class MakefileGccArm(Tool,Exporter):
             libs.extend([normpath(join(data['output_dir']['rel_path'], path))
                          for path in data['source_files_lib'][k]])
 
-        data['lib_paths'] =[]
-        data['libraries'] =[]
-        for path, lib in self._lib_names(libs):
-            data['lib_paths'].append(path)
-            data['libraries'].append(lib)
-
-        fixed_paths = []
-        for path in data['source_paths']:
-            fixed_paths.append(join(data['output_dir']['rel_path'], normpath(path)))
-
-        data['source_paths'] = fixed_paths
         if data['linker_file']:
             data['linker_file'] = join(data['output_dir']['rel_path'], normpath(data['linker_file']))
 
+    def _list_files(self, data, attribute, rel_path):
+        """ Creates a list of all files based on the attribute. """
+        file_list = []
+        for file in data[attribute]:
+            file_list.append(join(rel_path, normpath(file)))
+        data[attribute] = file_list
+
     def export_workspace(self):
-        logging.debug("Current version of CoIDE does not support workspaces")
+        logging.debug("Makefile GCC ARM currently does not support workspaces")
 
     def export_project(self):
-        """ Processes misc options specific for GCC ARM, and run generator. """
+        """ Processes misc options specific for GCC ARM, and run generator """
         generated_projects = copy.deepcopy(self.generated_projects)
         self.process_data_for_makefile(self.workspace)
         generated_projects['path'], generated_projects['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', self.workspace, 'Makefile', self.workspace['output_dir']['path'])
@@ -162,37 +124,42 @@ class MakefileGccArm(Tool,Exporter):
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['makefile']]}
 
+    def process_data_for_makefile(self, project_data):
+        #Flatten our dictionary, we don't need groups
+        self._fix_paths(project_data)
+        project_data['source_paths'] = []
+        for key in SOURCE_KEYS:
+            project_data[key] = list(chain(*project_data[key].values()))
+            project_data['source_paths'].extend([join(project_data['output_dir']['rel_path'], ntpath.split(path)[0]) for path in project_data[key]])
+            # TODO Fix this, and entire fix paths
+            self._list_files(project_data, key, project_data['output_dir']['rel_path'])
+        project_data['source_paths'] = set(project_data['source_paths'])
 
-    def process_data_for_makefile(self, data):
-        self._fix_paths(data)
-        self._list_files(data, 'source_files_c', data['output_dir']['rel_path'])
-        self._list_files(data, 'source_files_cpp', data['output_dir']['rel_path'])
-        self._list_files(data, 'source_files_s', data['output_dir']['rel_path'])
-        self._list_files(data, 'source_files_obj', data['output_dir']['rel_path'])
+        self._get_libs(project_data)
+        self._parse_specific_options(project_data)
 
-        self._parse_specific_options(data)
-        data['toolchain'] = 'arm-none-eabi-'
-        data['toolchain_bin_path'] = self.env_settings.get_env_settings('gcc')
+        project_data['toolchain'] = 'arm-none-eabi-'
+        project_data['toolchain_bin_path'] = self.env_settings.get_env_settings('gcc')
 
         pro_def = ProGenDef()
 
-        if pro_def.get_mcu_core(data['target'].lower()):
-            data['core'] = pro_def.get_mcu_core(data['target'].lower())[0]
+        if pro_def.get_mcu_core(project_data['target'].lower()):
+            project_data['core'] = pro_def.get_mcu_core(project_data['target'].lower())[0]
         else:
             raise RuntimeError(
-                "Target: %s not found, Please add them to https://github.com/project-generator/project_generator_definitions" % data['target'].lower())
+                "Target: %s not found, Please add the target to https://github.com/project-generator/project_generator_definitions" % project_data['target'].lower())
 
         # gcc arm is funny about cortex-m4f.
-        if data['core'] == 'cortex-m4f':
-            data['core'] = 'cortex-m4'
+        if project_data['core'] == 'cortex-m4f':
+            project_data['core'] = 'cortex-m4'
 
         # change cortex-m0+ to cortex-m0plus
-        if data['core'] == 'cortex-m0+':
-            data['core'] = 'cortex-m0plus'
+        if project_data['core'] == 'cortex-m0+':
+            project_data['core'] = 'cortex-m0plus'
 
         # set default values
-        if 'optimization_level' not in data:
-            data['optimization_level'] = self.optimization_options[0]
+        if 'optimization_level' not in project_data:
+            project_data['optimization_level'] = self.optimization_options[0]
 
     def build_project(self):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))

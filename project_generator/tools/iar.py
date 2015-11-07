@@ -29,10 +29,11 @@ from .tool import Tool, Builder, Exporter
 from ..util import SOURCE_KEYS
 
 class IARDefinitions():
+    """ Definitions for IAR Workbench IDE """
 
     # EWP file template
     ewp_file = {
-        u'project': {u'configuration': {u'debug': u'1', u'toolchain': {u'name': u''}, u'name': None, u'settings': [{u'archiveVersion': u'3', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'22', u'option': [{u'state': u'$PROJ_DIR$\\build\\Exe', u'name': u'ExePath'}, {u'state': u'$PROJ_DIR$\\build\\Obj', u'name': u'ObjPath'}, {u'state': u'$PROJ_DIR$\\build\\List', u'name': u'ListPath'}, {u'state': u'0', u'version': None, u'name': u'Variant'}, {u'state': u'0', u'name': u'GEndianMode'}, {u'state': u'0', u'version': None, u'name': u'Input variant'}, {u'state': u'Full formatting.', u'name': u'Input description'}, {u'state': u'1', u'version': None, u'name': u'Output variant'}, {u'state': u'Full formatting.', u'name': u'Output description'}, {u'state': u'0', u'name': u'GOutputBinary'}, {u'state': u'0', u'version': u'2', u'name': u'FPU'}, {u'state': u'1', u'name': u'OGCoreOrChip'}, {u'state': u'2', u'version': u'0', u'name': u'GRuntimeLibSelect'}, {u'state': u'0', u'version': u'0', u'name': u'GRuntimeLibSelectSlave'}, {u'state': u'Use the full configuration of the C/C++ runtime library. Full locale interface, C locale, file descriptor support, multibytes in printf and scanf, and hex floats in strtod.', u'name': u'RTDescription'}, {u'state': u'5.10.0.159', u'name': u'OGProductVersion'}, {u'state': u'6.30.6.53380', u'name': u'OGLastSavedByProductVersion'}, {u'state': u'0', u'name': u'GeneralEnableMisra'}, {u'state': u'0', u'name': u'GeneralMisraVerbose'}, {u'state': u'LPC1768\tNXP LPC1768', u'name': u'OGChipSelectEditMenu'}, {u'state': u'0', u'name': u'GenLowLevelInterface'}, {u'state': u'0', u'name': u'GEndianModeBE'}, {u'state': u'0', u'name': u'OGBufferedTerminalOutput'}, {u'state': u'0', u'name': u'GenStdoutInterface'}, {u'state': u'1000111110110101101110011100111111101110011011000101110111101101100111111111111100110011111001110111001111111111111111111111111', u'version': u'0', u'name': u'GeneralMisraRules98'}, {u'state': u'0', u'name': u'GeneralMisraVer'}, {u'state': u'111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111', u'version': u'0', u'name': u'GeneralMisraRules04'}, {u'state': u'$TOOLKIT_DIR$\\INC\\c\\DLib_Config_Full.h', u'name': u'RTConfigPath2'}, {u'state': u'0', u'version': None, u'name': u'GFPUCoreSlave'}, {u'state': u'0', u'version': None, u'name': u'GBECoreSlave'}, {u'state': u'0', u'name': u'OGUseCmsis'}, {u'state': u'0', u'name': u'OGUseCmsisDspLib'}]}, u'name': u'General'}, {u'archiveVersion': u'2', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'28', u'option': [{u'state': None, u'name': u'CCDefines'}, {u'state': u'0', u'name': u'CCPreprocFile'}, {u'state': u'0', u'name': u'CCPreprocComments'}, {u'state': u'0', u'name': u'CCPreprocLine'}, {u'state': u'0', u'name': u'CCListCFile'}, {u'state': u'0', u'name': u'CCListCMnemonics'}, {u'state': u'0', u'name': u'CCListCMessages'}, {u'state': u'0', u'name': u'CCListAssFile'}, {u'state': u'0', u'name': u'CCListAssSource'}, {u'state': u'[]', u'name': u'CCEnableRemarks'}, {u'state': None, u'name': u'CCDiagSuppress'}, {u'state': None, u'name': u'CCDiagRemark'}, {u'state': None, u'name': u'CCDiagWarning'}, {u'state': None, u'name': u'CCDiagError'}, {u'state': u'1', u'name': u'CCObjPrefix'}, {u'state': u'1111111', u'version': u'1', u'name': u'CCAllowList'}, {u'state': u'1', u'name': u'CCDebugInfo'}, {u'state': u'1', u'name': u'IEndianMode'}, {u'state': u'1', u'name': u'IProcessor'}, {u'state': u'0', u'name': u'IExtraOptionsCheck'}, {u'state': u'0', u'name': u'IExtraOptions'}, {u'state': u'0', u'name': u'CCLangConformance'}, {u'state': u'1', u'name': u'CCSignedPlainChar'}, {u'state': u'0', u'name': u'CCRequirePrototypes'}, {u'state': u'0', u'name': u'CCMultibyteSupport'}, {u'state': u'0', u'name': u'CCDiagWarnAreErr'}, {u'state': u'0', u'name': u'CCCompilerRuntimeInfo'}, {u'state': u'0', u'name': u'IFpuProcessor'}, {u'state': u'$FILE_BNAME$.o', u'name': u'OutputFile'}, {u'state': u'0', u'name': u'CCLibConfigHeader'}, {u'state': None, u'name': u'PreInclude'}, {u'state': u'0', u'name': u'CompilerMisraOverride'}, {u'state': None, u'name': u'CCIncludePath2'}, {u'state': u'0', u'name': u'CCStdIncCheck'}, {u'state': u'.text', u'name': u'CCCodeSection'}, {u'state': u'0', u'name': u'IInterwork2'}, {u'state': u'0', u'name': u'IProcessorMode2'}, {u'state': u'1', u'name': u'CCOptLevel'}, {u'state': u'0', u'version': u'0', u'name': u'CCOptStrategy'}, {u'state': u'0', u'name': u'CCOptLevelSlave'}, {u'state': u'1000111110110101101110011100111111101110011011000101110111101101100111111111111100110011111001110111001111111111111111111111111', u'version': u'0', u'name': u'CompilerMisraRules98'}, {u'state': u'111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111', u'version': u'0', u'name': u'CompilerMisraRules04'}, {u'state': u'0', u'name': u'CCPosIndRopi'}, {u'state': u'0', u'name': u'CCPosIndRwpi'}, {u'state': u'0', u'name': u'CCPosIndNoDynInit'}, {u'state': u'1', u'name': u'IccLang'}, {u'state': u'1', u'name': u'IccCDialect'}, {u'state': u'0', u'name': u'IccAllowVLA'}, {u'state': u'2', u'name': u'IccCppDialect'}, {u'state': u'0', u'name': u'IccExceptions'}, {u'state': u'0', u'name': u'IccRTTI'}, {u'state': u'1', u'name': u'IccStaticDestr'}, {u'state': u'0', u'name': u'IccCppInlineSemantics'}, {u'state': u'1', u'name': u'IccCmsis'}, {u'state': u'0', u'name': u'IccFloatSemantics'}]}, u'name': u'ICCARM'}, {u'archiveVersion': u'2', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'8', u'option': [{u'state': u'1', u'name': u'AObjPrefix'}, {u'state': u'0', u'name': u'AEndian'}, {u'state': u'1', u'name': u'ACaseSensitivity'}, {u'state': u'0', u'version': u'0', u'name': u'MacroChars'}, {u'state': u'0', u'name': u'AWarnEnable'}, {u'state': u'0', u'name': u'AWarnWhat'}, {u'state': u'0', u'name': u'AWarnOne'}, {u'state': u'0', u'name': u'AWarnRange1'}, {u'state': u'0', u'name': u'AWarnRange2'}, {u'state': u'1', u'name': u'ADebug'}, {u'state': u'0', u'name': u'AltRegisterNames'}, {u'state': None, u'name': u'ADefines'}, {u'state': u'0', u'name': u'AList'}, {u'state': u'0', u'name': u'AListHeader'}, {u'state': u'0', u'name': u'AListing'}, {u'state': u'0', u'name': u'Includes'}, {u'state': u'0', u'name': u'MacDefs'}, {u'state': u'1', u'name': u'MacExps'}, {u'state': u'0', u'name': u'MacExec'}, {u'state': u'0', u'name': u'OnlyAssed'}, {u'state': u'0', u'name': u'MultiLine'}, {u'state': u'0', u'name': u'PageLengthCheck'}, {u'state': u'80', u'name': u'PageLength'}, {u'state': u'4', u'name': u'TabSpacing'}, {u'state': u'0', u'name': u'AXRef'}, {u'state': u'0', u'name': u'AXRefDefines'}, {u'state': u'0', u'name': u'AXRefInternal'}, {u'state': u'0', u'name': u'AXRefDual'}, {u'state': u'0', u'name': u'AProcessor'}, {u'state': u'0', u'name': u'AFpuProcessor'}, {u'state': u'$FILE_BNAME$.o', u'name': u'AOutputFile'}, {u'state': u'0', u'name': u'AMultibyteSupport'}, {u'state': u'0', u'name': u'ALimitErrorsCheck'}, {u'state': u'100', u'name': u'ALimitErrorsEdit'}, {u'state': u'0', u'name': u'AIgnoreStdInclude'}, {u'state': None, u'name': u'AUserIncludes'}, {u'state': u'0', u'name': u'AExtraOptionsCheckV2'}, {u'state': u'0', u'name': u'AExtraOptionsV2'}]}, u'name': u'AARM'}, {u'archiveVersion': u'0', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'1', u'option': [{u'state': u'0', u'version': u'0', u'name': u'OOCOutputFormat'}, {u'state': u'0', u'name': u'OCOutputOverride'}, {u'state': u'lpc1768_blinky.bin', u'name': u'OOCOutputFile'}, {u'state': u'0', u'name': u'OOCCommandLineProducer'}, {u'state': u'1', u'name': u'OOCObjCopyEnable'}]}, u'name': u'OBJCOPY'}, {u'archiveVersion': u'3', u'data': {u'cmdline': None, u'extensions': None}, u'name': u'CUSTOM'}, {u'archiveVersion': u'0', u'data': None, u'name': u'BICOMP'}, {u'archiveVersion': u'1', u'data': {u'prebuild': None, u'postbuild': None}, u'name': u'BUILDACTION'}, {u'archiveVersion': u'0', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'14', u'option': [{u'state': None, u'name': u'IlinkOutputFile'}, {u'state': u'1', u'name': u'IlinkLibIOConfig'}, {u'state': u'0', u'name': u'XLinkMisraHandler'}, {u'state': u'0', u'name': u'IlinkInputFileSlave'}, {u'state': u'1', u'name': u'IlinkDebugInfoEnable'}, {u'state': None, u'name': u'IlinkKeepSymbols'}, {u'state': None, u'name': u'IlinkRawBinaryFile'}, {u'state': None, u'name': u'IlinkRawBinarySymbol'}, {u'state': None, u'name': u'IlinkRawBinarySegment'}, {u'state': None, u'name': u'IlinkRawBinaryAlign'}, {u'state': None, u'name': u'IlinkDefines'}, {u'state': None, u'name': u'IlinkConfigDefines'}, {u'state': u'0', u'name': u'IlinkMapFile'}, {u'state': u'0', u'name': u'IlinkLogFile'}, {u'state': u'0', u'name': u'IlinkLogInitialization'}, {u'state': u'0', u'name': u'IlinkLogModule'}, {u'state': u'0', u'name': u'IlinkLogSection'}, {u'state': u'0', u'name': u'IlinkLogVeneer'}, {u'state': u'1', u'name': u'IlinkIcfOverride'}, {u'state': None, u'name': u'IlinkIcfFile'}, {u'state': None, u'name': u'IlinkIcfFileSlave'}, {u'state': u'0', u'name': u'IlinkEnableRemarks'}, {u'state': None, u'name': u'IlinkSuppressDiags'}, {u'state': None, u'name': u'IlinkTreatAsRem'}, {u'state': None, u'name': u'IlinkTreatAsWarn'}, {u'state': None, u'name': u'IlinkTreatAsErr'}, {u'state': u'0', u'name': u'IlinkWarningsAreErrors'}, {u'state': u'0', u'name': u'IlinkUseExtraOptions'}, {u'state': None, u'name': u'IlinkExtraOptions'}, {u'state': u'1', u'name': u'IlinkLowLevelInterfaceSlave'}, {u'state': u'1', u'name': u'IlinkAutoLibEnable'}, {u'state': None, u'name': u'IlinkAdditionalLibs'}, {u'state': u'0', u'name': u'IlinkOverrideProgramEntryLabel'}, {u'state': u'0', u'name': u'IlinkProgramEntryLabelSelect'}, {u'state': u'__iar_program_start', u'name': u'IlinkProgramEntryLabel'}, {u'state': u'0', u'name': u'DoFill'}, {u'state': u'0xFF', u'name': u'FillerByte'}, {u'state': u'0x0', u'name': u'FillerStart'}, {u'state': u'0x0', u'name': u'FillerEnd'}, {u'state': u'1', u'version': u'0', u'name': u'CrcSize'}, {u'state': u'1', u'name': u'CrcAlign'}, {u'state': u'1', u'name': u'CrcAlgo'}, {u'state': u'0x11021', u'name': u'CrcPoly'}, {u'state': u'0', u'version': u'0', u'name': u'CrcCompl'}, {u'state': u'0', u'version': u'0', u'name': u'CrcBitOrder'}, {u'state': u'0x0', u'name': u'CrcInitialValue'}, {u'state': u'0', u'name': u'DoCrc'}, {u'state': u'1', u'name': u'IlinkBE8Slave'}, {u'state': u'1', u'name': u'IlinkBufferedTerminalOutput'}, {u'state': u'1', u'name': u'IlinkStdoutInterfaceSlave'}, {u'state': u'0', u'name': u'CrcFullSize'}, {u'state': u'0', u'name': u'IlinkIElfToolPostProcess'}, {u'state': u'0', u'name': u'IlinkLogAutoLibSelect'}, {u'state': u'0', u'name': u'IlinkLogRedirSymbols'}, {u'state': u'0', u'name': u'IlinkLogUnusedFragments'}, {u'state': u'0', u'name': u'IlinkCrcReverseByteOrder'}, {u'state': u'1', u'name': u'IlinkCrcUseAsInput'}, {u'state': u'0', u'name': u'IlinkOptInline'}, {u'state': u'0', u'name': u'IlinkOptExceptionsAllow'}, {u'state': u'0', u'name': u'IlinkOptExceptionsForce'}, {u'state': u'1', u'name': u'IlinkCmsis'}, {u'state': u'0', u'name': u'IlinkOptMergeDuplSections'}, {u'state': u'1', u'name': u'IlinkOptUseVfe'}, {u'state': u'0', u'name': u'IlinkOptForceVfe'}, {u'state': u'0', u'name': u'IlinkStackAnalysisEnable'}, {u'state': None, u'name': u'IlinkStackControlFile'}, {u'state': None, u'name': u'IlinkStackCallGraphFile'}]}, u'name': u'ILINK'}, {u'archiveVersion': u'0', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'0', u'option': [{u'state': None, u'name': u'IarchiveInputs'}, {u'state': u'0', u'name': u'IarchiveOverride'}, {u'state': u'###Unitialized###', u'name': u'IarchiveOutput'}]}, u'name': u'IARCHIVE'}, {u'archiveVersion': u'0', u'data': None, u'name': u'BILINK'}]}, u'fileVersion': u'2'}
+        u'project': {u'configuration': {u'debug': u'1', u'toolchain': {u'name': u''}, u'name': None, u'settings': [{u'archiveVersion': u'3', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'22', u'option': [{u'state': u'$PROJ_DIR$\\build\\Exe', u'name': u'ExePath'}, {u'state': u'$PROJ_DIR$\\build\\Obj', u'name': u'ObjPath'}, {u'state': u'$PROJ_DIR$\\build\\List', u'name': u'ListPath'}, {u'state': u'0', u'version': None, u'name': u'Variant'}, {u'state': u'0', u'name': u'GEndianMode'}, {u'state': u'0', u'version': None, u'name': u'Input variant'}, {u'state': u'Full formatting.', u'name': u'Input description'}, {u'state': u'1', u'version': None, u'name': u'Output variant'}, {u'state': u'Full formatting.', u'name': u'Output description'}, {u'state': u'0', u'name': u'GOutputBinary'}, {u'state': u'0', u'version': u'2', u'name': u'FPU'}, {u'state': u'1', u'name': u'OGCoreOrChip'}, {u'state': u'2', u'version': u'0', u'name': u'GRuntimeLibSelect'}, {u'state': u'0', u'version': u'0', u'name': u'GRuntimeLibSelectSlave'}, {u'state': u'Use the full configuration of the C/C++ runtime library. Full locale interface, C locale, file descriptor support, multibytes in printf and scanf, and hex floats in strtod.', u'name': u'RTDescription'}, {u'state': u'5.10.0.159', u'name': u'OGProductVersion'}, {u'state': u'6.30.6.53380', u'name': u'OGLastSavedByProductVersion'}, {u'state': u'0', u'name': u'GeneralEnableMisra'}, {u'state': u'0', u'name': u'GeneralMisraVerbose'}, {u'state': u'LPC1768\tNXP LPC1768', u'name': u'OGChipSelectEditMenu'}, {u'state': u'0', u'name': u'GenLowLevelInterface'}, {u'state': u'0', u'name': u'GEndianModeBE'}, {u'state': u'0', u'name': u'OGBufferedTerminalOutput'}, {u'state': u'0', u'name': u'GenStdoutInterface'}, {u'state': u'1000111110110101101110011100111111101110011011000101110111101101100111111111111100110011111001110111001111111111111111111111111', u'version': u'0', u'name': u'GeneralMisraRules98'}, {u'state': u'0', u'name': u'GeneralMisraVer'}, {u'state': u'111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111', u'version': u'0', u'name': u'GeneralMisraRules04'}, {u'state': u'$TOOLKIT_DIR$\\INC\\c\\DLib_Config_Full.h', u'name': u'RTConfigPath2'}, {u'state': u'0', u'version': None, u'name': u'GFPUCoreSlave'}, {u'state': u'0', u'version': None, u'name': u'GBECoreSlave'}, {u'state': u'0', u'name': u'OGUseCmsis'}, {u'state': u'0', u'name': u'OGUseCmsisDspLib'}]}, u'name': u'General'}, {u'archiveVersion': u'2', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'28', u'option': [{u'state': None, u'name': u'CCDefines'}, {u'state': u'0', u'name': u'CCPreprocFile'}, {u'state': u'0', u'name': u'CCPreprocComments'}, {u'state': u'0', u'name': u'CCPreprocLine'}, {u'state': u'0', u'name': u'CCListCFile'}, {u'state': u'0', u'name': u'CCListCMnemonics'}, {u'state': u'0', u'name': u'CCListCMessages'}, {u'state': u'0', u'name': u'CCListAssFile'}, {u'state': u'0', u'name': u'CCListAssSource'}, {u'state': u'[]', u'name': u'CCEnableRemarks'}, {u'state': None, u'name': u'CCDiagSuppress'}, {u'state': None, u'name': u'CCDiagRemark'}, {u'state': None, u'name': u'CCDiagWarning'}, {u'state': None, u'name': u'CCDiagError'}, {u'state': u'1', u'name': u'CCObjPrefix'}, {u'state': u'1111111', u'version': u'1', u'name': u'CCAllowList'}, {u'state': u'1', u'name': u'CCDebugInfo'}, {u'state': u'1', u'name': u'IEndianMode'}, {u'state': u'1', u'name': u'IProcessor'}, {u'state': u'0', u'name': u'IExtraOptionsCheck'}, {u'state': u'', u'name': u'IExtraOptions'}, {u'state': u'0', u'name': u'CCLangConformance'}, {u'state': u'1', u'name': u'CCSignedPlainChar'}, {u'state': u'0', u'name': u'CCRequirePrototypes'}, {u'state': u'0', u'name': u'CCMultibyteSupport'}, {u'state': u'0', u'name': u'CCDiagWarnAreErr'}, {u'state': u'0', u'name': u'CCCompilerRuntimeInfo'}, {u'state': u'0', u'name': u'IFpuProcessor'}, {u'state': u'$FILE_BNAME$.o', u'name': u'OutputFile'}, {u'state': u'0', u'name': u'CCLibConfigHeader'}, {u'state': None, u'name': u'PreInclude'}, {u'state': u'0', u'name': u'CompilerMisraOverride'}, {u'state': None, u'name': u'CCIncludePath2'}, {u'state': u'0', u'name': u'CCStdIncCheck'}, {u'state': u'.text', u'name': u'CCCodeSection'}, {u'state': u'0', u'name': u'IInterwork2'}, {u'state': u'0', u'name': u'IProcessorMode2'}, {u'state': u'1', u'name': u'CCOptLevel'}, {u'state': u'0', u'version': u'0', u'name': u'CCOptStrategy'}, {u'state': u'0', u'name': u'CCOptLevelSlave'}, {u'state': u'1000111110110101101110011100111111101110011011000101110111101101100111111111111100110011111001110111001111111111111111111111111', u'version': u'0', u'name': u'CompilerMisraRules98'}, {u'state': u'111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111', u'version': u'0', u'name': u'CompilerMisraRules04'}, {u'state': u'0', u'name': u'CCPosIndRopi'}, {u'state': u'0', u'name': u'CCPosIndRwpi'}, {u'state': u'0', u'name': u'CCPosIndNoDynInit'}, {u'state': u'1', u'name': u'IccLang'}, {u'state': u'1', u'name': u'IccCDialect'}, {u'state': u'0', u'name': u'IccAllowVLA'}, {u'state': u'2', u'name': u'IccCppDialect'}, {u'state': u'0', u'name': u'IccExceptions'}, {u'state': u'0', u'name': u'IccRTTI'}, {u'state': u'1', u'name': u'IccStaticDestr'}, {u'state': u'0', u'name': u'IccCppInlineSemantics'}, {u'state': u'1', u'name': u'IccCmsis'}, {u'state': u'0', u'name': u'IccFloatSemantics'}]}, u'name': u'ICCARM'}, {u'archiveVersion': u'2', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'8', u'option': [{u'state': u'1', u'name': u'AObjPrefix'}, {u'state': u'0', u'name': u'AEndian'}, {u'state': u'1', u'name': u'ACaseSensitivity'}, {u'state': u'0', u'version': u'0', u'name': u'MacroChars'}, {u'state': u'0', u'name': u'AWarnEnable'}, {u'state': u'0', u'name': u'AWarnWhat'}, {u'state': u'0', u'name': u'AWarnOne'}, {u'state': u'0', u'name': u'AWarnRange1'}, {u'state': u'0', u'name': u'AWarnRange2'}, {u'state': u'1', u'name': u'ADebug'}, {u'state': u'0', u'name': u'AltRegisterNames'}, {u'state': None, u'name': u'ADefines'}, {u'state': u'0', u'name': u'AList'}, {u'state': u'0', u'name': u'AListHeader'}, {u'state': u'0', u'name': u'AListing'}, {u'state': u'0', u'name': u'Includes'}, {u'state': u'0', u'name': u'MacDefs'}, {u'state': u'1', u'name': u'MacExps'}, {u'state': u'0', u'name': u'MacExec'}, {u'state': u'0', u'name': u'OnlyAssed'}, {u'state': u'0', u'name': u'MultiLine'}, {u'state': u'0', u'name': u'PageLengthCheck'}, {u'state': u'80', u'name': u'PageLength'}, {u'state': u'4', u'name': u'TabSpacing'}, {u'state': u'0', u'name': u'AXRef'}, {u'state': u'0', u'name': u'AXRefDefines'}, {u'state': u'0', u'name': u'AXRefInternal'}, {u'state': u'0', u'name': u'AXRefDual'}, {u'state': u'0', u'name': u'AProcessor'}, {u'state': u'0', u'name': u'AFpuProcessor'}, {u'state': u'$FILE_BNAME$.o', u'name': u'AOutputFile'}, {u'state': u'0', u'name': u'AMultibyteSupport'}, {u'state': u'0', u'name': u'ALimitErrorsCheck'}, {u'state': u'100', u'name': u'ALimitErrorsEdit'}, {u'state': u'0', u'name': u'AIgnoreStdInclude'}, {u'state': None, u'name': u'AUserIncludes'}, {u'state': u'0', u'name': u'AExtraOptionsCheckV2'}, {u'state': u'', u'name': u'AExtraOptionsV2'}]}, u'name': u'AARM'}, {u'archiveVersion': u'0', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'1', u'option': [{u'state': u'0', u'version': u'0', u'name': u'OOCOutputFormat'}, {u'state': u'0', u'name': u'OCOutputOverride'}, {u'state': u'lpc1768_blinky.bin', u'name': u'OOCOutputFile'}, {u'state': u'0', u'name': u'OOCCommandLineProducer'}, {u'state': u'1', u'name': u'OOCObjCopyEnable'}]}, u'name': u'OBJCOPY'}, {u'archiveVersion': u'3', u'data': {u'cmdline': None, u'extensions': None}, u'name': u'CUSTOM'}, {u'archiveVersion': u'0', u'data': None, u'name': u'BICOMP'}, {u'archiveVersion': u'1', u'data': {u'prebuild': None, u'postbuild': None}, u'name': u'BUILDACTION'}, {u'archiveVersion': u'0', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'14', u'option': [{u'state': None, u'name': u'IlinkOutputFile'}, {u'state': u'1', u'name': u'IlinkLibIOConfig'}, {u'state': u'0', u'name': u'XLinkMisraHandler'}, {u'state': u'0', u'name': u'IlinkInputFileSlave'}, {u'state': u'1', u'name': u'IlinkDebugInfoEnable'}, {u'state': None, u'name': u'IlinkKeepSymbols'}, {u'state': None, u'name': u'IlinkRawBinaryFile'}, {u'state': None, u'name': u'IlinkRawBinarySymbol'}, {u'state': None, u'name': u'IlinkRawBinarySegment'}, {u'state': None, u'name': u'IlinkRawBinaryAlign'}, {u'state': None, u'name': u'IlinkDefines'}, {u'state': None, u'name': u'IlinkConfigDefines'}, {u'state': u'0', u'name': u'IlinkMapFile'}, {u'state': u'0', u'name': u'IlinkLogFile'}, {u'state': u'0', u'name': u'IlinkLogInitialization'}, {u'state': u'0', u'name': u'IlinkLogModule'}, {u'state': u'0', u'name': u'IlinkLogSection'}, {u'state': u'0', u'name': u'IlinkLogVeneer'}, {u'state': u'1', u'name': u'IlinkIcfOverride'}, {u'state': None, u'name': u'IlinkIcfFile'}, {u'state': None, u'name': u'IlinkIcfFileSlave'}, {u'state': u'0', u'name': u'IlinkEnableRemarks'}, {u'state': None, u'name': u'IlinkSuppressDiags'}, {u'state': None, u'name': u'IlinkTreatAsRem'}, {u'state': None, u'name': u'IlinkTreatAsWarn'}, {u'state': None, u'name': u'IlinkTreatAsErr'}, {u'state': u'0', u'name': u'IlinkWarningsAreErrors'}, {u'state': u'0', u'name': u'IlinkUseExtraOptions'}, {u'state': '', u'name': u'IlinkExtraOptions'}, {u'state': u'1', u'name': u'IlinkLowLevelInterfaceSlave'}, {u'state': u'1', u'name': u'IlinkAutoLibEnable'}, {u'state': None, u'name': u'IlinkAdditionalLibs'}, {u'state': u'0', u'name': u'IlinkOverrideProgramEntryLabel'}, {u'state': u'0', u'name': u'IlinkProgramEntryLabelSelect'}, {u'state': u'__iar_program_start', u'name': u'IlinkProgramEntryLabel'}, {u'state': u'0', u'name': u'DoFill'}, {u'state': u'0xFF', u'name': u'FillerByte'}, {u'state': u'0x0', u'name': u'FillerStart'}, {u'state': u'0x0', u'name': u'FillerEnd'}, {u'state': u'1', u'version': u'0', u'name': u'CrcSize'}, {u'state': u'1', u'name': u'CrcAlign'}, {u'state': u'1', u'name': u'CrcAlgo'}, {u'state': u'0x11021', u'name': u'CrcPoly'}, {u'state': u'0', u'version': u'0', u'name': u'CrcCompl'}, {u'state': u'0', u'version': u'0', u'name': u'CrcBitOrder'}, {u'state': u'0x0', u'name': u'CrcInitialValue'}, {u'state': u'0', u'name': u'DoCrc'}, {u'state': u'1', u'name': u'IlinkBE8Slave'}, {u'state': u'1', u'name': u'IlinkBufferedTerminalOutput'}, {u'state': u'1', u'name': u'IlinkStdoutInterfaceSlave'}, {u'state': u'0', u'name': u'CrcFullSize'}, {u'state': u'0', u'name': u'IlinkIElfToolPostProcess'}, {u'state': u'0', u'name': u'IlinkLogAutoLibSelect'}, {u'state': u'0', u'name': u'IlinkLogRedirSymbols'}, {u'state': u'0', u'name': u'IlinkLogUnusedFragments'}, {u'state': u'0', u'name': u'IlinkCrcReverseByteOrder'}, {u'state': u'1', u'name': u'IlinkCrcUseAsInput'}, {u'state': u'0', u'name': u'IlinkOptInline'}, {u'state': u'0', u'name': u'IlinkOptExceptionsAllow'}, {u'state': u'0', u'name': u'IlinkOptExceptionsForce'}, {u'state': u'1', u'name': u'IlinkCmsis'}, {u'state': u'0', u'name': u'IlinkOptMergeDuplSections'}, {u'state': u'1', u'name': u'IlinkOptUseVfe'}, {u'state': u'0', u'name': u'IlinkOptForceVfe'}, {u'state': u'0', u'name': u'IlinkStackAnalysisEnable'}, {u'state': None, u'name': u'IlinkStackControlFile'}, {u'state': None, u'name': u'IlinkStackCallGraphFile'}]}, u'name': u'ILINK'}, {u'archiveVersion': u'0', u'data': {u'wantNonLocal': u'1', u'debug': u'1', u'version': u'0', u'option': [{u'state': None, u'name': u'IarchiveInputs'}, {u'state': u'0', u'name': u'IarchiveOverride'}, {u'state': u'###Unitialized###', u'name': u'IarchiveOutput'}]}, u'name': u'IARCHIVE'}, {u'archiveVersion': u'0', u'data': None, u'name': u'BILINK'}]}, u'fileVersion': u'2'}
     }
 
     # eww file template
@@ -61,6 +62,28 @@ class IARDefinitions():
 
 
 class IAREmbeddedWorkbenchProject:
+    """ This class handles all related project settings """
+
+    # IAR misc contains enable check and then state. Therefore we map here
+    # each flag to dict to know which one to enable and set those options
+    FLAG_TO_IAR = {
+        'asm_flags' : {
+            'enable': 'AExtraOptionsCheckV2',
+            'set' : 'AExtraOptionsV2',
+        },
+        'c_flags' : {
+            'enable': 'IExtraOptionsCheck',
+            'set' : 'IExtraOptions',
+        },
+        'cxx_flags' : {
+            'enable': 'IExtraOptionsCheck',
+            'set' : 'IExtraOptions',
+        },
+        'ld_flags' : {
+            'enable': 'IlinkUseExtraOptions',
+            'set' : 'IlinkExtraOptions',
+        },
+    }
 
     def _set_option(self, settings, value):
         settings['state'] = value
@@ -71,31 +94,40 @@ class IAREmbeddedWorkbenchProject:
             settings['state'].append(value)
 
     def _ewp_general_set(self, ewp_dic, project_dic):
-        index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ExePath')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'Exe'))
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ObjPath')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'Obj'))
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'ListPath')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'List'))
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'GOutputBinary')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], 0 if project_dic['output_type'] == 'exe' else 1)
+        index_general = self._get_option(ewp_dic, 'General')
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'ExePath')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'Exe'))
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'ObjPath')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'Obj'))
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'ListPath')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], join('$PROJ_DIR$', project_dic['build_dir'], 'List'))
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'GOutputBinary')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], 0 if project_dic['output_type'] == 'exe' else 1)
 
     def _ewp_iccarm_set(self, ewp_dic, project_dic):
-        index_iccarm = self._get_option(ewp_dic['project']['configuration']['settings'], 'ICCARM')
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'], 'CCDefines')
-        self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'][index_option], project_dic['macros'])
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'], 'CCIncludePath2')
-        self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_iccarm]['data']['option'][index_option], project_dic['includes'])
+        """ C/C++ options (ICCARM) """
+        index_iccarm = self._get_option(ewp_dic, 'ICCARM')
+        index_option = self._get_option(ewp_dic[index_iccarm]['data']['option'], 'CCDefines')
+        self._set_multiple_option(ewp_dic[index_iccarm]['data']['option'][index_option], project_dic['macros'])
+        index_option = self._get_option(ewp_dic[index_iccarm]['data']['option'], 'CCIncludePath2')
+        self._set_multiple_option(ewp_dic[index_iccarm]['data']['option'][index_option], project_dic['includes'])
+
+        iccarm_dic = ewp_dic[index_iccarm]['data']['option']
+        self._ewp_flags_set(iccarm_dic, project_dic, 'cx_flags', self.FLAG_TO_IAR['cxx_flags'])
+        self._ewp_flags_set(iccarm_dic, project_dic, 'c_flags', self.FLAG_TO_IAR['c_flags'])
 
     def _ewp_aarm_set(self, ewp_dic, project_dic):
-        # not used yet
-        pass
+        """ Assembly options (AARM) """
+        index_aarm = self._get_option(ewp_dic, 'AARM')
+
+        aarm_dic = ewp_dic[index_aarm]['data']['option']
+        self._ewp_flags_set(aarm_dic, project_dic, 'asm_flags', self.FLAG_TO_IAR['asm_flags'])
 
     def _ewp_ilink_set(self, ewp_dic, project_dic):
-        index_ilink = self._get_option(ewp_dic['project']['configuration']['settings'], 'ILINK')
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkIcfFile')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], project_dic['linker_file'])
+        """ Linker options (ILINK) """
+        index_ilink = self._get_option(ewp_dic, 'ILINK')
+        index_option = self._get_option(ewp_dic[index_ilink]['data']['option'], 'IlinkIcfFile')
+        self._set_option(ewp_dic[index_ilink]['data']['option'][index_option], project_dic['linker_file'])
         additional_libs = []
         for k,v in project_dic['source_files_lib'].items():
             if len(v):
@@ -104,10 +136,31 @@ class IAREmbeddedWorkbenchProject:
             if len(v):
                 additional_libs.append(v)
         if len(additional_libs):
-            index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'], 'IlinkAdditionalLibs')
-            self._set_multiple_option(ewp_dic['project']['configuration']['settings'][index_ilink]['data']['option'][index_option], additional_libs)
+            index_option = self._get_option(ewp_dic[index_ilink]['data']['option'], 'IlinkAdditionalLibs')
+            self._set_multiple_option(ewp_dic[index_ilink]['data']['option'][index_option], additional_libs)
+
+        ilink_dic = ewp_dic[index_ilink]['data']['option']
+        self._ewp_flags_set(ilink_dic, project_dic, 'ld_flags', self.FLAG_TO_IAR['ld_flags'])
+
+    def _ewp_flags_set(self, ewp_dic_subset, project_dic, flag_type, flag_dic):
+        """ Flags from misc to set to ewp project """
+        if flag_type in project_dic['misc'].keys():
+            # enable commands
+            index_option = self._get_option(ewp_dic_subset, flag_dic['enable'])
+            self._set_option(ewp_dic_subset[index_option], '1')
+
+            index_option = self._get_option(ewp_dic_subset, flag_dic['set'])
+            if type(ewp_dic_subset[index_option]['state']) != list:
+                # if it's string, only one state
+                previous_state = ewp_dic_subset[index_option]['state']
+                ewp_dic_subset[index_option]['state'] = []
+                ewp_dic_subset[index_option]['state'].append(previous_state)
+
+            for item in project_dic['misc'][flag_type]:
+                ewp_dic_subset[index_option]['state'].append(item)
 
     def _ewp_files_set(self, ewp_dic, project_dic):
+        """ Fills files in the ewp dictionary """
         ewp_dic['project']['group'] = []
         i = 0
         for group_name, files in project_dic['groups'].items():
@@ -117,14 +170,16 @@ class IAREmbeddedWorkbenchProject:
             i += 1
 
     def _clean_xmldict_option(self, dictionary):
-            for option in dictionary['data']['option']:
-                if option['state'] is None:
-                    option['state'] = ''
+        """ xml parser puts None to empty fields, this functions replaces them with empty strings """
+        for option in dictionary['data']['option']:
+            if option['state'] is None:
+                option['state'] = ''
 
     def _clean_xmldict_single_dic(self, dictionary):
-            for k, v in dictionary.items():
-                if v is None:
-                    dictionary[k] = ''
+        """ Every None replace by '' in the dic, as xml parsers puts None in those fiels, which is not valid for IAR """
+        for k, v in dictionary.items():
+            if v is None:
+                dictionary[k] = ''
 
     def _clean_xmldict_ewp(self, ewp_dic):
         for setting in ewp_dic['project']['configuration']['settings']:
@@ -157,17 +212,17 @@ class IAREmbeddedWorkbenchProject:
             eww_dic['workspace']['project'].append( { 'path' : join('$WS_DIR$', destination) })
 
     def _ewp_set_target(self, ewp_dic, mcu_def_dic):
-        index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGChipSelectEditMenu')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['OGChipSelectEditMenu']['state'])
-        index_option = self._get_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OGCoreOrChip')
-        self._set_option(ewp_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], mcu_def_dic['OGCoreOrChip']['state'])
+        index_general = self._get_option(ewp_dic, 'General')
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'OGChipSelectEditMenu')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['OGChipSelectEditMenu']['state'])
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'OGCoreOrChip')
+        self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['OGCoreOrChip']['state'])
 
     def _ewd_set_debugger(self, ewd_dic, ewp_dic, debugger_def_dic):
-        index_general = self._get_option(ewp_dic['project']['configuration']['settings'], 'General')
-        index_cspy = self._get_option(ewd_dic['project']['configuration']['settings'], 'C-SPY')
-        index_option = self._get_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'], 'OCDynDriverList')
-        self._set_option(ewd_dic['project']['configuration']['settings'][index_general]['data']['option'][index_option], debugger_def_dic['OCDynDriverList']['state'])
+        index_general = self._get_option(ewp_dic, 'General')
+        index_cspy = self._get_option(ewd_dic, 'C-SPY')
+        index_option = self._get_option(ewd_dic[index_general]['data']['option'], 'OCDynDriverList')
+        self._set_option(ewd_dic[index_general]['data']['option'][index_option], debugger_def_dic['OCDynDriverList']['state'])
 
 class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject):
 
@@ -202,7 +257,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         return 'iar'
 
     def _expand_data(self, old_data, new_data, attribute, group, rel_path):
-        """ Groups expansion for Sources. """
+        """ Groups expansion for Sources """
         if group == 'Sources':
             old_group = None
         else:
@@ -212,7 +267,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 new_data['groups'][group].append(join('$PROJ_DIR$', rel_path, normpath(file)))
 
     def _iterate(self, data, expanded_data, rel_path):
-        """ Iterate through all data, store the result expansion in extended dictionary. """
+        """ Iterate through all data, store the result expansion in extended dictionary """
         for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
@@ -222,7 +277,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 self._expand_data(data[attribute], expanded_data, attribute, group, rel_path)
 
     def _get_groups(self, data):
-        """ Get all groups defined. """
+        """ Get all groups defined """
         groups = []
         for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
@@ -233,14 +288,14 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         return groups
 
     def _find_target_core(self, data):
-        """ Sets Target core. """
+        """ Sets Target core """
         for k, v in self.core_dic.items():
             if k == data['core']:
                 return v
         return IAREmbeddedWorkbench.core_dic['cortex-m0']  # def cortex-m0 if not defined otherwise
 
     def _parse_specific_options(self, data):
-        """ Parse all IAR specific settings. """
+        """ Parse all IAR specific settings """
         data['iar_settings'].update(copy.deepcopy(
             self.definitions.iar_settings))  # set specific options to default values
         for dic in data['misc']:
@@ -278,11 +333,15 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))
 
     def _get_option(self, settings, find_key):
+        """ Return index for provided key """
+        # This is used as in IAR template, everything 
+        # is as an array with random positions. We look for key with an index
         for option in settings:
             if option['name'] == find_key:
                 return settings.index(option)
 
     def _export_single_project(self):
+        """ A single project export """
         expanded_dic = self.workspace.copy()
 
         groups = self._get_groups(expanded_dic)
@@ -301,7 +360,11 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             # template overrides what is set in the yaml files
             # TODO 0xc0170: extension check/expansion
             project_file = join(getcwd(), self.env_settings.templates['iar'][0])
-            ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            try:
+                ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            except IOError:
+                logging.info("Template file %s not found" % project_file)
+                return None, [None, None, None]
         else:
             ewp_dic = self.definitions.ewp_file
 
@@ -331,10 +394,10 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         self._ewp_set_toolchain(ewp_dic, 'ARM')
 
         # set common things we have for IAR
-        self._ewp_general_set(ewp_dic, expanded_dic)
-        self._ewp_iccarm_set(ewp_dic, expanded_dic)
-        self._ewp_aarm_set(ewp_dic, expanded_dic)
-        self._ewp_ilink_set(ewp_dic, expanded_dic)
+        self._ewp_general_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
+        self._ewp_iccarm_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
+        self._ewp_aarm_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
+        self._ewp_ilink_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
         self._ewp_files_set(ewp_dic, expanded_dic)
 
         # set target only if defined, otherwise use from template/default one
@@ -349,13 +412,13 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
             self._normalize_mcu_def(mcu_def_dic)
             logging.debug("Mcu definitions: %s" % mcu_def_dic)
-            self._ewp_set_target(ewp_dic, mcu_def_dic)
+            self._ewp_set_target(ewp_dic['project']['configuration']['settings'], mcu_def_dic)
 
         # overwrite debugger only if defined in the project file, otherwise use either default or from template
         if expanded_dic['debugger']:
             try:
                 debugger = self.definitions.debuggers[expanded_dic['debugger']]
-                self._ewd_set_debugger(ewd_dic, ewp_dic, debugger)
+                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_dic['project']['configuration']['settings'], debugger)
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
@@ -376,6 +439,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         return project_path, [eww]
 
     def export_workspace(self):
+        """ Export a workspace file """
         # we got a workspace defined, therefore one ewp generated only
         path, workspace = self._generate_eww_file()
         return path, [workspace]
@@ -391,7 +455,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         return generated_projects
 
     def build_project(self):
-        """ Build IAR project. """
+        """ Build IAR project """
         # > IarBuild [project_path] -build [project_name]
         proj_path = join(getcwd(), self.workspace['files']['ewp'])
         if proj_path.split('.')[-1] != 'ewp':

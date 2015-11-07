@@ -39,7 +39,6 @@ projects_yaml = {
         'project_1' : ['test_workspace/project_1.yaml']
     },
     'settings' : {
-        'definitions_dir': ['./notpg/path/somewhere'],
         'export_dir': ['projects/{workspace}/{tool}_{target}/{project_name}']
     }
 }
