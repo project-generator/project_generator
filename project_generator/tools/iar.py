@@ -360,7 +360,11 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             # template overrides what is set in the yaml files
             # TODO 0xc0170: extension check/expansion
             project_file = join(getcwd(), self.env_settings.templates['iar'][0])
-            ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            try:
+                ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            except IOError:
+                logging.info("Template file %s not found" % project_file)
+                return None, [None, None, None]
         else:
             ewp_dic = self.definitions.ewp_file
 
@@ -414,7 +418,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         if expanded_dic['debugger']:
             try:
                 debugger = self.definitions.debuggers[expanded_dic['debugger']]
-                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_dic, debugger)
+                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_dic['project']['configuration']['settings'], debugger)
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
