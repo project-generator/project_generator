@@ -20,7 +20,7 @@ import operator
 import copy
 
 from .tools_supported import ToolsSupported
-from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS
+from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS, fix_paths
 
 class ProjectWorkspace:
     """ Represents a workspace (multiple projects) """
@@ -381,14 +381,16 @@ class Project:
         tool_keywords += ToolsSupported().get_toolnames(tool)
         tool_keywords = list(set(tool_keywords))
 
-        # Export - internal + common + tool dics all together
+        # Set the template keys an get the relative path to fix all paths
         self.project['export'] = ProjectTemplateInternal._get_project_template()
         self.project['export'].update(self.project['common'])
+
+        self._set_output_dir_path(tool, copied)
+        fix_paths(self.project['export'], self.project['export']['output_dir']['rel_path'])
 
         self._set_internal_common_data()
         self._set_internal_tool_data(tool_keywords)
 
-        self._set_output_dir_path(tool, copied)
         # Merge common project data with tool specific data
         self.project['export']['includes'] += self._get_tool_data('includes', tool_keywords)
         self.project['export']['include_files'] += self._get_tool_data('include_files', tool_keywords)

@@ -87,3 +87,14 @@ class PartialFormatter(string.Formatter):
             first, _ = field_name._formatter_field_name_split()
             val = '{' + field_name + '}', first
         return val
+
+def fix_paths(project_data, rel_path):
+    norm_func = lambda path : os.path.normpath(os.path.join(rel_path, path))
+    for key in FILES_EXTENSIONS.keys():
+        if type(project_data[key]) is dict:
+            for k,v in project_data[key].items():
+                project_data[key][k] = map(norm_func,v)
+        elif type(project_data[key]) is list:
+            project_data[key] = map(norm_func,project_data[key])
+        else:
+            project_data[key] = norm_func(project_data[key])
