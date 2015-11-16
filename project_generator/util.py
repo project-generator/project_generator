@@ -88,9 +88,10 @@ class PartialFormatter(string.Formatter):
             val = '{' + field_name + '}', first
         return val
 
-def fix_paths(project_data, rel_path):
+def fix_paths(project_data, rel_path, extensions):
+    """ Fix paths for extension list """
     norm_func = lambda path : os.path.normpath(os.path.join(rel_path, path))
-    for key in FILES_EXTENSIONS.keys():
+    for key in extensions:
         if type(project_data[key]) is dict:
             for k,v in project_data[key].items():
                 project_data[key][k] = map(norm_func,v)

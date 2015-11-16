@@ -26,7 +26,7 @@ from os.path import join, normpath
 from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Builder, Exporter
-from ..util import SOURCE_KEYS
+from ..util import SOURCE_KEYS, FILES_EXTENSIONS, fix_paths
 
 class IARDefinitions():
     """ Definitions for IAR Workbench IDE """
@@ -256,26 +256,6 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
     def get_toolchain():
         return 'iar'
 
-    def _expand_data(self, old_data, new_data, attribute, group, rel_path):
-        """ Groups expansion for Sources """
-        if group == 'Sources':
-            old_group = None
-        else:
-            old_group = group
-        for file in old_data[old_group]:
-            if file:
-                new_data['groups'][group].append(join('$PROJ_DIR$', rel_path, normpath(file)))
-
-    def _iterate(self, data, expanded_data, rel_path):
-        """ Iterate through all data, store the result expansion in extended dictionary """
-        for attribute in SOURCE_KEYS:
-            for k, v in data[attribute].items():
-                if k == None:
-                    group = 'Sources'
-                else:
-                    group = k
-                self._expand_data(data[attribute], expanded_data, attribute, group, rel_path)
-
     def _get_groups(self, data):
         """ Get all groups defined """
         groups = []
@@ -317,20 +297,19 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         mcu_def['OGChipSelectEditMenu']['state'] = mcu_def['OGChipSelectEditMenu']['state'][0].replace(' ', '\t', 1)
         mcu_def['OGCoreOrChip']['state'] = mcu_def['OGCoreOrChip']['state'][0]
 
-    def _fix_paths(self, data, rel_path):
+    def _fix_paths(self, data):
         """ All paths needs to be fixed - add PROJ_DIR prefix + normalize """
-        data['includes'] = [join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['includes']]
+        data['includes'] = [join('$PROJ_DIR$', path) for path in data['includes']]
 
-        for k in data['source_files_lib'].keys():
-            data['source_files_lib'][k] = [
-                join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['source_files_lib'][k]]
-
-        for k in data['source_files_obj'].keys():
-            data['source_files_obj'][k] = [
-                join('$PROJ_DIR$', rel_path, normpath(path)) for path in data['source_files_obj'][k]]
-            
         if data['linker_file']:
-            data['linker_file'] = join('$PROJ_DIR$', rel_path, normpath(data['linker_file']))
+            data['linker_file'] = join('$PROJ_DIR$', data['linker_file'])
+
+        data['groups'] = {}
+        for attribute in SOURCE_KEYS:
+            for k, v in data[attribute].items():
+                if k not in data['groups']:
+                    data['groups'][k] = []
+                data['groups'][k].extend([join('$PROJ_DIR$', file) for file in v])
 
     def _get_option(self, settings, find_key):
         """ Return index for provided key """
@@ -344,12 +323,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         """ A single project export """
         expanded_dic = self.workspace.copy()
 
-        groups = self._get_groups(expanded_dic)
-        expanded_dic['groups'] = {}
-        for group in groups:
-            expanded_dic['groups'][group] = []
-        self._iterate(self.workspace, expanded_dic, expanded_dic['output_dir']['rel_path'])
-        self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._fix_paths(expanded_dic)
 
         # generic tool template specified or project
         if expanded_dic['template']:

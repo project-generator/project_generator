@@ -114,13 +114,13 @@ class ProjectTemplate:
             'build_dir' : build_dir,  # Build output path
             'debugger' : debugger,    # Debugger
             'export_dir': '',         # Export directory path
-            'includes': [],           # include paths
+            'includes': [],           # include files/folders
             'linker_file': None,      # linker script file
             'name': name,             # project name
             'macros': [],             # macros
             'misc': {},
             'output_type': output_type, # output type, default - exe
-            'sources': [],
+            'sources': [],            # source files/folders
             'target': '',             # target
             'template' : '',          # tool template
             'tools_supported': [],    # Tools which are supported,
@@ -131,10 +131,10 @@ class ProjectTemplate:
         """ Data for tool specific and common """
 
         data_template = {
-            'includes': [],      # include paths
+            'includes': [],      # include files/folders
             'linker_file': '',   # linker script file
             'macros': [],        # macros
-            'sources': [],
+            'sources': [],       # source files/folders
             'misc': {},          # misc settings related to tools
         }
         return data_template
@@ -386,7 +386,6 @@ class Project:
         self.project['export'].update(self.project['common'])
 
         self._set_output_dir_path(tool, copied)
-        fix_paths(self.project['export'], self.project['export']['output_dir']['rel_path'])
 
         self._set_internal_common_data()
         self._set_internal_tool_data(tool_keywords)
@@ -395,9 +394,12 @@ class Project:
         self.project['export']['includes'] += self._get_tool_data('includes', tool_keywords)
         self.project['export']['include_files'] += self._get_tool_data('include_files', tool_keywords)
         self.project['export']['source_paths'] +=  self._get_tool_data('source_paths', tool_keywords)
-        self.project['export']['macros'] += self._get_tool_data('macros', tool_keywords)
         self.project['export']['linker_file'] =  self.project['export']['linker_file'] or self._get_tool_data('linker_file', tool_keywords)
+        self.project['export']['macros'] += self._get_tool_data('macros', tool_keywords)
         self.project['export']['template'] = self._get_tool_data('template', tool_keywords)
+
+        fix_paths(self.project['export'], self.project['export']['output_dir']['rel_path'], FILES_EXTENSIONS.keys() + ['includes', 'source_paths'])
+
         # misc for tools requires dic merge
         misc = self._get_tool_data('misc', tool_keywords)
         for m in misc:

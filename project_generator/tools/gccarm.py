@@ -88,22 +88,6 @@ class MakefileGccArm(Tool, Exporter):
                 project_data['lib_paths'].append(head)
                 project_data['libraries'].append(file.replace("lib",''))
 
-    def _fix_paths(self, data):
-        # get relative path and fix all paths within a project
-        fixed_paths = []
-        for path in data['includes']:
-            fixed_paths.append(join(data['output_dir']['rel_path'], normpath(path)))
-
-        data['includes'] = fixed_paths
-
-        libs = []
-        for k in data['source_files_lib'].keys():
-            libs.extend([normpath(join(data['output_dir']['rel_path'], path))
-                         for path in data['source_files_lib'][k]])
-
-        if data['linker_file']:
-            data['linker_file'] = join(data['output_dir']['rel_path'], normpath(data['linker_file']))
-
     def _list_files(self, data, attribute, rel_path):
         """ Creates a list of all files based on the attribute. """
         file_list = []
@@ -126,7 +110,6 @@ class MakefileGccArm(Tool, Exporter):
 
     def process_data_for_makefile(self, project_data):
         #Flatten our dictionary, we don't need groups
-        self._fix_paths(project_data)
         project_data['source_paths'] = []
         for key in SOURCE_KEYS:
             project_data[key] = list(chain(*project_data[key].values()))
