@@ -88,13 +88,6 @@ class MakefileGccArm(Tool, Exporter):
                 project_data['lib_paths'].append(head)
                 project_data['libraries'].append(file.replace("lib",''))
 
-    def _list_files(self, data, attribute):
-        """ Creates a list of all files based on the attribute. """
-        file_list = []
-        for file in data[attribute]:
-            file_list.append(file)
-        data[attribute] = file_list
-
     def export_workspace(self):
         logging.debug("Makefile GCC ARM currently does not support workspaces")
 
@@ -114,7 +107,6 @@ class MakefileGccArm(Tool, Exporter):
         for key in SOURCE_KEYS:
             project_data[key] = list(chain(*project_data[key].values()))
             project_data['source_paths'].extend([ntpath.split(path)[0] for path in project_data[key]])
-            self._list_files(project_data, key)
         project_data['source_paths'] = set(project_data['source_paths'])
 
         self._get_libs(project_data)
