@@ -45,26 +45,39 @@ project_1_yaml = {
                 'common_flags': ['common_flag_test', 'common_flag_test2'],
                 'standard_libraries': ['standard_libraries_test'],
                 'optimization': ['O1'],
-            }
+            },
+        }
+    }
+}
+
+project_2_yaml = {
+    'common': {
+        'sources': ['sources/main.cpp'],
+        'includes': ['includes/header1.h'],
+        'target': ['mbed-lpc1768'],
+        'debugger': ['j-link'],
+        'macros': ['macro_test','macro_test2'],
+    },
+    'tool_specific': {
+        'coide': {
+            'template': [ 'template_test'],
+            'linker_file': ['linker_script'],
+        },
+        'iar': {
+            'template': [ 'template_test'],
+            'linker_file': ['linker_script'],
+        },
+        'uvision': {
+            'template': [ 'template_test'],
+            'linker_file': ['linker_script'],
         }
     }
 }
 
 projects_1_yaml = {
     'projects': {
-        'project_1' : ['test_workspace/project_1.yaml']
+        'project_1' : ['test_workspace/project_1.yaml'],
+        'project_2' : ['test_workspace/project_2.yaml']
     },
-    # 'settings': {
-    #     'tools': {
-    #         'coide': {
-    #             'template': [ 'template_test'],
-    #         },
-    #         'iar': {
-    #             'template': [ 'template_test'],
-    #         },
-    #         'uvision': {
-    #             'template': [ 'template_test'],
-    #         }
-    #     }
-    # }
 }
+

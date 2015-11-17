@@ -144,20 +144,23 @@ class IAREmbeddedWorkbenchProject:
 
     def _ewp_flags_set(self, ewp_dic_subset, project_dic, flag_type, flag_dic):
         """ Flags from misc to set to ewp project """
-        if flag_type in project_dic['misc'].keys():
-            # enable commands
-            index_option = self._get_option(ewp_dic_subset, flag_dic['enable'])
-            self._set_option(ewp_dic_subset[index_option], '1')
+        try:
+            if flag_type in project_dic['misc'].keys():
+                # enable commands
+                index_option = self._get_option(ewp_dic_subset, flag_dic['enable'])
+                self._set_option(ewp_dic_subset[index_option], '1')
 
-            index_option = self._get_option(ewp_dic_subset, flag_dic['set'])
-            if type(ewp_dic_subset[index_option]['state']) != list:
-                # if it's string, only one state
-                previous_state = ewp_dic_subset[index_option]['state']
-                ewp_dic_subset[index_option]['state'] = []
-                ewp_dic_subset[index_option]['state'].append(previous_state)
+                index_option = self._get_option(ewp_dic_subset, flag_dic['set'])
+                if type(ewp_dic_subset[index_option]['state']) != list:
+                    # if it's string, only one state
+                    previous_state = ewp_dic_subset[index_option]['state']
+                    ewp_dic_subset[index_option]['state'] = []
+                    ewp_dic_subset[index_option]['state'].append(previous_state)
 
-            for item in project_dic['misc'][flag_type]:
-                ewp_dic_subset[index_option]['state'].append(item)
+                for item in project_dic['misc'][flag_type]:
+                    ewp_dic_subset[index_option]['state'].append(item)
+        except KeyError:
+            return
 
     def _ewp_files_set(self, ewp_dic, project_dic):
         """ Fills files in the ewp dictionary """
@@ -329,7 +332,11 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         if expanded_dic['template']:
             # TODO 0xc0170: template list !
             project_file = join(getcwd(), expanded_dic['template'][0])
-            ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            try:
+                ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+            except IOError:
+                logging.info("Template file %s not found" % project_file)
+                ewp_dic = self.definitions.ewp_file
         elif 'iar' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
             # TODO 0xc0170: extension check/expansion
@@ -338,7 +345,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
             except IOError:
                 logging.info("Template file %s not found" % project_file)
-                return None, [None, None, None]
+                ewp_dic = self.definitions.ewp_file
         else:
             ewp_dic = self.definitions.ewp_file
 

@@ -111,37 +111,46 @@ class ProjectWorkspace:
 class ProjectTemplate:
     """ Public data which can be set in yaml files
         Yaml data available are:
-            'build_dir' : build_dir,  # Build output path
-            'debugger' : debugger,    # Debugger
-            'export_dir': '',         # Export directory path
-            'includes': [],           # include files/folders
-            'linker_file': None,      # linker script file
-            'name': name,             # project name
-            'macros': [],             # macros
-            'misc': {},
+            'build_dir' : build_dir,    # Build output path
+            'debugger' : debugger,      # Debugger
+            'export_dir': '',           # Export directory path
+            'includes': [],             # include paths
+            'linker_file': None,        # linker script file
+            'name': name,               # project name
+            'macros': [],               # macros
+            'misc': {},                 # misc settings related to tools
             'output_type': output_type, # output type, default - exe
-            'sources': [],            # source files/folders
-            'target': '',             # target
-            'template' : '',          # tool template
-            'tools_supported': [],    # Tools which are supported,
+            'sources': [],              # source files/folders
+            'target': '',               # target
+            'template' : '',            # tool template
+            'tools_supported': [],      # Tools which are supported,
     """
 
     @staticmethod
-    def _get_data_template():
-        """ Data for tool specific and common """
+    def _get_common_data_template():
+        """ Data for tool specific """
 
         data_template = {
             'includes': [],      # include files/folders
             'linker_file': '',   # linker script file
             'macros': [],        # macros
             'sources': [],       # source files/folders
-            'misc': {},          # misc settings related to tools
+        }
+        return data_template
+
+    @staticmethod
+    def _get_tool_specific_data_template():
+        """ Data for tool specific """
+
+        data_template = {
+            'misc': {},     # misc settings related to tools
+            'template': '', # template project file
         }
         return data_template
 
     @staticmethod
     def get_project_template(name="Default", output_type='exe', debugger='cmsis-dap', build_dir='build'):
-        """ Full project data (+data) """
+        """ Project data (+ data) """
 
         project_template = {
             'build_dir' : build_dir,  # Build output path
@@ -150,10 +159,10 @@ class ProjectTemplate:
             'name': name,             # project name
             'output_type': output_type, # output type, default - exe
             'target': '',             # target
-            'template' : '',          # tool template
             'tools_supported': [],    # Tools which are supported,
         }
-        project_template.update(ProjectTemplate._get_data_template())
+        project_template.update(ProjectTemplate._get_common_data_template())
+        project_template.update(ProjectTemplate._get_tool_specific_data_template())
         return project_template
 
 class ProjectTemplateInternal:
@@ -206,9 +215,9 @@ class Project:
                         # if dict does not exist, we initialize it
                         bool(self.project['tool_specific'][tool_name])
                     except KeyError:
-                        self.project['tool_specific'][tool_name] = ProjectTemplate._get_data_template()
+                        self.project['tool_specific'][tool_name] = ProjectTemplate._get_tool_specific_data_template()
+                        self.project['tool_specific'][tool_name].update(ProjectTemplate._get_common_data_template())
                     self._set_project_attributes(tool_name, self.project['tool_specific'][tool_name], project_data['tool_specific'])
-
         self.generated_files = {}
 
     # Project data have the some keys the same, therefore we process them here
