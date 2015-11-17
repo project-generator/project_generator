@@ -210,6 +210,9 @@ class Project:
             if 'linker_file' in project_file_data[key_value]:
                 project_dic['linker_file'] = os.path.normpath(project_file_data[key_value]['linker_file'][0])
 
+            if 'template' in project_file_data[key_value]:
+                project_dic['template'] = os.path.normpath(project_file_data[key_value]['template'][0])
+
     def _set_common_attributes(self, project_file_data):
         if 'common' in project_file_data:
             if 'output' in project_file_data['common']:
