@@ -39,7 +39,7 @@ projects_yaml = {
         'project_1' : ['test_workspace/project_1.yaml']
     },
     'settings' : {
-        'export_dir': ['projects/{workspace}/{tool}_{target}/{project_name}']
+        'export_dir': ['projects/{tool}_{target}/{project_name}']
     }
 }
 
@@ -91,8 +91,8 @@ class TestProject(TestCase):
         assert self.project.name == 'project_1'
 
     def test_copy(self):
-        # test copy method which shojld copy all files to generated project dir by default
-        self.project._fill_export_dict('uvision')
+        # test copy method which should copy all files to generated project dir by default
+        self.project._fill_export_dict('uvision', True)
         self.project._copy_sources_to_generated_destination()
 
     def test_set_output_dir_path(self):
