@@ -250,7 +250,7 @@ class Uvision(Tool, Builder, Exporter):
             # TODO 0xc0170: template list !
             project_file = join(getcwd(), expanded_dic['template'][0])
             try:
-                uvproj_dic = xmltodict.parse(file(project_file))
+                uvproj_dic = xmltodict.parse(open(project_file))
             except IOError:
                 logging.info("Template file %s not found" % project_file)
                 return None, None
@@ -260,7 +260,7 @@ class Uvision(Tool, Builder, Exporter):
             # and check if user defined them correctly
             project_file = join(getcwd(), self.env_settings.templates['uvision'][0])
             try:
-                uvproj_dic = xmltodict.parse(file(project_file))
+                uvproj_dic = xmltodict.parse(open(project_file))
             except IOError:
                 logging.info("Template file %s not found. Using default template" % project_file)
                 uvproj_dic = self.definitions.uvproj_file

@@ -333,7 +333,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             # TODO 0xc0170: template list !
             project_file = join(getcwd(), expanded_dic['template'][0])
             try:
-                ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+                ewp_dic = xmltodict.parse(open(project_file), dict_constructor=dict)
             except IOError:
                 logging.info("Template file %s not found" % project_file)
                 ewp_dic = self.definitions.ewp_file
@@ -342,7 +342,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             # TODO 0xc0170: extension check/expansion
             project_file = join(getcwd(), self.env_settings.templates['iar'][0])
             try:
-                ewp_dic = xmltodict.parse(file(project_file), dict_constructor=dict)
+                ewp_dic = xmltodict.parse(open(project_file), dict_constructor=dict)
             except IOError:
                 logging.info("Template file %s not found" % project_file)
                 ewp_dic = self.definitions.ewp_file
