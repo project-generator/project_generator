@@ -94,8 +94,8 @@ def fix_paths(project_data, rel_path, extensions):
     for key in extensions:
         if type(project_data[key]) is dict:
             for k,v in project_data[key].items():
-                project_data[key][k] = map(norm_func,v)
+                project_data[key][k] = [norm_func(i) for i in v]
         elif type(project_data[key]) is list:
-            project_data[key] = map(norm_func,project_data[key])
+            project_data[key] = [norm_func(i) for i in project_data[key]]
         else:
             project_data[key] = norm_func(project_data[key])
