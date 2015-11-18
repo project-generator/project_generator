@@ -77,8 +77,8 @@ ASFLAGS = $(ASM_FLAGS) $(INC_DIRS_F)
 
 # Linker options
 LD_OPTIONS = -mcpu=$(CPU) -m$(INSTRUCTION_MODE)
-LD_OPTIONS += -specs=nano.specs {% for option in ld_flags %}-{{option}} {% endfor %}
-LD_OPTIONS += -Wl,--wrap,main -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T$(LD_SCRIPT)
+LD_OPTIONS += {% for option in ld_flags %}-{{option}} {% endfor %}
+LD_OPTIONS += -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T$(LD_SCRIPT)
 
 OBJCPFLAGS = -O ihex
 
