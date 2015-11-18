@@ -20,7 +20,7 @@ import operator
 import copy
 
 from .tools_supported import ToolsSupported
-from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS
+from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS, fix_paths
 
 class ProjectWorkspace:
     """ Represents a workspace (multiple projects) """
@@ -111,37 +111,46 @@ class ProjectWorkspace:
 class ProjectTemplate:
     """ Public data which can be set in yaml files
         Yaml data available are:
-            'build_dir' : build_dir,  # Build output path
-            'debugger' : debugger,    # Debugger
-            'export_dir': '',         # Export directory path
-            'includes': [],           # include paths
-            'linker_file': None,      # linker script file
-            'name': name,             # project name
-            'macros': [],             # macros
-            'misc': {},
+            'build_dir' : build_dir,    # Build output path
+            'debugger' : debugger,      # Debugger
+            'export_dir': '',           # Export directory path
+            'includes': [],             # include paths
+            'linker_file': None,        # linker script file
+            'name': name,               # project name
+            'macros': [],               # macros
+            'misc': {},                 # misc settings related to tools
             'output_type': output_type, # output type, default - exe
-            'sources': [],
-            'target': '',             # target
-            'template' : '',          # tool template
-            'tools_supported': [],    # Tools which are supported,
+            'sources': [],              # source files/folders
+            'target': '',               # target
+            'template' : '',            # tool template
+            'tools_supported': [],      # Tools which are supported,
     """
 
     @staticmethod
-    def _get_data_template():
-        """ Data for tool specific and common """
+    def _get_common_data_template():
+        """ Data for tool specific """
 
         data_template = {
-            'includes': [],      # include paths
+            'includes': [],      # include files/folders
             'linker_file': '',   # linker script file
             'macros': [],        # macros
-            'sources': [],
-            'misc': {},          # misc settings related to tools
+            'sources': [],       # source files/folders
+        }
+        return data_template
+
+    @staticmethod
+    def _get_tool_specific_data_template():
+        """ Data for tool specific """
+
+        data_template = {
+            'misc': {},     # misc settings related to tools
+            'template': '', # template project file
         }
         return data_template
 
     @staticmethod
     def get_project_template(name="Default", output_type='exe', debugger='cmsis-dap', build_dir='build'):
-        """ Full project data (+data) """
+        """ Project data (+ data) """
 
         project_template = {
             'build_dir' : build_dir,  # Build output path
@@ -150,10 +159,10 @@ class ProjectTemplate:
             'name': name,             # project name
             'output_type': output_type, # output type, default - exe
             'target': '',             # target
-            'template' : '',          # tool template
             'tools_supported': [],    # Tools which are supported,
         }
-        project_template.update(ProjectTemplate._get_data_template())
+        project_template.update(ProjectTemplate._get_common_data_template())
+        project_template.update(ProjectTemplate._get_tool_specific_data_template())
         return project_template
 
 class ProjectTemplateInternal:
@@ -206,9 +215,9 @@ class Project:
                         # if dict does not exist, we initialize it
                         bool(self.project['tool_specific'][tool_name])
                     except KeyError:
-                        self.project['tool_specific'][tool_name] = ProjectTemplate._get_data_template()
+                        self.project['tool_specific'][tool_name] = ProjectTemplate._get_tool_specific_data_template()
+                        self.project['tool_specific'][tool_name].update(ProjectTemplate._get_common_data_template())
                     self._set_project_attributes(tool_name, self.project['tool_specific'][tool_name], project_data['tool_specific'])
-
         self.generated_files = {}
 
     # Project data have the some keys the same, therefore we process them here
@@ -381,21 +390,25 @@ class Project:
         tool_keywords += ToolsSupported().get_toolnames(tool)
         tool_keywords = list(set(tool_keywords))
 
-        # Export - internal + common + tool dics all together
+        # Set the template keys an get the relative path to fix all paths
         self.project['export'] = ProjectTemplateInternal._get_project_template()
         self.project['export'].update(self.project['common'])
+
+        self._set_output_dir_path(tool, copied)
 
         self._set_internal_common_data()
         self._set_internal_tool_data(tool_keywords)
 
-        self._set_output_dir_path(tool, copied)
         # Merge common project data with tool specific data
         self.project['export']['includes'] += self._get_tool_data('includes', tool_keywords)
         self.project['export']['include_files'] += self._get_tool_data('include_files', tool_keywords)
         self.project['export']['source_paths'] +=  self._get_tool_data('source_paths', tool_keywords)
-        self.project['export']['macros'] += self._get_tool_data('macros', tool_keywords)
         self.project['export']['linker_file'] =  self.project['export']['linker_file'] or self._get_tool_data('linker_file', tool_keywords)
+        self.project['export']['macros'] += self._get_tool_data('macros', tool_keywords)
         self.project['export']['template'] = self._get_tool_data('template', tool_keywords)
+
+        fix_paths(self.project['export'], self.project['export']['output_dir']['rel_path'], list(FILES_EXTENSIONS.keys()) + ['includes', 'source_paths'])
+
         # misc for tools requires dic merge
         misc = self._get_tool_data('misc', tool_keywords)
         for m in misc:

@@ -188,12 +188,20 @@ class Coide(Tool, Exporter, Builder):
         # generic tool template specified or project
         if expanded_dic['template']:
             project_file = join(getcwd(), expanded_dic['template'][0])
-            coproj_dic = xmltodict.parse(file(project_file))
+            try:
+                coproj_dic = xmltodict.parse(open(project_file))
+            except IOError:
+                logging.info("Template file %s not found. Using default template" % project_file)
+                coproj_dic = self.definitions.coproj_file
         elif 'coide' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
             # TODO 0xc0170: extension check/expansion
             project_file = join(getcwd(), self.env_settings.templates['coide'][0])
-            coproj_dic = xmltodict.parse(file(project_file))
+            try:
+                coproj_dic = xmltodict.parse(open(project_file))
+            except IOError:
+                logging.info("Template file %s not found. Using default template" % project_file)
+                coproj_dic = self.definitions.coproj_file
         else:
             # setting values from the yaml files
             coproj_dic = self.definitions.coproj_file

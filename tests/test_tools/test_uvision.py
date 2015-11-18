@@ -16,13 +16,14 @@ import yaml
 import shutil
 
 from unittest import TestCase
+from nose.tools import *
 
 from project_generator.generate import Generator
 from project_generator.project import Project
 from project_generator.settings import ProjectSettings
 from project_generator.tools.uvision import uVisionDefinitions, Uvision
 
-from .simple_project import project_1_yaml, projects_1_yaml
+from .simple_project import project_1_yaml, project_2_yaml, projects_1_yaml
 
 class TestProject(TestCase):
 
@@ -34,11 +35,14 @@ class TestProject(TestCase):
         # write project file
         with open(os.path.join(os.getcwd(), 'test_workspace/project_1.yaml'), 'wt') as f:
             f.write(yaml.dump(project_1_yaml, default_flow_style=False))
+        with open(os.path.join(os.getcwd(), 'test_workspace/project_2.yaml'), 'wt') as f:
+            f.write(yaml.dump(project_2_yaml, default_flow_style=False))
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_1_yaml, default_flow_style=False))
 
         self.project = next(Generator(projects_1_yaml).generate('project_1'))
+        self.project2 = next(Generator(projects_1_yaml).generate('project_2'))
 
         self.defintions = uVisionDefinitions()
         self.uvision = Uvision(self.project.project, ProjectSettings())
@@ -80,3 +84,8 @@ class TestProject(TestCase):
         assert result_export == 0
         # nonvalid project, should fail with errors
         assert result_build == -1
+
+    def test_template(self):
+        # should fail as template does not exists
+        result = self.project2.generate('uvision', False)
+        assert result == 0

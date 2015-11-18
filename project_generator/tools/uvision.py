@@ -142,29 +142,6 @@ class Uvision(Tool, Builder, Exporter):
         for k, v in mcu_def['TargetOption'].items():
             mcu_def['TargetOption'][k] = v[0]
 
-    def _fix_paths(self, data, rel_path):
-        data['includes'] = [join(rel_path, normpath(path)) for path in data['includes']]
-
-        # TODO v0.8 fixme
-        if type(data['source_files_lib']) == type(dict()):
-            for k in data['source_files_lib'].keys():
-                data['source_files_lib'][k] = [
-                    join(rel_path, normpath(path)) for path in data['source_files_lib'][k]]
-        else:
-            data['source_files_lib'] = [
-                join(rel_path, normpath(path)) for path in data['source_files_lib']]
-
-        if type(data['source_files_obj']) == type(dict()):
-            for k in data['source_files_obj'].keys():
-                data['source_files_obj'][k] = [
-                    join(rel_path, normpath(path)) for path in data['source_files_obj'][k]]
-        else:
-            data['source_files_obj'] = [
-                join(rel_path, normpath(path)) for path in data['source_files_obj']]
-
-        if data['linker_file']:
-            data['linker_file'] = join(rel_path, normpath(data['linker_file']))
-
     def _uvproj_clean_xmldict(self, uvproj_dic):
         for k, v in uvproj_dic.items():
             if v is None:
@@ -265,7 +242,6 @@ class Uvision(Tool, Builder, Exporter):
 
         # get relative path and fix all paths within a project
         self._iterate(self.workspace, expanded_dic, expanded_dic['output_dir']['rel_path'])
-        self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
 
         expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
 
@@ -273,13 +249,21 @@ class Uvision(Tool, Builder, Exporter):
         if expanded_dic['template']:
             # TODO 0xc0170: template list !
             project_file = join(getcwd(), expanded_dic['template'][0])
-            uvproj_dic = xmltodict.parse(file(project_file))
+            try:
+                uvproj_dic = xmltodict.parse(open(project_file))
+            except IOError:
+                logging.info("Template file %s not found" % project_file)
+                return None, None
         elif 'uvision' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
             # TODO 0xc0170: extensions for templates - support multiple files and get their extension
             # and check if user defined them correctly
             project_file = join(getcwd(), self.env_settings.templates['uvision'][0])
-            uvproj_dic = xmltodict.parse(file(project_file))
+            try:
+                uvproj_dic = xmltodict.parse(open(project_file))
+            except IOError:
+                logging.info("Template file %s not found. Using default template" % project_file)
+                uvproj_dic = self.definitions.uvproj_file
         else:
             uvproj_dic = self.definitions.uvproj_file
 
