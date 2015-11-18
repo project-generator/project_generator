@@ -407,7 +407,7 @@ class Project:
         self.project['export']['macros'] += self._get_tool_data('macros', tool_keywords)
         self.project['export']['template'] = self._get_tool_data('template', tool_keywords)
 
-        fix_paths(self.project['export'], self.project['export']['output_dir']['rel_path'], FILES_EXTENSIONS.keys() + ['includes', 'source_paths'])
+        fix_paths(self.project['export'], self.project['export']['output_dir']['rel_path'], list(FILES_EXTENSIONS.keys()) + ['includes', 'source_paths'])
 
         # misc for tools requires dic merge
         misc = self._get_tool_data('misc', tool_keywords)
