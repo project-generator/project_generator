@@ -131,10 +131,6 @@ class MakefileGccArm(Tool, Exporter):
         if project_data['core'] == 'cortex-m0+':
             project_data['core'] = 'cortex-m0plus'
 
-        # set default values
-        if 'optimization_level' not in project_data:
-            project_data['optimization_level'] = self.optimization_options[0]
-
     def build_project(self):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
