@@ -22,10 +22,10 @@ requirements = [str(requirement.req) for requirement in parse_requirements('requ
 
 setup(
     name='project_generator',
-    version='0.7.8',
+    version='0.8.0',
     description='Project generators for various embedded tools (IDE). IAR, uVision, Makefile and many more in the roadmap!',
-    author='Martin Kojtal, Matthew Else',
-    author_email='c0170@rocketmail.com, matthewelse1997@gmail.com',
+    author='Martin Kojtal',
+    author_email='c0170@rocketmail.com',
     keywords="c cpp project generator embedded",
     url="https://github.com/project-generator/project_generator",
     classifiers= [
@@ -41,7 +41,7 @@ setup(
     entry_points={
         'console_scripts': [
             "project_generator=project_generator.main:main",
-            "pgen=project_generator.main:main",
+            "progen=project_generator.main:main",
         ]
     },
 
