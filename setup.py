@@ -36,7 +36,7 @@ setup(
         "Programming Language :: Python",
         "Topic :: Software Development"
     ],
-
+    long_description=read('pypi_readme.rst'),
     packages=find_packages(),
     entry_points={
         'console_scripts': [
