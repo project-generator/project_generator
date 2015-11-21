@@ -52,9 +52,9 @@ class CMakeGccArm(Tool,Exporter):
             data[key] = paths
         # fix includes
         includes = []
-        for key in data['includes']:
+        for key in data['include_paths']:
             includes.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'] + '/' + key.replace('\\', '/'))
-        data['includes'] = includes
+        data['include_paths'] = includes
         data['linker_file'] = getcwd().replace('\\', '/') + '/' + data['output_dir']['path'] + '/' + data['linker_file'].replace('\\', '/')
 
     def export_project(self):

@@ -41,8 +41,8 @@ enable_language(ASM)
 {% for symbol in macros %}
 set(DEFINES "${DEFINES} -D{{symbol}}"){% endfor %}
 
-# Set includes
-{% for path in includes %}
+# Set include_paths
+{% for path in include_paths %}
 include_directories("{{path}}"){% endfor %}
 
 {#
