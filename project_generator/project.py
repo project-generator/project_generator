@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os
-import yaml
 import shutil
 import logging
 import operator
@@ -21,6 +20,7 @@ import copy
 
 from .tools_supported import ToolsSupported
 from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS, fix_paths
+from .init_yaml import _generate_file
 
 class ProjectWorkspace:
     """ Represents a workspace (multiple projects) """
@@ -524,10 +524,13 @@ class Project:
             if copy:
                 logging.debug("Copying sources to the output directory")
                 self._copy_sources_to_generated_destination()
-            # Print debug info prior exporting
-            logging.debug("Project common data: %s" % self.project['common'])
-            logging.debug("Project tool_specific data: %s" % self.project['tool_specific'])
-            logging.debug("Project export data: %s" % self.project['export'])
+            # dump a log file if debug is enabled
+            if logging.getLogger().isEnabledFor(logging.DEBUG):
+                dump_data = {}
+                dump_data['common'] = self.project['common']
+                dump_data['tool_specific'] = self.project['tool_specific']
+                dump_data['merged'] = self.project['export']
+                _generate_file('%s.progen.log' % self.name, dump_data)
 
             files = exporter(self.project['export'], self.settings).export_project()
             generated_files[export_tool] = files
