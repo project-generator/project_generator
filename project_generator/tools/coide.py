@@ -89,11 +89,16 @@ class Coide(Tool, Exporter, Builder):
         """ Get all groups defined """
         groups = []
         for attribute in SOURCE_KEYS:
-                for k, v in self.workspace[attribute].items():
-                    if k == None:
-                        k = 'Sources'
-                    if k not in groups:
-                        groups.append(k)
+            for k, v in self.workspace[attribute].items():
+                if k == None:
+                    k = 'Sources'
+                if k not in groups:
+                    groups.append(k)
+            for k, v in self.workspace['include_files'].items():
+                if k == None:
+                    k = 'Includes'
+                if k not in groups:
+                    groups.append(k)
         return groups
 
     def _iterate(self, data, expanded_data):

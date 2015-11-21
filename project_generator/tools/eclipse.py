@@ -64,6 +64,7 @@ class EclipseGnuARM(Tool, Exporter, Builder):
                     source), "type": self.file_types[extension.lower()]}
                 new_data['groups'][group].append(new_file)
 
+#TODO: eliminate this duplicate in many tools. Same applies to _iterate
     def _get_groups(self, data):
         """ Get all groups defined. """
         groups = []
@@ -71,6 +72,11 @@ class EclipseGnuARM(Tool, Exporter, Builder):
             for k, v in data[attribute].items():
                 if k == None:
                     k = 'Sources'
+                if k not in groups:
+                    groups.append(k)
+            for k, v in data['include_files'].items():
+                if k == None:
+                    k = 'Includes'
                 if k not in groups:
                     groups.append(k)
         return groups
