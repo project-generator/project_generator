@@ -90,6 +90,12 @@ class EclipseGnuARM(Tool, Exporter, Builder):
                 else:
                     group = k
                 self._expand_data(data[attribute], expanded_data, attribute, group)
+        for k, v in data['include_files'].items():
+            if k == None:
+                group = 'Includes'
+            else:
+                group = k
+            self._expand_data(data['include_files'], expanded_data, attribute, group)
 
     def export_workspace(self):
         logging.debug("Current version of CoIDE does not support workspaces")
