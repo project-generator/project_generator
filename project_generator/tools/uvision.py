@@ -142,6 +142,11 @@ class Uvision(Tool, Builder, Exporter):
                     k = 'Sources'
                 if k not in groups:
                     groups.append(k)
+            for k, v in data['include_files'].items():
+                if k == None:
+                    k = 'Includes'
+                if k not in groups:
+                    groups.append(k)
         return groups
 
     def _normalize_mcu_def(self, mcu_def):

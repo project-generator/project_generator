@@ -1,7 +1,7 @@
 project_1_yaml = {
     'common': {
-        'sources': ['test_workspace/main.cpp'],
-        'includes': ['test_workspace/header1.h'],
+        'sources': {'sources': ['test_workspace/main.cpp']},
+        'includes': {'includes': ['test_workspace/header1.h']},
         'macros': ['MACRO1', 'MACRO2'],
         'target': ['mbed-lpc1768'],
         'core': ['core1'],

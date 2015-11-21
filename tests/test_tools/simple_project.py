@@ -1,7 +1,7 @@
 project_1_yaml = {
     'common': {
-        'sources': ['sources/main.cpp'],
-        'includes': ['includes/header1.h'],
+        'sources': {'sources': ['sources/main.cpp']},
+        'includes': {'includes': ['includes/header1.h']},
         'target': ['mbed-lpc1768'],
         'linker_file': ['linker_script'],
         'debugger': ['j-link'],
@@ -44,7 +44,6 @@ project_1_yaml = {
                 'ld_flags': ['ld_flag_test', 'ld_flag_test2'],
                 'common_flags': ['common_flag_test', 'common_flag_test2'],
                 'standard_libraries': ['standard_libraries_test'],
-                'optimization': ['O1'],
             },
         }
     }
