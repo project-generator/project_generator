@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import logging
+import copy
+import os
 
 from .tool import Tool, Exporter
 from .gccarm import MakefileGccArm
@@ -89,7 +91,36 @@ class VisualStudioMakeGCCARM(VisualStudio):
         return MakefileGccArm.get_toolchain()
 
     def export_project(self):
-        print "Do nothing"
+        output = copy.deepcopy(self.generated_project)
+        data_for_make = self.workspace.copy()
+
+        self.exporter.process_data_for_makefile(data_for_make)
+        output['path'], output['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', data_for_make, 'Makefile', data_for_make['output_dir']['path'])
+
+        expanded_dic = self.workspace.copy()
+
+        # data for .vcxproj
+        expanded_dic['vcxproj'] = {}
+        expanded_dic['vcxproj']['build_command'] = 'make all'
+        expanded_dic['vcxproj']['rebuild_command'] = 'make clean &amp;&amp; make all'
+        expanded_dic['vcxproj']['clean_command'] = 'make clean &amp;&amp; make all'
+        expanded_dic['vcxproj']['executable_path'] = ''
+
+        # data for debugger for pyOCD
+        expanded_dic['vcxproj_user'] = {}
+        expanded_dic['vcxproj_user']['gdb_address'] = 'localhost:3333'
+        expanded_dic['vcxproj_user']['debugger_executable'] = 'arm-none-eabi-gdb'
+        expanded_dic['vcxproj_user']['local_executable'] = os.path.join(expanded_dic['build_dir'], expanded_dic['name']) + '.elf'
+
+        # Project files
+        project_path, output['files']['vcxproj.filters'] = self.gen_file_jinja(
+            'visual_studio.vcxproj.filters.tmpl', expanded_dic, '%s.vcxproj.filters' % expanded_dic['name'], data_for_make['output_dir']['path'])
+        project_path, output['files']['vcxproj'] = self.gen_file_jinja(
+            'visual_studio.vcxproj.tmpl', expanded_dic, '%s.vcxproj' % expanded_dic['name'], data_for_make['output_dir']['path'])
+        project_path, output['files']['vcxproj.user'] = self.gen_file_jinja(
+            'visual_studio.vcxproj.user.tmpl', expanded_dic, '%s.vcxproj.user' % expanded_dic['name'], data_for_make['output_dir']['path'])
+
+        return output
 
     def export_workspace(self):
         logging.debug("Not supported currently")

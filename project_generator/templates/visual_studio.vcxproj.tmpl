@@ -20,6 +20,7 @@
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
 
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -30,26 +31,52 @@
   </ImportGroup>
 
   <ItemGroup>
-    {% for group_name,files in source_groups.items() %} {% for file in files %}
-    <ClCompile Include="{{file}}" />
-    {% endfor %}{% endfor %}
+    <None Include="Makefile" />
   </ItemGroup>
-  <ItemGroup>
-    {% for group_name,files in include_groups.items() %} {% for file in files %}
-    <ClInclude Include="{{file}}" />
+
+    {% for group_name,files in source_files_c.items() %} {% for file in files %}
+    <ItemGroup>
+    <ClCompile Include="{{file}}">
+    <Filter>Source Files</Filter>
+    </ClCompile>
+    </ItemGroup>
     {% endfor %}{% endfor %}
-  </ItemGroup>
+
+    {% for group_name,files in source_files_cpp.items() %} {% for file in files %}
+    <ItemGroup>
+    <ClCompile Include="{{file}}">
+    <Filter>Source Files</Filter>
+    </ClCompile>
+    </ItemGroup>
+    {% endfor %}{% endfor %}
+
+    {% for group_name,files in source_files_s.items() %} {% for file in files %}
+    <ItemGroup>
+    <ClCompile Include="{{file}}">
+    <Filter>Source Files</Filter>
+    </ClCompile>
+    </ItemGroup>
+    {% endfor %}{% endfor %}
+
+    {% for group_name,files in include_files.items() %} {% for file in files %}
+    <ItemGroup>
+    <ClInclude Include="{{file}}">
+     <Filter>Include Files</Filter>
+     </ClInclude>
+    </ItemGroup>
+    {% endfor %}{% endfor %}
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <NMakeBuildCommandLine>{{build_command}}</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>{{vcxproj['build_command']}}</NMakeBuildCommandLine>
     <OutDir>$(ProjDir)</OutDir>
-    <IntDir>$(ProjDir)\sources</IntDir>
+    <IntDir>$(ProjDir)</IntDir>
     <IncludePath>{%for include in include_paths%} {{include}} {% endfor %}</IncludePath>
     <LibraryWPath>
     </LibraryWPath>
-    <NMakeReBuildCommandLine>{{rebuild_command}}</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>{{clean_command}}</NMakeCleanCommandLine>
-    <ExecutablePath>{{executable_path}}</ExecutablePath>
+    <NMakeReBuildCommandLine>{{vcxproj['rebuild_command']}}</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>{{vcxproj['clean_command']}}</NMakeCleanCommandLine>
+    <ExecutablePath>{{vcxproj['executable_path']}}</ExecutablePath>
     <ReferencePath>
     </ReferencePath>
     <LibraryPath>

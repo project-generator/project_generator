@@ -10,7 +10,21 @@
       <Extensions>h;hh;hpp;hxx;hm;inl;inc</Extensions>
     </Filter>
   </ItemGroup>
-  {% for group_name,files in groups.items() %} {% for file in files %}
+  {% for group_name,files in source_files_c.items() %} {% for file in files %}
+  <ItemGroup>
+    <ClCompile Include="{{file}}">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  {% endfor %}{% endfor %}
+  {% for group_name,files in source_files_cpp.items() %} {% for file in files %}
+  <ItemGroup>
+    <ClCompile Include="{{file}}">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  {% endfor %}{% endfor %}
+  {% for group_name,files in source_files_s.items() %} {% for file in files %}
   <ItemGroup>
     <ClCompile Include="{{file}}">
       <Filter>Source Files</Filter>
