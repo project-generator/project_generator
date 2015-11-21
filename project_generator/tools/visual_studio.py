@@ -25,6 +25,17 @@ from .tool import Tool, Exporter
 # 4. To test the basic methods, like export or progen list tools, add this class to tools_supported
 # use logging.debug to print that exporting is happening and other info if you need to
 
+# Not certain if the first step should not be to create templates. Generate a valid project for a tool,
+# create a new project there, make it compile for simple hello world and possibly to debug (verifies that
+# everything is correctly set up). Once we have a simple project, we can inspect the syntax . Where are files stored,
+# include paths, macros, target if any, and other variables. look at project.ProjectTemplate() class which
+# defines data needed for progen.
+# The fastest way is to copy the manually generated project, and replace data with jinja2 syntax. To fill in
+# all data we need (sources, includes, etc). Rename the files to tools_name.extensions.tmpl. They will be used 
+# as templates.
+# We can later switch to full parsing the file and generate it on the fly, but this often is more time consuming to learn
+# how the tool is structured. Thus lets keep it simple for new tool, use jinja2 
+
 class VisualStudio(Tool, Exporter):
 
     def __init__(self, workspace, env_settings):
