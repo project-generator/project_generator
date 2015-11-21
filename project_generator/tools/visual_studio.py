@@ -15,6 +15,7 @@
 import logging
 
 from .tool import Tool, Exporter
+from .gccarm import MakefileGccArm
 
 # This serves as a new guide for upcoming wiki
 # steps how to create a new tool
@@ -38,6 +39,15 @@ from .tool import Tool, Exporter
 
 class VisualStudio(Tool, Exporter):
 
+    generated_project = {
+        'path': '',
+        'files': {
+            'vcxproj.filters': '',
+            'vcxproj': '',
+            'vcxproj.user': '',
+        }
+    }
+
     def __init__(self, workspace, env_settings):
         self.definitions = 0
         self.workspace = workspace
@@ -52,14 +62,14 @@ class VisualStudio(Tool, Exporter):
         return None
 
 
-class VisualStudioMakefileGCCARM()
+class VisualStudioMakeGCCARM(VisualStudio):
 
-   generated_project = {
+    generated_project = {
         'path': '',
         'files': {
             'vcxproj.filters': '',
             'vcxproj': '',
-            'vcxproj.user'
+            'vcxproj.user': '',
             'makefile': '',
         }
     }
@@ -79,7 +89,7 @@ class VisualStudioMakefileGCCARM()
         return MakefileGccArm.get_toolchain()
 
     def export_project(self):
-        pass
+        print "Do nothing"
 
     def export_workspace(self):
         logging.debug("Not supported currently")
