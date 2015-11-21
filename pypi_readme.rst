@@ -14,6 +14,7 @@ Project generator currently generaters projects for the following tools (IDE, Ma
 
  - uVision
  - Makefile (GCC ARM)
+ - CMake (GCC ARM)
  - IAR
  - CoIDE (GCC ARM)
  - Eclipse (Makefile with GCC ARM)
