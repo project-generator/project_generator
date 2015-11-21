@@ -56,8 +56,7 @@ class uVisionDefinitions():
 class Uvision(Tool, Builder, Exporter):
 
     optimization_options = ['O0', 'O1', 'O2', 'O3']
-    # source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_lib', 'source_files_obj']
-    file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3,'o':3, 'lib': 4, 'ar': 4}
+    file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3,'o':3, 'lib': 4, 'ar': 4, 'h': 5}
 
     # flags mapping to uvision uvproj dics
     # for available flags, check armcc/armasm/armlink command line guide
@@ -104,7 +103,7 @@ class Uvision(Tool, Builder, Exporter):
     def get_toolchain():
         return 'uvision'
 
-    def _expand_data(self, old_data, new_data, attribute, group, rel_path):
+    def _expand_data(self, old_data, new_data, attribute, group):
         """ data expansion - uvision needs filename and path separately. """
         if group == 'Sources':
             old_group = None
@@ -113,19 +112,26 @@ class Uvision(Tool, Builder, Exporter):
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
-                new_file = {"FilePath": rel_path + normpath(file), "FileName": basename(file),
+                new_file = {"FilePath": file, "FileName": basename(file),
                             "FileType": self.file_types[extension.lower()]}
                 new_data['groups'][group].append(new_file)
 
-    def _iterate(self, data, expanded_data, rel_path):
-        """ Iterate through all data, store the result expansion in extended dictionary. """
+    def _iterate(self, data, expanded_data):
+        """ Iterate through all sources/includes, store the result expansion in extended dictionary. """
         for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     group = 'Sources'
                 else:
                     group = k
-                self._expand_data(data[attribute], expanded_data, attribute, group, rel_path)
+                self._expand_data(data[attribute], expanded_data, attribute, group)
+        for k, v in data['include_files'].items():
+            if k == None:
+                group = 'Includes'
+            else:
+                group = k
+            self._expand_data(data['include_files'], expanded_data, attribute, group)
+
 
     def _get_groups(self, data):
         """ Get all groups defined. """
@@ -169,7 +175,7 @@ class Uvision(Tool, Builder, Exporter):
         self._uvproj_clean_xmldict(uvproj_dic['LDads'])
         uvproj_dic['LDads']['ScatterFile'] = project_dic['linker_file']
 
-        uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['includes']).encode('utf-8')
+        uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['include_paths']).encode('utf-8')
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
         uvproj_dic['Aads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
 
@@ -241,7 +247,7 @@ class Uvision(Tool, Builder, Exporter):
             expanded_dic['groups'][group] = []
 
         # get relative path and fix all paths within a project
-        self._iterate(self.workspace, expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._iterate(self.workspace, expanded_dic)
 
         expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
 
