@@ -47,7 +47,7 @@ class CoIDEdefinitions():
 
 class Coide(Tool, Exporter, Builder):
 
-    file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
+    file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1, 'h': 1}
 
     generated_project = {
         'path': '',
@@ -69,8 +69,9 @@ class Coide(Tool, Exporter, Builder):
     def get_toolchain():
         return 'coide'
 
-    def _expand_data(self, old_data, new_data, attribute, group, rel_path):
-        """ data expansion - uvision needs filename and path separately. """
+    def _expand_data(self, old_data, new_data, attribute, group):
+        """ data expansion - coide needs filename and path separately """
+        # TODO: fix this for include/sources. Do we need it?
         if group == 'Sources':
             old_group = None
         else:
@@ -80,30 +81,41 @@ class Coide(Tool, Exporter, Builder):
             if file:
                 extension = file.split(".")[-1]
                 new_file = {
-                    '@path': rel_path + normpath(file), '@name': basename(file), '@type': str(self.file_types[extension.lower()])
+                    '@path': file, '@name': basename(file), '@type': str(self.file_types[extension.lower()])
                 }
                 new_data['groups'][group].append(new_file)
 
     def _get_groups(self):
-        """ Get all groups defined. """
+        """ Get all groups defined """
         groups = []
         for attribute in SOURCE_KEYS:
-                for k, v in self.workspace[attribute].items():
-                    if k == None:
-                        k = 'Sources'
-                    if k not in groups:
-                        groups.append(k)
+            for k, v in self.workspace[attribute].items():
+                if k == None:
+                    k = 'Sources'
+                if k not in groups:
+                    groups.append(k)
+            for k, v in self.workspace['include_files'].items():
+                if k == None:
+                    k = 'Includes'
+                if k not in groups:
+                    groups.append(k)
         return groups
 
-    def _iterate(self, data, expanded_data, rel_path):
-        """ _Iterate through all data, store the result expansion in extended dictionary. """
+    def _iterate(self, data, expanded_data):
+        """ _Iterate through all data, store the result expansion in extended dictionary """
         for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     group = 'Sources'
                 else:
                     group = k
-                self._expand_data(data[attribute], expanded_data, attribute, group, rel_path)
+                self._expand_data(data[attribute], expanded_data, attribute, group)
+        for k, v in data['include_files'].items():
+            if k == None:
+                group = 'Includes'
+            else:
+                group = k
+            self._expand_data(data['include_files'], expanded_data, attribute, group)
 
     def _normalize_mcu_def(self, mcu_def):
         for k, v in mcu_def['Device'].items():
@@ -118,17 +130,6 @@ class Coide(Tool, Exporter, Builder):
             mcu_def['MemoryAreas']['IRAM1'][k] = v[0]
         for k, v in mcu_def['MemoryAreas']['IRAM2'].items():
             mcu_def['MemoryAreas']['IRAM2'][k] = v[0]
-
-    def _fix_paths(self, data, rel_path):
-        data['includes'] = [join(rel_path, normpath(path)) for path in data['includes']]
-
-        for k in data['source_files_lib'].keys():
-            data['source_files_lib'][k] = [join(rel_path,normpath(path)) for path in data['source_files_lib'][k]]
-
-        for k in data['source_files_obj'].keys():
-            data['source_files_obj'][k] = [join(rel_path,normpath(path)) for path in data['source_files_obj'][k]]
-        if data['linker_file']:
-            data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
     def _coide_option_dictionarize(self, option, key, coide_settings):
         dictionarized = {}
@@ -155,7 +156,7 @@ class Coide(Tool, Exporter, Builder):
 
     def _coproj_set_includepaths(self, coproj_dic, project_dic):
         coproj_dic['Project']['Target']['BuildOption']['Compile']['Includepaths']['Includepath'] = []
-        for include in project_dic['includes']:
+        for include in project_dic['include_paths']:
             coproj_dic['Project']['Target']['BuildOption']['Compile']['Includepaths']['Includepath'].append({'@path': include})
 
     def _coproj_set_linker(self, coproj_dic, project_dic):
@@ -182,8 +183,7 @@ class Coide(Tool, Exporter, Builder):
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self._iterate(self.workspace, expanded_dic, expanded_dic['output_dir']['rel_path'])
-        self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._iterate(self.workspace, expanded_dic)
 
         # generic tool template specified or project
         if expanded_dic['template']:

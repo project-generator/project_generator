@@ -103,12 +103,8 @@ class MakefileGccArm(Tool, Exporter):
 
     def process_data_for_makefile(self, project_data):
         #Flatten our dictionary, we don't need groups
-        project_data['source_paths'] = []
         for key in SOURCE_KEYS:
             project_data[key] = list(chain(*project_data[key].values()))
-            project_data['source_paths'].extend([ntpath.split(path)[0] for path in project_data[key]])
-        project_data['source_paths'] = set(project_data['source_paths'])
-
         self._get_libs(project_data)
         self._parse_specific_options(project_data)
 

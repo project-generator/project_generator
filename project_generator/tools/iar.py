@@ -110,7 +110,7 @@ class IAREmbeddedWorkbenchProject:
         index_option = self._get_option(ewp_dic[index_iccarm]['data']['option'], 'CCDefines')
         self._set_multiple_option(ewp_dic[index_iccarm]['data']['option'][index_option], project_dic['macros'])
         index_option = self._get_option(ewp_dic[index_iccarm]['data']['option'], 'CCIncludePath2')
-        self._set_multiple_option(ewp_dic[index_iccarm]['data']['option'][index_option], project_dic['includes'])
+        self._set_multiple_option(ewp_dic[index_iccarm]['data']['option'][index_option], project_dic['include_paths'])
 
         iccarm_dic = ewp_dic[index_iccarm]['data']['option']
         self._ewp_flags_set(iccarm_dic, project_dic, 'cx_flags', self.FLAG_TO_IAR['cxx_flags'])
@@ -259,17 +259,6 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
     def get_toolchain():
         return 'iar'
 
-    def _get_groups(self, data):
-        """ Get all groups defined """
-        groups = []
-        for attribute in SOURCE_KEYS:
-            for k, v in data[attribute].items():
-                if k == None:
-                    k = 'Sources'
-                if k not in groups:
-                    groups.append(k)
-        return groups
-
     def _find_target_core(self, data):
         """ Sets Target core """
         for k, v in self.core_dic.items():
@@ -302,7 +291,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
 
     def _fix_paths(self, data):
         """ All paths needs to be fixed - add PROJ_DIR prefix + normalize """
-        data['includes'] = [join('$PROJ_DIR$', path) for path in data['includes']]
+        data['include_paths'] = [join('$PROJ_DIR$', path) for path in data['include_paths']]
 
         if data['linker_file']:
             data['linker_file'] = join('$PROJ_DIR$', data['linker_file'])
@@ -313,6 +302,10 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 if k not in data['groups']:
                     data['groups'][k] = []
                 data['groups'][k].extend([join('$PROJ_DIR$', file) for file in v])
+        for k,v in data['include_files'].items():
+            if k not in data['groups']:
+                data['groups'][k] = []
+            data['groups'][k].extend([join('$PROJ_DIR$', file) for file in v])
 
     def _get_option(self, settings, find_key):
         """ Return index for provided key """

@@ -67,7 +67,7 @@ def _scan(section, directory, extensions):
     return l
 
 def _generate_file(filename,data):
-    logging.debug('Writing the follwoing to %s:\n%s' % (filename, yaml.dump(data)))
+    logging.debug('Writing the following to %s:\n%s' % (filename, yaml.dump(data)))
     file = os.path.join(os.getcwd(), filename)
     if os.path.isfile(file):
         os.remove(file)

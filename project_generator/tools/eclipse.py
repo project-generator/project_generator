@@ -24,7 +24,7 @@ from ..util import SOURCE_KEYS
 
 class EclipseGnuARM(Tool, Exporter, Builder):
 
-    file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1}
+    file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1, 'h': 1}
 
     generated_project = {
         'path': '',
@@ -49,7 +49,7 @@ class EclipseGnuARM(Tool, Exporter, Builder):
     def get_toolchain():
         return 'gcc_arm'
 
-    def _expand_data(self, old_data, new_data, attribute, group, rel_path):
+    def _expand_data(self, old_data, new_data, attribute, group):
         """ data expansion - uvision needs filename and path separately. """
         if group == 'Sources':
             old_group = None
@@ -64,6 +64,7 @@ class EclipseGnuARM(Tool, Exporter, Builder):
                     source), "type": self.file_types[extension.lower()]}
                 new_data['groups'][group].append(new_file)
 
+#TODO: eliminate this duplicate in many tools. Same applies to _iterate
     def _get_groups(self, data):
         """ Get all groups defined. """
         groups = []
@@ -73,9 +74,14 @@ class EclipseGnuARM(Tool, Exporter, Builder):
                     k = 'Sources'
                 if k not in groups:
                     groups.append(k)
+            for k, v in data['include_files'].items():
+                if k == None:
+                    k = 'Includes'
+                if k not in groups:
+                    groups.append(k)
         return groups
 
-    def _iterate(self, data, expanded_data, rel_path):
+    def _iterate(self, data, expanded_data):
         """ Iterate through all data, store the result expansion in extended dictionary. """
         for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
@@ -83,7 +89,7 @@ class EclipseGnuARM(Tool, Exporter, Builder):
                     group = 'Sources'
                 else:
                     group = k
-                self._expand_data(data[attribute], expanded_data, attribute, group, rel_path)
+                self._expand_data(data[attribute], expanded_data, attribute, group)
 
     def export_workspace(self):
         logging.debug("Current version of CoIDE does not support workspaces")
@@ -103,7 +109,7 @@ class EclipseGnuARM(Tool, Exporter, Builder):
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
-        self._iterate(self.workspace, expanded_dic, expanded_dic['rel_path'])
+        self._iterate(self.workspace, expanded_dic)
 
         # Project file
         project_path, output['files']['cproj'] = self.gen_file_jinja(

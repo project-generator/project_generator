@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os
-import yaml
 import shutil
 import logging
 import operator
@@ -21,6 +20,7 @@ import copy
 
 from .tools_supported import ToolsSupported
 from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS, fix_paths
+from .init_yaml import _generate_file
 
 class ProjectWorkspace:
     """ Represents a workspace (multiple projects) """
@@ -174,7 +174,8 @@ class ProjectTemplateInternal:
 
         internal_template = {
             'source_paths': [],       # [internal] source paths derived from sources
-            'include_files': [],      # [internal] include files - used in the copy function
+            'include_paths': [],      # [internal] include paths derived from sources
+            'include_files': {},      # [internal] include files - used in the copy function
             'source_files_c': {},     # [internal] c source files
             'source_files_cpp': {},   # [internal] c++ source files
             'source_files_s': {},     # [internal] assembly source files
@@ -254,31 +255,46 @@ class Project:
     @staticmethod
     def _process_include_files(source, destination):
         # If it's dic add it , if file, add it to files
+        use_group_name = 'default'
+        use_includes = []
         if 'includes' in source:
-            for include_file in source['includes']:
-                # include might be set to None - empty yaml list
-                if include_file:
-                    if os.path.isfile(include_file):
-                        # file, add it to the list (for copying or if tool requires it)
-                        if not include_file in destination['include_files']:
-                            destination['include_files'].append(os.path.normpath(include_file))
-                        dir_path = os.path.dirname(include_file)
-                    else:
-                        # its a directory
-                        dir_path = include_file
-                        # get all files from dir
-                        include_files = []
-                        try:
-                            for f in os.listdir(dir_path):
-                                if os.path.isfile(os.path.join(os.path.normpath(dir_path), f)) and f.split('.')[-1].lower() in FILES_EXTENSIONS['include_files']:
-                                    include_files.append(os.path.join(os.path.normpath(dir_path), f))
-                        except:
-                            # TODO: catch only those exceptions which are relevant
-                            logging.debug("The includes is not accessible: %s" % include_file)
-                            continue
-                        destination['include_files'] += include_files
-                    if not os.path.normpath(dir_path) in destination['includes']:
-                        destination['includes'].append(os.path.normpath(dir_path))
+            for includes in source['includes']:
+                if type(includes) == dict:
+                    for group_name, include_files in includes.items():
+                        use_includes += include_files
+                        use_group_name = group_name
+                elif type(includes) == list:
+                    use_includes = includes
+                else:
+                    use_includes = [includes]
+
+                if use_group_name not in destination['include_files']:
+                    destination['include_files'][use_group_name] = []
+
+                for include_file in use_includes:
+                    # include might be set to None - empty yaml list
+                    if include_file:
+                        if os.path.isdir(include_file):
+                           # its a directory
+                            dir_path = include_file
+                            # get all files from dir
+                            include_files = []
+                            try:
+                                for f in os.listdir(dir_path):
+                                    if os.path.isfile(os.path.join(os.path.normpath(dir_path), f)) and f.split('.')[-1].lower() in FILES_EXTENSIONS['include_files']:
+                                        include_files.append(os.path.join(os.path.normpath(dir_path), f))
+                            except:
+                                # TODO: catch only those exceptions which are relevant
+                                logging.debug("The includes is not accessible: %s" % include_file)
+                                continue
+                            destination['include_files'][use_group_name] += include_files
+                        else:
+                            # include files are in groups as sources
+                            destination['include_files'][use_group_name].append(os.path.normpath(include_file))
+                            dir_path = os.path.dirname(include_file)
+                        if not os.path.normpath(dir_path) in destination['include_paths']:
+                            destination['include_paths'].append(os.path.normpath(dir_path))
+     
 
     def _process_source_files(self, files, use_group_name='default'):
         use_sources = []
@@ -357,6 +373,15 @@ class Project:
                     continue
         return sources
 
+    def _get_tool_includes(self, tool_keywords):
+        include_files = {}
+        for tool_name in tool_keywords:
+            try:
+                include_files = merge_recursive(include_files, self.project['tool_specific'][tool_name]['include_files'])
+            except KeyError:
+                continue
+        return include_files
+
     def _set_output_dir_path(self, tool, copied):
         if self.settings.export_location_format != self.settings.DEFAULT_EXPORT_LOCATION_FORMAT:
             location_format = self.settings.export_location_format
@@ -400,24 +425,25 @@ class Project:
         self._set_internal_tool_data(tool_keywords)
 
         # Merge common project data with tool specific data
-        self.project['export']['includes'] += self._get_tool_data('includes', tool_keywords)
-        self.project['export']['include_files'] += self._get_tool_data('include_files', tool_keywords)
-        self.project['export']['source_paths'] +=  self._get_tool_data('source_paths', tool_keywords)
+        self.project['export']['source_paths'] += self._get_tool_data('source_paths', tool_keywords)
+        self.project['export']['include_paths'] += self._get_tool_data('include_paths', tool_keywords)
         self.project['export']['linker_file'] =  self.project['export']['linker_file'] or self._get_tool_data('linker_file', tool_keywords)
         self.project['export']['macros'] += self._get_tool_data('macros', tool_keywords)
         self.project['export']['template'] = self._get_tool_data('template', tool_keywords)
 
-        fix_paths(self.project['export'], self.project['export']['output_dir']['rel_path'], list(FILES_EXTENSIONS.keys()) + ['includes', 'source_paths'])
+        fix_paths(self.project['export'], self.project['export']['output_dir']['rel_path'], list(FILES_EXTENSIONS.keys()) + ['include_paths', 'source_paths'])
 
         # misc for tools requires dic merge
         misc = self._get_tool_data('misc', tool_keywords)
         for m in misc:
            self.project['export']['misc'] = merge_recursive(self.project['export']['misc'], m)
 
-        # This is magic with sources as they have groups
+        # This is magic with sources/include_files as they have groups
         tool_sources = self._get_tool_sources(tool_keywords)
         for key in SOURCE_KEYS:
            self.project['export'][key] = merge_recursive(self.project['export'][key], tool_sources[key])
+
+        self.project['export']['include_files'] = merge_recursive(self.project['export']['include_files'], self._get_tool_includes(tool_keywords))
 
         # linker checkup
         if len(self.project['export']['linker_file']) == 0 and self.project['export']['output_type'] == 'exe':
@@ -498,10 +524,13 @@ class Project:
             if copy:
                 logging.debug("Copying sources to the output directory")
                 self._copy_sources_to_generated_destination()
-            # Print debug info prior exporting
-            logging.debug("Project common data: %s" % self.project['common'])
-            logging.debug("Project tool_specific data: %s" % self.project['tool_specific'])
-            logging.debug("Project export data: %s" % self.project['export'])
+            # dump a log file if debug is enabled
+            if logging.getLogger().isEnabledFor(logging.DEBUG):
+                dump_data = {}
+                dump_data['common'] = self.project['common']
+                dump_data['tool_specific'] = self.project['tool_specific']
+                dump_data['merged'] = self.project['export']
+                _generate_file('%s.progen.log' % self.name, dump_data)
 
             files = exporter(self.project['export'], self.settings).export_project()
             generated_files[export_tool] = files
