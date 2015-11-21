@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from .tool import Tool, Exporter
 
 # This serves as a new guide for upcoming wiki
@@ -20,7 +22,8 @@ from .tool import Tool, Exporter
 # 2. implement ctor, get_toolnames and get_toolchain, export_project(), def export_workspace(self): methods
 # and get_generated_project_files()
 # 3. create generated project dictionary (what files will progen generate)
-# 4. 
+# 4. To test the basic methods, like export or progen list tools, add this class to tools_supported
+# use logging.debug to print that exporting is happening and other info if you need to
 
 class VisualStudio(Tool, Exporter):
 
@@ -65,6 +68,7 @@ class VisualStudioMakefileGCCARM()
         return MakefileGccArm.get_toolchain()
 
     def export_project(self):
+        pass
 
     def export_workspace(self):
         logging.debug("Not supported currently")

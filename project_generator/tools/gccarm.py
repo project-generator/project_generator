@@ -23,7 +23,6 @@ from os.path import join, normpath,dirname
 from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool,Exporter
-from .tool import Tool, Exporter
 from ..util import SOURCE_KEYS
 
 class MakefileGccArm(Tool, Exporter):

@@ -21,6 +21,7 @@ from .tools.sublimetext import SublimeTextMakeGccARM
 from .tools.gdb import GDB
 from .tools.gdb import ARMNoneEABIGDB
 from .tools.cmake import CMakeGccArm
+from .tools.visual_studio import VisualStudioMakefileGCCARM
 
 class ToolsSupported:
     """ Represents all tools available """
@@ -40,6 +41,7 @@ class ToolsSupported:
         'gdb':                  GDB,
         'arm_none_eabi_gdb':    ARMNoneEABIGDB,
         'cmake_gcc_arm':        CMakeGccArm,
+        'visual_studio_make_gcc_arm': VisualStudioMakefileGCCARM,
     }
 
     TOOLCHAINS = list(set([v.get_toolchain() for k, v in TOOLS_DICT.items() if v.get_toolchain() is not None]))
