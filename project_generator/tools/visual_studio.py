@@ -85,7 +85,7 @@ class VisualStudioMakeGCCARM(VisualStudio):
 
     @staticmethod
     def get_toolnames():
-        return ['visual_studio']
+        return ['visual_studio'] + MakefileGccArm.get_toolnames()
 
     @staticmethod
     def get_toolchain():
@@ -113,6 +113,7 @@ class VisualStudioMakeGCCARM(VisualStudio):
         expanded_dic['vcxproj_user']['gdb_address'] = 'localhost:3333'
         expanded_dic['vcxproj_user']['debugger_executable'] = 'arm-none-eabi-gdb'
         expanded_dic['vcxproj_user']['local_executable'] = os.path.join(expanded_dic['build_dir'], expanded_dic['name']) + '.elf'
+        expanded_dic['vcxproj_user']['working_dir'] = os.path.join(os.getcwd(), data_for_make['output_dir']['path'])
 
         # Project files
         project_path, output['files']['vcxproj.filters'] = self.gen_file_jinja(

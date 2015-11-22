@@ -49,7 +49,7 @@ LIB_PATHS = {% for path in lib_paths %} {{path}} {% endfor %}
 
 
 # directories
-INC_DIRS = {% for path in includes %} {{path}} {% endfor %}
+INC_DIRS = {% for path in include_paths %} {{path}} {% endfor %}
 
 OUT_DIR = {{build_dir}}
 
