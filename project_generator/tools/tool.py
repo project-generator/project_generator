@@ -87,9 +87,9 @@ class Exporter(object):
 
         """ Fills data to the project template, using jinja2. """
         template_path = join(self.TEMPLATE_DIR, template_file)
-        template_text = open(template_path).read().decode('utf-8')
+        template_text = open(template_path).read()
         # TODO: undefined=StrictUndefined - this needs fixes in templates
-        template = Template(template_text)
+        template = Template(template_text.decode('utf-8'))
         target_text = template.render(data)
 
         open(output, "w").write(target_text.encode('utf-8'))

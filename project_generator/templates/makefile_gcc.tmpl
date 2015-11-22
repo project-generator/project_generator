@@ -64,12 +64,12 @@ else
 endif
 
 # Flags
-COMMON_FLAGS = {% for option in common_flags %} -{{option}} {% endfor %}
-COMMON_FLAGS += -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -c -g -MMD -MP $(CC_SYMBOLS)
+COMMON_FLAGS = {% for option in common_flags %} {{option}} {% endfor %}
+COMMON_FLAGS += -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -MMD -MP $(CC_SYMBOLS)
 
-C_FLAGS  = {% for option in c_flags %} -{{option}} {% endfor %}
-CXX_FLAGS  = {% for option in cxx_flags %} -{{option}} {% endfor %}
-ASM_FLAGS  = {% for option in asm_flags %} -{{option}} {% endfor %}
+C_FLAGS  = {% for option in c_flags %} {{option}} {% endfor %}
+CXX_FLAGS  = {% for option in cxx_flags %} {{option}} {% endfor %}
+ASM_FLAGS  = {% for option in asm_flags %} {{option}} {% endfor %}
 
 CFLAGS = $(C_FLAGS) $(INC_DIRS_F)
 CXXFLAGS = $(CXX_FLAGS) $(INC_DIRS_F)
@@ -77,7 +77,7 @@ ASFLAGS = $(ASM_FLAGS) $(INC_DIRS_F)
 
 # Linker options
 LD_OPTIONS = -mcpu=$(CPU) -m$(INSTRUCTION_MODE)
-LD_OPTIONS += {% for option in ld_flags %}-{{option}} {% endfor %}
+LD_OPTIONS += {% for option in ld_flags %} {{option}} {% endfor %}
 LD_OPTIONS += -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T$(LD_SCRIPT)
 
 OBJCPFLAGS = -O ihex
