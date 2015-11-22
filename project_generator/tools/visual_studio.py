@@ -15,6 +15,7 @@
 import logging
 import copy
 import os
+import uuid
 
 from .tool import Tool, Exporter
 from .gccarm import MakefileGccArm
@@ -105,6 +106,7 @@ class VisualStudioMakeGCCARM(VisualStudio):
         expanded_dic['vcxproj']['rebuild_command'] = 'make clean &amp;&amp; make all'
         expanded_dic['vcxproj']['clean_command'] = 'make clean &amp;&amp; make all'
         expanded_dic['vcxproj']['executable_path'] = ''
+        expanded_dic['vcxproj']['uuid'] = str(uuid.uuid5(uuid.NAMESPACE_URL, expanded_dic['name'])).upper()
 
         # data for debugger for pyOCD
         expanded_dic['vcxproj_user'] = {}
@@ -119,6 +121,13 @@ class VisualStudioMakeGCCARM(VisualStudio):
             'visual_studio.vcxproj.tmpl', expanded_dic, '%s.vcxproj' % expanded_dic['name'], data_for_make['output_dir']['path'])
         project_path, output['files']['vcxproj.user'] = self.gen_file_jinja(
             'visual_studio.vcxproj.user.tmpl', expanded_dic, '%s.vcxproj.user' % expanded_dic['name'], data_for_make['output_dir']['path'])
+
+        # NMake and debugger assets
+        self.gen_file_jinja(
+            'visual_studio.LocalDebugger.xaml.tmpl', {}, 'LocalDebugger.xaml', data_for_make['output_dir']['path'])
+        self.gen_file_jinja(
+            'visual_studio.linux_nmake.xaml.tmpl', {}, 'linux_nmake.xaml', data_for_make['output_dir']['path'])
+
 
         return output
 

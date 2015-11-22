@@ -87,12 +87,12 @@ class Exporter(object):
 
         """ Fills data to the project template, using jinja2. """
         template_path = join(self.TEMPLATE_DIR, template_file)
-        template_text = open(template_path).read()
+        template_text = open(template_path).read().decode('utf-8')
         # TODO: undefined=StrictUndefined - this needs fixes in templates
         template = Template(template_text)
         target_text = template.render(data)
 
-        open(output, "w").write(target_text)
+        open(output, "w").write(target_text.encode('utf-8'))
         return dirname(output), output
 
     def fixup_executable(self, exe_path):
