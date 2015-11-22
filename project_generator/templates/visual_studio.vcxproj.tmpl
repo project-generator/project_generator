@@ -63,6 +63,7 @@
     <OutDir>$(ProjDir)</OutDir>
     <IntDir>$(ProjDir)</IntDir>
     <IncludePath>{%for include in include_paths%} {{include}} {% endfor %}</IncludePath>
+    <SourcePath>{%for source in source_paths%} {{source}} {% endfor %}</SourcePath>
     <LibraryWPath>
     </LibraryWPath>
     <NMakeReBuildCommandLine>{{vcxproj['rebuild_command']}}</NMakeReBuildCommandLine>
@@ -72,7 +73,6 @@
     </ReferencePath>
     <LibraryPath>
     </LibraryPath>
-    <SourcePath />
     <ExcludePath />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
