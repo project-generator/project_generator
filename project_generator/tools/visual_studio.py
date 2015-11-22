@@ -90,6 +90,16 @@ class VisualStudio(Tool, Exporter):
         proj_dic['working_dir'] = working_dir
         return proj_dic
 
+    def _generate_vcxproj_files(self, proj_dict, name, rel_path):
+        output = copy.deepcopy(self.generated_project)
+        project_path, output['files']['vcxproj.filters'] = self.gen_file_jinja(
+            'visual_studio.vcxproj.filters.tmpl', proj_dict, '%s.vcxproj.filters' % name, rel_path)
+        project_path, output['files']['vcxproj'] = self.gen_file_jinja(
+            'visual_studio.vcxproj.tmpl', proj_dict, '%s.vcxproj' % name, rel_path)
+        project_path, output['files']['vcxproj.user'] = self.gen_file_jinja(
+            'visual_studio.vcxproj.user.tmpl', proj_dict, '%s.vcxproj.user' % name, rel_path)
+        return project_path, output
+
     def export_project(self):
         output = copy.deepcopy(self.generated_project)
         expanded_dic = self.workspace.copy()
@@ -105,14 +115,10 @@ class VisualStudio(Tool, Exporter):
             os.path.join(expanded_dic['build_dir'], expanded_dic['name']), os.path.join(os.getcwd(), data_for_make['output_dir']['path']))
 
         # Project files
-        project_path, output['files']['vcxproj.filters'] = self.gen_file_jinja(
-            'visual_studio.vcxproj.filters.tmpl', expanded_dic, '%s.vcxproj.filters' % expanded_dic['name'], data_for_make['output_dir']['path'])
-        project_path, output['files']['vcxproj'] = self.gen_file_jinja(
-            'visual_studio.vcxproj.tmpl', expanded_dic, '%s.vcxproj' % expanded_dic['name'], data_for_make['output_dir']['path'])
-        project_path, output['files']['vcxproj.user'] = self.gen_file_jinja(
-            'visual_studio.vcxproj.user.tmpl', expanded_dic, '%s.vcxproj.user' % expanded_dic['name'], data_for_make['output_dir']['path'])
+        project_path, output = self._generate_vcxproj_files(expanded_dic, expanded_dic['name'], data_for_make['output_dir']['path'])
 
         # NMake and debugger assets
+        # TODO: not sure about base class having NMake and debugger. We might want to disable that by default?
         self.gen_file_raw(xmltodict.unparse(self.linux_nmake_xaml, pretty=True), 'linux_nmake.xaml', data_for_make['output_dir']['path'])
         self.gen_file_raw(xmltodict.unparse(self.linux_debugger_xaml, pretty=True), 'LocalDebugger.xaml', data_for_make['output_dir']['path'])
 
@@ -163,12 +169,7 @@ class VisualStudioMakeGCCARM(VisualStudio):
             os.path.join(expanded_dic['build_dir'], expanded_dic['name']), os.path.join(os.getcwd(), data_for_make['output_dir']['path']))
 
         # Project files
-        project_path, output['files']['vcxproj.filters'] = self.gen_file_jinja(
-            'visual_studio.vcxproj.filters.tmpl', expanded_dic, '%s.vcxproj.filters' % expanded_dic['name'], data_for_make['output_dir']['path'])
-        project_path, output['files']['vcxproj'] = self.gen_file_jinja(
-            'visual_studio.vcxproj.tmpl', expanded_dic, '%s.vcxproj' % expanded_dic['name'], data_for_make['output_dir']['path'])
-        project_path, output['files']['vcxproj.user'] = self.gen_file_jinja(
-            'visual_studio.vcxproj.user.tmpl', expanded_dic, '%s.vcxproj.user' % expanded_dic['name'], data_for_make['output_dir']['path'])
+        self._generate_vcxproj_files(expanded_dic, expanded_dic['name'], data_for_make['output_dir']['path'])
 
         # NMake and debugger assets
         self.gen_file_raw(xmltodict.unparse(self.linux_nmake_xaml, pretty=True), 'linux_nmake.xaml', data_for_make['output_dir']['path'])
