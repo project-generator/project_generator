@@ -44,6 +44,8 @@ from .gccarm import MakefileGccArm
 
 
 
+# This file contains 2 classes, VisualStudio gdb project and VisualStudio with gdb project configured for arm gcc
+
 class VisualStudio(Tool, Exporter):
 
     linux_nmake_xaml = OrderedDict([(u'Rule', OrderedDict([(u'@Name', u'ConfigurationNMake'), (u'@DisplayName', u'NMake'), (u'@PageTemplate', u'generic'), (u'@Description', u'NMake'), (u'@SwitchPrefix', u'/'), (u'@Order', u'100'), (u'@xmlns', u'http://schemas.microsoft.com/build/2009/properties'), (u'Rule.Categories', OrderedDict([(u'Category', [OrderedDict([(u'@Name', u'General'), (u'@DisplayName', u'General'), (u'@Description', u'General')]), OrderedDict([(u'@Name', u'IntelliSense'), (u'@DisplayName', u'IntelliSense'), (u'@Description', u'IntelliSense')])])])), (u'Rule.DataSource', OrderedDict([(u'DataSource', OrderedDict([(u'@Persistence', u'ProjectFile')]))])), (u'StringProperty', [OrderedDict([(u'@Name', u'NMakeBuildCommandLine'), (u'@DisplayName', u'Build Command Line'), (u'@Description', u"Specifies the command line to run for the 'Build' command."), (u'@IncludeInCommandLine', u'false'), (u'@Category', u'General'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.BuildCommandLine'), (u'StringProperty.ValueEditors', OrderedDict([(u'ValueEditor', OrderedDict([(u'@EditorType', u'DefaultCommandPropertyEditor'), (u'@DisplayName', u'<Edit...>')]))]))]), OrderedDict([(u'@Name', u'NMakeReBuildCommandLine'), (u'@DisplayName', u'Rebuild All Command Line'), (u'@Description', u"Specifies the command line to run for the 'Rebuild All' command."), (u'@IncludeInCommandLine', u'false'), (u'@Category', u'General'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.ReBuildCommandLine'), (u'StringProperty.ValueEditors', OrderedDict([(u'ValueEditor', OrderedDict([(u'@EditorType', u'DefaultCommandPropertyEditor'), (u'@DisplayName', u'<Edit...>')]))]))]), OrderedDict([(u'@Name', u'NMakeCleanCommandLine'), (u'@DisplayName', u'Clean Command Line'), (u'@Description', u"Specifies the command line to run for the 'Clean' command."), (u'@IncludeInCommandLine', u'false'), (u'@Category', u'General'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.CleanCommandLine'), (u'StringProperty.ValueEditors', OrderedDict([(u'ValueEditor', OrderedDict([(u'@EditorType', u'DefaultCommandPropertyEditor'), (u'@DisplayName', u'<Edit...>')]))]))]), OrderedDict([(u'@Name', u'NMakeOutput'), (u'@DisplayName', u'Output'), (u'@Description', u'Specifies the output file to generate.'), (u'@Category', u'General'), (u'@IncludeInCommandLine', u'false'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.Output')]), OrderedDict([(u'@Name', u'AdditionalOptions'), (u'@DisplayName', u'Additional Options'), (u'@Category', u'IntelliSense'), (u'@Description', u'Specifies additional compiler switches to be used by Intellisense when parsing C++ files')])]), (u'StringListProperty', [OrderedDict([(u'@Name', u'NMakePreprocessorDefinitions'), (u'@DisplayName', u'Preprocessor Definitions'), (u'@Category', u'IntelliSense'), (u'@Switch', u'D'), (u'@Description', u'Specifies the preprocessor defines used by the source files.'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.PreprocessorDefinitions')]), OrderedDict([(u'@Name', u'NMakeIncludeSearchPath'), (u'@DisplayName', u'Include Search Path'), (u'@Category', u'IntelliSense'), (u'@Switch', u'I'), (u'@Description', u'Specifies the include search path for resolving included files.'), (u'@Subtype', u'folder'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.IncludeSearchPath')]), OrderedDict([(u'@Name', u'NMakeForcedIncludes'), (u'@DisplayName', u'Forced Includes'), (u'@Category', u'IntelliSense'), (u'@Switch', u'FI'), (u'@Description', u'Specifies the files that are forced included.'), (u'@Subtype', u'folder'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.ForcedIncludes')]), OrderedDict([(u'@Name', u'NMakeAssemblySearchPath'), (u'@DisplayName', u'Assembly Search Path'), (u'@Category', u'IntelliSense'), (u'@Switch', u'AI'), (u'@Description', u'Specifies the assembly search path for resolving used .NET assemblies.'), (u'@Subtype', u'folder'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.AssemblySearchPath')]), OrderedDict([(u'@Name', u'AdditionalSOSearchPaths'), (u'@DisplayName', u'Additional Symbol Search Paths'), (u'@Category', u'IntelliSense'), (u'@Description', u'Locations to identify '), (u'@F1Keyword', u'VC.Project.VCNMakeTool.AdditionalSOSearchPaths')])])]))])
@@ -60,7 +62,6 @@ class VisualStudio(Tool, Exporter):
     }
 
     def __init__(self, workspace, env_settings):
-        self.definitions = 0
         self.workspace = workspace
         self.env_settings = env_settings
 
@@ -72,6 +73,50 @@ class VisualStudio(Tool, Exporter):
     def get_toolchain():
         return None
 
+    def _set_vcxproj(self, name='', execut='', build='', rebuild='', clean=''):
+        proj_dic = {}
+        proj_dic['build_command'] = build
+        proj_dic['rebuild_command'] = rebuild
+        proj_dic['clean_command'] = clean
+        proj_dic['executable_path'] = execut
+        proj_dic['uuid'] = str(uuid.uuid5(uuid.NAMESPACE_URL, name)).upper()
+        return proj_dic
+
+    def _set_vcxproj_user(self, gdb_add, debbuger_exec, local_executable, working_dir):
+        proj_dic = {}
+        proj_dic['gdb_address'] = gdb_add
+        proj_dic['debugger_executable'] = 'arm-none-eabi-gdb'
+        proj_dic['local_executable'] = local_executable
+        proj_dic['working_dir'] = working_dir
+        return proj_dic
+
+    def export_project(self):
+        output = copy.deepcopy(self.generated_project)
+        expanded_dic = self.workspace.copy()
+
+        # data for .vcxproj
+        expanded_dic['vcxproj'] = {}
+        expanded_dic['vcxproj'] = self._set_vcxproj(expanded_dic['name'])
+
+        # data for debugger for pyOCD
+        expanded_dic['vcxproj_user'] = {}
+        # TODO: localhost and gdb should be misc for VS ! Add misc options
+        expanded_dic['vcxproj_user'] = self._set_vcxproj_user('localhost:3333', 'arm-none-eabi-gdb', 
+            os.path.join(expanded_dic['build_dir'], expanded_dic['name']), os.path.join(os.getcwd(), data_for_make['output_dir']['path']))
+
+        # Project files
+        project_path, output['files']['vcxproj.filters'] = self.gen_file_jinja(
+            'visual_studio.vcxproj.filters.tmpl', expanded_dic, '%s.vcxproj.filters' % expanded_dic['name'], data_for_make['output_dir']['path'])
+        project_path, output['files']['vcxproj'] = self.gen_file_jinja(
+            'visual_studio.vcxproj.tmpl', expanded_dic, '%s.vcxproj' % expanded_dic['name'], data_for_make['output_dir']['path'])
+        project_path, output['files']['vcxproj.user'] = self.gen_file_jinja(
+            'visual_studio.vcxproj.user.tmpl', expanded_dic, '%s.vcxproj.user' % expanded_dic['name'], data_for_make['output_dir']['path'])
+
+        # NMake and debugger assets
+        self.gen_file_raw(xmltodict.unparse(self.linux_nmake_xaml, pretty=True), 'linux_nmake.xaml', data_for_make['output_dir']['path'])
+        self.gen_file_raw(xmltodict.unparse(self.linux_debugger_xaml, pretty=True), 'LocalDebugger.xaml', data_for_make['output_dir']['path'])
+
+        return output
 
 class VisualStudioMakeGCCARM(VisualStudio):
 
@@ -86,14 +131,12 @@ class VisualStudioMakeGCCARM(VisualStudio):
     }
 
     def __init__(self, workspace, env_settings):
-        self.definitions = 0
+        super(VisualStudioMakeGCCARM, self).__init__(workspace, env_settings)
         self.exporter = MakefileGccArm(workspace, env_settings)
-        self.workspace = workspace
-        self.env_settings = env_settings
 
     @staticmethod
     def get_toolnames():
-        return ['visual_studio'] + MakefileGccArm.get_toolnames()
+        return VisualStudio.get_toolnames() + MakefileGccArm.get_toolnames()
 
     @staticmethod
     def get_toolchain():
@@ -110,18 +153,14 @@ class VisualStudioMakeGCCARM(VisualStudio):
 
         # data for .vcxproj
         expanded_dic['vcxproj'] = {}
-        expanded_dic['vcxproj']['build_command'] = 'make all'
-        expanded_dic['vcxproj']['rebuild_command'] = 'make clean &amp;&amp; make all'
-        expanded_dic['vcxproj']['clean_command'] = 'make clean &amp;&amp; make all'
-        expanded_dic['vcxproj']['executable_path'] = ''
-        expanded_dic['vcxproj']['uuid'] = str(uuid.uuid5(uuid.NAMESPACE_URL, expanded_dic['name'])).upper()
+        expanded_dic['vcxproj'] = self._set_vcxproj(expanded_dic['name'],'make all', 'make clean &amp;&amp; make all',
+            'make clean &amp;&amp; make all', '')
 
         # data for debugger for pyOCD
         expanded_dic['vcxproj_user'] = {}
-        expanded_dic['vcxproj_user']['gdb_address'] = 'localhost:3333'
-        expanded_dic['vcxproj_user']['debugger_executable'] = 'arm-none-eabi-gdb'
-        expanded_dic['vcxproj_user']['local_executable'] = os.path.join(expanded_dic['build_dir'], expanded_dic['name'])
-        expanded_dic['vcxproj_user']['working_dir'] = os.path.join(os.getcwd(), data_for_make['output_dir']['path'])
+        # TODO: localhost and gdb should be misc for VS ! Add misc options
+        expanded_dic['vcxproj_user'] = self._set_vcxproj_user('localhost:3333', 'arm-none-eabi-gdb', 
+            os.path.join(expanded_dic['build_dir'], expanded_dic['name']), os.path.join(os.getcwd(), data_for_make['output_dir']['path']))
 
         # Project files
         project_path, output['files']['vcxproj.filters'] = self.gen_file_jinja(
@@ -141,4 +180,5 @@ class VisualStudioMakeGCCARM(VisualStudio):
         logging.debug("Not supported currently")
 
     def get_generated_project_files(self):
+        # TODO: implement
         pass
