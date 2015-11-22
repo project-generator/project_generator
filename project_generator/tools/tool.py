@@ -89,10 +89,10 @@ class Exporter(object):
         template_path = join(self.TEMPLATE_DIR, template_file)
         template_text = open(template_path).read()
         # TODO: undefined=StrictUndefined - this needs fixes in templates
-        template = Template(template_text.decode('utf-8'))
+        template = Template(template_text)
         target_text = template.render(data)
 
-        open(output, "w").write(target_text.encode('utf-8'))
+        open(output, "w").write(target_text)
         return dirname(output), output
 
     def fixup_executable(self, exe_path):
