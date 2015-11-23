@@ -117,6 +117,7 @@ class Project:
         'includes': [],      # include paths
         'macros': [],        # macros
         'linker_file': None, # linker script file
+        'linker_options': [],# linker options
         'source_paths': [],  # [internal] source paths derived from sources
         'include_files': [], # [internal] include files - used in the copy function
         'source_groups': {}, # [internal] sources are here in groups (virtual folders)
@@ -209,6 +210,9 @@ class Project:
 
             if 'linker_file' in project_file_data[key_value]:
                 project_dic['linker_file'] = os.path.normpath(project_file_data[key_value]['linker_file'][0])
+
+            if 'linker_options' in project_file_data[key_value]:
+                project_dic['linker_options'].extend([x for x in project_file_data[key_value]['linker_options'] if x is not None])
 
             if 'template' in project_file_data[key_value]:
                 project_dic['template'] = os.path.normpath(project_file_data[key_value]['template'][0])
@@ -432,6 +436,7 @@ class Project:
         self.project['export']['source_paths'] =  self.project['export']['source_paths'] + self._get_tool_data('source_paths', tool_keywords)
         self.project['export']['macros'] = self.project['export']['macros'] + self._get_tool_data('macros', tool_keywords)
         self.project['export']['linker_file'] =  self.project['export']['linker_file'] or self._get_tool_data('linker_file', tool_keywords)
+        self.project['export']['linker_options'] =  self.project['export']['linker_options'] or self._get_tool_data('linker_options', tool_keywords)
         self.project['export']['template'] = self._get_tool_data('template', tool_keywords)
         self.project['export']['misc'] =  self._get_tool_data('misc', tool_keywords)
 

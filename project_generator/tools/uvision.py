@@ -178,6 +178,7 @@ class Uvision(Tool, Builder, Exporter):
         self._uvproj_clean_xmldict(uvproj_dic['Cads']['VariousControls'])
         self._uvproj_clean_xmldict(uvproj_dic['LDads'])
         uvproj_dic['LDads']['ScatterFile'] = project_dic['linker_file']
+        uvproj_dic['LDads']['Misc'] = project_dic['linker_options']
 
         uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['includes']).encode('utf-8')
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
