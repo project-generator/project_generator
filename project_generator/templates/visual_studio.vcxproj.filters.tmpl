@@ -31,4 +31,11 @@
     </ClCompile>
   </ItemGroup>
   {% endfor %}{% endfor %}
+  {% for group_name,files in include_files.items() %} {% for file in files %}
+  <ItemGroup>
+    <ClInclude  Include="{{file}}">
+      <Filter>Include Files</Filter>
+    </ClInclude >
+  </ItemGroup>
+  {% endfor %}{% endfor %}
 </Project>
