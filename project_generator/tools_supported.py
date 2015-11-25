@@ -21,7 +21,7 @@ from .tools.sublimetext import SublimeTextMakeGccARM
 from .tools.gdb import GDB
 from .tools.gdb import ARMNoneEABIGDB
 from .tools.cmake import CMakeGccArm
-from .tools.visual_studio import VisualStudioMakeGCCARM
+from .tools.visual_studio import VisualStudioMakeGCCARM, VisualStudioGDB
 
 class ToolsSupported:
     """ Represents all tools available """
@@ -41,6 +41,7 @@ class ToolsSupported:
         'gdb':                  GDB,
         'arm_none_eabi_gdb':    ARMNoneEABIGDB,
         'cmake_gcc_arm':        CMakeGccArm,
+        'visual_studio_gdb':    VisualStudioGDB,
         'visual_studio_make_gcc_arm': VisualStudioMakeGCCARM,
     }
 

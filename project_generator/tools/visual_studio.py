@@ -53,7 +53,7 @@ from ..util import SOURCE_KEYS
 # I recommend doing minimal project when parsing to python. For instance, we just need one source file, one macro , one header file, or
 # any other data for progen. To get the syntax, where to inject those data and the syntax. Then we can just loop to get data injected.
 
-class VisualStudio(Tool, Exporter):
+class VisualStudioGDB(Tool, Exporter):
 
     # Asset - linux_nmake.xaml
     linux_nmake_xaml = OrderedDict([(u'Rule', OrderedDict([(u'@Name', u'ConfigurationNMake'), (u'@DisplayName', u'NMake'), (u'@PageTemplate', u'generic'), (u'@Description', u'NMake'), (u'@SwitchPrefix', u'/'), (u'@Order', u'100'), (u'@xmlns', u'http://schemas.microsoft.com/build/2009/properties'), (u'Rule.Categories', OrderedDict([(u'Category', [OrderedDict([(u'@Name', u'General'), (u'@DisplayName', u'General'), (u'@Description', u'General')]), OrderedDict([(u'@Name', u'IntelliSense'), (u'@DisplayName', u'IntelliSense'), (u'@Description', u'IntelliSense')])])])), (u'Rule.DataSource', OrderedDict([(u'DataSource', OrderedDict([(u'@Persistence', u'ProjectFile')]))])), (u'StringProperty', [OrderedDict([(u'@Name', u'NMakeBuildCommandLine'), (u'@DisplayName', u'Build Command Line'), (u'@Description', u"Specifies the command line to run for the 'Build' command."), (u'@IncludeInCommandLine', u'false'), (u'@Category', u'General'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.BuildCommandLine'), (u'StringProperty.ValueEditors', OrderedDict([(u'ValueEditor', OrderedDict([(u'@EditorType', u'DefaultCommandPropertyEditor'), (u'@DisplayName', u'<Edit...>')]))]))]), OrderedDict([(u'@Name', u'NMakeReBuildCommandLine'), (u'@DisplayName', u'Rebuild All Command Line'), (u'@Description', u"Specifies the command line to run for the 'Rebuild All' command."), (u'@IncludeInCommandLine', u'false'), (u'@Category', u'General'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.ReBuildCommandLine'), (u'StringProperty.ValueEditors', OrderedDict([(u'ValueEditor', OrderedDict([(u'@EditorType', u'DefaultCommandPropertyEditor'), (u'@DisplayName', u'<Edit...>')]))]))]), OrderedDict([(u'@Name', u'NMakeCleanCommandLine'), (u'@DisplayName', u'Clean Command Line'), (u'@Description', u"Specifies the command line to run for the 'Clean' command."), (u'@IncludeInCommandLine', u'false'), (u'@Category', u'General'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.CleanCommandLine'), (u'StringProperty.ValueEditors', OrderedDict([(u'ValueEditor', OrderedDict([(u'@EditorType', u'DefaultCommandPropertyEditor'), (u'@DisplayName', u'<Edit...>')]))]))]), OrderedDict([(u'@Name', u'NMakeOutput'), (u'@DisplayName', u'Output'), (u'@Description', u'Specifies the output file to generate.'), (u'@Category', u'General'), (u'@IncludeInCommandLine', u'false'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.Output')]), OrderedDict([(u'@Name', u'AdditionalOptions'), (u'@DisplayName', u'Additional Options'), (u'@Category', u'IntelliSense'), (u'@Description', u'Specifies additional compiler switches to be used by Intellisense when parsing C++ files')])]), (u'StringListProperty', [OrderedDict([(u'@Name', u'NMakePreprocessorDefinitions'), (u'@DisplayName', u'Preprocessor Definitions'), (u'@Category', u'IntelliSense'), (u'@Switch', u'D'), (u'@Description', u'Specifies the preprocessor defines used by the source files.'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.PreprocessorDefinitions')]), OrderedDict([(u'@Name', u'NMakeIncludeSearchPath'), (u'@DisplayName', u'Include Search Path'), (u'@Category', u'IntelliSense'), (u'@Switch', u'I'), (u'@Description', u'Specifies the include search path for resolving included files.'), (u'@Subtype', u'folder'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.IncludeSearchPath')]), OrderedDict([(u'@Name', u'NMakeForcedIncludes'), (u'@DisplayName', u'Forced Includes'), (u'@Category', u'IntelliSense'), (u'@Switch', u'FI'), (u'@Description', u'Specifies the files that are forced included.'), (u'@Subtype', u'folder'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.ForcedIncludes')]), OrderedDict([(u'@Name', u'NMakeAssemblySearchPath'), (u'@DisplayName', u'Assembly Search Path'), (u'@Category', u'IntelliSense'), (u'@Switch', u'AI'), (u'@Description', u'Specifies the assembly search path for resolving used .NET assemblies.'), (u'@Subtype', u'folder'), (u'@F1Keyword', u'VC.Project.VCNMakeTool.AssemblySearchPath')]), OrderedDict([(u'@Name', u'AdditionalSOSearchPaths'), (u'@DisplayName', u'Additional Symbol Search Paths'), (u'@Category', u'IntelliSense'), (u'@Description', u'Locations to identify '), (u'@F1Keyword', u'VC.Project.VCNMakeTool.AdditionalSOSearchPaths')])])]))])
@@ -152,22 +152,29 @@ class VisualStudio(Tool, Exporter):
         expanded_dic['vcxproj_user'] = {}
         # TODO: localhost and gdb should be misc for VS ! Add misc options
         vcxproj_user_dic = self._set_vcxproj_user('localhost:3333', 'arm-none-eabi-gdb',
-            os.path.join(expanded_dic['build_dir'], expanded_dic['name']), os.path.join(os.getcwd(), data_for_make['output_dir']['path']))
+            os.path.join(expanded_dic['build_dir'], expanded_dic['name']), os.path.join(os.getcwd(), expanded_dic['output_dir']['path']))
 
-        vcxproj_filters_dic = self._set_vcxproj_filters(self, expanded_dic)
+        vcxproj_filters_dic = self._set_vcxproj_filters(expanded_dic)
 
         # Project files
         project_path, output = self._generate_vcxproj_files(expanded_dic, 
-            expanded_dic['name'], data_for_make['output_dir']['path'], vcxproj_user_dic, vcxproj_filters_dic)
+            expanded_dic['name'], expanded_dic['output_dir']['path'], vcxproj_user_dic, vcxproj_filters_dic)
 
         # NMake and debugger assets
         # TODO: not sure about base class having NMake and debugger. We might want to disable that by default?
-        self.gen_file_raw(xmltodict.unparse(self.linux_nmake_xaml, pretty=True), 'linux_nmake.xaml', data_for_make['output_dir']['path'])
-        self.gen_file_raw(xmltodict.unparse(self.linux_debugger_xaml, pretty=True), 'LocalDebugger.xaml', data_for_make['output_dir']['path'])
+        self.gen_file_raw(xmltodict.unparse(self.linux_nmake_xaml, pretty=True), 'linux_nmake.xaml', expanded_dic['output_dir']['path'])
+        self.gen_file_raw(xmltodict.unparse(self.linux_debugger_xaml, pretty=True), 'LocalDebugger.xaml', expanded_dic['output_dir']['path'])
 
         return output
 
-class VisualStudioMakeGCCARM(VisualStudio):
+    def export_workspace(self):
+        logging.debug("Not supported currently")
+
+    def get_generated_project_files(self):
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['vcxproj.filters'],
+            self.workspace['files']['vcxproj'], self.workspace['files']['vcxproj.user']]}
+
+class VisualStudioMakeGCCARM(VisualStudioGDB):
 
     generated_project = {
         'path': '',
@@ -185,7 +192,7 @@ class VisualStudioMakeGCCARM(VisualStudio):
 
     @staticmethod
     def get_toolnames():
-        return VisualStudio.get_toolnames() + MakefileGccArm.get_toolnames()
+        return VisualStudioGDB.get_toolnames() + MakefileGccArm.get_toolnames()
 
     @staticmethod
     def get_toolchain():
@@ -214,8 +221,11 @@ class VisualStudioMakeGCCARM(VisualStudio):
         vcxproj_filters_dic = self._set_vcxproj_filters(expanded_dic)
 
         # Project files
-        self._generate_vcxproj_files(expanded_dic, expanded_dic['name'], 
+        project_path, vcx_files = self._generate_vcxproj_files(expanded_dic, expanded_dic['name'], 
             data_for_make['output_dir']['path'], vcxproj_user_dic, vcxproj_filters_dic)
+        output['files']['vcxproj.filters'] = vcx_files['files']['vcxproj.filters']
+        output['files']['vcxproj'] = vcx_files['files']['vcxproj']
+        output['files']['vcxproj.user'] = vcx_files['files']['vcxproj.user']
 
         # NMake and debugger assets
         self.gen_file_raw(xmltodict.unparse(self.linux_nmake_xaml, pretty=True), 'linux_nmake.xaml', data_for_make['output_dir']['path'])
@@ -223,9 +233,7 @@ class VisualStudioMakeGCCARM(VisualStudio):
 
         return output
 
-    def export_workspace(self):
-        logging.debug("Not supported currently")
-
     def get_generated_project_files(self):
-        # TODO: implement
-        pass
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['vcxproj.filters'],
+            self.workspace['files']['vcxproj'], self.workspace['files']['vcxproj.user'],
+            self.workspace['files']['Makefile']]}
