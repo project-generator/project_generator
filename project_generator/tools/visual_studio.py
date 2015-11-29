@@ -207,6 +207,8 @@ class VisualStudioMakeGCCARM(VisualStudioGDB):
 
         expanded_dic = self.workspace.copy()
 
+        expanded_dic['makefile'] = True
+
         # data for .vcxproj
         expanded_dic['vcxproj'] = {}
         expanded_dic['vcxproj'] = self._set_vcxproj(expanded_dic['name'],'make all', 'make clean &amp;&amp; make all',
