@@ -106,39 +106,25 @@ class VisualStudioGDB(Tool, Exporter):
         vcxproj_user['Project']['PropertyGroup']['LocalWorkingDirectory'] = working_dir
         return vcxproj_user
 
-    def _set_vcxproj_filters(self, proj_dic):
-        # filters - inject header files and sources
-        vcxproj_filters = copy.deepcopy(self.vcxproj_filters_tmpl)
-        for attribute in SOURCE_KEYS:
-            for group, files in proj_dic[attribute].items():
-                for source in files:
-                    dic = {
-                        'ClCompile': {
-                            'Include': source,
-                            'Filter': group,
-                        }
-                    }
-                    vcxproj_filters['Project']['ItemGroup'].append(dic)
-        for group, files in proj_dic['include_files'].items():
-            for include in files:
-                dic = {
-                    'ClInclude': {
-                        'Include': include,
-                        'Filter': group,
-                    }
-                }
-                vcxproj_filters['Project']['ItemGroup'].append(dic)
-        return vcxproj_filters
-
-    def _generate_vcxproj_files(self, proj_dict, name, rel_path, vcxproj_user_dic, vcxproj_filters_dic):
+    def _generate_vcxproj_files(self, proj_dict, name, rel_path, vcxproj_user_dic):
         output = copy.deepcopy(self.generated_project)
-        project_path, output['files']['vcxproj.filters'] = self.gen_file_raw(
-            xmltodict.unparse(vcxproj_filters_dic, pretty=True), '%s.vcxproj.filters' % name, rel_path)
+        project_path, output['files']['vcxproj.filters'] = self.gen_file_jinja(
+            'visual_studio.vcxproj.filters.tmpl', proj_dict, '%s.vcxproj.filters' % name, rel_path)
         project_path, output['files']['vcxproj'] = self.gen_file_jinja(
             'visual_studio.vcxproj.tmpl', proj_dict, '%s.vcxproj' % name, rel_path)
         project_path, output['files']['vcxproj.user'] = self.gen_file_raw(
             xmltodict.unparse(vcxproj_user_dic, pretty=True), '%s.vcxproj.user' % name, rel_path)
         return project_path, output
+
+    def _set_groups(self, proj_dic):
+        # each group needs to have own filter with UUID
+        proj_dic['source_groups'] = {}
+        proj_dic['include_groups'] = {}
+        for key in SOURCE_KEYS:
+            for group_name, files in proj_dic[key].items():
+                proj_dic['source_groups'][group_name] = str(uuid.uuid5(uuid.NAMESPACE_URL, group_name)).upper()
+        for k,v in proj_dic['include_files'].items():
+            proj_dic['include_groups'][k] = str(uuid.uuid5(uuid.NAMESPACE_URL, k)).upper()
 
     def export_project(self):
         output = copy.deepcopy(self.generated_project)
@@ -154,11 +140,11 @@ class VisualStudioGDB(Tool, Exporter):
         vcxproj_user_dic = self._set_vcxproj_user('localhost:3333', 'arm-none-eabi-gdb',
             os.path.join(expanded_dic['build_dir'], expanded_dic['name']), os.path.join(os.getcwd(), expanded_dic['output_dir']['path']))
 
-        vcxproj_filters_dic = self._set_vcxproj_filters(expanded_dic)
+        self._set_groups(expanded_dic)
 
         # Project files
         project_path, output = self._generate_vcxproj_files(expanded_dic, 
-            expanded_dic['name'], expanded_dic['output_dir']['path'], vcxproj_user_dic, vcxproj_filters_dic)
+            expanded_dic['name'], expanded_dic['output_dir']['path'], vcxproj_user_dic)
 
         # NMake and debugger assets
         # TODO: not sure about base class having NMake and debugger. We might want to disable that by default?
@@ -220,11 +206,11 @@ class VisualStudioMakeGCCARM(VisualStudioGDB):
         vcxproj_user_dic = self._set_vcxproj_user('localhost:3333', 'arm-none-eabi-gdb',
             os.path.join(expanded_dic['build_dir'], expanded_dic['name']), os.path.join(os.getcwd(), data_for_make['output_dir']['path']))
 
-        vcxproj_filters_dic = self._set_vcxproj_filters(expanded_dic)
+        self._set_groups(expanded_dic)
 
         # Project files
         project_path, vcx_files = self._generate_vcxproj_files(expanded_dic, expanded_dic['name'], 
-            data_for_make['output_dir']['path'], vcxproj_user_dic, vcxproj_filters_dic)
+            data_for_make['output_dir']['path'], vcxproj_user_dic)
         output['files']['vcxproj.filters'] = vcx_files['files']['vcxproj.filters']
         output['files']['vcxproj'] = vcx_files['files']['vcxproj']
         output['files']['vcxproj.user'] = vcx_files['files']['vcxproj.user']
