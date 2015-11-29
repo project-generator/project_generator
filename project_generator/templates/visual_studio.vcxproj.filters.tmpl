@@ -1,34 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{08a26e93-524c-4982-a01c-c8d4f223d6be}</UniqueIdentifier>
+  {% for k,v in source_groups.items() %}
+    <Filter Include="{{k}}">
+      <UniqueIdentifier>{{v}}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;asm;s</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{35c51339-ba9d-43c8-bd71-5f3199e89878}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc</Extensions>
+  {% endfor %}
+  {% for k,v in include_groups.items() %}
+    <Filter Include="{{k}}">
+      <UniqueIdentifier>{{v}}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;</Extensions>
     </Filter>
+  {% endfor %}
   </ItemGroup>
+
   {% for group_name,files in source_files_c.items() %} {% for file in files %}
   <ItemGroup>
     <ClCompile Include="{{file}}">
-      <Filter>Source Files</Filter>
+      <Filter>{{group_name}}</Filter>
     </ClCompile>
   </ItemGroup>
   {% endfor %}{% endfor %}
   {% for group_name,files in source_files_cpp.items() %} {% for file in files %}
   <ItemGroup>
     <ClCompile Include="{{file}}">
-      <Filter>Source Files</Filter>
+      <Filter>{{group_name}}</Filter>
     </ClCompile>
   </ItemGroup>
   {% endfor %}{% endfor %}
   {% for group_name,files in source_files_s.items() %} {% for file in files %}
   <ItemGroup>
     <ClCompile Include="{{file}}">
-      <Filter>Source Files</Filter>
+      <Filter>{{group_name}}</Filter>
     </ClCompile>
+  </ItemGroup>
+  {% endfor %}{% endfor %}
+  {% for group_name,files in include_files.items() %} {% for file in files %}
+  <ItemGroup>
+    <ClInclude  Include="{{file}}">
+      <Filter>{{group_name}}</Filter>
+    </ClInclude >
   </ItemGroup>
   {% endfor %}{% endfor %}
 </Project>

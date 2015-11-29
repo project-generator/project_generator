@@ -27,7 +27,7 @@ from .simple_project import project_1_yaml, project_2_yaml, projects_1_yaml
 
 class TestProject(TestCase):
 
-    """test things related to the uvision tool"""
+    """test things related to the visual studio tool"""
 
     def setUp(self):
         if not os.path.exists('test_workspace'):
@@ -53,6 +53,14 @@ class TestProject(TestCase):
 
     def test_export_project(self):
         result = self.project.generate('visual_studio_make_gcc_arm', False)
+        # TODO: add project files test once implemted
+        # projectfiles = self.project.get_generated_project_files('visual_studio_make_gcc_arm')
+
+        assert result == 0
+        # assert projectfiles
+        # assert os.path.splitext(projectfiles['files'][0])[1] == '.vcxproj.filters'
+
+        result = self.project.generate('visual_studio_gdb', False)
         # TODO: add project files test once implemted
         # projectfiles = self.project.get_generated_project_files('visual_studio_make_gcc_arm')
 
