@@ -19,6 +19,7 @@ Project generator currently generaters projects for the following tools (IDE, Ma
  - CoIDE (GCC ARM)
  - Eclipse (Makefile with GCC ARM)
  - Sublime (Makefile with GCC ARM)
+ - Visual studio (Makegile with GCC ARM)
 
 We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository.
 The plan is to support as many IDE as possible , same applies for targets/MCU.

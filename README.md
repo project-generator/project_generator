@@ -23,6 +23,7 @@ Project generator currently generaters projects for the following tools (IDE, Ma
  - CoIDE (GCC ARM)
  - Eclipse (Makefile with GCC ARM)
  - Sublime (Makefile with GCC ARM)
+ - Visual studio (Makegile with GCC ARM)
 
 We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository.
 The plan is to support as many IDE as possible , same applies for targets/MCU.
@@ -47,11 +48,12 @@ In case of using this repository directly, be aware, the project generator is us
 
 An example how to use progen [here](https://github.com/project-generator/project_generator_mbed_examples).
 
+###### Docs
 To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/project-generator/project_generator/wiki/Getting_started). There are other sections which describe the each blocks of the project generator.
 
 ##### Add a new target/mcu
 
-We use project generator definitions, which is separate python module and contains mcu/target database plus parser to obtain those from tools projects, visit github page [here](https://github.com/project-generator/project_generator_definitions/).
+We use project generator definitions, which is a separate python module and contains mcu/target database plus parser to obtain those from tools projects, visit github page [here](https://github.com/project-generator/project_generator_definitions/).
 
 Dependencies for Project generator
 -------------------------
