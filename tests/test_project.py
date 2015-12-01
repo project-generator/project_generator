@@ -19,6 +19,7 @@ from unittest import TestCase
 
 from project_generator.project import Project
 from project_generator.generate import Generator
+from project_generator.settings import ProjectSettings
 
 project_1_yaml = {
     'common': {
@@ -44,7 +45,7 @@ projects_yaml = {
 }
 
 def test_output_directory_formatting():
-    path, depth = Project._generate_output_dir('aaa/bbb/cccc/ddd/eee/ffff/ggg')
+    path, depth = Project._generate_output_dir(ProjectSettings(),'aaa/bbb/cccc/ddd/eee/ffff/ggg')
 
     assert depth == 7
     assert os.path.normpath(path) == os.path.normpath('../../../../../../../')
