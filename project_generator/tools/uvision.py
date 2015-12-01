@@ -19,6 +19,7 @@ import logging
 import xmltodict
 import copy
 
+from os import getcwd
 from os.path import basename, join, normpath
 from collections import OrderedDict
 from project_generator_definitions.definitions import ProGenDef
