@@ -341,10 +341,10 @@ class Project:
         return tools
 
     @staticmethod
-    def _generate_output_dir(path):
+    def _generate_output_dir(settings, path):
         """ This is a separate function, so that it can be more easily tested """
 
-        relpath = os.path.relpath(os.getcwd(),path)
+        relpath = os.path.relpath(settings.root,path)
         count = relpath.count(os.sep) + 1
 
         return relpath+os.path.sep, count
@@ -406,7 +406,7 @@ class Project:
             self.project['export']['output_dir']['rel_path'] = ''
             self.project['export']['output_dir']['rel_count'] = 0
         else:
-            self.project['export']['output_dir']['rel_path'], self.project['export']['output_dir']['rel_count'] = self._generate_output_dir(path)
+            self.project['export']['output_dir']['rel_path'], self.project['export']['output_dir']['rel_count'] = self._generate_output_dir(self.settings, path)
 
     def _fill_export_dict(self, tool, copied=False):
         tool_keywords = []
@@ -471,17 +471,17 @@ class Project:
             else:
                 files.append(self.project['export'][key])
 
-        destination = os.path.join(os.getcwd(), self.project['export']['output_dir']['path'])
+        destination = os.path.join(self.settings.root, self.project['export']['output_dir']['path'])
         if os.path.exists(destination):
             shutil.rmtree(destination)
         for item in files:
-            s = os.path.join(os.getcwd(), item)
+            s = os.path.join(self.settings.root, item)
             d = os.path.join(destination, item)
             if os.path.isdir(s):
                 shutil.copytree(s,d)
             else:
                 if not os.path.exists(os.path.dirname(d)):
-                    os.makedirs(os.path.join(os.getcwd(), os.path.dirname(d)))
+                    os.makedirs(os.path.join(self.settings.root, os.path.dirname(d)))
                 shutil.copy2(s,d)
 
     def clean(self, tool):

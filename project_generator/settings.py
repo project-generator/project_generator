@@ -51,6 +51,10 @@ class ProjectSettings:
 
             if 'export_dir' in settings:
                 self.export_location_format = normpath(settings['export_dir'][0])
+            if 'root' in settings:
+                self.root = normpath(settings['root'][0])
+            else:
+                self.root = os.getcwd()
 
     def get_env_settings(self, env_set):
         return self.paths[env_set]
