@@ -113,7 +113,7 @@ class IAREmbeddedWorkbenchProject:
         self._set_multiple_option(ewp_dic[index_iccarm]['data']['option'][index_option], project_dic['include_paths'])
 
         iccarm_dic = ewp_dic[index_iccarm]['data']['option']
-        self._ewp_flags_set(iccarm_dic, project_dic, 'cx_flags', self.FLAG_TO_IAR['cxx_flags'])
+        self._ewp_flags_set(iccarm_dic, project_dic, 'cxx_flags', self.FLAG_TO_IAR['cxx_flags'])
         self._ewp_flags_set(iccarm_dic, project_dic, 'c_flags', self.FLAG_TO_IAR['c_flags'])
 
     def _ewp_aarm_set(self, ewp_dic, project_dic):
