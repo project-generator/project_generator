@@ -19,8 +19,8 @@ import logging
 import xmltodict
 import copy
 
-from os.path import basename, join, normpath
 from os import getcwd
+from os.path import basename, join, normpath
 from collections import OrderedDict
 from project_generator_definitions.definitions import ProGenDef
 
@@ -233,9 +233,9 @@ class Uvision(Tool, Builder, Exporter):
             # get relpath for project and inject it into workspace
             path_project = os.path.dirname(project['files']['uvproj'])
             path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
-            destination = os.path.join(os.path.relpath(os.getcwd(), path_project), project['files']['uvproj'])
+            destination = os.path.join(os.path.relpath(self.env_settings.root, path_project), project['files']['uvproj'])
             if path_project != path_workspace:
-                destination = os.path.join(os.path.relpath(os.getcwd(), path_workspace), project['files']['uvproj'])
+                destination = os.path.join(os.path.relpath(self.env_settings.root, path_workspace), project['files']['uvproj'])
             uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': destination})
 
         # generate the file
@@ -358,7 +358,7 @@ class Uvision(Tool, Builder, Exporter):
 
     def build_project(self):
         # > UV4 -b [project_path]
-        path = join(os.getcwd(), self.workspace['files']['uvproj'])
+        path = join(self.env_settings.root, self.workspace['files']['uvproj'])
         if path.split('.')[-1] != 'uvproj' and path.split('.')[-1] != 'uvprojx':
             path = path + '.uvproj'
 

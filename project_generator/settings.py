@@ -38,6 +38,7 @@ class ProjectSettings:
         self.paths['gcc'] = os.environ.get('ARM_GCC_PATH') or ''
 
         self.export_location_format = self.DEFAULT_EXPORT_LOCATION_FORMAT
+        self.root = os.getcwd()
 
     def update(self, settings):
         if settings:
@@ -51,6 +52,8 @@ class ProjectSettings:
 
             if 'export_dir' in settings:
                 self.export_location_format = normpath(settings['export_dir'][0])
+            if 'root' in settings:
+                self.root = normpath(settings['root'][0])
 
     def get_env_settings(self, env_set):
         return self.paths[env_set]
