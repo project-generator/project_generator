@@ -19,6 +19,7 @@ from unittest import TestCase
 
 from project_generator.project import Project
 from project_generator.generate import Generator
+from project_generator.settings import ProjectSettings
 
 project_1_yaml = {
     'common': {
@@ -39,13 +40,12 @@ projects_yaml = {
         'project_1' : ['test_workspace/project_1.yaml']
     },
     'settings' : {
-        'definitions_dir': ['./notpg/path/somewhere'],
-        'export_dir': ['projects/{workspace}/{tool}_{target}/{project_name}']
+        'export_dir': ['projects/{tool}_{target}/{project_name}']
     }
 }
 
 def test_output_directory_formatting():
-    path, depth = Project._generate_output_dir('aaa/bbb/cccc/ddd/eee/ffff/ggg')
+    path, depth = Project._generate_output_dir(ProjectSettings(),'aaa/bbb/cccc/ddd/eee/ffff/ggg')
 
     assert depth == 7
     assert os.path.normpath(path) == os.path.normpath('../../../../../../../')
@@ -92,8 +92,8 @@ class TestProject(TestCase):
         assert self.project.name == 'project_1'
 
     def test_copy(self):
-        # test copy method which shojld copy all files to generated project dir by default
-        self.project._fill_export_dict('uvision')
+        # test copy method which should copy all files to generated project dir by default
+        self.project._fill_export_dict('uvision', True)
         self.project._copy_sources_to_generated_destination()
 
     def test_set_output_dir_path(self):

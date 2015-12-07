@@ -16,28 +16,27 @@ import logging
 
 from ..generate import Generator
 
-help = 'Export a project record'
-
+help = 'Generate a project record'
 
 def run(args):
     if os.path.exists(args.file):
         generator = Generator(args.file)
         build_failed = False
         export_failed = False
-        if args.defdirectory:
-            logging.info("Def directory is deprecated, look at https://pypi.python.org/pypi/project_generator_definitions")
+        generated = True
         for project in generator.generate(args.project):
-            if project.export(args.tool, args.copy) == -1:
+            generated = False
+            if project.generate(args.tool, args.copy) == -1:
                 export_failed = True
             if args.build:
                 if project.build(args.tool) == -1:
                     build_failed = True
-        if build_failed or export_failed:
+        if build_failed or export_failed or generated:
             return -1
         else:
             return 0
     else:
-        # not project known by pgen
+        # not project known by progen
         logging.warning("%s not found." % args.file)
         return -1
 
@@ -50,8 +49,5 @@ def setup(subparser):
         "-t", "--tool", help="Create project files for provided tool")
     subparser.add_argument(
         "-b", "--build", action="store_true", help="Build defined projects")
-    subparser.add_argument(
-        "-defdir", "--defdirectory",
-        help="Deprecated")
     subparser.add_argument(
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")

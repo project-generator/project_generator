@@ -17,11 +17,13 @@ The project is in alpha phase. Check issues for the ongoing tasks or todo tasks.
 Project generator currently generaters projects for the following tools (IDE, Makefile, etc..):
 
  - uVision
- - Makefile (GCC ARM)
  - IAR
+ - Makefile (GCC ARM)
+ - Cmake (GCC ARM)
  - CoIDE (GCC ARM)
  - Eclipse (Makefile with GCC ARM)
  - Sublime (Makefile with GCC ARM)
+ - Visual studio (Makefile with GCC ARM)
 
 We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository.
 The plan is to support as many IDE as possible , same applies for targets/MCU.
@@ -34,22 +36,24 @@ There are two options, how to use it. Either you download [pypi package](https:/
 Once installed, test if project_generator is recognized:
 
 ```
-pgen --version
+progen --version
 ```
-This should print the current installed version. You can use pgen or project_generator as a command.
+
+This should print the current installed version. You can use progen or project_generator as a command.
 
 ##### Using directly the repository
 In case of using this repository directly, be aware, the project generator is using relative paths. To solve this, invoke run.py with arguments as you would if using the package. Something like: python run.py --version. This helps with debugging the package.
 
 ##### Getting started
 
-An example how to use pgen [here](https://github.com/project-generator/project_generator_mbed_examples).
+An example how to use progen [here](https://github.com/project-generator/project_generator_mbed_examples).
 
+###### Docs
 To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/project-generator/project_generator/wiki/Getting_started). There are other sections which describe the each blocks of the project generator.
 
 ##### Add a new target/mcu
 
-We use project generator definitions, which is separate python module and contains mcu/target database plus parser to obtain those from tools projects, visit github page [here](https://github.com/project-generator/project_generator_definitions/).
+We use project generator definitions, which is a separate python module and contains mcu/target database plus parser to obtain those from tools projects, visit github page [here](https://github.com/project-generator/project_generator_definitions/).
 
 Dependencies for Project generator
 -------------------------

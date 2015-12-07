@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import yaml
 
 from .settings import ProjectSettings
 from .util import flatten, uniqify, load_yaml_records
@@ -23,7 +24,7 @@ class Generator:
                 with open(projects_file, 'rt') as f:
                     self.projects_dict = yaml.load(f)
             except IOError:
-               raise IOError("The main pgen projects file %s doesn't exist." % projects_file)
+               raise IOError("The main progen projects file %s doesn't exist." % projects_file)
         else:
             self.projects_dict = projects_file
         self.workspaces = {}
@@ -32,27 +33,39 @@ class Generator:
         if 'settings' in self.projects_dict:
             self.settings.update(self.projects_dict['settings'])
 
-    def generate(self, name = ''):
-        if 'projects' in self.projects_dict:
-            if name != '':
+    def generate(self, name=''):
+        found = False
+        if name != '':
+            # process project first, workspaces afterwards
+            if 'projects' in self.projects_dict:
                 if name in self.projects_dict['projects'].keys():
+                    found = True
                     records = self.projects_dict['projects'][name]
-                    if type(records) is dict:
-                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
-                        self.workspaces[name] = ProjectWorkspace(name, projects, self)
-                        yield self.workspaces[name]
-                    else:
-                        yield Project(name, load_yaml_records(uniqify(flatten(records))), self)
-                else:
-                    raise RuntimeError("You specified an invalid project name.")
-            else:
-                for name, records in self.projects_dict['projects'].items():
-                    if type(records) is dict:
-                        # workspace
-                        projects = [Project(n, load_yaml_records(uniqify(flatten(r))), self) for n, r in records.items()]
-                        self.workspaces[name] = ProjectWorkspace(name, projects, self)
-                        yield self.workspaces[name]
-                    else:
-                        yield Project(name, load_yaml_records(uniqify(flatten(records))), self)
+                    yield Project(name, load_yaml_records(uniqify(flatten(records))), self.settings)
+            if 'workspaces' in self.projects_dict:
+                workspace_settings = {}
+                if name in self.projects_dict['workspaces'].keys():
+                    found = True
+                    records = self.projects_dict['workspaces'][name]
+                    if 'settings' in records:
+                        workspace_settings = records['settings'] 
+                    projects = [Project(project, load_yaml_records(uniqify(flatten(self.projects_dict['projects'][project]))), self.settings, name) for project in records['projects']]
+                    self.workspaces[name] = ProjectWorkspace(name, projects, self.settings, workspace_settings)
+                    yield self.workspaces[name]
         else:
-            logging.debug("No projects found in the main record file.")
+            if 'projects' in self.projects_dict:
+                found = True
+                for name, records in self.projects_dict['projects'].items():
+                    yield Project(name, load_yaml_records(uniqify(flatten(records))), self.settings)
+            if 'workspaces' in self.projects_dict:
+                found = True
+                for name, records in self.projects_dict['workspaces'].items():
+                    workspace_settings = {}
+                    if 'settings' in records:
+                        workspace_settings = records['settings']
+                    projects = [Project(project, load_yaml_records(uniqify(flatten(self.projects_dict['projects'][project]))), self.settings, name) for project in records['projects']]
+                    self.workspaces[name] = ProjectWorkspace(name, projects, self.settings, workspace_settings)
+                    yield self.workspaces[name]
+
+        if not found:
+            logging.debug("You specified an invalid project name.")

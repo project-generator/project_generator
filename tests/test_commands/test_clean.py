@@ -19,7 +19,7 @@ import shutil
 
 from unittest import TestCase
 
-from project_generator.commands import export, clean
+from project_generator.commands import generate, clean
 from .simple_project import project_1_yaml, projects_yaml, project_2_yaml
 
 class TestCleanCommand(TestCase):
@@ -41,7 +41,7 @@ class TestCleanCommand(TestCase):
 
         self.parser = argparse.ArgumentParser()
         subparsers = self.parser.add_subparsers(help='commands')
-        self.export_subparser = subparsers.add_parser('export', help=export.help)
+        self.export_subparser = subparsers.add_parser('generate', help=generate.help)
         self.clean_subparser = subparsers.add_parser('clean', help=clean.help)
 
     def tearDown(self):
@@ -51,13 +51,13 @@ class TestCleanCommand(TestCase):
 
 
     def test_clean_one_project(self):
-        # We first export project, then clean it
-        export.setup(self.export_subparser)
-        args = self.parser.parse_args(['export','-f','test_workspace/projects.yaml','-p','project_2',
+        # We first generate project, then clean it
+        generate.setup(self.export_subparser)
+        args = self.parser.parse_args(['generate','-f','test_workspace/projects.yaml','-p','project_2',
             '-t', 'uvision'])
-        result = export.run(args)
+        result = generate.run(args)
 
-        # this should export a project to generated_projects/uvision_project_2/project_2.uvproj
+        # this should generate a project to generated_projects/uvision_project_2/project_2.uvproj
         assert os.path.isfile('generated_projects/uvision_project_2/project_2.uvproj')
         assert result == 0
 

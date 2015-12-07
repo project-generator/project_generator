@@ -19,12 +19,13 @@ import logging
 import xmltodict
 import copy
 
-from os.path import basename, join, normpath
 from os import getcwd
+from os.path import basename, join, normpath
 from collections import OrderedDict
 from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Builder, Exporter
+from ..util import SOURCE_KEYS
 
 class uVisionDefinitions():
 
@@ -55,8 +56,18 @@ class uVisionDefinitions():
 class Uvision(Tool, Builder, Exporter):
 
     optimization_options = ['O0', 'O1', 'O2', 'O3']
-    source_files_dic = ['source_files_c', 'source_files_s', 'source_files_cpp', 'source_files_lib', 'source_files_obj']
-    file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3,'o':3, 'lib': 4, 'ar': 4}
+    file_types = {'cpp': 8, 'c': 1, 's': 2, 'obj': 3,'o':3, 'lib': 4, 'ar': 4, 'h': 5}
+
+    # flags mapping to uvision uvproj dics
+    # for available flags, check armcc/armasm/armlink command line guide
+    # this does not provide all options within a project, most usable options are 
+    # exposed via command line, the rest is covered via template project files
+    FLAGS_TO_UVISION = {
+        'asm_flags': 'Aads',
+        'c_flags': 'Cads',
+        'cxx_flags': 'Cads',
+        'ld_flags':  'LDads',
+    }
 
     ERRORLEVEL = {
         0: 'success (0 warnings, 0 errors)',
@@ -92,7 +103,7 @@ class Uvision(Tool, Builder, Exporter):
     def get_toolchain():
         return 'uvision'
 
-    def _expand_data(self, old_data, new_data, attribute, group, rel_path):
+    def _expand_data(self, old_data, new_data, attribute, group):
         """ data expansion - uvision needs filename and path separately. """
         if group == 'Sources':
             old_group = None
@@ -101,27 +112,39 @@ class Uvision(Tool, Builder, Exporter):
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
-                new_file = {"FilePath": rel_path + normpath(file), "FileName": basename(file),
+                new_file = {"FilePath": file, "FileName": basename(file),
                             "FileType": self.file_types[extension.lower()]}
                 new_data['groups'][group].append(new_file)
 
-    def _iterate(self, data, expanded_data, rel_path):
-        """ Iterate through all data, store the result expansion in extended dictionary. """
-        for attribute in self.source_files_dic:
+    def _iterate(self, data, expanded_data):
+        """ Iterate through all sources/includes, store the result expansion in extended dictionary. """
+        for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     group = 'Sources'
                 else:
                     group = k
-                self._expand_data(data[attribute], expanded_data, attribute, group, rel_path)
+                self._expand_data(data[attribute], expanded_data, attribute, group)
+        for k, v in data['include_files'].items():
+            if k == None:
+                group = 'Includes'
+            else:
+                group = k
+            self._expand_data(data['include_files'], expanded_data, attribute, group)
+
 
     def _get_groups(self, data):
         """ Get all groups defined. """
         groups = []
-        for attribute in self.source_files_dic:
+        for attribute in SOURCE_KEYS:
             for k, v in data[attribute].items():
                 if k == None:
                     k = 'Sources'
+                if k not in groups:
+                    groups.append(k)
+            for k, v in data['include_files'].items():
+                if k == None:
+                    k = 'Includes'
                 if k not in groups:
                     groups.append(k)
         return groups
@@ -129,28 +152,6 @@ class Uvision(Tool, Builder, Exporter):
     def _normalize_mcu_def(self, mcu_def):
         for k, v in mcu_def['TargetOption'].items():
             mcu_def['TargetOption'][k] = v[0]
-
-    def _fix_paths(self, data, rel_path):
-        data['includes'] = [join(rel_path, normpath(path)) for path in data['includes']]
-
-        if type(data['source_files_lib']) == type(dict()):
-            for k in data['source_files_lib'].keys():
-                data['source_files_lib'][k] = [
-                    join(rel_path, normpath(path)) for path in data['source_files_lib'][k]]
-        else:
-            data['source_files_lib'] = [
-                join(rel_path, normpath(path)) for path in data['source_files_lib']]
-
-        if type(data['source_files_obj']) == type(dict()):
-            for k in data['source_files_obj'].keys():
-                data['source_files_obj'][k] = [
-                    join(rel_path, normpath(path)) for path in data['source_files_obj'][k]]
-        else:
-            data['source_files_obj'] = [
-                join(rel_path, normpath(path)) for path in data['source_files_obj']]
-
-        if data['linker_file']:
-            data['linker_file'] = join(rel_path, normpath(data['linker_file']))
 
     def _uvproj_clean_xmldict(self, uvproj_dic):
         for k, v in uvproj_dic.items():
@@ -179,9 +180,18 @@ class Uvision(Tool, Builder, Exporter):
         self._uvproj_clean_xmldict(uvproj_dic['LDads'])
         uvproj_dic['LDads']['ScatterFile'] = project_dic['linker_file']
 
-        uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['includes']).encode('utf-8')
+        uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['include_paths']).encode('utf-8')
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
         uvproj_dic['Aads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
+
+        for misc_keys in project_dic['misc'].keys():
+            # ld-flags dont follow the same as asm/c flags, why?!? Please KEIL fix this
+            if misc_keys == 'ld_flags':
+                for item in project_dic['misc'][misc_keys]:
+                    uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['Misc'] += ' ' + item
+            else:
+                for item in project_dic['misc'][misc_keys]:
+                    uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['VariousControls']['MiscControls'] += ' ' + item
 
     def _uvproj_set_TargetCommonOption(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)
@@ -223,9 +233,10 @@ class Uvision(Tool, Builder, Exporter):
             # get relpath for project and inject it into workspace
             path_project = os.path.dirname(project['files']['uvproj'])
             path_workspace = os.path.dirname(self.workspace['settings']['path'] + '\\')
+            destination = os.path.join(os.path.relpath(self.env_settings.root, path_project), project['files']['uvproj'])
             if path_project != path_workspace:
-                rel_path = os.path.relpath(os.getcwd(), path_workspace)
-            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': os.path.join(rel_path,project['files']['uvproj'])})
+                destination = os.path.join(os.path.relpath(self.env_settings.root, path_workspace), project['files']['uvproj'])
+            uvmpw_dic['ProjectWorkspace']['project'].append({'PathAndName': destination})
 
         # generate the file
         uvmpw_xml = xmltodict.unparse(uvmpw_dic, pretty=True)
@@ -241,8 +252,7 @@ class Uvision(Tool, Builder, Exporter):
             expanded_dic['groups'][group] = []
 
         # get relative path and fix all paths within a project
-        self._iterate(self.workspace, expanded_dic, expanded_dic['output_dir']['rel_path'])
-        self._fix_paths(expanded_dic, expanded_dic['output_dir']['rel_path'])
+        self._iterate(self.workspace, expanded_dic)
 
         expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
 
@@ -250,13 +260,21 @@ class Uvision(Tool, Builder, Exporter):
         if expanded_dic['template']:
             # TODO 0xc0170: template list !
             project_file = join(getcwd(), expanded_dic['template'][0])
-            uvproj_dic = xmltodict.parse(file(project_file))
+            try:
+                uvproj_dic = xmltodict.parse(open(project_file))
+            except IOError:
+                logging.info("Template file %s not found" % project_file)
+                return None, None
         elif 'uvision' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
             # TODO 0xc0170: extensions for templates - support multiple files and get their extension
             # and check if user defined them correctly
             project_file = join(getcwd(), self.env_settings.templates['uvision'][0])
-            uvproj_dic = xmltodict.parse(file(project_file))
+            try:
+                uvproj_dic = xmltodict.parse(open(project_file))
+            except IOError:
+                logging.info("Template file %s not found. Using default template" % project_file)
+                uvproj_dic = self.definitions.uvproj_file
         else:
             uvproj_dic = self.definitions.uvproj_file
 
@@ -340,7 +358,7 @@ class Uvision(Tool, Builder, Exporter):
 
     def build_project(self):
         # > UV4 -b [project_path]
-        path = join(os.getcwd(), self.workspace['files']['uvproj'])
+        path = join(self.env_settings.root, self.workspace['files']['uvproj'])
         if path.split('.')[-1] != 'uvproj' and path.split('.')[-1] != 'uvprojx':
             path = path + '.uvproj'
 

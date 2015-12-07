@@ -21,13 +21,13 @@ from nose.tools import *
 from project_generator.generate import Generator
 from project_generator.project import Project
 from project_generator.settings import ProjectSettings
-from project_generator.tools.iar import IARDefinitions, IAREmbeddedWorkbench
+from project_generator.tools.visual_studio import VisualStudioMakeGCCARM
 
 from .simple_project import project_1_yaml, project_2_yaml, projects_1_yaml
 
 class TestProject(TestCase):
 
-    """test things related to the iar tool"""
+    """test things related to the visual studio tool"""
 
     def setUp(self):
         if not os.path.exists('test_workspace'):
@@ -44,7 +44,7 @@ class TestProject(TestCase):
         self.project = next(Generator(projects_1_yaml).generate('project_1'))
         self.project2 = next(Generator(projects_1_yaml).generate('project_2'))
 
-        self.iar = IAREmbeddedWorkbench(self.project.project, ProjectSettings())
+        self.vs = VisualStudioMakeGCCARM(self.project.project, ProjectSettings())
 
     def tearDown(self):
         # remove created directory
@@ -52,16 +52,34 @@ class TestProject(TestCase):
         shutil.rmtree('generated_projects', ignore_errors=True)
 
     def test_export_project(self):
-        result = self.project.generate('iar_arm', False)
-        projectfiles = self.project.get_generated_project_files('iar_arm')
+        result = self.project.generate('visual_studio_make_gcc_arm', False)
+        # TODO: add project files test once implemted
+        # projectfiles = self.project.get_generated_project_files('visual_studio_make_gcc_arm')
 
         assert result == 0
-        assert projectfiles
-        assert os.path.splitext(projectfiles['files'][0])[1] == '.ewp'
-        assert os.path.splitext(projectfiles['files'][1])[1] == '.eww'
-        assert os.path.splitext(projectfiles['files'][2])[1] == '.ewd'
+        # assert projectfiles
+        # assert os.path.splitext(projectfiles['files'][0])[1] == '.vcxproj.filters'
+
+        result = self.project.generate('visual_studio_gdb', False)
+        # TODO: add project files test once implemted
+        # projectfiles = self.project.get_generated_project_files('visual_studio_make_gcc_arm')
+
+        assert result == 0
+        # assert projectfiles
+        # assert os.path.splitext(projectfiles['files'][0])[1] == '.vcxproj.filters'
+
+    def test_export_project_to_diff_directory(self):
+        project_1_yaml['common']['export_dir'] = ['create_this_folder']
+        with open(os.path.join(os.getcwd(), 'test_workspace/project_1.yaml'), 'wt') as f:
+            f.write(yaml.dump(project_1_yaml, default_flow_style=False))
+        for project in Generator(projects_1_yaml).generate('project_1'):
+            result = project.generate('visual_studio_make_gcc_arm', False)
+
+        assert result == 0
+        assert os.path.isdir('create_this_folder')
+        shutil.rmtree('create_this_folder')
 
     def test_template(self):
-        # should fail as template does not exists
-        result = self.project2.generate('iar_arm', False)
+        # should fail as template does not exists, and neither visual studio supports it
+        result = self.project2.generate('visual_studio_make_gcc_arm', False)
         assert result == 0

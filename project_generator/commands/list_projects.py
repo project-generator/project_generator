@@ -17,10 +17,9 @@ from project_generator_definitions.definitions import ProGenTargets
 
 from ..tools_supported import ToolsSupported
 from ..generate import Generator
-from ..util import unicode_available
 from ..settings import ProjectSettings
 
-help = 'List general pgen data as projects, tools or targets'
+help = 'List general progen data as projects, tools or targets'
 
 
 def run(args):
@@ -37,10 +36,10 @@ def run(args):
                 print("%s supports: %s\n"%(project.project['name'], tools))
     else:
         if args.section == 'targets':
-            print("\nPgen supports the following targets:\n")
+            print("\nProgen supports the following targets:\n")
             print("\n".join(ProGenTargets().get_targets()))
         elif args.section == 'tools':
-            print("\nPgen supports the following tools:\n")
+            print("\nProgen supports the following tools:\n")
             print("\n".join(ToolsSupported().get_supported()))
         elif args.section == 'projects':
             print("\nFile needs to be defined for projects.")
@@ -51,4 +50,3 @@ def setup(subparser):
     subparser.add_argument("section", choices = ['targets','tools','projects'],
                            help="What section you would like listed", default='projects')
     subparser.add_argument("-f", "--file", help="YAML projects file")
-    subparser.add_argument("-u", "--no-unicode", help="Use ASCII characters only", action='store_true')

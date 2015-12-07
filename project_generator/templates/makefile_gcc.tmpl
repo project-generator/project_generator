@@ -35,7 +35,7 @@ NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)nm
 INSTRUCTION_MODE = thumb
 TARGET = {{name}}
 {% if output_type == 'exe' %}
-TARGET_EXT = elf
+TARGET_EXT =
 {% else %}
 TARGET_EXT = a
 {% endif %}
@@ -49,7 +49,7 @@ LIB_PATHS = {% for path in lib_paths %} {{path}} {% endfor %}
 
 
 # directories
-INC_DIRS = {% for path in includes %} {{path}} {% endfor %}
+INC_DIRS = {% for path in include_paths %} {{path}} {% endfor %}
 
 OUT_DIR = {{build_dir}}
 
@@ -63,20 +63,22 @@ else
 	OBJ_FOLDER = $(strip $(OUT_DIR))/
 endif
 
-COMPILER_OPTIONS  = {% for option in compiler_options %} -{{option}} {% endfor %}
-COMPILER_OPTIONS += -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -c -g -MMD -MP $(CC_SYMBOLS)
-
 # Flags
-CFLAGS = $(COMPILER_OPTIONS) -std={{ c_standard|default('gnu99') }} $(INC_DIRS_F)
+COMMON_FLAGS = {% for option in common_flags %} {{option}} {% endfor %}
+COMMON_FLAGS += -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -MMD -MP $(CC_SYMBOLS)
 
-CXXFLAGS = $(COMPILER_OPTIONS) -std={{ cc_standard|default('gnu++98') }} -fno-rtti $(INC_DIRS_F)
+C_FLAGS  = {% for option in c_flags %} {{option}} {% endfor %}
+CXX_FLAGS  = {% for option in cxx_flags %} {{option}} {% endfor %}
+ASM_FLAGS  = {% for option in asm_flags %} {{option}} {% endfor %}
 
-ASFLAGS = $(COMPILER_OPTIONS) $(INC_DIRS_F)
+CFLAGS = $(C_FLAGS) $(INC_DIRS_F)
+CXXFLAGS = $(CXX_FLAGS) $(INC_DIRS_F)
+ASFLAGS = $(ASM_FLAGS) $(INC_DIRS_F)
 
 # Linker options
 LD_OPTIONS = -mcpu=$(CPU) -m$(INSTRUCTION_MODE)
-LD_OPTIONS += -specs=nano.specs {% for option in linker_options %}-{{option}} {% endfor %}
-LD_OPTIONS += -Wl,--wrap,main -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T$(LD_SCRIPT)
+LD_OPTIONS += {% for option in ld_flags %} {{option}} {% endfor %}
+LD_OPTIONS += -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T$(LD_SCRIPT)
 
 OBJCPFLAGS = -O ihex
 
@@ -104,21 +106,21 @@ VPATH := $(SRC_DIRS)
 $(OBJ_FOLDER)%.o : %.c
 	@echo 'Building file: $(@F)'
 	@echo 'Invoking: MCU C Compiler'
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) $(COMMON_FLAGS) $< -o $@
 	@echo 'Finished building: $(@F)'
 	@echo ' '
 
 $(OBJ_FOLDER)%.o : %.cpp
 	@echo 'Building file: $(@F)'
 	@echo 'Invoking: MCU C++ Compiler'
-	$(CXX) $(CXXFLAGS) $< -o $@
+	$(CXX) $(CXXFLAGS) $(COMMON_FLAGS) $< -o $@
 	@echo 'Finished building: $(@F)'
 	@echo ' '
 
 $(OBJ_FOLDER)%.o : %.s
 	@echo 'Building file: $(@F)'
 	@echo 'Invoking: MCU Assembler'
-	$(AS) $(ASFLAGS) $< -o $@
+	$(AS) $(ASFLAGS) $(COMMON_FLAGS) $< -o $@
 	@echo 'Finished building: $(@F)'
 	@echo ' '
 

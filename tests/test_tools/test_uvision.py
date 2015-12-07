@@ -16,13 +16,14 @@ import yaml
 import shutil
 
 from unittest import TestCase
+from nose.tools import *
 
 from project_generator.generate import Generator
 from project_generator.project import Project
 from project_generator.settings import ProjectSettings
 from project_generator.tools.uvision import uVisionDefinitions, Uvision
 
-from .simple_project import project_1_yaml, projects_1_yaml
+from .simple_project import project_1_yaml, project_2_yaml, projects_1_yaml
 
 class TestProject(TestCase):
 
@@ -34,11 +35,14 @@ class TestProject(TestCase):
         # write project file
         with open(os.path.join(os.getcwd(), 'test_workspace/project_1.yaml'), 'wt') as f:
             f.write(yaml.dump(project_1_yaml, default_flow_style=False))
+        with open(os.path.join(os.getcwd(), 'test_workspace/project_2.yaml'), 'wt') as f:
+            f.write(yaml.dump(project_2_yaml, default_flow_style=False))
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_1_yaml, default_flow_style=False))
 
         self.project = next(Generator(projects_1_yaml).generate('project_1'))
+        self.project2 = next(Generator(projects_1_yaml).generate('project_2'))
 
         self.defintions = uVisionDefinitions()
         self.uvision = Uvision(self.project.project, ProjectSettings())
@@ -54,7 +58,7 @@ class TestProject(TestCase):
     #     self.uvision.export_project()
 
     def test_export_project(self):
-        result = self.project.export('uvision', False)
+        result = self.project.generate('uvision', False)
         # it should get generated files from the last export
         projectfiles = self.project.get_generated_project_files('uvision')
 
@@ -67,16 +71,21 @@ class TestProject(TestCase):
         with open(os.path.join(os.getcwd(), 'test_workspace/project_1.yaml'), 'wt') as f:
             f.write(yaml.dump(project_1_yaml, default_flow_style=False))
         for project in Generator(projects_1_yaml).generate('project_1'):
-            result = project.export('uvision', False)
+            result = project.generate('uvision', False)
 
         assert result == 0
         assert os.path.isdir('create_this_folder')
         shutil.rmtree('create_this_folder')
 
     def test_build_project(self):
-        result_export = self.project.export('uvision', False)
+        result_export = self.project.generate('uvision', False)
         result_build = self.project.build('uvision')
 
         assert result_export == 0
         # nonvalid project, should fail with errors
         assert result_build == -1
+
+    def test_template(self):
+        # should fail as template does not exists
+        result = self.project2.generate('uvision', False)
+        assert result == 0

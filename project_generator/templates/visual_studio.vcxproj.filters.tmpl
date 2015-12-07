@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+  {% for k,v in source_groups.items() %}
+    <Filter Include="{{k}}">
+      <UniqueIdentifier>{{v}}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;asm;s</Extensions>
+    </Filter>
+  {% endfor %}
+  {% for k,v in include_groups.items() %}
+    <Filter Include="{{k}}">
+      <UniqueIdentifier>{{v}}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;</Extensions>
+    </Filter>
+  {% endfor %}
+  </ItemGroup>
+
+  {% for group_name,files in source_files_c.items() %} {% for file in files %}
+  <ItemGroup>
+    <ClCompile Include="{{file}}">
+      <Filter>{{group_name}}</Filter>
+    </ClCompile>
+  </ItemGroup>
+  {% endfor %}{% endfor %}
+  {% for group_name,files in source_files_cpp.items() %} {% for file in files %}
+  <ItemGroup>
+    <ClCompile Include="{{file}}">
+      <Filter>{{group_name}}</Filter>
+    </ClCompile>
+  </ItemGroup>
+  {% endfor %}{% endfor %}
+  {% for group_name,files in source_files_s.items() %} {% for file in files %}
+  <ItemGroup>
+    <ClCompile Include="{{file}}">
+      <Filter>{{group_name}}</Filter>
+    </ClCompile>
+  </ItemGroup>
+  {% endfor %}{% endfor %}
+  {% for group_name,files in include_files.items() %} {% for file in files %}
+  <ItemGroup>
+    <ClInclude  Include="{{file}}">
+      <Filter>{{group_name}}</Filter>
+    </ClInclude >
+  </ItemGroup>
+  {% endfor %}{% endfor %}
+</Project>

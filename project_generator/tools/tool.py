@@ -63,7 +63,7 @@ class Exporter(object):
     # for example xml. Or jinja2 templates, not always possible to generate valid
     # xml/json/etc.. output, then jinja2 helps as it's just injects data to predefined
     # valid format. The easiest way is use raw, as we can template a project, take a valid
-    # project, parse it and inject pgen data into and generate a file which tool understands
+    # project, parse it and inject progen data into and generate a file which tool understands
 
     # jinja2 is quite a work for more advanced tools as there are many options and support all of
     # them requires lot of time. On the other hand, use a template file provided by a user (expecting

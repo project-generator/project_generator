@@ -1,7 +1,7 @@
 project_1_yaml = {
     'common': {
-        'sources': ['test_workspace/main.cpp'],
-        'includes': ['test_workspace/header1.h'],
+        'sources': {'sources': ['test_workspace/main.cpp']},
+        'includes': {'includes': ['test_workspace/header1.h']},
         'macros': ['MACRO1', 'MACRO2'],
         'target': ['mbed-lpc1768'],
         'core': ['core1'],
@@ -27,10 +27,13 @@ project_2_yaml = {
 
 projects_yaml = {
     'projects': {
-        'project_workspace': {
-            'project_1': ['test_workspace/project_1.yaml'],
-        },
         'project_2': ['test_workspace/project_2.yaml'],
         'project_3': ['test_workspace/project_1.yaml'],
+    },
+    'workspaces': {
+        'project_workspace': {
+            'projects': ['project_3'],
+        },
     }
+
 }

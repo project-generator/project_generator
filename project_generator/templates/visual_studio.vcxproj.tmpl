@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ApplicationType>LinuxDebugger</ApplicationType>
+    <SecureShellExecutable>ssh</SecureShellExecutable>
+    <RemoteDebuggerExecutable>gdb</RemoteDebuggerExecutable>
+    <LocalDebuggerExecutable>gdb</LocalDebuggerExecutable>
+    <ProjectGuid>vcxproj['uuid']</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <!--Import Project="$(MSBuildThisFileDirectory)\Microsoft.cpp.Linux.targets" /-->
+  <!-- To Enable linux debugger -->
+  <PropertyGroup>
+    <UseDefaultDebuggersPropertyPageSchemas>false</UseDefaultDebuggersPropertyPageSchemas>
+    <UseDefaultPropertyPageSchemas>false</UseDefaultPropertyPageSchemas>
+    <_ApplicableDebuggers>Desktop</_ApplicableDebuggers>
+    <DebuggerFlavor>LinuxDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <ItemGroup>
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\ProjectItemsSchema.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\directories.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\debugger_general.xml" />
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\LocalDebugger.xaml" />
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\linux_nmake.xaml" />
+    <!-- project only rules -->
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_makefile.xml">
+      <Context>Project</Context>
+    </PropertyPageSchema>
+    <!-- Property sheet only rules -->
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_makefile_ps.xml;$(VCTargetsPath)$(LangID)\usermacros.xml">
+      <Context>PropertySheet</Context>
+    </PropertyPageSchema>
+    <!-- File only rules -->
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\general_file.xml">
+      <Context>File</Context>
+    </PropertyPageSchema>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="Linux" />
+  </ItemGroup>
+
+  <!-- To Enable linux debugger End -->
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <NMakeBuildCommandLine>{{vcxproj['build_command']}}</NMakeBuildCommandLine>
+    <OutDir>$(ProjDir)</OutDir>
+    <IntDir>$(ProjDir)</IntDir>
+    <IncludePath>{%for include in include_paths%} {{include}} {% endfor %}</IncludePath>
+    <SourcePath>{%for source in source_paths%} {{source}} {% endfor %}</SourcePath>
+    <LibraryWPath>
+    </LibraryWPath>
+    <NMakeReBuildCommandLine>{{vcxproj['rebuild_command']}}</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>{{vcxproj['clean_command']}}</NMakeCleanCommandLine>
+    <ExecutablePath>{{vcxproj['executable_path']}}</ExecutablePath>
+    <ReferencePath>
+    </ReferencePath>
+    <LibraryPath>
+    </LibraryPath>
+    <ExcludePath />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <BuildLog>
+      <Path>$(ProjDir){{name}}.log</Path>
+    </BuildLog>
+  </ItemDefinitionGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+
+  {% if makefile %}
+  <ItemGroup>
+    <None Include="Makefile" />
+  </ItemGroup>
+  {% endif %}
+
+    {% for group_name,files in source_files_c.items() %} {% for file in files %}
+    <ItemGroup>
+    <ClCompile Include="{{file}}">
+    <Filter>Source Files</Filter>
+    </ClCompile>
+    </ItemGroup>
+    {% endfor %}{% endfor %}
+
+    {% for group_name,files in source_files_cpp.items() %} {% for file in files %}
+    <ItemGroup>
+    <ClCompile Include="{{file}}">
+    <Filter>Source Files</Filter>
+    </ClCompile>
+    </ItemGroup>
+    {% endfor %}{% endfor %}
+
+    {% for group_name,files in source_files_s.items() %} {% for file in files %}
+    <ItemGroup>
+    <ClCompile Include="{{file}}">
+    <Filter>Source Files</Filter>
+    </ClCompile>
+    </ItemGroup>
+    {% endfor %}{% endfor %}
+
+    {% for group_name,files in include_files.items() %} {% for file in files %}
+    <ItemGroup>
+    <ClInclude Include="{{file}}">
+     <Filter>Include Files</Filter>
+     </ClInclude>
+    </ItemGroup>
+    {% endfor %}{% endfor %}
+
+</Project>
