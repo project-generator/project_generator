@@ -210,17 +210,19 @@ class Project:
 
         # fill common + tool_specific dics from the project_dicts
         for project_data in project_dicts:
-            if 'common' in project_data:
-                self._set_project_attributes('common', self.project['common'], project_data)
-            if 'tool_specific' in project_data:
-                for tool_name, tool_settings in project_data['tool_specific'].items():
-                    try:
-                        # if dict does not exist, we initialize it
-                        bool(self.project['tool_specific'][tool_name])
-                    except KeyError:
-                        self.project['tool_specific'][tool_name] = ProjectTemplate._get_tool_specific_data_template()
-                        self.project['tool_specific'][tool_name].update(ProjectTemplate._get_common_data_template())
-                    self._set_project_attributes(tool_name, self.project['tool_specific'][tool_name], project_data['tool_specific'])
+            # project_data might be empty yaml - None
+            if project_data:
+                if 'common' in project_data:
+                    self._set_project_attributes('common', self.project['common'], project_data)
+                if 'tool_specific' in project_data:
+                    for tool_name, tool_settings in project_data['tool_specific'].items():
+                        try:
+                            # if dict does not exist, we initialize it
+                            bool(self.project['tool_specific'][tool_name])
+                        except KeyError:
+                            self.project['tool_specific'][tool_name] = ProjectTemplate._get_tool_specific_data_template()
+                            self.project['tool_specific'][tool_name].update(ProjectTemplate._get_common_data_template())
+                        self._set_project_attributes(tool_name, self.project['tool_specific'][tool_name], project_data['tool_specific'])
         self.generated_files = {}
 
     # Project data have the some keys the same, therefore we process them here
