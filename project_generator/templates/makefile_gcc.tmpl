@@ -71,9 +71,9 @@ C_FLAGS  = {% for option in c_flags %} {{option}} {% endfor %}
 CXX_FLAGS  = {% for option in cxx_flags %} {{option}} {% endfor %}
 ASM_FLAGS  = {% for option in asm_flags %} {{option}} {% endfor %}
 
-CFLAGS = $(C_FLAGS) $(INC_DIRS_F)
-CXXFLAGS = $(CXX_FLAGS) $(INC_DIRS_F)
-ASFLAGS = $(ASM_FLAGS) $(INC_DIRS_F)
+CFLAGS = $(C_FLAGS) $(INC_DIRS_F) -c
+CXXFLAGS = $(CXX_FLAGS) $(INC_DIRS_F) -c
+ASFLAGS = $(ASM_FLAGS) $(INC_DIRS_F) -c
 
 # Linker options
 LD_OPTIONS = -mcpu=$(CPU) -m$(INSTRUCTION_MODE)
@@ -138,7 +138,7 @@ endif
 $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	$(LD) $(LD_OPTIONS) $(LIB_PATHS) -o $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS)$(LIBS)
+	$(LD) $(LIB_PATHS) -o $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
