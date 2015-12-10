@@ -26,6 +26,18 @@ from .tools.visual_studio import VisualStudioMakeGCCARM, VisualStudioGDB
 class ToolsSupported:
     """ Represents all tools available """
 
+    # Default tools - aliases
+    TOOLS_ALIAS = {
+        'uvision':      'uvision4',
+        'iar':          'iar_arm',
+        'make_gcc':     'make_gcc_arm',
+        'gcc_arm':      'make_gcc_arm',
+        'eclipse':      'eclipse_make_gcc_arm',
+        'sublime':      'sublime_make_gcc_arm',
+        'sublime_text': 'sublime_make_gcc_arm',
+        'visual_studio': 'visual_studio_make_gcc_arm',
+     }
+
     # Tools dictionary
     # Each of this tool needs to support at least:
     # - get_toolchain (toolchain is a list of toolchains supported by tool)
@@ -33,7 +45,7 @@ class ToolsSupported:
     # - export_project (basic functionality to be covered by a tool)
     TOOLS_DICT = {
         'iar_arm':              IAREmbeddedWorkbench,
-        'uvision':              Uvision,
+        'uvision4':             Uvision,
         'coide':                Coide,
         'make_gcc_arm':         MakefileGccArm,
         'eclipse_make_gcc_arm': EclipseGnuARM,
@@ -48,24 +60,32 @@ class ToolsSupported:
     TOOLCHAINS = list(set([v.get_toolchain() for k, v in TOOLS_DICT.items() if v.get_toolchain() is not None]))
     TOOLS = list(set([v for k, v in TOOLS_DICT.items() if v is not None]))
 
+    def _get_tool_name(self, tool):
+        if tool in self.TOOLS_ALIAS.keys():
+            tool = self.TOOLS_ALIAS[tool]
+        return tool
+
     def get_tool(self, tool):
+        name = self._get_tool_name(tool)
         try:
-            return self.TOOLS_DICT[tool]
+            return self.TOOLS_DICT[name]
         except KeyError:
             return None
 
     def get_toolnames(self, tool):
+        name = self._get_tool_name(tool)
         try:
-            return self.TOOLS_DICT[tool].get_toolnames()
+            return self.TOOLS_DICT[name].get_toolnames()
         except KeyError:
             return None
 
     def get_toolchain(self, tool):
+        name = self._get_tool_name(tool)
         try:
-            return self.TOOLS_DICT[tool].get_toolchain()
+            return self.TOOLS_DICT[name].get_toolchain()
         except KeyError:
             return None
 
     def get_supported(self):
-        return self.TOOLS_DICT.keys()
+        return list(self.TOOLS_DICT.keys()) + list(self.TOOLS_ALIAS.keys())
 
