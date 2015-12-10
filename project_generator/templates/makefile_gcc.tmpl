@@ -44,7 +44,11 @@ LD_SCRIPT = {{linker_file}}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 
-LIBS = {% for library in libraries %} -l{{library}} {% endfor %}
+LIBS = {% for library in libraries %} -l{{library}} {% endfor %} 
+{% if standard_libraries %} 
+LIBS += -Wl,--start-group  {% for library in standard_libraries %} -l{{library}} {% endfor %} -Wl,--end-group
+{% endif %} 
+
 LIB_PATHS = {% for path in lib_paths %} {{path}} {% endfor %}
 
 
