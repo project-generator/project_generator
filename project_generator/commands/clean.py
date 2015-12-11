@@ -34,4 +34,4 @@ def setup(subparser):
     subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-p", "--project", required = True, help="Specify which project to be removed")
     subparser.add_argument(
-        "-t", "--tool", help="Clean project files")
+        "-t", "--tool", help="Clean project files for this tool")

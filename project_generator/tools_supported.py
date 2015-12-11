@@ -28,14 +28,15 @@ class ToolsSupported:
 
     # Default tools - aliases
     TOOLS_ALIAS = {
-        'uvision':      'uvision4',
-        'iar':          'iar_arm',
-        'make_gcc':     'make_gcc_arm',
-        'gcc_arm':      'make_gcc_arm',
-        'eclipse':      'eclipse_make_gcc_arm',
-        'sublime':      'sublime_make_gcc_arm',
-        'sublime_text': 'sublime_make_gcc_arm',
+        'uvision':       'uvision4',
+        'iar':           'iar_arm',
+        'make_gcc':      'make_gcc_arm',
+        'gcc_arm':       'make_gcc_arm',
+        'eclipse':       'eclipse_make_gcc_arm',
+        'sublime':       'sublime_make_gcc_arm',
+        'sublime_text':  'sublime_make_gcc_arm',
         'visual_studio': 'visual_studio_make_gcc_arm',
+        'cmake':         'cmake_gcc_arm',
      }
 
     # Tools dictionary

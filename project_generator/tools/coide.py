@@ -63,11 +63,11 @@ class Coide(Tool, Exporter, Builder):
 
     @staticmethod
     def get_toolnames():
-        return ['gcc_arm']
+        return ['coide']
 
     @staticmethod
     def get_toolchain():
-        return 'coide'
+        return 'gcc_arm'
 
     def _expand_data(self, old_data, new_data, attribute, group):
         """ data expansion - coide needs filename and path separately """

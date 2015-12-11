@@ -48,14 +48,14 @@ class CMakeGccArm(Tool,Exporter):
             paths = []
             for value in data[key]:
                 # TODO: this needs to be fixed
-                paths.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'] + '/' + value.replace('\\', '/'))
+                paths.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'].replace('\\', '/') + '/' + value.replace('\\', '/'))
             data[key] = paths
         # fix includes
         includes = []
         for key in data['include_paths']:
-            includes.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'] + '/' + key.replace('\\', '/'))
+            includes.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'].replace('\\', '/') + '/' + key.replace('\\', '/'))
         data['include_paths'] = includes
-        data['linker_file'] = getcwd().replace('\\', '/') + '/' + data['output_dir']['path'] + '/' + data['linker_file'].replace('\\', '/')
+        data['linker_file'] = getcwd().replace('\\', '/') + '/' + data['output_dir']['path'].replace('\\', '/') + '/' + data['linker_file'].replace('\\', '/')
 
     def export_project(self):
         generated_projects = {}
