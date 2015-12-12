@@ -322,9 +322,10 @@ class Uvision(Tool, Builder, Exporter):
             # overwrite the template if target has defined debugger
             # later progen can overwrite this if debugger is set in project data
             try:
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[pro_def.get_debugger(expanded_dic['target'])]['TargetDlls']['Driver']
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[pro_def.get_debugger(expanded_dic['target'])]['Utilities']['Flash2']
-            except KeyError:
+                debugger_name = pro_def.get_debugger(expanded_dic['target'])['name']
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[debugger_name]['TargetDlls']['Driver']
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[debugger_name]['Utilities']['Flash2']
+            except (TypeError, KeyError) as err:
                 pass
             # Support new device packs, we just need probably one of the new features for
             # uvision to notice it's using software packs

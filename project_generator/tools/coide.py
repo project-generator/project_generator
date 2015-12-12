@@ -262,8 +262,9 @@ class Coide(Tool, Exporter, Builder):
                         if option['@name'] == 'org.coocox.codebugger.gdbjtag.core.adapter':
                             found = index
                 index += 1
-                coproj_dic['Project']['Target']['DebugOption']['Option'][found]['@value'] = self.definitions.debuggers[pro_def.get_debugger(expanded_dic['target'])]['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']
-            except KeyError:
+                debugger_name =pro_def.get_debugger(expanded_dic['target'])['name']
+                coproj_dic['Project']['Target']['DebugOption']['Option'][found]['@value'] = self.definitions.debuggers[debugger_name]['Target']['DebugOption']['org.coocox.codebugger.gdbjtag.core.adapter']
+            except (TypeError, KeyError) as err:
                 pass
 
 

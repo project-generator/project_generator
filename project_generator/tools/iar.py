@@ -389,10 +389,10 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             self._ewp_set_target(ewp_dic['project']['configuration']['settings'], mcu_def_dic)
 
             try:
-                debugger = proj_def.get_debugger(expanded_dic['target'])
-                debugger_def = self.definitions.debuggers[debugger]
+                debugger_name = proj_def.get_debugger(expanded_dic['target'])['name']
+                debugger_def = self.definitions.debuggers[debugger_name]
                 self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_dic['project']['configuration']['settings'], debugger_def)
-            except KeyError:
+            except (TypeError, KeyError) as err:
                 pass
 
         # overwrite debugger only if defined in the project file, otherwise use either default or from template
