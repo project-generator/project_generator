@@ -151,7 +151,7 @@ class ProjectTemplate:
         return data_template
 
     @staticmethod
-    def get_project_template(name="Default", output_type='exe', debugger='cmsis-dap', build_dir='build'):
+    def get_project_template(name="Default", output_type='exe', debugger=None, build_dir='build'):
         """ Project data (+ data) """
 
         project_template = {
