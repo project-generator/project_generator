@@ -388,6 +388,13 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             logging.debug("Mcu definitions: %s" % mcu_def_dic)
             self._ewp_set_target(ewp_dic['project']['configuration']['settings'], mcu_def_dic)
 
+            try:
+                debugger = proj_def.get_debugger(expanded_dic['target'])
+                debugger_def = self.definitions.debuggers[debugger]
+                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_dic['project']['configuration']['settings'], debugger_def)
+            except KeyError:
+                pass
+
         # overwrite debugger only if defined in the project file, otherwise use either default or from template
         if expanded_dic['debugger']:
             try:

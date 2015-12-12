@@ -319,6 +319,13 @@ class Uvision(Tool, Builder, Exporter):
                 # TODO: remove for next patch
                 logging.debug("Using old definitions which are faulty for uvision, please update >v0.1.3.")
 
+            # overwrite the template if target has defined debugger
+            # later progen can overwrite this if debugger is set in projec data
+            try:
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[pro_def.get_debugger(expanded_dic['target'])]['TargetDlls']['Driver']
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[pro_def.get_debugger(expanded_dic['target'])]['Utilities']['Flash2']
+            except KeyError:
+                pass
             # Support new device packs, we just need probably one of the new features for
             # uvision to notice it's using software packs
             if 'RegisterFile' in  mcu_def_dic['TargetOption']:
