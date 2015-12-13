@@ -199,6 +199,8 @@ class Project:
     def __init__(self, name, project_dicts, settings, workspace_name=None):
         """ Initialise a project with a yaml file """
 
+        assert type(project_dicts) is list, "Project records/dics must be a list" % project_dicts 
+
         self.settings = settings
         self.name = name
         self.workspace_name = workspace_name
@@ -216,12 +218,15 @@ class Project:
                     self._set_project_attributes('common', self.project['common'], project_data)
                 if 'tool_specific' in project_data:
                     for tool_name, tool_settings in project_data['tool_specific'].items():
+                        # if there's no valid tool name, skip that yaml file and report to a user
+                        if tool_name not in ToolsSupported().get_supported():
+                            logging.error("Project data %s contain non-valid tool: %s" % (project_data, tool_name))
+                            continue
                         try:
                             # if dict does not exist, we initialize it
                             bool(self.project['tool_specific'][tool_name])
                         except KeyError:
-                            self.project['tool_specific'][tool_name] = ProjectTemplate._get_tool_specific_data_template()
-                            self.project['tool_specific'][tool_name].update(ProjectTemplate._get_common_data_template())
+                            self.project['tool_specific'][tool_name] = ProjectTemplate.get_project_template(self.name, OUTPUT_TYPES['exe'])
                         self._set_project_attributes(tool_name, self.project['tool_specific'][tool_name], project_data['tool_specific'])
         self.generated_files = {}
 
@@ -239,7 +244,10 @@ class Project:
                     elif type(destination[attribute]) is dict:
                         destination[attribute].update(data)
                     else:
-                        destination[attribute] = data[0]
+                        if type(data) is list:
+                            destination[attribute] = data[0]
+                        else:
+                            destination[attribute] = data
 
     def _set_internal_common_data(self):
         # process here includes, sources and set all internal data related to them
