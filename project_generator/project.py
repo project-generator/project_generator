@@ -226,8 +226,7 @@ class Project:
                             # if dict does not exist, we initialize it
                             bool(self.project['tool_specific'][tool_name])
                         except KeyError:
-                            self.project['tool_specific'][tool_name] = ProjectTemplate._get_tool_specific_data_template()
-                            self.project['tool_specific'][tool_name].update(ProjectTemplate._get_common_data_template())
+                            self.project['tool_specific'][tool_name] = ProjectTemplate.get_project_template(self.name, OUTPUT_TYPES['exe'])
                         self._set_project_attributes(tool_name, self.project['tool_specific'][tool_name], project_data['tool_specific'])
         self.generated_files = {}
 
