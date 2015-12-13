@@ -199,6 +199,8 @@ class Project:
     def __init__(self, name, project_dicts, settings, workspace_name=None):
         """ Initialise a project with a yaml file """
 
+        assert type(project_dicts) is list, "Project records/dics must be a list" % project_dicts 
+
         self.settings = settings
         self.name = name
         self.workspace_name = workspace_name
