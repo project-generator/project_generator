@@ -8,14 +8,6 @@ import copy
 
 from .tool import Tool, Builder, Exporter
 
-class gdb_definitions():
-
-    SUPPORTED_MCUS = {
-        'K64F': {
-        }
-    }
-
-
 class GDB(Tool, Exporter, Builder):
     def __init__(self, workspace, env_settings):
         self.workspace = workspace
@@ -44,7 +36,6 @@ class GDB(Tool, Exporter, Builder):
 
 
 class ARMNoneEABIGDB(GDB):
-    SUPPORTED = gdb_definitions.SUPPORTED_MCUS
 
     generated_project = {
         'path': '',
@@ -79,10 +70,6 @@ class ARMNoneEABIGDB(GDB):
 
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['startupfile']]}
-
-
-    def supports_target(self, target):
-        return target in self.SUPPORTED
 
     @staticmethod
     def is_supported_by_default(target):
