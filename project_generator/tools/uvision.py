@@ -361,9 +361,6 @@ class Uvision(Tool, Builder, Exporter):
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvproj']]}
 
-    def supports_target(self, target):
-        return target in self.definitions.mcu_def
-
     def build_project(self):
         # > UV4 -b [project_path]
         path = join(self.env_settings.root, self.workspace['files']['uvproj'])

@@ -8,14 +8,6 @@ import copy
 
 from .tool import Tool, Builder, Exporter
 
-class gdb_definitions():
-
-    SUPPORTED_MCUS = {
-        'K64F': {
-        }
-    }
-
-
 class GDB(Tool, Exporter, Builder):
     def __init__(self, workspace, env_settings):
         self.workspace = workspace
@@ -33,10 +25,6 @@ class GDB(Tool, Exporter, Builder):
         # for native debugging, no command files are necessary
         return None, []
 
-    def supports_target(self, target):
-        # !!! TODO: should be yes for native targets
-        return False
-
     @staticmethod
     def is_supported_by_default(target):
         # does not require additional information
@@ -44,7 +32,6 @@ class GDB(Tool, Exporter, Builder):
 
 
 class ARMNoneEABIGDB(GDB):
-    SUPPORTED = gdb_definitions.SUPPORTED_MCUS
 
     generated_project = {
         'path': '',
@@ -64,12 +51,11 @@ class ARMNoneEABIGDB(GDB):
     def get_toolchain():
         return None
 
-    def export_project(self):
+    def _generate_file(self, port):
         generated_projects = copy.deepcopy(self.generated_project)
         expanded_dic = self.workspace.copy()
-        
-        # !!! TODO: store and read settings from gdb_definitions
-        expanded_dic['gdb_server_port'] = 3333
+
+        expanded_dic['gdb_server_port'] = port
 
         project_path, startupfile = self.gen_file_jinja(
             'gdb.tmpl', expanded_dic, '%s.gdbstartup' % expanded_dic['name'], expanded_dic['output_dir']['path'])
@@ -77,14 +63,19 @@ class ARMNoneEABIGDB(GDB):
         generated_projects['files']['startupfile'] = startupfile
         return generated_projects
 
+    def export_project(self):
+        self._generate_file(3333)
+
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['startupfile']]}
-
-
-    def supports_target(self, target):
-        return target in self.SUPPORTED
 
     @staticmethod
     def is_supported_by_default(target):
         # does not require additional information
         return True
+
+class JLinkGDB(ARMNoneEABIGDB):
+
+    def export_project(self):
+        self._generate_file(2331)
+

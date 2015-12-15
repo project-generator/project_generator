@@ -18,8 +18,7 @@ from .tools.coide import Coide
 from .tools.eclipse import EclipseGnuARM
 from .tools.gccarm import MakefileGccArm
 from .tools.sublimetext import SublimeTextMakeGccARM
-from .tools.gdb import GDB
-from .tools.gdb import ARMNoneEABIGDB
+from .tools.gdb import GDB, ARMNoneEABIGDB, JLinkGDB
 from .tools.cmake import CMakeGccArm
 from .tools.visual_studio import VisualStudioMakeGCCARM, VisualStudioGDB
 
@@ -53,6 +52,7 @@ class ToolsSupported:
         'sublime_make_gcc_arm': SublimeTextMakeGccARM,
         'gdb':                  GDB,
         'arm_none_eabi_gdb':    ARMNoneEABIGDB,
+        'jlink_gdb':            JLinkGDB,
         'cmake_gcc_arm':        CMakeGccArm,
         'visual_studio_gdb':    VisualStudioGDB,
         'visual_studio_make_gcc_arm': VisualStudioMakeGCCARM,
