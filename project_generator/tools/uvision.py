@@ -36,28 +36,28 @@ class uVisionDefinitions():
     debuggers = {
         'cmsis-dap': {
             'TargetDlls': {
-                'Driver': 'BIN\CMSIS_AGDI.dll',
+                'Driver': 'BIN\\CMSIS_AGDI.dll',
             },
             'Utilities': {
-                'Flash2': 'BIN\CMSIS_AGDI.dll',
+                'Flash2': 'BIN\\CMSIS_AGDI.dll',
             },
         },
         'j-link': {
             'TargetDlls': {
-                'Driver': 'Segger\JL2CM3.dll',
+                'Driver': 'Segger\\JL2CM3.dll',
             },
             'Utilities': {
-                'Flash2': 'Segger\JL2CM3.dll',
+                'Flash2': 'Segger\\JL2CM3.dll',
             },
         },
-	'ulink-pro': {
+        'ulink-pro': {
             'TargetDlls': {
                 'Driver': 'BIN\\ULP2CM3.dll',
             },
             'Utilities': {
                 'Flash2': 'BIN\\ULP2CM3.dll',
             },
-	}
+        },
     }
 
 
