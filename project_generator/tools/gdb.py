@@ -64,7 +64,7 @@ class ARMNoneEABIGDB(GDB):
         return generated_projects
 
     def export_project(self):
-        self._generate_file(3333)
+        return self._generate_file(3333)
 
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['startupfile']]}
@@ -77,5 +77,5 @@ class ARMNoneEABIGDB(GDB):
 class JLinkGDB(ARMNoneEABIGDB):
 
     def export_project(self):
-        self._generate_file(2331)
+        return self._generate_file(2331)
 
