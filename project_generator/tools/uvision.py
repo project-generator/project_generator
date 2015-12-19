@@ -49,7 +49,15 @@ class uVisionDefinitions():
             'Utilities': {
                 'Flash2': 'Segger\JL2CM3.dll',
             },
-        }
+        },
+	'ulink-pro': {
+            'TargetDlls': {
+                'Driver': 'BIN\\ULP2CM3.dll',
+            },
+            'Utilities': {
+                'Flash2': 'BIN\\ULP2CM3.dll',
+            },
+	}
     }
 
 
