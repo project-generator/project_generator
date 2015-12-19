@@ -23,32 +23,6 @@ from .tool import Tool, Exporter
 from .gccarm import MakefileGccArm
 from ..util import SOURCE_KEYS
 
-# This serves as a new guide for upcoming wiki
-# steps how to create a new tool
-# 1. create a class and inherit frmo Tool and Exporter (at least export should be implemented)
-# 2. implement ctor, get_toolnames and get_toolchain, export_project(), def export_workspace(self): methods
-# and get_generated_project_files()
-# 3. create generated project dictionary (what files will progen generate)
-# 4. To test the basic methods, like export or progen list tools, add this class to tools_supported
-# use logging.debug to print that exporting is happening and other info if you need to
-
-# Not certain if the first step should not be to create templates. Generate a valid project for a tool,
-# create a new project there, make it compile for simple hello world and possibly to debug (verifies that
-# everything is correctly set up). Once we have a simple project, we can inspect the syntax . Where are files stored,
-# include paths, macros, target if any, and other variables. look at project.ProjectTemplate() class which
-# defines data needed for progen.
-# The fastest way is to copy the manually generated project, and replace data with jinja2 syntax. To fill in
-# all data we need (sources, includes, etc). Rename the files to tools_name.extensions.tmpl. They will be used 
-# as templates.
-# We can later switch to full parsing the file and generate it on the fly, but this often is more time consuming to learn
-# how the tool is structured. Thus lets keep it simple for new tool, use jinja2 
-
-# once jinja2 template is working, we can switch to python and provide a template in python
-# for instance using xmltodict for xml tools project
-#>> import xmltodict                                                               
-#>> print xmltodict.parse(file('lpc1768_blinky.vcxproj.user'))                     
-# store the output and create a dict vcxproj.user , where we can injcet progen data
-
 # This file contains 2 classes, VisualStudio gdb project and VisualStudio with gdb project configured for arm gcc
 # I recommend doing minimal project when parsing to python. For instance, we just need one source file, one macro , one header file, or
 # any other data for progen. To get the syntax, where to inject those data and the syntax. Then we can just loop to get data injected.
