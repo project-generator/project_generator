@@ -242,7 +242,7 @@ class Project:
                         else:
                             destination[attribute].append(data)
                     elif type(destination[attribute]) is dict:
-                        destination[attribute].update(data)
+                        destination[attribute] = merge_recursive(destination[attribute], data)
                     else:
                         if type(data) is list:
                             destination[attribute] = data[0]
