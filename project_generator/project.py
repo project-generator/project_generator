@@ -251,62 +251,59 @@ class Project:
 
     def _set_internal_common_data(self):
         # process here includes, sources and set all internal data related to them
-        Project._process_include_files(self.project['common'], self.project['export'])
         for files in self.project['common']['sources']:
             self._process_source_files(files)
+        for files in self.project['common']['includes']:
+            self._process_include_files(files)
 
     def _set_internal_tool_data(self, tool_keywords):
         # process here includes, sources and set all internal data related to them for tool_keywords
         for tool in tool_keywords:
             if tool in self.project['tool_specific'].keys():
-                Project._process_include_files(self.project['tool_specific'][tool], self.project['export'])
+                if 'includes' in self.project['tool_specific'][tool]:
+                    for files in self.project['tool_specific'][tool]['includes']:
+                        self._process_include_files(self.project['tool_specific'][tool]['includes'])
                 if 'sources' in self.project['tool_specific'][tool]:
                     for files in self.project['tool_specific'][tool]['sources']:
                         self._process_source_files(files)
 
-    @staticmethod
-    def _process_include_files(source, destination):
+    def _process_include_files(self, files, use_group_name = 'default'):
         # If it's dic add it , if file, add it to files
-        use_group_name = 'default'
         use_includes = []
-        if 'includes' in source:
-            for includes in source['includes']:
-                if type(includes) == dict:
-                    for group_name, include_files in includes.items():
-                        use_includes += include_files
-                        use_group_name = group_name
-                elif type(includes) == list:
-                    use_includes = includes
+        if type(files) == dict:
+            for group_name, include_files in files.items():
+                self._process_include_files(include_files, group_name)
+        elif type(files) == list:
+            use_includes = files
+        else:
+            use_includes = [files]
+
+        if use_group_name not in self.project['export']['include_files']:
+            self.project['export']['include_files'][use_group_name] = []
+
+        for include_file in use_includes:
+            # include might be set to None - empty yaml list
+            if include_file:
+                if os.path.isdir(include_file):
+                   # its a directory
+                    dir_path = include_file
+                    # get all files from dir
+                    include_files = []
+                    try:
+                        for f in os.listdir(dir_path):
+                            if os.path.isfile(os.path.join(os.path.normpath(dir_path), f)) and f.split('.')[-1].lower() in FILES_EXTENSIONS['include_files']:
+                                include_files.append(os.path.join(os.path.normpath(dir_path), f))
+                    except:
+                        # TODO: catch only those exceptions which are relevant
+                        logging.debug("The includes is not accessible: %s" % include_file)
+                        continue
+                    self.project['export']['include_files'][use_group_name] += include_files
                 else:
-                    use_includes = [includes]
-
-                if use_group_name not in destination['include_files']:
-                    destination['include_files'][use_group_name] = []
-
-                for include_file in use_includes:
-                    # include might be set to None - empty yaml list
-                    if include_file:
-                        if os.path.isdir(include_file):
-                           # its a directory
-                            dir_path = include_file
-                            # get all files from dir
-                            include_files = []
-                            try:
-                                for f in os.listdir(dir_path):
-                                    if os.path.isfile(os.path.join(os.path.normpath(dir_path), f)) and f.split('.')[-1].lower() in FILES_EXTENSIONS['include_files']:
-                                        include_files.append(os.path.join(os.path.normpath(dir_path), f))
-                            except:
-                                # TODO: catch only those exceptions which are relevant
-                                logging.debug("The includes is not accessible: %s" % include_file)
-                                continue
-                            destination['include_files'][use_group_name] += include_files
-                        else:
-                            # include files are in groups as sources
-                            destination['include_files'][use_group_name].append(os.path.normpath(include_file))
-                            dir_path = os.path.dirname(include_file)
-                        if not os.path.normpath(dir_path) in destination['include_paths']:
-                            destination['include_paths'].append(os.path.normpath(dir_path))
-     
+                    # include files are in groups as sources
+                    self.project['export']['include_files'][use_group_name].append(os.path.normpath(include_file))
+                    dir_path = os.path.dirname(include_file)
+                if not os.path.normpath(dir_path) in self.project['export']['include_paths']:
+                    self.project['export']['include_paths'].append(os.path.normpath(dir_path))
 
     def _process_source_files(self, files, use_group_name='default'):
         use_sources = []
