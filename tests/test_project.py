@@ -39,7 +39,9 @@ project_1_yaml = {
 
 project_2_yaml = {
     'common': {
-        'sources': { 'sources_dict' : ['test_workspace/file2.cpp']
+        'sources': { 
+            'sources_dict' : ['test_workspace/file2.cpp'],
+            'sources_dict2' : ['test_workspace/file3.cpp']
         },
         'includes': ['test_workspace/header2.h'],
         'macros': ['MACRO2_1', 'MACRO2_2'],
@@ -86,6 +88,8 @@ class TestProjectYAML(TestCase):
             pass
         with open(os.path.join(os.getcwd(), 'test_workspace/file2.cpp'), 'wt') as f:
             pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/file3.cpp'), 'wt') as f:
+            pass
         with open(os.path.join(os.getcwd(), 'test_workspace/header1.h'), 'wt') as f:
             pass
         with open(os.path.join(os.getcwd(), 'test_workspace/header2.h'), 'wt') as f:
@@ -112,7 +116,6 @@ class TestProjectYAML(TestCase):
         self.project._fill_export_dict('uvision')
         assert self.project.project['export']['macros'] == project_1_yaml['common']['macros'] + project_2_yaml['common']['macros'] 
         assert self.project.project['export']['includes'] == project_1_yaml['common']['includes'] + project_2_yaml['common']['includes']
-        assert self.project.project['export']['sources'] == merge_recursive(project_1_yaml['common']['sources'], project_2_yaml['common']['sources'])
 
     def test_copy(self):
         # test copy method which should copy all files to generated project dir by default
@@ -136,6 +139,8 @@ class TestProjectDict(TestCase):
             pass
         with open(os.path.join(os.getcwd(), 'test_workspace/file2.cpp'), 'wt') as f:
             pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/file3.cpp'), 'wt') as f:
+            pass
         with open(os.path.join(os.getcwd(), 'test_workspace/header1.h'), 'wt') as f:
             pass
         with open(os.path.join(os.getcwd(), 'test_workspace/header2.h'), 'wt') as f:
@@ -156,7 +161,19 @@ class TestProjectDict(TestCase):
         self.project._fill_export_dict('uvision')
         assert self.project.project['export']['macros'] == project_1_yaml['common']['macros'] + project_2_yaml['common']['macros'] 
         assert self.project.project['export']['includes'] == project_1_yaml['common']['includes'] + project_2_yaml['common']['includes']
-        assert self.project.project['export']['sources'] == merge_recursive(project_1_yaml['common']['sources'], project_2_yaml['common']['sources'])
+        # no c or asm files, empty dics
+        assert self.project.project['export']['source_files_c'] == dict()
+        assert self.project.project['export']['source_files_s'] == dict()
+        # source groups should be equal
+        assert self.project.project['export']['source_files_cpp'].keys() == merge_recursive(project_1_yaml['common']['sources'], project_2_yaml['common']['sources']).keys()
+
+    def test_sources_groups(self):
+        self.project._fill_export_dict('uvision')
+        source_groups = []
+        for dic in self.project.project['export']['sources']:
+            for k, v in dic.items():
+                source_groups.append(k)
+        assert source_groups == project_1_yaml['common']['sources'].keys() + project_2_yaml['common']['sources'].keys()
 
     def test_copy(self):
         # test copy method which should copy all files to generated project dir by default
