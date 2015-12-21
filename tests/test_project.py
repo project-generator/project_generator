@@ -61,7 +61,7 @@ def test_output_directory_formatting():
     assert depth == 7
     assert os.path.normpath(path) == os.path.normpath('../../../../../../../')
 
-class TestProject(TestCase):
+class TestProjectYAML(TestCase):
 
     """test things related to the Project class"""
 
@@ -122,3 +122,48 @@ class TestProject(TestCase):
     def test_set_output_dir_path(self):
         self.project._fill_export_dict('uvision')
         assert self.project.project['export']['output_dir']['path'] == os.path.join('projects', 'uvision_target1','project_1')
+
+class TestProjectDict(TestCase):
+
+    """test things related to the Project class, using python dicts"""
+
+    def setUp(self):
+        if not os.path.exists('test_workspace'):
+            os.makedirs('test_workspace')
+
+        # create 3 files to test project
+        with open(os.path.join(os.getcwd(), 'test_workspace/main.cpp'), 'wt') as f:
+            pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/file2.cpp'), 'wt') as f:
+            pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/header1.h'), 'wt') as f:
+            pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/header2.h'), 'wt') as f:
+            pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/linker.ld'), 'wt') as f:
+            pass
+
+        self.project = Project('project_1', [project_1_yaml, project_2_yaml], ProjectSettings())
+
+    def tearDown(self):
+        # remove created directory
+        shutil.rmtree('test_workspace', ignore_errors=True)
+
+    def test_name(self):
+        assert self.project.name == 'project_1'
+
+    def test_project_attributes(self):
+        self.project._fill_export_dict('uvision')
+        assert self.project.project['export']['macros'] == project_1_yaml['common']['macros'] + project_2_yaml['common']['macros'] 
+        assert self.project.project['export']['includes'] == project_1_yaml['common']['includes'] + project_2_yaml['common']['includes']
+        assert self.project.project['export']['sources'] == merge_recursive(project_1_yaml['common']['sources'], project_2_yaml['common']['sources'])
+
+    def test_copy(self):
+        # test copy method which should copy all files to generated project dir by default
+        self.project._fill_export_dict('uvision', True)
+        self.project._copy_sources_to_generated_destination()
+
+    def test_set_output_dir_path(self):
+        self.project._fill_export_dict('uvision')
+        # we use default one in this class
+        assert self.project.project['export']['output_dir']['path'] == os.path.join('generated_projects', 'uvision_project_1')
