@@ -20,10 +20,12 @@ from unittest import TestCase
 from project_generator.project import Project
 from project_generator.generate import Generator
 from project_generator.settings import ProjectSettings
+from project_generator.util import merge_recursive
 
 project_1_yaml = {
     'common': {
-        'sources': ['test_workspace/main.cpp'],
+        'sources': { 'sources_dict' : ['test_workspace/main.cpp']
+        },
         'includes': ['test_workspace/header1.h'],
         'macros': ['MACRO1', 'MACRO2'],
         'target': ['target1'],
@@ -35,9 +37,18 @@ project_1_yaml = {
     }
 }
 
+project_2_yaml = {
+    'common': {
+        'sources': { 'sources_dict' : ['test_workspace/file2.cpp']
+        },
+        'includes': ['test_workspace/header2.h'],
+        'macros': ['MACRO2_1', 'MACRO2_2'],
+    }
+}
+
 projects_yaml = {
     'projects': {
-        'project_1' : ['test_workspace/project_1.yaml']
+        'project_1' : ['test_workspace/project_1.yaml', 'test_workspace/project_2.yaml']
     },
     'settings' : {
         'export_dir': ['projects/{tool}_{target}/{project_name}']
@@ -60,6 +71,8 @@ class TestProject(TestCase):
         # write project file
         with open(os.path.join(os.getcwd(), 'test_workspace/project_1.yaml'), 'wt') as f:
             f.write(yaml.dump(project_1_yaml, default_flow_style=False))
+        with open(os.path.join(os.getcwd(), 'test_workspace/project_2.yaml'), 'wt') as f:
+            f.write(yaml.dump(project_2_yaml, default_flow_style=False))
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_yaml, default_flow_style=False))
@@ -71,7 +84,11 @@ class TestProject(TestCase):
         # create 3 files to test project
         with open(os.path.join(os.getcwd(), 'test_workspace/main.cpp'), 'wt') as f:
             pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/file2.cpp'), 'wt') as f:
+            pass
         with open(os.path.join(os.getcwd(), 'test_workspace/header1.h'), 'wt') as f:
+            pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/header2.h'), 'wt') as f:
             pass
         with open(os.path.join(os.getcwd(), 'test_workspace/linker.ld'), 'wt') as f:
             pass
@@ -90,6 +107,12 @@ class TestProject(TestCase):
 
     def test_name(self):
         assert self.project.name == 'project_1'
+
+    def test_project_attributes(self):
+        self.project._fill_export_dict('uvision')
+        assert self.project.project['export']['macros'] == project_1_yaml['common']['macros'] + project_2_yaml['common']['macros'] 
+        assert self.project.project['export']['includes'] == project_1_yaml['common']['includes'] + project_2_yaml['common']['includes']
+        assert self.project.project['export']['sources'] == merge_recursive(project_1_yaml['common']['sources'], project_2_yaml['common']['sources'])
 
     def test_copy(self):
         # test copy method which should copy all files to generated project dir by default
