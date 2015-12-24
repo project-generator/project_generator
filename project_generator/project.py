@@ -17,10 +17,10 @@ import shutil
 import logging
 import operator
 import copy
+import yaml
 
 from .tools_supported import ToolsSupported
 from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS, fix_paths
-from .init_yaml import _generate_file
 
 logger = logging.getLogger('progen.project')
 
@@ -541,7 +541,10 @@ class Project:
                 dump_data['common'] = self.project['common']
                 dump_data['tool_specific'] = self.project['tool_specific']
                 dump_data['merged'] = self.project['export']
-                _generate_file('%s.progen.log' % self.name, dump_data)
+                handler = logging.FileHandler(os.path.join(os.getcwd(), "%s.log" % self.name),"w", encoding=None, delay="true")
+                handler.setLevel(logging.DEBUG)
+                logger.addHandler(handler)
+                logger.debug("\n" + yaml.dump(dump_data))
 
             files = exporter(self.project['export'], self.settings).export_project()
             generated_files[export_tool] = files
