@@ -120,7 +120,7 @@ class TestProjectYAML(TestCase):
     def test_project_attributes(self):
         self.project._fill_export_dict('uvision')
         assert self.project.project['export']['macros'] == project_1_yaml['common']['macros'] + project_2_yaml['common']['macros'] 
-        assert list(self.project.project['export']['include_files'].keys()) == ['default'] + list(project_2_yaml['common']['includes'].keys())
+        assert set(self.project.project['export']['include_files'].keys()) & set(['default'] + list(project_2_yaml['common']['includes'].keys()))
 
         # no c or asm files, empty dics
         assert self.project.project['export']['source_files_c'] == dict()
@@ -173,7 +173,7 @@ class TestProjectDict(TestCase):
     def test_project_attributes(self):
         self.project._fill_export_dict('uvision')
         assert self.project.project['export']['macros'] == project_1_yaml['common']['macros'] + project_2_yaml['common']['macros'] 
-        assert list(self.project.project['export']['include_files'].keys()) == ['default'] + list(project_2_yaml['common']['includes'].keys())
+        assert set(self.project.project['export']['include_files'].keys()) & set(['default'] + list(project_2_yaml['common']['includes'].keys()))
 
         # no c or asm files, empty dics
         assert self.project.project['export']['source_files_c'] == dict()
