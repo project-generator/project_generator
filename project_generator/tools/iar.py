@@ -28,6 +28,8 @@ from project_generator_definitions.definitions import ProGenDef
 from .tool import Tool, Builder, Exporter
 from ..util import SOURCE_KEYS, FILES_EXTENSIONS, fix_paths
 
+logger = logging.getLogger('progen.tools.iar')
+
 class IARDefinitions():
     """ Definitions for IAR Workbench IDE """
 
@@ -328,7 +330,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             try:
                 ewp_dic = xmltodict.parse(open(project_file), dict_constructor=dict)
             except IOError:
-                logging.info("Template file %s not found" % project_file)
+                logger.info("Template file %s not found" % project_file)
                 ewp_dic = self.definitions.ewp_file
         elif 'iar' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
@@ -337,7 +339,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             try:
                 ewp_dic = xmltodict.parse(open(project_file), dict_constructor=dict)
             except IOError:
-                logging.info("Template file %s not found" % project_file)
+                logger.info("Template file %s not found" % project_file)
                 ewp_dic = self.definitions.ewp_file
         else:
             ewp_dic = self.definitions.ewp_file
@@ -385,7 +387,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                  raise RuntimeError(
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
             self._normalize_mcu_def(mcu_def_dic)
-            logging.debug("Mcu definitions: %s" % mcu_def_dic)
+            logger.debug("Mcu definitions: %s" % mcu_def_dic)
             self._ewp_set_target(ewp_dic['project']['configuration']['settings'], mcu_def_dic)
 
             try:
@@ -442,22 +444,22 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         if proj_path.split('.')[-1] != 'ewp':
             proj_path += '.ewp'
         if not os.path.exists(proj_path):
-            logging.debug("The file: %s does not exists, exported prior building?" % proj_path)
+            logger.debug("The file: %s does not exists, exported prior building?" % proj_path)
             return -1
-        logging.debug("Building IAR project: %s" % proj_path)
+        logger.debug("Building IAR project: %s" % proj_path)
 
         args = [join(self.env_settings.get_env_settings('iar'), 'IarBuild.exe'), proj_path, '-build', os.path.splitext(os.path.basename(self.workspace['files']['ewp']))[0]]
-        logging.debug(args)
+        logger.debug(args)
 
         try:
             ret_code = None
             ret_code = subprocess.call(args)
         except:
-            logging.error("Error whilst calling IarBuild. Please check IARBUILD path in the user_settings.py file.")
+            logger.error("Error whilst calling IarBuild. Please check IARBUILD path in the user_settings.py file.")
             return -1
         else:
             # no IAR doc describes errors from IarBuild
-            logging.info("Build completed.")
+            logger.info("Build completed.")
             return 0
 
     def get_generated_project_files(self):

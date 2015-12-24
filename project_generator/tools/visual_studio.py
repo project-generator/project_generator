@@ -23,6 +23,8 @@ from .tool import Tool, Exporter
 from .gccarm import MakefileGccArm
 from ..util import SOURCE_KEYS
 
+logger = logging.getLogger('progen.tools.visual_studio')
+
 # This file contains 2 classes, VisualStudio gdb project and VisualStudio with gdb project configured for arm gcc
 # I recommend doing minimal project when parsing to python. For instance, we just need one source file, one macro , one header file, or
 # any other data for progen. To get the syntax, where to inject those data and the syntax. Then we can just loop to get data injected.
@@ -128,7 +130,7 @@ class VisualStudioGDB(Tool, Exporter):
         return output
 
     def export_workspace(self):
-        logging.debug("Not supported currently")
+        logger.debug("Not supported currently")
 
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['vcxproj.filters'],

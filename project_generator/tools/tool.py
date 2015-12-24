@@ -18,6 +18,7 @@ import logging
 from os.path import join, dirname
 from jinja2 import Template
 
+logger = logging.getLogger('progen.tools')
 
 # Each new tool should at least support this Tool class methods
 # and Exporter class. The build is optional as not every tool supports building
@@ -74,7 +75,7 @@ class Exporter(object):
         if not os.path.exists(dest_path):
             os.makedirs(dest_path)
         output = join(dest_path, output)
-        logging.debug("Generating: %s" % output)
+        logger.debug("Generating: %s" % output)
 
         open(output, "w").write(target_text)
         return dirname(output), output
@@ -83,7 +84,7 @@ class Exporter(object):
         if not os.path.exists(dest_path):
             os.makedirs(dest_path)
         output = join(dest_path, output)
-        logging.debug("Generating: %s" % output)
+        logger.debug("Generating: %s" % output)
 
         """ Fills data to the project template, using jinja2. """
         template_path = join(self.TEMPLATE_DIR, template_file)
