@@ -54,10 +54,10 @@ def main():
     verbosity = args.verbosity - args.quietness
 
     logging_level = max(logging.INFO - (10 * verbosity), 0)
+    logging.basicConfig(format="%(name)s %(levelname)s\t%(message)s", level=logging_level)
+    logger = logging.getLogger('progen')
 
-    logging.basicConfig(format="%(levelname)s\t%(message)s", level=logging_level)
-
-    logging.debug('This should be the project root: %s', os.getcwd())
+    logger.debug('This should be the project root: %s', os.getcwd())
 
     return args.func(args)
 

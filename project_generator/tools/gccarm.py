@@ -25,6 +25,8 @@ from project_generator_definitions.definitions import ProGenDef
 from .tool import Tool,Exporter
 from ..util import SOURCE_KEYS
 
+logger = logging.getLogger('progen.tools.gccarm')
+
 class MakefileGccArm(Tool, Exporter):
 
     # http://www.gnu.org/software/make/manual/html_node/Running.html
@@ -88,7 +90,7 @@ class MakefileGccArm(Tool, Exporter):
                 project_data['libraries'].append(file.replace("lib",''))
 
     def export_workspace(self):
-        logging.debug("Makefile GCC ARM currently does not support workspaces")
+        logger.debug("Makefile GCC ARM currently does not support workspaces")
 
     def export_project(self):
         """ Processes misc options specific for GCC ARM, and run generator """
@@ -130,28 +132,28 @@ class MakefileGccArm(Tool, Exporter):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
         path = dirname(self.workspace['files']['makefile'])
-        logging.debug("Building GCC ARM project: %s" % path)
+        logger.debug("Building GCC ARM project: %s" % path)
 
         args = ['make', 'all']
-        logging.debug(args)
+        logger.debug(args)
 
         try:
             ret_code = None
             ret_code = subprocess.call(args, cwd=path)
         except:
-            logging.error("Error whilst calling make. Is it in your PATH?")
+            logger.error("Error whilst calling make. Is it in your PATH?")
             return -1
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
                 if ret_code < 3:
-                    logging.error("Build failed with the status: %s" %
+                    logger.error("Build failed with the status: %s" %
                                   self.ERRORLEVEL[ret_code])
                 else:
-                    logging.error("Build failed with unknown error. Returned: %s" %
+                    logger.error("Build failed with unknown error. Returned: %s" %
                                    ret_code)
                 return -1
             else:
-                logging.info("Build succeeded with the status: %s" %
+                logger.info("Build succeeded with the status: %s" %
                              self.ERRORLEVEL[ret_code])
                 return 0

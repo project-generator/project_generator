@@ -20,6 +20,8 @@ from collections import defaultdict
 
 from .project import FILES_EXTENSIONS
 
+logger = logging.getLogger('progen.yaml')
+
 def _determine_tool(files):
     """Yields tuples in the form of (linker file, tool the file links for"""
     for file in files:
@@ -67,7 +69,7 @@ def _scan(section, directory, extensions):
     return l
 
 def _generate_file(filename,data):
-    logging.debug('Writing the following to %s:\n%s' % (filename, yaml.dump(data)))
+    logger.debug('Writing the following to %s:\n%s' % (filename, yaml.dump(data)))
     file = os.path.join(os.getcwd(), filename)
     if os.path.isfile(file):
         os.remove(file)
@@ -75,9 +77,9 @@ def _generate_file(filename,data):
         with open(file, 'w+') as f:
             f.write(yaml.dump(data, default_flow_style=False))
     except:
-        logging.error("Unable to open %s for writing!" % file)
+        logger.error("Unable to open %s for writing!" % file)
         return -1
-    logging.info("Wrote to file %s" % file)
+    logger.info("Wrote to file %s" % file)
 
     return 0
 
@@ -85,7 +87,7 @@ def _generate_file(filename,data):
 def create_yaml(directory, project_name, board,output_dir):
     # lay out what the common section a project yaml file will look like
     # The value mapped to by each key are the file extensions that will help us get valid files for each section
-    logging.debug("Project name: %s, Target: %s"%(project_name,board))
+    logger.debug("Project name: %s, Target: %s"%(project_name,board))
     common_section = {
         'linker_file': FILES_EXTENSIONS['linker_file'],
         'sources': FILES_EXTENSIONS['source_files_c'] + FILES_EXTENSIONS['source_files_cpp'] +

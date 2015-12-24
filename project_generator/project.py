@@ -17,10 +17,12 @@ import shutil
 import logging
 import operator
 import copy
+import yaml
 
 from .tools_supported import ToolsSupported
 from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS, fix_paths
-from .init_yaml import _generate_file
+
+logger = logging.getLogger('progen.project')
 
 class ProjectWorkspace:
     """ Represents a workspace (multiple projects) """
@@ -39,7 +41,7 @@ class ProjectWorkspace:
 
         tools = []
         if not tool:
-            logging.info("Workspace supports one tool for all projects within.")
+            logger.info("Workspace supports one tool for all projects within.")
             return -1
         else:
             tools = [tool]
@@ -103,11 +105,11 @@ class ProjectWorkspace:
             return result
 
     def build(self, tool):
-        logging.info("Building a workspace is not currently supported")
+        logger.info("Building a workspace is not currently supported")
         return -1
 
     def clean(self, tool):
-        logging.info("Cleaning a workspace is not currently supported")
+        logger.info("Cleaning a workspace is not currently supported")
         return -1
 
 class ProjectTemplate:
@@ -220,7 +222,7 @@ class Project:
                     for tool_name, tool_settings in project_data['tool_specific'].items():
                         # if there's no valid tool name, skip that yaml file and report to a user
                         if tool_name not in ToolsSupported().get_supported():
-                            logging.error("Project data %s contain non-valid tool: %s" % (project_data, tool_name))
+                            logger.error("Project data %s contain non-valid tool: %s" % (project_data, tool_name))
                             continue
                         try:
                             # if dict does not exist, we initialize it
@@ -295,7 +297,7 @@ class Project:
                                 include_files.append(os.path.join(os.path.normpath(dir_path), f))
                     except:
                         # TODO: catch only those exceptions which are relevant
-                        logging.debug("The includes is not accessible: %s" % include_file)
+                        logger.debug("The includes is not accessible: %s" % include_file)
                         continue
                     self.project['export']['include_files'][use_group_name] += include_files
                 else:
@@ -342,7 +344,7 @@ class Project:
         tools = []
         if not tool:
             if len(self.project['common']['tools_supported']) == 0:
-                logging.info("No tool defined.")
+                logger.info("No tool defined.")
                 return -1
             tools = self.project['common']['tools_supported']
         else:
@@ -456,14 +458,14 @@ class Project:
 
         # linker checkup
         if len(self.project['export']['linker_file']) == 0 and self.project['export']['output_type'] == 'exe':
-            logging.debug("Executable - no linker command found.")
+            logger.debug("Executable - no linker command found.")
 
         # There might be a situation when there are more linkers. warn user and choose the first one
         if type(self.project['export']['linker_file']) == type(list()):
             if len(self.project['export']['linker_file']) > 1:
-                logging.debug("More than one linker command files: %s" % self.project['export']['linker_file'])
+                logger.debug("More than one linker command files: %s" % self.project['export']['linker_file'])
             elif len(self.project['export']['linker_file']) == 0:
-                logging.debug("No linker found for %s tool" % tool)
+                logger.debug("No linker found for %s tool" % tool)
                 return
             self.project['export']['linker_file'] = self.project['export']['linker_file'][0]
 
@@ -506,7 +508,7 @@ class Project:
             path = self.project['export']['output_dir']['path']
 
             if os.path.isdir(path):
-                logging.info("Cleaning directory %s" % path)
+                logger.info("Cleaning directory %s" % path)
 
                 shutil.rmtree(path)
         return 0
@@ -526,20 +528,23 @@ class Project:
             # None is an error
             if exporter is None:
                 result = -1
-                logging.debug("Tool: %s was not found" % export_tool)
+                logger.debug("Tool: %s was not found" % export_tool)
                 continue
 
             self._fill_export_dict(export_tool, copied)
             if copy:
-                logging.debug("Copying sources to the output directory")
+                logger.debug("Copying sources to the output directory")
                 self._copy_sources_to_generated_destination()
             # dump a log file if debug is enabled
-            if logging.getLogger().isEnabledFor(logging.DEBUG):
+            if logger.isEnabledFor(logging.DEBUG):
                 dump_data = {}
                 dump_data['common'] = self.project['common']
                 dump_data['tool_specific'] = self.project['tool_specific']
                 dump_data['merged'] = self.project['export']
-                _generate_file('%s.progen.log' % self.name, dump_data)
+                handler = logging.FileHandler(os.path.join(os.getcwd(), "%s.log" % self.name),"w", encoding=None, delay="true")
+                handler.setLevel(logging.DEBUG)
+                logger.addHandler(handler)
+                logger.debug("\n" + yaml.dump(dump_data))
 
             files = exporter(self.project['export'], self.settings).export_project()
             generated_files[export_tool] = files
@@ -559,12 +564,12 @@ class Project:
             builder = ToolsSupported().get_tool(build_tool)
             # None is an error
             if builder is None:
-                logging.debug("Tool: %s was not found" % builder)
+                logger.debug("Tool: %s was not found" % builder)
                 result = -1
                 continue
 
-            logging.debug("Building for tool: %s", build_tool)
-            logging.debug(self.generated_files)
+            logger.debug("Building for tool: %s", build_tool)
+            logger.debug(self.generated_files)
             if builder(self.generated_files[build_tool], self.settings).build_project() == -1:
                 # if one fails, set to -1 to report
                 result = -1

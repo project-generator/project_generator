@@ -22,6 +22,8 @@ from .tool import Tool, Builder, Exporter
 from .gccarm import MakefileGccArm
 from ..util import SOURCE_KEYS
 
+logger = logging.getLogger('progen.tools.eclipse')
+
 class EclipseGnuARM(Tool, Exporter, Builder):
 
     file_types = {'cpp': 1, 'c': 1, 's': 1, 'obj': 1, 'lib': 1, 'h': 1}
@@ -98,7 +100,7 @@ class EclipseGnuARM(Tool, Exporter, Builder):
             self._expand_data(data['include_files'], expanded_data, attribute, group)
 
     def export_workspace(self):
-        logging.debug("Current version of CoIDE does not support workspaces")
+        logger.debug("Current version of CoIDE does not support workspaces")
 
     def export_project(self):
         """ Processes groups and misc options specific for eclipse, and run generator """
