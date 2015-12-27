@@ -16,7 +16,7 @@ The project is in alpha phase. Check issues for the ongoing tasks or todo tasks.
 
 Project generator currently generaters projects for the following tools (IDE, Makefile, etc..):
 
- - uVision
+ - uVision4 and uVision5
  - IAR
  - Makefile (GCC ARM)
  - Cmake (GCC ARM)
