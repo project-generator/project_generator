@@ -281,13 +281,12 @@ class Uvision(Tool, Builder, Exporter):
                 uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[debugger_name]['Utilities']['Flash2']
             except (TypeError, KeyError) as err:
                 pass
-            # Support new device packs, we just need probably one of the new features for
-            # uvision to notice it's using software packs
-            if 'RegisterFile' in  mcu_def_dic['TargetOption']:
+            # Support new device packs
+            if 'PackID' in  mcu_def_dic['TargetOption']:
                 if tool_name != 'uvision5':
                     # using software packs require v5
                     logger.info("The target might not be supported in %s, requires uvision5" % tool_name)
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['RegisterFile'] = mcu_def_dic['TargetOption']['RegisterFile'][0]
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['PackID'] = mcu_def_dic['TargetOption']['PackID'][0]
 
     def _export_single_project(self, tool_name):
         expanded_dic = self.workspace.copy()
@@ -346,8 +345,10 @@ class Uvision(Tool, Builder, Exporter):
         # set target only if defined, otherwise use from template/default one
         if tool_name == 'uvision5':
             extension = 'uvprojx'
+            uvproj_dic['Project']['SchemaVersion'] = '2.1'
         else:
             extension = 'uvproj'
+            uvproj_dic['Project']['SchemaVersion'] = '1.1'
 
         if expanded_dic['target']:
             self._set_target(expanded_dic, uvproj_dic, tool_name)
