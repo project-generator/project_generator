@@ -59,7 +59,12 @@ class IARDefinitions():
             'OCDynDriverList': {
                 'state' : 'JLINK_ID',
             },
-        }
+        },
+        'st-link': {
+            'OCDynDriverList': {
+                'state' : 'STLINK_ID',
+            },
+        },
     }
 
 

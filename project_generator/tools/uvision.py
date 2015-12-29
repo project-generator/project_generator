@@ -60,6 +60,14 @@ class uVisionDefinitions():
                 'Flash2': 'BIN\\ULP2CM3.dll',
             },
         },
+        'st-link': {
+            'TargetDlls': {
+                'Driver': 'STLink\\ST-LINKIII-KEIL_SWO.dll',
+            },
+            'Utilities': {
+                'Flash2': 'STLink\\ST-LINKIII-KEIL_SWO.dll',
+            },
+        },
     }
 
 
