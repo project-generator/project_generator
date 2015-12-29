@@ -253,7 +253,42 @@ class Uvision(Tool, Builder, Exporter):
         project_path, uvmpw = self.gen_file_raw(uvmpw_xml, '%s.uvmpw' % self.workspace['settings']['name'], self.workspace['settings']['path'])
         return project_path, uvmpw
 
-    def _export_single_project(self):
+    def _set_target(self, expanded_dic, uvproj_dic, tool_name):
+        pro_def = ProGenDef(tool_name)
+        if not pro_def.is_supported(expanded_dic['target'].lower()):
+            raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
+        mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower())
+        if not mcu_def_dic:
+             raise RuntimeError(
+                "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
+        logger.debug("Mcu definitions: %s" % mcu_def_dic)
+        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
+        uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
+        try:
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
+        except KeyError:
+            # TODO: remove for next patch
+            logger.debug("Using old definitions which are faulty for uvision, please update >v0.1.3.")
+
+            # overwrite the template if target has defined debugger
+            # later progen can overwrite this if debugger is set in project data
+            try:
+                debugger_name = pro_def.get_debugger(expanded_dic['target'])['name']
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[debugger_name]['TargetDlls']['Driver']
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[debugger_name]['Utilities']['Flash2']
+            except (TypeError, KeyError) as err:
+                pass
+            # Support new device packs
+            if 'PackID' in  mcu_def_dic['TargetOption']:
+                if tool_name != 'uvision5':
+                    # using software packs require v5
+                    logger.info("The target might not be supported in %s, requires uvision5" % tool_name)
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['PackID'] = mcu_def_dic['TargetOption']['PackID'][0]
+
+    def _export_single_project(self, tool_name):
         expanded_dic = self.workspace.copy()
 
         groups = self._get_groups(self.workspace)
@@ -308,41 +343,15 @@ class Uvision(Tool, Builder, Exporter):
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities'], expanded_dic)
 
         # set target only if defined, otherwise use from template/default one
-        extension = 'uvproj'
-        if expanded_dic['target']:
-            pro_def = ProGenDef('uvision')
-            if not pro_def.is_supported(expanded_dic['target'].lower()):
-                raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
-            mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower())
-            if not mcu_def_dic:
-                 raise RuntimeError(
-                    "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
-            logger.debug("Mcu definitions: %s" % mcu_def_dic)
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
-            try:
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
-            except KeyError:
-                # TODO: remove for next patch
-                logger.debug("Using old definitions which are faulty for uvision, please update >v0.1.3.")
+        if tool_name == 'uvision5':
+            extension = 'uvprojx'
+            uvproj_dic['Project']['SchemaVersion'] = '2.1'
+        else:
+            extension = 'uvproj'
+            uvproj_dic['Project']['SchemaVersion'] = '1.1'
 
-            # overwrite the template if target has defined debugger
-            # later progen can overwrite this if debugger is set in project data
-            try:
-                debugger_name = pro_def.get_debugger(expanded_dic['target'])['name']
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[debugger_name]['TargetDlls']['Driver']
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[debugger_name]['Utilities']['Flash2']
-            except (TypeError, KeyError) as err:
-                pass
-            # Support new device packs, we just need probably one of the new features for
-            # uvision to notice it's using software packs
-            if 'RegisterFile' in  mcu_def_dic['TargetOption']:
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['RegisterFile'] = mcu_def_dic['TargetOption']['RegisterFile'][0]
-                # Add x for the new one so it does not need to convert it
-                extension = 'uvprojx'
+        if expanded_dic['target']:
+            self._set_target(expanded_dic, uvproj_dic, tool_name)
 
         # load debugger
         if expanded_dic['debugger']:
@@ -362,7 +371,7 @@ class Uvision(Tool, Builder, Exporter):
         return path, [workspace]
 
     def export_project(self):
-        path, files = self._export_single_project()
+        path, files = self._export_single_project('uvision') #todo: uvision will switch to uv4
         generated_projects = copy.deepcopy(self.generated_project)
         generated_projects['path'] = path
         generated_projects['files']['uvproj'] = files
@@ -371,11 +380,11 @@ class Uvision(Tool, Builder, Exporter):
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvproj']]}
 
-    def build_project(self):
+    def _build_project(self, tool_name, extension):
         # > UV4 -b [project_path]
-        path = join(self.env_settings.root, self.workspace['files']['uvproj'])
-        if path.split('.')[-1] != 'uvproj' and path.split('.')[-1] != 'uvprojx':
-            path = path + '.uvproj'
+        path = join(self.env_settings.root, self.workspace['files'][extension])
+        if path.split('.')[-1] != extension:
+            path = path + extension
 
         if not os.path.exists(path):
             logger.debug("The file: %s does not exists, exported prior building?" % path)
@@ -383,7 +392,7 @@ class Uvision(Tool, Builder, Exporter):
 
         logger.debug("Building uVision project: %s" % path)
 
-        args = [self.env_settings.get_env_settings('uvision'), '-r', '-j0', '-o', './build/build_log.txt', path]
+        args = [self.env_settings.get_env_settings(tool_name), '-r', '-j0', '-o', './build/build_log.txt', path]
         logger.debug(args)
 
         try:
@@ -401,3 +410,37 @@ class Uvision(Tool, Builder, Exporter):
             else:
                 logging.info("Build succeeded with the status: %s" % self.ERRORLEVEL[ret_code])
                 return 0
+
+    def build_project(self):
+        return self._build_project('uvision', 'uvproj')
+
+class Uvision5(Uvision):
+
+    generated_project = {
+        'path': '',
+        'files': {
+            'uvprojx': '',
+        }
+    }
+
+    def __init__(self, workspace, env_settings):
+        super(Uvision5, self).__init__(workspace, env_settings)
+
+    @staticmethod
+    def get_toolnames():
+        return ['uvision5']
+
+    def export_project(self):
+        path, files = self._export_single_project('uvision5')
+        generated_projects = copy.deepcopy(self.generated_project)
+        generated_projects['path'] = path
+        generated_projects['files']['uvprojx'] = files
+        return generated_projects
+
+    def get_generated_project_files(self):
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvprojx']]}
+
+    def build_project(self):
+        # tool_name uvision as uv4 is still used in uv5
+        return self._build_project('uvision', 'uvprojx')
+
