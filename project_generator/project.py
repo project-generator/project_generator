@@ -280,7 +280,7 @@ class Project:
         else:
             use_includes = [files]
 
-        if use_group_name not in self.project['export']['include_files']:
+        if use_group_name not in self.project['export']['include_files'] and use_includes:
             self.project['export']['include_files'][use_group_name] = []
 
         for include_file in use_includes:
