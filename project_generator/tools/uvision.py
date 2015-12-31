@@ -264,11 +264,11 @@ class Uvision(Tool, Builder, Exporter):
     def _set_target(self, expanded_dic, uvproj_dic, tool_name):
         pro_def = ProGenDef(tool_name)
         if not pro_def.is_supported(expanded_dic['target'].lower()):
-            raise RuntimeError("Target %s is not supported." % expanded_dic['target'].lower())
+            raise RuntimeError("Target %s is not supported. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
         mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower())
         if not mcu_def_dic:
              raise RuntimeError(
-                "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
+                "Target definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
         logger.debug("Mcu definitions: %s" % mcu_def_dic)
         uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Device'] = mcu_def_dic['TargetOption']['Device'][0]
         uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
@@ -281,20 +281,20 @@ class Uvision(Tool, Builder, Exporter):
             # TODO: remove for next patch
             logger.debug("Using old definitions which are faulty for uvision, please update >v0.1.3.")
 
-            # overwrite the template if target has defined debugger
-            # later progen can overwrite this if debugger is set in project data
-            try:
-                debugger_name = pro_def.get_debugger(expanded_dic['target'])['name']
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[debugger_name]['TargetDlls']['Driver']
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[debugger_name]['Utilities']['Flash2']
-            except (TypeError, KeyError) as err:
-                pass
-            # Support new device packs
-            if 'PackID' in  mcu_def_dic['TargetOption']:
-                if tool_name != 'uvision5':
-                    # using software packs require v5
-                    logger.info("The target might not be supported in %s, requires uvision5" % tool_name)
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['PackID'] = mcu_def_dic['TargetOption']['PackID'][0]
+        # overwrite the template if target has defined debugger
+        # later progen can overwrite this if debugger is set in project data
+        try:
+            debugger_name = pro_def.get_debugger(expanded_dic['target'])['name']
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[debugger_name]['TargetDlls']['Driver']
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[debugger_name]['Utilities']['Flash2']
+        except (TypeError, KeyError) as err:
+            pass
+        # Support new device packs
+        if 'PackID' in  mcu_def_dic['TargetOption']:
+            if tool_name != 'uvision5':
+                # using software packs require v5
+                logger.info("The target might not be supported in %s, requires uvision5" % tool_name)
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['PackID'] = mcu_def_dic['TargetOption']['PackID'][0]
 
     def _export_single_project(self, tool_name):
         expanded_dic = self.workspace.copy()
