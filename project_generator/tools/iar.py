@@ -410,10 +410,10 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
-        ewp_xml = xmltodict.unparse(ewp_dic, pretty=True)
+        ewp_xml = xmltodict.unparse(ewp_dic, encoding='iso-8859-1', pretty=True)
         project_path, ewp = self.gen_file_raw(ewp_xml, '%s.ewp' % expanded_dic['name'], expanded_dic['output_dir']['path'])
 
-        ewd_xml = xmltodict.unparse(ewd_dic, pretty=True)
+        ewd_xml = xmltodict.unparse(ewd_dic, encoding='iso-8859-1', pretty=True)
         project_path, ewd = self.gen_file_raw(ewd_xml, '%s.ewd' % expanded_dic['name'], expanded_dic['output_dir']['path'])
         return project_path, [ewp, eww, ewd]
 
