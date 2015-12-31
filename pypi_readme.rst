@@ -12,27 +12,17 @@ The project is in alpha phase. Check issues for the ongoing tasks or todo tasks.
 
 Project generator currently generaters projects for the following tools (IDE, Makefile, etc..):
 
- - uVision
- - Makefile (GCC ARM)
- - CMake (GCC ARM)
+ - uVision4 and uVision5
  - IAR
+ - Makefile (GCC ARM)
+ - Cmake (GCC ARM)
  - CoIDE (GCC ARM)
  - Eclipse (Makefile with GCC ARM)
  - Sublime (Makefile with GCC ARM)
- - Visual studio (Makegile with GCC ARM)
+ - Visual studio (Makefile with GCC ARM)
 
 We appreciate any help and you are more than welcome to send a pull request or create a new issue in this repository.
 The plan is to support as many IDE as possible , same applies for targets/MCU.
-
-Using package
-============
-
-Once installed, test if project_generator is recognized:
-
-```
-progen --version
-```
-This should print the current installed version. You can use progen or project_generator as a command.
 
 Getting started
 ============
