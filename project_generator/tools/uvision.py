@@ -413,10 +413,10 @@ class Uvision(Tool, Builder, Exporter):
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
-                logging.error("Build failed with the status: %s" % self.ERRORLEVEL[ret_code])
+                logging.error("Project: %s build failed with the status: %s" % (self.ERRORLEVEL[ret_code], self.workspace['files'][extension]))
                 return -1
             else:
-                logging.info("Build succeeded with the status: %s" % self.ERRORLEVEL[ret_code])
+                logging.info("Project: %s build succeeded with the status: %s" % (self.ERRORLEVEL[ret_code], self.workspace['files'][extension]))
                 return 0
 
     def build_project(self):

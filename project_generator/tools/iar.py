@@ -465,11 +465,11 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             ret_code = None
             ret_code = subprocess.call(args)
         except:
-            logger.error("Error whilst calling IarBuild. Please check IARBUILD path in the user_settings.py file.")
+            logger.error("Project: %s build failed. Please check IARBUILD path in the user_settings.py file." % self.workspace['files']['ewp'])
             return -1
         else:
             # no IAR doc describes errors from IarBuild
-            logger.info("Build completed.")
+            logger.info("Project: %s build completed." % self.workspace['files']['ewp'])
             return 0
 
     def get_generated_project_files(self):
