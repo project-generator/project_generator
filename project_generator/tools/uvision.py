@@ -130,6 +130,9 @@ class Uvision(Tool, Builder, Exporter):
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
+                if not extension in self.file_types.keys():
+                    logger.debug("Filetype for file %s not recognized" % file)
+                    continue
                 new_file = {"FilePath": file, "FileName": basename(file),
                             "FileType": self.file_types[extension.lower()]}
                 new_data['groups'][group].append(new_file)

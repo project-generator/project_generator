@@ -82,6 +82,9 @@ class Coide(Tool, Exporter, Builder):
         for file in old_data[old_group]:
             if file:
                 extension = file.split(".")[-1]
+                if not extension in self.file_types.keys():
+                    logger.debug("Filetype for file %s not recognized" % file)
+                    continue
                 new_file = {
                     '@path': file, '@name': basename(file), '@type': str(self.file_types[extension.lower()])
                 }

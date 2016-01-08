@@ -60,6 +60,9 @@ class EclipseGnuARM(Tool, Exporter, Builder):
         for source in old_data[old_group]:
             if source:
                 extension = source.split(".")[-1]
+                if not extension in self.file_types.keys():
+                    logger.debug("Filetype for file %s not recognized" % file)
+                    continue
                 # TODO: fix - workaround for windows, seems posixpath does not work
                 source = source.replace('\\', '/')
                 new_file = {"path": join('PARENT-%s-PROJECT_LOC' % new_data['output_dir']['rel_path'], normpath(source)), "name": basename(
