@@ -232,6 +232,20 @@ class Project:
                         self._set_project_attributes(tool_name, self.project['tool_specific'][tool_name], project_data['tool_specific'])
         self.generated_files = {}
 
+    @staticmethod
+    def _list_elim_none(list_to_clean):
+        return [l for l in list_to_clean if l]
+
+    @staticmethod
+    def _dict_elim_none(dic_to_clean):
+        dic = dic_to_clean
+        for k, v in dic_to_clean.items():
+            if type(v) is list:
+                dic[k] = Project._list_elim_none(v)
+            elif type(v) is dict:
+                dic[k] = Project._dict_elim_none(v)
+        return dic
+
     # Project data have the some keys the same, therefore we process them here
     # and their own keys, are processed in common/tool attributes
     def _set_project_attributes(self, key_value, destination, source):
@@ -240,16 +254,18 @@ class Project:
                 if attribute in ProjectTemplate.get_project_template().keys():
                     if type(destination[attribute]) is list:
                         if type(data) is list:
-                            destination[attribute].extend(data)
+                            destination[attribute].extend(Project._list_elim_none(data))
                         else:
-                            destination[attribute].append(data)
+                            destination[attribute].append(Project._dict_elim_none(data))
                     elif type(destination[attribute]) is dict:
-                        destination[attribute] = merge_recursive(destination[attribute], data)
+                        destination[attribute] = Project._dict_elim_none(merge_recursive(destination[attribute], data))
                     else:
                         if type(data) is list:
-                            destination[attribute] = data[0]
+                            if data[0]:
+                                destination[attribute] = data[0]
                         else:
-                            destination[attribute] = data
+                            if data:
+                                destination[attribute] = data
 
     def _set_internal_common_data(self):
         # process here includes, sources and set all internal data related to them
@@ -278,7 +294,8 @@ class Project:
         elif type(files) == list:
             use_includes = files
         else:
-            use_includes = [files]
+            if files:
+                use_includes = [files]
 
         if use_group_name not in self.project['export']['include_files'] and use_includes:
             self.project['export']['include_files'][use_group_name] = []
@@ -312,11 +329,12 @@ class Project:
         if type(files) == dict:
             for group_name, sources in files.items():
                 # process each group name as separate entity
-                self._process_source_files(sources, group_name)
+                self._process_source_files(Project._list_elim_none(sources), group_name)
         elif type(files) == list:
-            use_sources = files
+            use_sources = Project._list_elim_none(files)
         else:
-            use_sources = [files]
+            if files:
+                use_sources = [files]
 
         for source_file in use_sources:
             source_file = os.path.normpath(source_file)

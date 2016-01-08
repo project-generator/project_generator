@@ -27,7 +27,7 @@ project_1_yaml = {
         'sources': { 'sources_dict' : ['test_workspace/main.cpp']
         },
         'includes': ['test_workspace/header1.h'],
-        'macros': ['MACRO1', 'MACRO2'],
+        'macros': ['MACRO1', 'MACRO2', None],
         'target': ['target1'],
         'core': ['core1'],
         'tools_supported': ['iar_arm', 'uvision', 'coide', 'unknown'],
@@ -119,7 +119,7 @@ class TestProjectYAML(TestCase):
 
     def test_project_attributes(self):
         self.project._fill_export_dict('uvision')
-        assert self.project.project['export']['macros'] == project_1_yaml['common']['macros'] + project_2_yaml['common']['macros'] 
+        assert set(self.project.project['export']['macros'] + [None]) & set(project_1_yaml['common']['macros'] + project_2_yaml['common']['macros']) 
         assert set(self.project.project['export']['include_files'].keys()) & set(['default'] + list(project_2_yaml['common']['includes'].keys()))
 
         # no c or asm files, empty dics
@@ -172,7 +172,7 @@ class TestProjectDict(TestCase):
 
     def test_project_attributes(self):
         self.project._fill_export_dict('uvision')
-        assert self.project.project['export']['macros'] == project_1_yaml['common']['macros'] + project_2_yaml['common']['macros'] 
+        assert set(self.project.project['export']['macros'] + [None]) & set(project_1_yaml['common']['macros'] + project_2_yaml['common']['macros']) 
         assert set(self.project.project['export']['include_files'].keys()) & set(['default'] + list(project_2_yaml['common']['includes'].keys()))
 
         # no c or asm files, empty dics
