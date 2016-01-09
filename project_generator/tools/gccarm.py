@@ -141,17 +141,17 @@ class MakefileGccArm(Tool, Exporter):
             ret_code = None
             ret_code = subprocess.call(args, cwd=path)
         except:
-            logger.error("Error whilst calling make. Is it in your PATH?")
+            logger.error("Project: %s build error whilst calling make. Is it in your PATH?" % self.workspace['files']['makefile'])
             return -1
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
                 if ret_code < 3:
-                    logger.error("Build failed with the status: %s" %
-                                  self.ERRORLEVEL[ret_code])
+                    logger.error("Project: %s build failed with the status: %s" %
+                                  (self.ERRORLEVEL[ret_code], self.workspace['files']['makefile']))
                 else:
-                    logger.error("Build failed with unknown error. Returned: %s" %
-                                   ret_code)
+                    logger.error("Project: %s build failed with unknown error. Returned: %s" %
+                                   (ret_code, self.workspace['files']['makefile']))
                 return -1
             else:
                 logger.info("Build succeeded with the status: %s" %
