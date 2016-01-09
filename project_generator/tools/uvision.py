@@ -410,16 +410,16 @@ class Uvision(Tool, Builder, Exporter):
             ret_code = None
             ret_code = subprocess.call(args)
         except:
-            logging.error(
+            logger.error(
                 "Error whilst calling UV4: '%s'. Please set uvision path in the projects.yaml file." % self.env_settings.get_env_settings('uvision'))
             return -1
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
-                logging.error("Project: %s build failed with the status: %s" % (self.ERRORLEVEL[ret_code], self.workspace['files'][extension]))
+                logger.error("Project: %s build failed with the status: %s" % (self.ERRORLEVEL[ret_code], self.workspace['files'][extension]))
                 return -1
             else:
-                logging.info("Project: %s build succeeded with the status: %s" % (self.ERRORLEVEL[ret_code], self.workspace['files'][extension]))
+                logger.info("Project: %s build succeeded with the status: %s" % (self.ERRORLEVEL[ret_code], self.workspace['files'][extension]))
                 return 0
 
     def build_project(self):
