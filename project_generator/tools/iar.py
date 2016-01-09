@@ -16,7 +16,6 @@ import copy
 import logging
 import xmltodict
 import subprocess
-import logging
 import time
 import copy
 
