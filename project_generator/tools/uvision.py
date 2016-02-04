@@ -243,6 +243,8 @@ class Uvision(Tool, Builder, Exporter):
             uvproj_dic['Project']['Targets']['Target']['Groups']['Group'].append(group)
             for file in files:
                 uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'].append(file)
+            files = uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File']
+            uvproj_dic['Project']['Targets']['Target']['Groups']['Group'][i]['Files']['File'] = sorted(files, key=lambda x: x['FileName'].lower())
             i += 1
 
     def _generate_uvmpw_file(self):
