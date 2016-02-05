@@ -153,6 +153,7 @@ class Coide(Tool, Exporter, Builder):
                 if group:
                     file['@name'] = group + '/' + file['@name']
                 coproj_dic['Project']['Files']['File'].append(file)
+        coproj_dic['Project']['Files']['File'] = sorted(coproj_dic['Project']['Files']['File'], key=lambda x: basename(x['@path'].lower()))
 
     def _coproj_set_macros(self, coproj_dic, project_dic):
         coproj_dic['Project']['Target']['BuildOption']['Compile']['DefinedSymbols']['Define'] = []

@@ -470,7 +470,12 @@ class Project:
         # This is magic with sources/include_files as they have groups
         tool_sources = self._get_tool_sources(tool_keywords)
         for key in SOURCE_KEYS:
-           self.project['export'][key] = merge_recursive(self.project['export'][key], tool_sources[key])
+            self.project['export'][key] = merge_recursive(self.project['export'][key], tool_sources[key])
+            # sort all sources within its own group and own category (=k)
+            # the tool needs to do sort files as tools require further processing based on 
+            # categories (we can't mix now cpp and c files for instance)
+            for k, v in self.project['export'][key].items():
+                self.project['export'][key][k] = sorted(v, key=lambda x: os.path.basename(x))
 
         self.project['export']['include_files'] = merge_recursive(self.project['export']['include_files'], self._get_tool_includes(tool_keywords))
 

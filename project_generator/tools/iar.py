@@ -174,6 +174,7 @@ class IAREmbeddedWorkbenchProject:
             ewp_dic['project']['group'].append({'name': group_name, 'file': []})
             for file in files:
                 ewp_dic['project']['group'][i]['file'].append({'name': file})
+            ewp_dic['project']['group'][i]['file'] = sorted(ewp_dic['project']['group'][i]['file'], key=lambda x: os.path.basename(x['name'].lower()))
             i += 1
 
     def _clean_xmldict_option(self, dictionary):

@@ -68,6 +68,7 @@ class EclipseGnuARM(Tool, Exporter, Builder):
                 new_file = {"path": join('PARENT-%s-PROJECT_LOC' % new_data['output_dir']['rel_path'], normpath(source)), "name": basename(
                     source), "type": self.file_types[extension.lower()]}
                 new_data['groups'][group].append(new_file)
+        new_data['groups'][group] = sorted(new_data['groups'][group], key=lambda x: x['name'].lower())
 
 #TODO: eliminate this duplicate in many tools. Same applies to _iterate
     def _get_groups(self, data):
