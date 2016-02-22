@@ -135,11 +135,11 @@ class IAREmbeddedWorkbenchProject:
         self._set_option(ewp_dic[index_ilink]['data']['option'][index_option], project_dic['linker_file'])
         additional_libs = []
         for k,v in project_dic['source_files_lib'].items():
-            if len(v):
-                additional_libs.append(v)
+            for lib in v:
+                additional_libs.append(lib)
         for k,v in project_dic['source_files_obj'].items():
-            if len(v):
-                additional_libs.append(v)
+            for lib in v:
+                additional_libs.append(lib)
         if len(additional_libs):
             index_option = self._get_option(ewp_dic[index_ilink]['data']['option'], 'IlinkAdditionalLibs')
             self._set_multiple_option(ewp_dic[index_ilink]['data']['option'][index_option], additional_libs)
