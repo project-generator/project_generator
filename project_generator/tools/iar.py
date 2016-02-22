@@ -133,16 +133,6 @@ class IAREmbeddedWorkbenchProject:
         index_ilink = self._get_option(ewp_dic, 'ILINK')
         index_option = self._get_option(ewp_dic[index_ilink]['data']['option'], 'IlinkIcfFile')
         self._set_option(ewp_dic[index_ilink]['data']['option'][index_option], project_dic['linker_file'])
-        additional_libs = []
-        for k,v in project_dic['source_files_lib'].items():
-            for lib in v:
-                additional_libs.append(join('$PROJ_DIR$', lib))
-        for k,v in project_dic['source_files_obj'].items():
-            for lib in v:
-                additional_libs.append(join('$PROJ_DIR$', lib))
-        if len(additional_libs):
-            index_option = self._get_option(ewp_dic[index_ilink]['data']['option'], 'IlinkAdditionalLibs')
-            self._set_multiple_option(ewp_dic[index_ilink]['data']['option'][index_option], additional_libs)
 
         ilink_dic = ewp_dic[index_ilink]['data']['option']
         self._ewp_flags_set(ilink_dic, project_dic, 'ld_flags', self.FLAG_TO_IAR['ld_flags'])
