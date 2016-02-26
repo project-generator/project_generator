@@ -218,6 +218,27 @@ class IAREmbeddedWorkbenchProject:
         self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['OGChipSelectEditMenu']['state'])
         index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'OGCoreOrChip')
         self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['OGCoreOrChip']['state'])
+        # FPU settings. AS this is latest addition, try catch for now
+        try:
+            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU2')
+            self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['FPU2']['state'])
+        except TypeError:
+            pass
+        try:
+            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU')
+            self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['FPU']['state'])
+        except TypeError:
+            pass
+        try:
+            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'NrRegs')
+            self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['NrRegs']['state'])
+        except TypeError:
+            pass
+        try:
+            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'NEON')
+            self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['NEON']['state'])
+        except TypeError:
+            pass
 
     def _ewd_set_debugger(self, ewd_dic, ewp_dic, debugger_def_dic):
         index_general = self._get_option(ewp_dic, 'General')
