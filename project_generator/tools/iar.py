@@ -218,26 +218,34 @@ class IAREmbeddedWorkbenchProject:
         self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['OGChipSelectEditMenu']['state'])
         index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'OGCoreOrChip')
         self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['OGCoreOrChip']['state'])
-        # FPU settings. AS this is latest addition, try catch for now
-        try:
-            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU2')
-            self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['FPU2']['state'])
-        except TypeError:
-            pass
-        try:
+        # FPU settings, target has priority
+        if 'FPU' in mcu_def_dic.keys():
             index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU')
+            if index_option == None:
+                # template does not have FPU in it, might be FPU2, overwrite
+                index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU2')
+                ewp_dic[index_general]['data']['option'][index_option]['name'] = 'FPU'
             self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['FPU']['state'])
-        except TypeError:
-            pass
+        elif 'FPU2' in mcu_def_dic.keys():
+            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU2')
+            if index_option == None:
+                # FPU found, overwrite
+                index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU')
+                ewp_dic[index_general]['data']['option'][index_option]['name'] = 'FPU2'
+            # currently supports version 0 for FPU2, TODO: what version means?
+            ewp_dic[index_general]['data']['option'][index_option]['version'] = 0
+            self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['FPU2']['state'])
+
+        # additional FPU settings
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'NrRegs')
         try:
-            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'NrRegs')
             self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['NrRegs']['state'])
-        except TypeError:
+        except (TypeError, KeyError):
             pass
+        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'NEON')
         try:
-            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'NEON')
             self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['NEON']['state'])
-        except TypeError:
+        except (TypeError, KeyError):
             pass
 
     def _ewd_set_debugger(self, ewd_dic, ewp_dic, debugger_def_dic):
