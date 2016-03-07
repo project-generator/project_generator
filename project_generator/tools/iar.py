@@ -232,6 +232,8 @@ class IAREmbeddedWorkbenchProject:
                 # template does not have FPU in it, might be FPU2, overwrite
                 index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU2')
                 ewp_dic[index_general]['data']['option'][index_option]['name'] = 'FPU'
+            else:
+                index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU')
             self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['FPU']['state'])
         elif 'FPU2' in mcu_def_dic.keys():
             if fileVersion == 1:
