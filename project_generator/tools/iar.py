@@ -226,50 +226,39 @@ class IAREmbeddedWorkbenchProject:
         else:
             fileVersion = 2
 
-        # FPU settings, target has priority
-        if 'FPU' in mcu_def_dic.keys():
-            if fileVersion == 2:
-                # template does not have FPU in it, might be FPU2, overwrite
-                index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU2')
-                ewp_dic[index_general]['data']['option'][index_option]['name'] = 'FPU'
-            else:
-                index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU')
-            self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['FPU']['state'])
-        elif 'FPU2' in mcu_def_dic.keys():
-            if fileVersion == 1:
-                index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU2')
-                ewp_dic[index_general]['data']['version'] = 24
-                 # FPU found, overwrite
-                index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'FPU')
-                ewp_dic[index_general]['data']['option'][index_option]['name'] = 'FPU2'
-                self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['FPU2']['state'])
-                # replace variant with CodeVariant
-                index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'Variant')
-                ewp_dic[index_general]['data']['option'][index_option]['name'] = 'CoreVariant'
-                self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['CoreVariant']['state'])
-                # replace GFPUCoreSlave
-                index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'GFPUCoreSlave')
-                ewp_dic[index_general]['data']['option'][index_option]['name'] = 'GFPUCoreSlave2'
-                self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['GFPUCoreSlave2']['state'])
-            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'GBECoreSlave')
-            self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['GBECoreSlave']['state'])
+        def _get_mcu_option(option):
+            try:
+                return mcu_def_dic[option]['state']
+            except KeyError:
+                return None
+
+        # Get variant 
+        Variant = _get_mcu_option('Variant')
+        if not Variant:
+            Variant = _get_mcu_option('CoreVariant')
+        GFPUCoreSlave = _get_mcu_option('GFPUCoreSlave') 
+        if not GFPUCoreSlave:
+            GFPUCoreSlave = _get_mcu_option('GFPUCoreSlave2')
+        GBECoreSlave = _get_mcu_option('GBECoreSlave')
+
+        if fileVersion == 1:
+            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'Variant')
+            self._set_option(ewp_dic[index_general]['data']['option'][index_option], Variant)
+            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'GFPUCoreSlave')
+            self._set_option(ewp_dic[index_general]['data']['option'][index_option], GFPUCoreSlave)
+        elif fileVersion == 2:
+            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'CoreVariant')
+            self._set_option(ewp_dic[index_general]['data']['option'][index_option], Variant)
+            index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'GFPUCoreSlave2')
+            self._set_option(ewp_dic[index_general]['data']['option'][index_option], GFPUCoreSlave)
+            if GBECoreSlave:
+                index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'GBECoreSlave')
+                self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['GBECoreSlave']['state'])
             GFPUDeviceSlave = {
                 'state': mcu_def_dic['OGChipSelectEditMenu']['state'], # should be same
                 'name': 'GFPUDeviceSlave',
             }
             ewp_dic[index_general]['data']['option'].append(GFPUDeviceSlave)
-                
-        # additional FPU settings
-        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'NrRegs')
-        try:
-            self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['NrRegs']['state'])
-        except (TypeError, KeyError):
-            pass
-        index_option = self._get_option(ewp_dic[index_general]['data']['option'], 'NEON')
-        try:
-            self._set_option(ewp_dic[index_general]['data']['option'][index_option], mcu_def_dic['NEON']['state'])
-        except (TypeError, KeyError):
-            pass
 
     def _ewd_set_debugger(self, ewd_dic, ewp_dic, debugger_def_dic):
         index_general = self._get_option(ewp_dic, 'General')
