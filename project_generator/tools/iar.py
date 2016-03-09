@@ -180,7 +180,7 @@ class IAREmbeddedWorkbenchProject:
                 dictionary[k] = ''
 
     def _clean_xmldict_ewp(self, ewp_dic):
-        for setting in ewp_dic['project']['configuration']['settings']:
+        for setting in ewp_dic['settings']:
             if setting['name'] == 'BICOMP' or setting['name'] == 'BILINK':
                 self._clean_xmldict_single_dic(setting)
             elif setting['name'] == 'BUILDACTION' or setting['name'] == 'CUSTOM':
@@ -189,13 +189,13 @@ class IAREmbeddedWorkbenchProject:
                 self._clean_xmldict_option(setting)
 
     def _ewp_set_toolchain(self, ewp_dic, toolchain):
-        ewp_dic['project']['configuration']['toolchain']['name'] = toolchain
+        ewp_dic['toolchain']['name'] = toolchain
 
     def _ewp_set_name(self, ewp_dic, name):
-        ewp_dic['project']['configuration']['name'] = name
+        ewp_dic['name'] = name
 
     def _ewd_set_name(self, ewd_dic, name):
-        ewd_dic['project']['configuration']['name'] = name
+        ewd_dic['name'] = name
 
     def _eww_set_path_single_project(self, eww_dic, name):
         eww_dic['workspace']['project']['path'] = join('$WS_DIR$', name + '.ewp')
@@ -394,23 +394,38 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             eww_xml = xmltodict.unparse(eww_dic, pretty=True)
             project_path, eww = self.gen_file_raw(eww_xml, '%s.eww' % expanded_dic['name'], expanded_dic['output_dir']['path'])
 
+
         try:
-            self._ewp_set_name(ewp_dic, expanded_dic['name'])
+            ewp_configuration = ewp_dic['project']['configuration'][0]
+            logging.debug("Provided .ewp file has multiple configuration, we use only the first one")
+            ewp_dic['project']['configuration'] = ewp_dic['project']['configuration'][0]
+        except KeyError:
+            ewp_configuration = ewp_dic['project']['configuration']
+
+        try:
+            ewp_configuration = ewp_dic['project']['configuration'][0]
+            logging.debug("Provided .ewp file has multiple configuration, we use only the first one")
+            ewp_dic['project']['configuration'] = ewp_dic['project']['configuration'][0]
+        except KeyError:
+            ewp_configuration = ewp_dic['project']['configuration']
+
+        # replace all None with empty strings ''
+        self._clean_xmldict_ewp(ewp_configuration)
+        #self._clean_xmldict_ewd(ewd_dic)
+
+        try:
+            self._ewp_set_name(ewp_configuration, expanded_dic['name'])
         except KeyError:
             raise RuntimeError("The IAR template is not valid .ewp file")
 
-        # replace all None with empty strings ''
-        self._clean_xmldict_ewp(ewp_dic)
-        #self._clean_xmldict_ewd(ewd_dic)
-
         # set ARM toolchain and project name\
-        self._ewp_set_toolchain(ewp_dic, 'ARM')
+        self._ewp_set_toolchain(ewp_configuration, 'ARM')
 
         # set common things we have for IAR
-        self._ewp_general_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
-        self._ewp_iccarm_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
-        self._ewp_aarm_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
-        self._ewp_ilink_set(ewp_dic['project']['configuration']['settings'], expanded_dic)
+        self._ewp_general_set(ewp_configuration['settings'], expanded_dic)
+        self._ewp_iccarm_set(ewp_configuration['settings'], expanded_dic)
+        self._ewp_aarm_set(ewp_configuration['settings'], expanded_dic)
+        self._ewp_ilink_set(ewp_configuration['settings'], expanded_dic)
         self._ewp_files_set(ewp_dic, expanded_dic)
 
         # set target only if defined, otherwise use from template/default one
@@ -425,12 +440,12 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                     "Mcu definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
             self._normalize_mcu_def(mcu_def_dic)
             logger.debug("Mcu definitions: %s" % mcu_def_dic)
-            self._ewp_set_target(ewp_dic['project']['configuration']['settings'], mcu_def_dic)
+            self._ewp_set_target(ewp_configuration['settings'], mcu_def_dic)
 
             try:
                 debugger_name = proj_def.get_debugger(expanded_dic['target'])['name']
                 debugger_def = self.definitions.debuggers[debugger_name]
-                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_dic['project']['configuration']['settings'], debugger_def)
+                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_configuration['settings'], debugger_def)
             except (TypeError, KeyError) as err:
                 # TODO: worth reporting?
                 pass
@@ -439,11 +454,11 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         if expanded_dic['debugger']:
             try:
                 debugger = self.definitions.debuggers[expanded_dic['debugger']]
-                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_dic['project']['configuration']['settings'], debugger)
+                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_configuration['settings'], debugger)
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
-        self._ewd_set_name(ewd_dic, expanded_dic['name'])
+        self._ewd_set_name(ewd_dic['project']['configuration'], expanded_dic['name'])
 
         # IAR uses ident 2 spaces, encoding iso-8859-1
         ewp_xml = xmltodict.unparse(ewp_dic, encoding='iso-8859-1', pretty=True, indent='  ')
