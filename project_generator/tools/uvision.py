@@ -129,12 +129,12 @@ class Uvision(Tool, Builder, Exporter):
             old_group = group
         for file in old_data[old_group]:
             if file:
-                extension = file.split(".")[-1]
+                extension = file.split(".")[-1].lower()
                 if not extension in self.file_types.keys():
                     logger.debug("Filetype for file %s not recognized" % file)
                     continue
                 new_file = {"FilePath": file, "FileName": basename(file),
-                            "FileType": self.file_types[extension.lower()]}
+                            "FileType": self.file_types[extension]}
                 new_data['groups'][group].append(new_file)
 
     def _iterate(self, data, expanded_data):
