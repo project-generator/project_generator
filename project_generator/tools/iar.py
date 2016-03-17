@@ -51,16 +51,31 @@ class IARDefinitions():
             'OCDynDriverList': {
                 'state' : 'CMSISDAP_ID',
             },
+            'interface': {
+                'name' : 'CMSISDAPInterfaceRadio', # each debuger has own names for this
+                'jtag' : 0, # TODO: verify that jtag maches for all debuggers to have it just defined once
+                'swd' : 1,
+            }
         },
         'j-link': {
             'OCDynDriverList': {
                 'state' : 'JLINK_ID',
             },
+            'interface': {
+                'name' : 'CCJLinkInterfaceRadio',
+                'jtag' : 0,
+                'swd' : 1,
+            }
         },
         'st-link': {
             'OCDynDriverList': {
                 'state' : 'STLINK_ID',
             },
+            'interface': {
+                'name' : 'CCSTLinkInterfaceRadio',
+                'jtag' : 0,
+                'swd' : 1,
+            }
         },
     }
 
@@ -260,12 +275,25 @@ class IAREmbeddedWorkbenchProject:
             }
             ewp_dic[index_general]['data']['option'].append(GFPUDeviceSlave)
 
-    def _ewd_set_debugger(self, ewd_dic, ewp_dic, debugger_def_dic):
-        index_general = self._get_option(ewp_dic, 'General')
+    def _ewd_set_debugger(self, ewd_dic, debugger):
+        try:
+            debugger_def = self.definitions.debuggers[debugger['name']]
+        except TypeError:
+            return
         index_cspy = self._get_option(ewd_dic, 'C-SPY')
-        index_option = self._get_option(ewd_dic[index_general]['data']['option'], 'OCDynDriverList')
-        self._set_option(ewd_dic[index_general]['data']['option'][index_option], debugger_def_dic['OCDynDriverList']['state'])
+        index_option = self._get_option(ewd_dic[index_cspy]['data']['option'], 'OCDynDriverList')
+        self._set_option(ewd_dic[index_cspy]['data']['option'][index_option], debugger_def['OCDynDriverList']['state'])
 
+        # find InterfaceRadio (jtag or swd)
+        try:
+            debugger_interface = self.definitions.debuggers[debugger['name']]['interface']
+            index_debugger_settings = self._get_option(ewd_dic, debugger_def['OCDynDriverList']['state'])
+            index_option = self._get_option(ewd_dic[index_debugger_settings]['data']['option'], debugger_interface['name'])
+            self._set_option(ewd_dic[index_debugger_settings]['data']['option'][index_option], debugger_def['interface'][debugger['interface']])
+        except TypeError as e:
+            # use default
+            pass
+        
 class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject):
 
     core_dic = {
@@ -443,18 +471,16 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             self._ewp_set_target(ewp_configuration['settings'], mcu_def_dic)
 
             try:
-                debugger_name = proj_def.get_debugger(expanded_dic['target'])['name']
-                debugger_def = self.definitions.debuggers[debugger_name]
-                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_configuration['settings'], debugger_def)
-            except (TypeError, KeyError) as err:
+                debugger = proj_def.get_debugger(expanded_dic['target'])
+                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], debugger)
+            except KeyError as err:
                 # TODO: worth reporting?
                 pass
 
         # overwrite debugger only if defined in the project file, otherwise use either default or from template
         if expanded_dic['debugger']:
             try:
-                debugger = self.definitions.debuggers[expanded_dic['debugger']]
-                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], ewp_configuration['settings'], debugger)
+                self._ewd_set_debugger(ewd_dic['project']['configuration']['settings'], expanded_dic['debugger'])
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
