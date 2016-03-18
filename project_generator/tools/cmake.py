@@ -56,6 +56,10 @@ class CMakeGccArm(Tool,Exporter):
             includes.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'].replace('\\', '/') + '/' + key.replace('\\', '/'))
         data['include_paths'] = includes
         data['linker_file'] = getcwd().replace('\\', '/') + '/' + data['output_dir']['path'].replace('\\', '/') + '/' + data['linker_file'].replace('\\', '/')
+        lib_paths = []
+        for path in data['lib_paths']:
+            lib_paths.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'].replace('\\', '/') + '/' + path.replace('\\', '/'))
+        data['lib_paths'] = lib_paths
 
     def export_project(self):
         generated_projects = {}
