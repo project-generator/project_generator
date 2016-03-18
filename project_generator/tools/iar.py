@@ -173,6 +173,12 @@ class IAREmbeddedWorkbenchProject:
 
     def _ewp_files_set(self, ewp_dic, project_dic):
         """ Fills files in the ewp dictionary """
+        # empty any files in the template which are not grouped
+        try:
+            ewp_dic['project']['file'] = []
+        except KeyError:
+            pass
+        # empty groups
         ewp_dic['project']['group'] = []
         i = 0
         for group_name, files in project_dic['groups'].items():
