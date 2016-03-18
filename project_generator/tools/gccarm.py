@@ -83,6 +83,7 @@ class MakefileGccArm(Tool, Exporter):
             head, tail = ntpath.split(lib)
             file = tail
             if (os.path.splitext(file)[1] != ".a"):
+                logging.debug("Found %s lib with non-valid extension (!=.a)" % file)
                 continue
             else:
                 file = file.replace(".a","")
