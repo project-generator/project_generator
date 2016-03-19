@@ -239,11 +239,14 @@ class Project:
     @staticmethod
     def _dict_elim_none(dic_to_clean):
         dic = dic_to_clean
-        for k, v in dic_to_clean.items():
-            if type(v) is list:
-                dic[k] = Project._list_elim_none(v)
-            elif type(v) is dict:
-                dic[k] = Project._dict_elim_none(v)
+        try:
+            for k, v in dic_to_clean.items():
+                if type(v) is list:
+                    dic[k] = Project._list_elim_none(v)
+                elif type(v) is dict:
+                    dic[k] = Project._dict_elim_none(v)
+        except AttributeError:
+            pass
         return dic
 
     # Project data have the some keys the same, therefore we process them here

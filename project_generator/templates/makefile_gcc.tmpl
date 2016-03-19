@@ -49,7 +49,7 @@ LIBS = {% for library in libraries %} -l{{library}} {% endfor %}
 LIBS += -Wl,--start-group  {% for library in standard_libraries %} -l{{library}} {% endfor %} -Wl,--end-group
 {% endif %} 
 
-LIB_PATHS = {% for path in lib_paths %} {{path}} {% endfor %}
+LIB_PATHS = {% for path in lib_paths %} -L{{path}} {% endfor %}
 
 
 # directories
