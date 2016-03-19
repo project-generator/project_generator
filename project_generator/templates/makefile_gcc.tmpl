@@ -101,7 +101,8 @@ CPP_SRCS := {% for file in source_files_cpp %} {{file}} {% endfor %}
 CPP_OBJS := $(patsubst %.cpp,$(OBJ_FOLDER)%.o,$(notdir $(CPP_SRCS)))
 
 S_SRCS := {% for file in source_files_s %} {{file}} {% endfor %}
-S_OBJS := $(patsubst %.s,$(OBJ_FOLDER)%.o,$(notdir $(S_SRCS)))
+S_OBJS = $(patsubst %.s,$(OBJ_FOLDER)%.o,$(filter %.s,$(notdir $(S_SRCS))))
+S_OBJS += $(patsubst %.S,$(OBJ_FOLDER)%.o,$(filter %.S,$(notdir $(S_SRCS))))
 
 O_OBJS := {% for file in source_files_obj %} {{file}} {% endfor %}
 
