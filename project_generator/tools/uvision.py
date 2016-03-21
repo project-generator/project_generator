@@ -68,6 +68,14 @@ class uVisionDefinitions():
                 'Flash2': 'STLink\\ST-LINKIII-KEIL_SWO.dll',
             },
         },
+        'nu-link': {
+            'TargetDlls': {
+                'Driver': 'BIN\\Nu_Link.dll',
+            },
+            'Utilities': {
+                'Flash2': 'BIN\\Nu_Link.dll',
+            },
+        },
     }
 
 
