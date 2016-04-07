@@ -327,23 +327,30 @@ class Uvision(Tool, Builder, Exporter):
 
         # generic tool template specified or project
         if expanded_dic['template']:
-            # TODO 0xc0170: template list !
-            project_file = join(getcwd(), expanded_dic['template'][0])
-            try:
-                uvproj_dic = xmltodict.parse(open(project_file))
-            except IOError:
-                logger.info("Template file %s not found" % project_file)
-                return None, None
+            for template in expanded_dic['template']:
+                template = join(getcwd(), template)
+                if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx':
+                    try:
+                        uvproj_dic = xmltodict.parse(open(template))
+                    except IOError:
+                        logger.info("Template file %s not found" % template)
+                        return None, None
+                else:
+                    logger.info("Template file %s contains unknown template extension (.uvproj/x are valid). Using default one" % template)
+                    uvproj_dic = self.definitions.uvproj_file
         elif 'uvision' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
-            # TODO 0xc0170: extensions for templates - support multiple files and get their extension
-            # and check if user defined them correctly
-            project_file = join(getcwd(), self.env_settings.templates['uvision'][0])
-            try:
-                uvproj_dic = xmltodict.parse(open(project_file))
-            except IOError:
-                logger.info("Template file %s not found. Using default template" % project_file)
-                uvproj_dic = self.definitions.uvproj_file
+            for template in self.env_settings.templates['uvision']:
+                template = join(getcwd(), template)
+                if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx':
+                    try:
+                        uvproj_dic = xmltodict.parse(open(template))
+                    except IOError:
+                        logger.info("Template file %s not found. Using default template" % template)
+                        uvproj_dic = self.definitions.uvproj_file
+                else:
+                    logger.info("Template file %s contains unknown template extension (.uvproj/x are valid). Using default one" % template)
+                    uvproj_dic = self.definitions.uvproj_file
         else:
             uvproj_dic = self.definitions.uvproj_file
 
