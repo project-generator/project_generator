@@ -18,6 +18,7 @@ import shutil
 import logging
 import xmltodict
 import copy
+import re
 
 from os import getcwd
 from os.path import basename, join, normpath
@@ -329,7 +330,8 @@ class Uvision(Tool, Builder, Exporter):
         if expanded_dic['template']:
             for template in expanded_dic['template']:
                 template = join(getcwd(), template)
-                if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx':
+                if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx' or \
+                    re.match('.*\.uvproj.tmpl$', template) or re.match('.*\.uvprojx.tmpl$', template):
                     try:
                         uvproj_dic = xmltodict.parse(open(template))
                     except IOError:
@@ -342,7 +344,8 @@ class Uvision(Tool, Builder, Exporter):
             # template overrides what is set in the yaml files
             for template in self.env_settings.templates['uvision']:
                 template = join(getcwd(), template)
-                if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx':
+                if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx' or \
+                    re.match('.*\.uvproj.tmpl$', template) or re.match('.*\.uvprojx.tmpl$', template):
                     try:
                         uvproj_dic = xmltodict.parse(open(template))
                     except IOError:

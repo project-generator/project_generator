@@ -18,6 +18,7 @@ import xmltodict
 import subprocess
 import time
 import copy
+import re
 
 import os
 from os import getcwd
@@ -407,13 +408,14 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             # process each template file
             for template in expanded_dic['template']:
                 template = join(getcwd(), template)
-                if os.path.splitext(template)[1] == '.ewp':
+                # we support .ewp or .ewp.tmpl templates
+                if os.path.splitext(template)[1] == '.ewp' or re.match('.*\.ewp.tmpl$', template):
                     try:
                         ewp_dic = xmltodict.parse(open(template), dict_constructor=dict)
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         ewp_dic = self.definitions.ewp_file
-                elif os.path.splitext(template)[1] == '.ewd':
+                elif os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
                     try:
                         ewd_dic = xmltodict.parse(open(template), dict_constructor=dict)
                     except IOError:
@@ -426,13 +428,13 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             # template overrides what is set in the yaml files
             for template in self.env_settings.templates['iar']:
                 template = join(getcwd(), template)
-                if os.path.splitext(template)[1] == '.ewp':
+                if os.path.splitext(template)[1] == '.ewp' or re.match('.*\.ewp.tmpl$', template):
                     try:
                         ewp_dic = xmltodict.parse(open(template), dict_constructor=dict)
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         ewp_dic = self.definitions.ewp_file
-                elif os.path.splitext(template)[1] == '.ewd':
+                elif os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
                     # get ewd template
                     try:
                         ewd_dic = xmltodict.parse(open(template), dict_constructor=dict)
