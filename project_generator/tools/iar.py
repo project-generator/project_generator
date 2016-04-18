@@ -380,6 +380,9 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 data['groups'][k] = []
             data['groups'][k].extend([join('$PROJ_DIR$', file) for file in v])
 
+        # sort groups
+        data['groups'] = OrderedDict(sorted(data['groups'].items(), key=lambda t: t[0]))
+
     def _get_option(self, settings, find_key):
         """ Return index for provided key """
         # This is used as in IAR template, everything 

@@ -15,6 +15,7 @@
 import copy
 import logging
 
+from collections import OrderedDict
 # eclipse works with linux paths
 from posixpath import normpath, join, basename
 
@@ -102,6 +103,9 @@ class EclipseGnuARM(Tool, Exporter, Builder):
             else:
                 group = k
             self._expand_data(data['include_files'], expanded_data, attribute, group)
+
+        # sort groups
+        expanded_data['groups'] = OrderedDict(sorted(expanded_data['groups'].items(), key=lambda t: t[0]))
 
     def export_workspace(self):
         logger.debug("Current version of CoIDE does not support workspaces")
