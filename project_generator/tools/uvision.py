@@ -153,6 +153,8 @@ class Uvision(Tool, Builder, Exporter):
                 group = k
             self._expand_data(data['include_files'], expanded_data, attribute, group)
 
+        # sort groups
+        expanded_data['groups'] = OrderedDict(sorted(expanded_data['groups'].items(), key=lambda t: t[0]))
 
     def _get_groups(self, data):
         """ Get all groups defined. """
