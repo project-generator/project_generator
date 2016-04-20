@@ -86,7 +86,7 @@ class Uvision(Tool, Builder, Exporter):
 
     # flags mapping to uvision uvproj dics
     # for available flags, check armcc/armasm/armlink command line guide
-    # this does not provide all options within a project, most usable options are 
+    # this does not provide all options within a project, most usable options are
     # exposed via command line, the rest is covered via template project files
     FLAGS_TO_UVISION = {
         'asm_flags': 'Aads',
@@ -213,7 +213,10 @@ class Uvision(Tool, Builder, Exporter):
 
         uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['include_paths']).encode('utf-8')
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
-        uvproj_dic['Aads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
+        if project_dic['macros']:
+            c_preproc = '--cpreproc --cpreproc_opts=-D'.encode('utf-8')
+            uvproj_dic['Aads']['VariousControls']['MiscControls'] = c_preproc
+            uvproj_dic['Aads']['VariousControls']['MiscControls'] += ',-D'.join(project_dic['macros']).encode('utf-8')
 
         for misc_keys in project_dic['misc'].keys():
             # ld-flags dont follow the same as asm/c flags, why?!? Please KEIL fix this
@@ -222,7 +225,7 @@ class Uvision(Tool, Builder, Exporter):
                     uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['Misc'] += ' ' + item
             else:
                 for item in project_dic['misc'][misc_keys]:
-                    uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['VariousControls']['MiscControls'] += ' ' + item
+                    uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['VariousControls']['MiscControls'] += ' '.encode('utf-8') + item.encode('utf-8')
 
     def _uvproj_set_TargetCommonOption(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)
@@ -466,4 +469,3 @@ class Uvision5(Uvision):
     def build_project(self):
         # tool_name uvision as uv4 is still used in uv5
         return self._build_project('uvision', 'uvprojx')
-
