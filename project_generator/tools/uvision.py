@@ -202,7 +202,7 @@ class Uvision(Tool, Builder, Exporter):
     def _uvproj_set_DllOption(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)
 
-    def _uvproj_set_TargetArmAds(self, uvproj_dic, project_dic):
+    def _uvproj_set_TargetArmAds(self, uvproj_dic, project_dic, tool_name):
         self._uvproj_clean_xmldict(uvproj_dic['Aads'])
         self._uvproj_clean_xmldict(uvproj_dic['Aads']['VariousControls'])
         self._uvproj_clean_xmldict(uvproj_dic['ArmAdsMisc'])
@@ -214,6 +214,20 @@ class Uvision(Tool, Builder, Exporter):
         uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['include_paths']).encode('utf-8')
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
         uvproj_dic['Aads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
+
+        pro_def = ProGenDef(tool_name)
+        if not pro_def.is_supported(project_dic['target'].lower()):
+            raise RuntimeError("Target %s is not supported. Please add them to https://github.com/project-generator/project_generator_definitions" % project_dic['target'].lower())
+        mcu_def_dic = pro_def.get_tool_definition(project_dic['target'].lower())
+        if not mcu_def_dic:
+             raise RuntimeError(
+                "Target definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % project_dic['target'].lower())
+        try:
+            uvproj_dic['ArmAdsMisc']['useUlib'] = mcu_def_dic['TargetOption']['uLib'][0]
+            uvproj_dic['ArmAdsMisc']['OptFeed'] = mcu_def_dic['TargetOption']['OptFeed'][0]
+        except KeyError:
+            # TODO: remove for next patch
+            logger.debug("Using old definitions which are faulty for uvision, please update >v0.1.3.")
 
         for misc_keys in project_dic['misc'].keys():
             # ld-flags dont follow the same as asm/c flags, why?!? Please KEIL fix this
@@ -292,6 +306,7 @@ class Uvision(Tool, Builder, Exporter):
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['RegisterFile'] = mcu_def_dic['TargetOption']['RegisterFile'][0]
         except KeyError:
             # TODO: remove for next patch
             logger.debug("Using old definitions which are faulty for uvision, please update >v0.1.3.")
@@ -359,7 +374,7 @@ class Uvision(Tool, Builder, Exporter):
         self._uvproj_set_DllOption(
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['DllOption'], expanded_dic)
         self._uvproj_set_TargetArmAds(
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetArmAds'], expanded_dic)
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetArmAds'], expanded_dic, tool_name)
         self._uvproj_set_TargetCommonOption(
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption'], expanded_dic)
         self._uvproj_set_Utilities(
