@@ -214,9 +214,7 @@ class Uvision(Tool, Builder, Exporter):
         uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['include_paths']).encode('utf-8')
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
         if project_dic['macros']:
-            c_preproc = '--cpreproc --cpreproc_opts=-D'.encode('utf-8')
-            uvproj_dic['Aads']['VariousControls']['MiscControls'] = c_preproc
-            uvproj_dic['Aads']['VariousControls']['MiscControls'] += ',-D'.join(project_dic['macros']).encode('utf-8')
+            uvproj_dic['Aads']['VariousControls']['MiscControls'] = '--cpreproc --cpreproc_opts=-D' + ',-D'.join(project_dic['macros'])
 
         for misc_keys in project_dic['misc'].keys():
             # ld-flags dont follow the same as asm/c flags, why?!? Please KEIL fix this
@@ -225,7 +223,7 @@ class Uvision(Tool, Builder, Exporter):
                     uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['Misc'] += ' ' + item
             else:
                 for item in project_dic['misc'][misc_keys]:
-                    uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['VariousControls']['MiscControls'] += ' '.encode('utf-8') + item.encode('utf-8')
+                    uvproj_dic[self.FLAGS_TO_UVISION[misc_keys]]['VariousControls']['MiscControls'] += ' ' + item
 
     def _uvproj_set_TargetCommonOption(self, uvproj_dic, project_dic):
         self._uvproj_clean_xmldict(uvproj_dic)
