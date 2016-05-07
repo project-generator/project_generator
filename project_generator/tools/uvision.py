@@ -86,7 +86,7 @@ class Uvision(Tool, Builder, Exporter):
 
     # flags mapping to uvision uvproj dics
     # for available flags, check armcc/armasm/armlink command line guide
-    # this does not provide all options within a project, most usable options are 
+    # this does not provide all options within a project, most usable options are
     # exposed via command line, the rest is covered via template project files
     FLAGS_TO_UVISION = {
         'asm_flags': 'Aads',
@@ -213,7 +213,8 @@ class Uvision(Tool, Builder, Exporter):
 
         uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['include_paths']).encode('utf-8')
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
-        uvproj_dic['Aads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
+        if project_dic['macros']:
+            uvproj_dic['Aads']['VariousControls']['MiscControls'] = '--cpreproc --cpreproc_opts=-D' + ',-D'.join(project_dic['macros'])
 
         for misc_keys in project_dic['misc'].keys():
             # ld-flags dont follow the same as asm/c flags, why?!? Please KEIL fix this
@@ -466,4 +467,3 @@ class Uvision5(Uvision):
     def build_project(self):
         # tool_name uvision as uv4 is still used in uv5
         return self._build_project('uvision', 'uvprojx')
-

@@ -283,7 +283,7 @@ class Project:
             if tool in self.project['tool_specific'].keys():
                 if 'includes' in self.project['tool_specific'][tool]:
                     for files in self.project['tool_specific'][tool]['includes']:
-                        self._process_include_files(self.project['tool_specific'][tool]['includes'])
+                        self._process_include_files(files)
                 if 'sources' in self.project['tool_specific'][tool]:
                     for files in self.project['tool_specific'][tool]['sources']:
                         self._process_source_files(files)
