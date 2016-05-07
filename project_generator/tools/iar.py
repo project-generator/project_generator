@@ -18,6 +18,7 @@ import xmltodict
 import subprocess
 import time
 import copy
+import re
 
 import os
 from os import getcwd
@@ -391,6 +392,11 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             if option['name'] == find_key:
                 return settings.index(option)
 
+    def _get_default_templates(self):
+        ewp_dic = self.definitions.ewp_file
+        ewd_dic = self.definitions.ewd_file
+        return ewp_dic, ewd_dic
+
     def _export_single_project(self):
         """ A single project export """
         expanded_dic = self.workspace.copy()
@@ -399,27 +405,47 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
 
         # generic tool template specified or project
         if expanded_dic['template']:
-            # TODO 0xc0170: template list !
-            project_file = join(getcwd(), expanded_dic['template'][0])
-            try:
-                ewp_dic = xmltodict.parse(open(project_file), dict_constructor=dict)
-            except IOError:
-                logger.info("Template file %s not found" % project_file)
-                ewp_dic = self.definitions.ewp_file
+            # process each template file
+            for template in expanded_dic['template']:
+                template = join(getcwd(), template)
+                # we support .ewp or .ewp.tmpl templates
+                if os.path.splitext(template)[1] == '.ewp' or re.match('.*\.ewp.tmpl$', template):
+                    try:
+                        ewp_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                    except IOError:
+                        logger.info("Template file %s not found" % template)
+                        ewp_dic = self.definitions.ewp_file
+                elif os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
+                    try:
+                        ewd_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                    except IOError:
+                        logger.info("Template file %s not found" % template)
+                        ewd_dic = self.definitions.ewd_file
+                else:
+                    logger.info("Template file %s contains unknown template extension (.ewp, .ewd are valid)" % template)
+                    ewp_dic, ewd_dic = self._get_default_templates()
         elif 'iar' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
-            # TODO 0xc0170: extension check/expansion
-            project_file = join(getcwd(), self.env_settings.templates['iar'][0])
-            try:
-                ewp_dic = xmltodict.parse(open(project_file), dict_constructor=dict)
-            except IOError:
-                logger.info("Template file %s not found" % project_file)
-                ewp_dic = self.definitions.ewp_file
+            for template in self.env_settings.templates['iar']:
+                template = join(getcwd(), template)
+                if os.path.splitext(template)[1] == '.ewp' or re.match('.*\.ewp.tmpl$', template):
+                    try:
+                        ewp_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                    except IOError:
+                        logger.info("Template file %s not found" % template)
+                        ewp_dic = self.definitions.ewp_file
+                elif os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
+                    # get ewd template
+                    try:
+                        ewd_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                    except IOError:
+                        logger.info("Template file %s not found" % template)
+                        ewd_dic = self.definitions.ewd_file
+                else:
+                    logger.info("Template file %s contains unknown template extension (.ewp, .ewd are valid)" % template)
+                    ewp_dic, ewd_dic = self._get_default_templates()
         else:
-            ewp_dic = self.definitions.ewp_file
-
-        # TODO 0xc0170: add ewd file parsing and support
-        ewd_dic = self.definitions.ewd_file
+            ewp_dic, ewd_dic = self._get_default_templates()
 
         eww = None
         if self.workspace['singular']:

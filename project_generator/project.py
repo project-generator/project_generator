@@ -126,7 +126,7 @@ class ProjectTemplate:
             'output_type': output_type, # output type, default - exe
             'sources': [],              # source files/folders
             'target': '',               # target
-            'template' : '',            # tool template
+            'template' : [],            # tool template
             'tools_supported': [],      # Tools which are supported,
     """
 
@@ -148,7 +148,7 @@ class ProjectTemplate:
 
         data_template = {
             'misc': {},     # misc settings related to tools
-            'template': '', # template project file
+            'template': [], # template project file
         }
         return data_template
 
