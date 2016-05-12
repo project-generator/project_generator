@@ -126,7 +126,7 @@ class ProjectTemplate:
             'output_type': output_type, # output type, default - exe
             'sources': [],              # source files/folders
             'target': '',               # target
-            'template' : '',            # tool template
+            'template' : [],            # tool template
             'tools_supported': [],      # Tools which are supported,
     """
 
@@ -148,7 +148,7 @@ class ProjectTemplate:
 
         data_template = {
             'misc': {},     # misc settings related to tools
-            'template': '', # template project file
+            'template': [], # template project file
         }
         return data_template
 
@@ -283,7 +283,7 @@ class Project:
             if tool in self.project['tool_specific'].keys():
                 if 'includes' in self.project['tool_specific'][tool]:
                     for files in self.project['tool_specific'][tool]['includes']:
-                        self._process_include_files(self.project['tool_specific'][tool]['includes'])
+                        self._process_include_files(files)
                 if 'sources' in self.project['tool_specific'][tool]:
                     for files in self.project['tool_specific'][tool]['sources']:
                         self._process_source_files(files)

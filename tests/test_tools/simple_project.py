@@ -9,6 +9,8 @@ project_1_yaml = {
     },
     'tool_specific': {
         'iar': {
+            'sources': {'sources': ['sources/iar1.cpp']},
+            'includes': {'includes': ['includes/iar1.h']},
             'macros': ['IAR_TEST_MACRO'],
             'misc': {
                 'c_flags': ['c_flag_test', 'c_flag_test2'],
@@ -18,6 +20,8 @@ project_1_yaml = {
             },
         },
         'uvision': {
+            'sources': {'sources': ['sources/uvision.cpp']},
+            'includes': {'includes': ['includes/uvision.h']},
             'macros': ['UVISION_TEST_MACRO'],
             'misc': {
                 'c_flags': ['c_flag_test', 'c_flag_test2'],
@@ -27,6 +31,8 @@ project_1_yaml = {
             }
         },
         'coide': {
+            'sources': {'sources': ['sources/coide.cpp']},
+            'includes': {'includes': ['includes/coide.h']},
             'macros': ['COIDE_TEST_MACRO'],
             'misc': {
                 'c_flags': ['c_flag_test', 'c_flag_test2'],
@@ -36,6 +42,8 @@ project_1_yaml = {
             }
         },
         'gcc_arm': {
+            'sources': {'sources': ['sources/gcc_arm.cpp']},
+            'includes': {'includes': ['includes/gcc_arm.h']},
             'macros': ['GCC_ARM_TEST_MACRO'],
             'misc': {
                 'c_flags': ['c_flag_test', 'c_flag_test2'],

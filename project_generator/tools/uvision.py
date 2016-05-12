@@ -18,6 +18,7 @@ import shutil
 import logging
 import xmltodict
 import copy
+import re
 
 from os import getcwd
 from os.path import basename, join, normpath
@@ -86,7 +87,7 @@ class Uvision(Tool, Builder, Exporter):
 
     # flags mapping to uvision uvproj dics
     # for available flags, check armcc/armasm/armlink command line guide
-    # this does not provide all options within a project, most usable options are 
+    # this does not provide all options within a project, most usable options are
     # exposed via command line, the rest is covered via template project files
     FLAGS_TO_UVISION = {
         'asm_flags': 'Aads',
@@ -213,7 +214,8 @@ class Uvision(Tool, Builder, Exporter):
 
         uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['include_paths']).encode('utf-8')
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
-        uvproj_dic['Aads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
+        if project_dic['macros']:
+            uvproj_dic['Aads']['VariousControls']['MiscControls'] = '--cpreproc --cpreproc_opts=-D' + ',-D'.join(project_dic['macros'])
 
         for misc_keys in project_dic['misc'].keys():
             # ld-flags dont follow the same as asm/c flags, why?!? Please KEIL fix this
@@ -327,23 +329,32 @@ class Uvision(Tool, Builder, Exporter):
 
         # generic tool template specified or project
         if expanded_dic['template']:
-            # TODO 0xc0170: template list !
-            project_file = join(getcwd(), expanded_dic['template'][0])
-            try:
-                uvproj_dic = xmltodict.parse(open(project_file))
-            except IOError:
-                logger.info("Template file %s not found" % project_file)
-                return None, None
+            for template in expanded_dic['template']:
+                template = join(getcwd(), template)
+                if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx' or \
+                    re.match('.*\.uvproj.tmpl$', template) or re.match('.*\.uvprojx.tmpl$', template):
+                    try:
+                        uvproj_dic = xmltodict.parse(open(template))
+                    except IOError:
+                        logger.info("Template file %s not found" % template)
+                        return None, None
+                else:
+                    logger.info("Template file %s contains unknown template extension (.uvproj/x are valid). Using default one" % template)
+                    uvproj_dic = self.definitions.uvproj_file
         elif 'uvision' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
-            # TODO 0xc0170: extensions for templates - support multiple files and get their extension
-            # and check if user defined them correctly
-            project_file = join(getcwd(), self.env_settings.templates['uvision'][0])
-            try:
-                uvproj_dic = xmltodict.parse(open(project_file))
-            except IOError:
-                logger.info("Template file %s not found. Using default template" % project_file)
-                uvproj_dic = self.definitions.uvproj_file
+            for template in self.env_settings.templates['uvision']:
+                template = join(getcwd(), template)
+                if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx' or \
+                    re.match('.*\.uvproj.tmpl$', template) or re.match('.*\.uvprojx.tmpl$', template):
+                    try:
+                        uvproj_dic = xmltodict.parse(open(template))
+                    except IOError:
+                        logger.info("Template file %s not found. Using default template" % template)
+                        uvproj_dic = self.definitions.uvproj_file
+                else:
+                    logger.info("Template file %s contains unknown template extension (.uvproj/x are valid). Using default one" % template)
+                    uvproj_dic = self.definitions.uvproj_file
         else:
             uvproj_dic = self.definitions.uvproj_file
 
@@ -467,4 +478,3 @@ class Uvision5(Uvision):
     def build_project(self):
         # tool_name uvision as uv4 is still used in uv5
         return self._build_project('uvision', 'uvprojx')
-

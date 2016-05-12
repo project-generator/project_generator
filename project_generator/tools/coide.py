@@ -16,8 +16,9 @@ import logging
 import xmltodict
 from collections import OrderedDict
 import copy
+import re
 
-from os.path import basename, join, normpath
+from os.path import basename, join, normpath, splitext
 from os import getcwd
 from project_generator_definitions.definitions import ProGenDef
 
@@ -196,21 +197,30 @@ class Coide(Tool, Exporter, Builder):
 
         # generic tool template specified or project
         if expanded_dic['template']:
-            project_file = join(getcwd(), expanded_dic['template'][0])
-            try:
-                coproj_dic = xmltodict.parse(open(project_file))
-            except IOError:
-                logger.info("Template file %s not found. Using default template" % project_file)
-                coproj_dic = self.definitions.coproj_file
+            for template in expanded_dic['template']:
+                template = join(getcwd(), template)
+                if splitext(template)[1] == '.coproj' or re.match('.*\.coproj.tmpl$', template):
+                    try:
+                        coproj_dic = xmltodict.parse(open(template))
+                    except IOError:
+                        logger.info("Template file %s not found. Using default template" % template)
+                        coproj_dic = self.definitions.coproj_file
+                else:
+                    logger.info("Template file %s contains unknown template extension (.coproj/.coproj.tmpl are valid). Using default one" % template)
+                    coproj_dic = self.definitions.coproj_file
         elif 'coide' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
-            # TODO 0xc0170: extension check/expansion
-            project_file = join(getcwd(), self.env_settings.templates['coide'][0])
-            try:
-                coproj_dic = xmltodict.parse(open(project_file))
-            except IOError:
-                logger.info("Template file %s not found. Using default template" % project_file)
-                coproj_dic = self.definitions.coproj_file
+            for template in self.env_settings.templates['coide']:
+                template = join(getcwd(), template)
+                if splitext(template)[1] == '.coproj' or re.match('.*\.coproj.tmpl$', template):
+                    try:
+                        coproj_dic = xmltodict.parse(open(template))
+                    except IOError:
+                        logger.info("Template file %s not found. Using default template" % template)
+                        coproj_dic = self.definitions.coproj_file
+                else:
+                    logger.info("Template file %s contains unknown template extension (.coproj/.coproj.tmpl are valid). Using default one" % template)
+                    coproj_dic = self.definitions.coproj_file
         else:
             # setting values from the yaml files
             coproj_dic = self.definitions.coproj_file
