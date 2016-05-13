@@ -405,6 +405,8 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
 
         # generic tool template specified or project
         if expanded_dic['template']:
+            template_ewp = False
+            template_ewd = False
             # process each template file
             for template in expanded_dic['template']:
                 template = join(getcwd(), template)
@@ -412,36 +414,45 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 if os.path.splitext(template)[1] == '.ewp' or re.match('.*\.ewp.tmpl$', template):
                     try:
                         ewp_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                        template_ewp = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         ewp_dic = self.definitions.ewp_file
-                elif os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
+                if os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
                     try:
                         ewd_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                        template_ewd = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         ewd_dic = self.definitions.ewd_file
-                else:
+                if not template_ewp or not template_ewd:
                     logger.info("Template file %s contains unknown template extension (.ewp, .ewd are valid)" % template)
                     ewp_dic, ewd_dic = self._get_default_templates()
         elif 'iar' in self.env_settings.templates.keys():
+            template_ewp = False
+            template_ewd = False
             # template overrides what is set in the yaml files
             for template in self.env_settings.templates['iar']:
                 template = join(getcwd(), template)
                 if os.path.splitext(template)[1] == '.ewp' or re.match('.*\.ewp.tmpl$', template):
                     try:
                         ewp_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                        template_ewp = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         ewp_dic = self.definitions.ewp_file
-                elif os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
+                if os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
                     # get ewd template
                     try:
                         ewd_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                        template_ewd = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         ewd_dic = self.definitions.ewd_file
                 else:
+                    # load default ewd if not found in the templates
+                    ewd_dic = self.definitions.ewd_file
+                if not template_ewp or not template_ewd:
                     logger.info("Template file %s contains unknown template extension (.ewp, .ewd are valid)" % template)
                     ewp_dic, ewd_dic = self._get_default_templates()
         else:
