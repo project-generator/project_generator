@@ -40,7 +40,7 @@ TARGET_EXT =
 TARGET_EXT = a
 {% endif %}
 
-LD_SCRIPT = {% for file in linker_file %} {{file}} {% endfor %}
+LD_SCRIPT = {{ linker_file }}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 
