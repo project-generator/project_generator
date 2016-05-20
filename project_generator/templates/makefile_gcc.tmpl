@@ -40,7 +40,7 @@ TARGET_EXT =
 TARGET_EXT = a
 {% endif %}
 
-LD_SCRIPT = {{linker_file}}
+LD_SCRIPT = {{ linker_file }}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 
@@ -175,6 +175,7 @@ clean:
 	$(RM) $(TARGET).$(TARGET_EXT) $(TARGET).bin $(TARGET).map $(OBJ_FOLDER)*.* $(OBJ_FOLDER)
 	@echo ' '
 
-
+{% block extra_targets %}
+{% endblock %}
 
 .PHONY: all clean print_info

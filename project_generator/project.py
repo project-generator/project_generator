@@ -464,6 +464,7 @@ class Project:
         self.project['export']['template'] = self._get_tool_data('template', tool_keywords)
 
         fix_paths(self.project['export'], self.project['export']['output_dir']['rel_path'], list(FILES_EXTENSIONS.keys()) + ['include_paths', 'source_paths'])
+        fix_paths(self.project['tool_specific']['make_gcc_arm']['misc'], self.project['export']['output_dir']['rel_path'], ['linker_file'])
 
         # misc for tools requires dic merge
         misc = self._get_tool_data('misc', tool_keywords)

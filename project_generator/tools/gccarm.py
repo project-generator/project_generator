@@ -113,6 +113,14 @@ class MakefileGccArm(Tool, Exporter):
         project_data['toolchain'] = 'arm-none-eabi-'
         project_data['toolchain_bin_path'] = self.env_settings.get_env_settings('gcc')
 
+        linker_file = project_data['linker_file']
+        if not isinstance(linker_file, basestring):
+            if len(linker_file) > 1:
+                raise RuntimeError(
+                    "Target: multiple linker files specified. please remove all but one linker file")
+            else:
+                project_data['linker_file'] = linker_file[0]
+
         pro_def = ProGenDef()
 
         if pro_def.get_mcu_core(project_data['target'].lower()):
