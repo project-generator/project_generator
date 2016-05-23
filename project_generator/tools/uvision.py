@@ -294,9 +294,9 @@ class Uvision(Tool, Builder, Exporter):
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['RegisterFile'] = mcu_def_dic['TargetOption']['RegisterFile'][0]
         except KeyError:
-            # TODO: remove for next patch
-            logger.debug("Using old definitions which are faulty for uvision, please update >v0.1.3.")
+            pass
 
         # overwrite the template if target has defined debugger
         # later progen can overwrite this if debugger is set in project data

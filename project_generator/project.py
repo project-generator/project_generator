@@ -496,7 +496,7 @@ class Project:
             self.project['export']['linker_file'] = self.project['export']['linker_file'][0]
 
     def _copy_sources_to_generated_destination(self):
-        """" Copies all project files to specified directory - generated dir """
+        """ Copies all project files to specified directory - generated dir """
 
         files = []
         for key in FILES_EXTENSIONS.keys():
