@@ -106,7 +106,16 @@ class IAREmbeddedWorkbenchProject:
     }
 
     def _set_option(self, settings, value):
+        """ Set option (state) """
         settings['state'] = value
+
+    def _get_option(self, settings, find_key):
+        """ Return index for provided key """
+        # This is used as in IAR template, everything 
+        # is as an array with random positions. We look for key with an index
+        for option in settings:
+            if option['name'] == find_key:
+                return settings.index(option)
 
     def _set_multiple_option(self, settings, value_list):
         settings['state'] = []
@@ -351,14 +360,6 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
 
         # sort groups
         data['groups'] = OrderedDict(sorted(data['groups'].items(), key=lambda t: t[0]))
-
-    def _get_option(self, settings, find_key):
-        """ Return index for provided key """
-        # This is used as in IAR template, everything 
-        # is as an array with random positions. We look for key with an index
-        for option in settings:
-            if option['name'] == find_key:
-                return settings.index(option)
 
     def _get_default_templates(self):
         ewp_dic = self.definitions.ewp_file
