@@ -106,7 +106,16 @@ class IAREmbeddedWorkbenchProject:
     }
 
     def _set_option(self, settings, value):
+        """ Set option (state) """
         settings['state'] = value
+
+    def _get_option(self, settings, find_key):
+        """ Return index for provided key """
+        # This is used as in IAR template, everything 
+        # is as an array with random positions. We look for key with an index
+        for option in settings:
+            if option['name'] == find_key:
+                return settings.index(option)
 
     def _set_multiple_option(self, settings, value_list):
         settings['state'] = []
@@ -303,14 +312,6 @@ class IAREmbeddedWorkbenchProject:
         
 class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject):
 
-    core_dic = {
-        "cortex-m0":  34,
-        "cortex-m0+": 35,
-        "cortex-m3":  38,
-        "cortex-m4":  39,
-        "cortex-m4f": 40,
-    }
-
     generated_project = {
         'path': '',
         'files': {
@@ -332,30 +333,6 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
     @staticmethod
     def get_toolchain():
         return 'iar'
-
-    def _find_target_core(self, data):
-        """ Sets Target core """
-        for k, v in self.core_dic.items():
-            if k == data['core']:
-                return v
-        return IAREmbeddedWorkbench.core_dic['cortex-m0']  # def cortex-m0 if not defined otherwise
-
-    def _parse_specific_options(self, data):
-        """ Parse all IAR specific settings """
-        data['iar_settings'].update(copy.deepcopy(
-            self.definitions.iar_settings))  # set specific options to default values
-        for dic in data['misc']:
-            # for k,v in dic.items():
-            self.set_specific_settings(dic, data)
-
-    def _set_specific_settings(self, value_list, data):
-        for k, v in value_list.items():
-            for option in v.items():
-                for key, value in v['data']['option'].items():
-                    result = 0
-                    if value[0] == 'enable':
-                        result = 1
-                    data['iar_settings'][k]['data']['option'][key]['state'] = result
 
     def _normalize_mcu_def(self, mcu_def):
         """ Normalizes mcu definitions to the required format """
@@ -383,14 +360,6 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
 
         # sort groups
         data['groups'] = OrderedDict(sorted(data['groups'].items(), key=lambda t: t[0]))
-
-    def _get_option(self, settings, find_key):
-        """ Return index for provided key """
-        # This is used as in IAR template, everything 
-        # is as an array with random positions. We look for key with an index
-        for option in settings:
-            if option['name'] == find_key:
-                return settings.index(option)
 
     def _get_default_templates(self):
         ewp_dic = self.definitions.ewp_file
