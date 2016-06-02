@@ -108,6 +108,7 @@ class Uvision(Tool, Builder, Exporter):
     }
 
     SUCCESSVALUE = 0
+    WARNVALUE = 1
 
     generated_project = {
         'path': '',
@@ -437,12 +438,12 @@ class Uvision(Tool, Builder, Exporter):
                 "Error whilst calling UV4: '%s'. Please set uvision path in the projects.yaml file." % self.env_settings.get_env_settings('uvision'))
             return -1
         else:
-            if ret_code != self.SUCCESSVALUE:
+            if ret_code != self.SUCCESSVALUE and ret_code != self.WARNVALUE:
                 # Seems like something went wrong.
-                logger.error("Project: %s build failed with the status: %s" % (self.ERRORLEVEL[ret_code], self.workspace['files'][extension]))
+                logger.error("Project: %s build failed with the status: %s" % (self.workspace['files'][extension], self.ERRORLEVEL[ret_code]))
                 return -1
             else:
-                logger.info("Project: %s build succeeded with the status: %s" % (self.ERRORLEVEL[ret_code], self.workspace['files'][extension]))
+                logger.info("Project: %s build succeeded with the status: %s" % (self.workspace['files'][extension], self.ERRORLEVEL[ret_code]))
                 return 0
 
     def build_project(self):
