@@ -27,7 +27,7 @@ LD = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block LD %}{% endblock %}
 AR = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block AR %}{% endblock %}
 
 SIZE = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)size
-OBJCOPY = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)objcopy
+OBJCOPY = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block OBJCOPY %}{% endblock %}
 OBJDUMP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)objdump
 NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)nm
 
@@ -35,7 +35,7 @@ NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)nm
 INSTRUCTION_MODE = thumb
 TARGET = {{name}}
 {% if output_type == 'exe' %}
-TARGET_EXT = .axf
+TARGET_EXT = .elf
 {% else %}
 TARGET_EXT = .a
 {% endif %}
@@ -153,10 +153,10 @@ $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS
 print_info:
 	@echo 'Printing size'
 	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
-#$(OBJCOPY) -O ihex $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) $(OBJ_FOLDER)$(TARGET).hex
-#$(OBJCOPY) -O binary -v $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) $(OBJ_FOLDER)$(TARGET).bin
-#$(OBJDUMP) -D $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET).lst
-#$(NM) $(OBJ_FOLDER)$(TARGET).$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
+	$(OBJCOPY) {% block TOHEX %}{% endblock %} $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) {% block objcopy_output %}{% endblock %} $(OBJ_FOLDER)$(TARGET).hex
+	$(OBJCOPY) {% block TOBIN %}{% endblock %} -v $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) {{ self.objcopy_output() }} $(OBJ_FOLDER)$(TARGET).bin
+	-$(OBJDUMP) -D $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET).lst
+	-$(NM) $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
 	@echo ' '
 
 {% else %}
@@ -175,7 +175,7 @@ print_info:
 # Other Targets
 clean:
 	@echo 'Removing entire out directory'
-	$(RM) $(TARGET).$(TARGET_EXT) $(TARGET).bin $(TARGET).map $(OBJ_FOLDER)*.* $(OBJ_FOLDER)
+	$(RM) $(TARGET)$(TARGET_EXT) $(TARGET).bin $(TARGET).map $(OBJ_FOLDER)*.* $(OBJ_FOLDER)
 	@echo ' '
 
 .PHONY: clean print_info
