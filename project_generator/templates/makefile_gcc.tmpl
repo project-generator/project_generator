@@ -5,9 +5,9 @@
 {% block AS %}gcc -x assembler-with-cpp{% endblock %}
 {% block LD %}gcc{% endblock %}
 {% block AR %}ar{% endblock %}
-{% block OBJDUMP %}objdump{% endblock %}
-{% block TOHEX %}-O hex{% endblock %}
-{% block TOBIN %}-O bin{% endblock %}
+{% block OBJCOPY %}objcopy{% endblock %}
+{% block TOHEX %}-O ihex{% endblock %}
+{% block TOBIN %}-O binary{% endblock %}
 
 {% block COMMON_FLAGS %} -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -MMD -MP $(CC_SYMBOLS) {% endblock %}
 {% block LD_OPTIONS %} -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T$(LD_SCRIPT){% endblock %}
