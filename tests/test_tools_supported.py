@@ -19,6 +19,7 @@ from project_generator.tools.uvision import Uvision
 from project_generator.tools.iar import IAREmbeddedWorkbench
 from project_generator.tools.coide import Coide
 from project_generator.tools.gccarm import MakefileGccArm
+from project_generator.tools.makearmcc import MakefileArmcc
 from project_generator.tools.eclipse import EclipseGnuARM
 from project_generator.tools.sublimetext import SublimeTextMakeGccARM
 from project_generator.tools.cmake import CMakeGccArm
@@ -44,6 +45,8 @@ class TestProject(TestCase):
         assert tool == Coide
         tool = self.tools.get_tool('gcc_arm')
         assert tool == MakefileGccArm
+        tool = self.tools.get_tool('make_armcc')
+        assert tool == MakefileArmcc
         tool = self.tools.get_tool('eclipse_make_gcc_arm')
         assert tool == EclipseGnuARM
         tool = self.tools.get_tool('sublime_make_gcc_arm')

@@ -15,8 +15,9 @@
 import os
 import logging
 
-from os.path import join, dirname
-from jinja2 import Template
+from os.path import join, dirname, abspath
+from jinja2 import Template, FileSystemLoader
+from jinja2.environment import Environment
 
 logger = logging.getLogger('progen.tools')
 
@@ -48,7 +49,7 @@ class Builder:
 class Exporter(object):
     """Just an exporter template for subclassing"""
 
-    TEMPLATE_DIR = join(dirname(__file__), '..', 'templates')
+    TEMPLATE_DIR = abspath(join(dirname(__file__), '..', 'templates'))
 
     # Any tool which exports should implement these methods 3 methods
     def export_workspace(self):
@@ -87,10 +88,10 @@ class Exporter(object):
         logger.debug("Generating: %s" % output)
 
         """ Fills data to the project template, using jinja2. """
-        template_path = join(self.TEMPLATE_DIR, template_file)
-        template_text = open(template_path).read()
+        env = Environment()
+        env.loader = FileSystemLoader(self.TEMPLATE_DIR)
         # TODO: undefined=StrictUndefined - this needs fixes in templates
-        template = Template(template_text)
+        template = env.get_template(template_file)
         target_text = template.render(data)
 
         open(output, "w").write(target_text)

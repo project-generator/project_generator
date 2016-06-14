@@ -1,0 +1,16 @@
+{% extends "makefile.tmpl" %}
+
+{% block CC %}armcc{% endblock %}
+{% block CXX %}armcc{% endblock %}
+{% block AS %}armasm{% endblock %}
+{% block LD %}armlink{% endblock %}
+{% block AR %}armar{% endblock %}
+{% block OBJCOPY %}fromelf{% endblock %}
+
+{% block TOBIN %}--bin{% endblock %}
+{% block TOHEX %}--i32{% endblock %}
+{% block objcopy_output %}--output{% endblock %}
+
+{% block COMMON_FLAGS %} --cpu $(CPU) --$(INSTRUCTION_MODE){% endblock %}
+{% block LD_OPTIONS %}--strict --scatter $(LD_SCRIPT) $(patsubst %,--predefine "%",$(CC_SYMBOLS) $(INC_DIRS_F)){% endblock %}
+{% block ASM_SYMBOLS %}{% for symbol in macros %} --pd "{{ morph_define(symbol) }}" {% endfor %}{% endblock %}

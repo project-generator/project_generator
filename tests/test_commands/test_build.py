@@ -39,6 +39,10 @@ class TestBuildCommand(TestCase):
         # write projects file
         with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
             f.write(yaml.dump(projects_yaml, default_flow_style=False))
+        with open(os.path.join(os.getcwd(), 'test_workspace/linker.ld'), 'wt'):
+            pass
+        with open(os.path.join(os.getcwd(), 'test_workspace/main.cpp'), 'wt') as f:
+            f.write("int __bss_start__ = 0;\nint __bss_end__ = 0;\nint _exit = 0;\nint main() {}\n")
 
         self.parser = argparse.ArgumentParser()
         subparsers = self.parser.add_subparsers(help='commands')
@@ -90,6 +94,13 @@ class TestBuildCommand(TestCase):
     def test_build_project_make_gcc_arm_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'make_gcc_arm'])
+        result = build.run(args)
+
+        assert result == -1
+
+    def test_build_project_make_armcc_tool(self):
+        args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
+            'project_2', '-t', 'make_armcc'])
         result = build.run(args)
 
         assert result == -1

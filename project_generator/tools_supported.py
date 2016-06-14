@@ -17,6 +17,7 @@ from .tools.uvision import Uvision, Uvision5
 from .tools.coide import Coide
 from .tools.eclipse import EclipseGnuARM
 from .tools.gccarm import MakefileGccArm
+from .tools.makearmcc import MakefileArmcc
 from .tools.sublimetext import SublimeTextMakeGccARM
 from .tools.gdb import GDB, ARMNoneEABIGDB, JLinkGDB
 from .tools.cmake import CMakeGccArm
@@ -49,6 +50,7 @@ class ToolsSupported:
         'uvision5':             Uvision5,
         'coide':                Coide,
         'make_gcc_arm':         MakefileGccArm,
+        'make_armcc':           MakefileArmcc,
         'eclipse_make_gcc_arm': EclipseGnuARM,
         'sublime_make_gcc_arm': SublimeTextMakeGccARM,
         'gdb':                  GDB,
