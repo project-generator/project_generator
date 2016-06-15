@@ -88,6 +88,13 @@ class PartialFormatter(string.Formatter):
             val = '{' + field_name + '}', first
         return val
 
+def strip_start(text, prefix):
+    if text == [] :
+        return []
+    if not text.startswith(prefix):
+        return text
+    return text[len(prefix):]
+
 def fix_paths(project_data, rel_path, extensions):
     """ Fix paths for extension list """
     norm_func = lambda path : os.path.normpath(os.path.join(rel_path, path))
