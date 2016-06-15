@@ -89,6 +89,8 @@ class PartialFormatter(string.Formatter):
         return val
 
 def strip_start(text, prefix):
+    if text == [] :
+        return []
     if not text.startswith(prefix):
         return text
     return text[len(prefix):]
