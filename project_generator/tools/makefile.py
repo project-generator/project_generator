@@ -23,7 +23,7 @@ from os.path import join, normpath,dirname
 from project_generator_definitions.definitions import ProGenDef
 
 from .tool import Tool, Exporter
-from ..util import SOURCE_KEYS
+from ..util import SOURCE_KEYS, strip_start
 
 
 class MakefileTool(Tool, Exporter):
@@ -111,6 +111,12 @@ class MakefileTool(Tool, Exporter):
         # change cortex-m0+ to cortex-m0plus
         if project_data['core'] == 'cortex-m0+':
             project_data['core'] = 'cortex-m0plus'
+
+        for key in ['source_files_c','source_files_cpp','source_files_s', 'source_paths']:
+            project_data[key] = [strip_start(f,project_data['output_dir']['rel_path'])
+                                 for f in project_data[key]]
+        project_data['linker_file'] = strip_start(project_data['linker_file'],
+                                                  project_data['output_dir']['rel_path'])
 
     def build_project(self):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
