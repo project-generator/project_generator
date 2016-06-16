@@ -91,41 +91,6 @@ class Coide(Tool, Exporter, Builder):
                 }
                 new_data['groups'][group].append(new_file)
 
-    def _get_groups(self):
-        """ Get all groups defined """
-        groups = []
-        for attribute in SOURCE_KEYS:
-            for k, v in self.workspace[attribute].items():
-                if k == None:
-                    k = 'Sources'
-                if k not in groups:
-                    groups.append(k)
-            for k, v in self.workspace['include_files'].items():
-                if k == None:
-                    k = 'Includes'
-                if k not in groups:
-                    groups.append(k)
-        return groups
-
-    def _iterate(self, data, expanded_data):
-        """ _Iterate through all data, store the result expansion in extended dictionary """
-        for attribute in SOURCE_KEYS:
-            for k, v in data[attribute].items():
-                if k == None:
-                    group = 'Sources'
-                else:
-                    group = k
-                self._expand_data(data[attribute], expanded_data, attribute, group)
-        for k, v in data['include_files'].items():
-            if k == None:
-                group = 'Includes'
-            else:
-                group = k
-            self._expand_data(data['include_files'], expanded_data, attribute, group)
-
-        # sort groups
-        expanded_data['groups'] = OrderedDict(sorted(expanded_data['groups'].items(), key=lambda t: t[0]))
-
     def _normalize_mcu_def(self, mcu_def):
         for k, v in mcu_def['Device'].items():
             mcu_def['Device'][k] = v[0]
@@ -189,7 +154,7 @@ class Coide(Tool, Exporter, Builder):
         if 'misc' in expanded_dic and bool(expanded_dic['misc']):
             print ("Using deprecated misc options for coide. Please use template project files.")
 
-        groups = self._get_groups()
+        groups = self._get_groups(self.workspace)
         expanded_dic['groups'] = {}
         for group in groups:
             expanded_dic['groups'][group] = []
