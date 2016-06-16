@@ -64,7 +64,7 @@ set(SOURCES_S ${SOURCES_S} "{{file}}"){% endfor %}
 {% for file in source_files_obj %}
 set(OBJECT_FILES ${OBJECT_FILES} "{{file}}"){% endfor %}
 
-set(COMMON_FLAGS "-mcpu={{core}} {% for flag in misc['common_flags'] %} {{flag}}{% endfor %}")
+set(COMMON_FLAGS "-mcpu={{core}} -mthumb {% for flag in misc['common_flags'] %} {{flag}}{% endfor %}")
 set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} ${DEFINES} {% for flag in misc['cxx_flags'] %} {{flag}}{% endfor %}")
 set(CMAKE_C_FLAGS "${COMMON_FLAGS} ${DEFINES} {% for flag in misc['c_flags'] %} {{flag}}{% endfor %}")
 set(CMAKE_EXE_LINKER_FLAGS "-mcpu={{core}} {% for flag in misc['linker_flags'] %} {{flag}}{% endfor %}")
