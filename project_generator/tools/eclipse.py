@@ -52,24 +52,12 @@ class EclipseGnuARM(Tool, Exporter, Builder):
     def get_toolchain():
         return 'gcc_arm'
 
-    def _expand_data(self, old_data, new_data, attribute, group):
-        """ data expansion - uvision needs filename and path separately. """
-        if group == 'Sources':
-            old_group = None
-        else:
-            old_group = group
-        for source in old_data[old_group]:
-            if source:
-                extension = source.split(".")[-1]
-                if not extension in self.file_types.keys():
-                    logger.debug("Filetype for file %s not recognized" % file)
-                    continue
-                # TODO: fix - workaround for windows, seems posixpath does not work
-                source = source.replace('\\', '/')
-                new_file = {"path": join('PARENT-%s-PROJECT_LOC' % new_data['output_dir']['rel_path'], normpath(source)), "name": basename(
+    def _expand_one_file(self, source, new_data, extension):
+        return {"path": join('PARENT-%s-PROJECT_LOC' % new_data['output_dir']['rel_path'], normpath(source)), "name": basename(
                     source), "type": self.file_types[extension.lower()]}
-                new_data['groups'][group].append(new_file)
-        new_data['groups'][group] = sorted(new_data['groups'][group], key=lambda x: x['name'].lower())
+
+    def _expand_sort_key(self, file) :
+        return file['name'].lower()
 
     def export_workspace(self):
         logger.debug("Current version of CoIDE does not support workspaces")

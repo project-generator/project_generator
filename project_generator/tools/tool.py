@@ -16,7 +16,7 @@ import os
 import logging
 from collections import OrderedDict
 
-from os.path import join, dirname, abspath
+from os.path import join, dirname, abspath, normpath
 from jinja2 import Template, FileSystemLoader
 from jinja2.environment import Environment
 
@@ -107,6 +107,20 @@ class Exporter(object):
     def is_supported_by_default(target):
         return False
 
+    def _expand_data(self, old_data, new_data, group):
+        """ data expansion - uvision needs filename and path separately. """
+        for file in sum(old_data.values(), []):
+            if file:
+                extension = file.split(".")[-1].lower()
+                if extension in self.file_types.keys():
+                    new_data['groups'][group].append(self._expand_one_file(normpath(file),
+                                                                           new_data, extension))
+                else:
+                    logger.debug("Filetype for file %s not recognized" % file)
+        if hasattr(self, '_expand_sort_key'):
+            new_data['groups'][group] = sorted(new_data['groups'][group],
+                                               key=self._expand_sort_key)
+
     def _get_groups(self, data):
         """ Get all groups defined """
         groups = []
@@ -131,13 +145,13 @@ class Exporter(object):
                     group = 'Sources'
                 else:
                     group = k
-                self._expand_data(data[attribute], expanded_data, attribute, group)
+                self._expand_data(data[attribute], expanded_data, group)
         for k, v in data['include_files'].items():
             if k == None:
                 group = 'Includes'
             else:
                 group = k
-            self._expand_data(data['include_files'], expanded_data, attribute, group)
+            self._expand_data(data['include_files'], expanded_data, group)
 
         # sort groups
         expanded_data['groups'] = OrderedDict(sorted(expanded_data['groups'].items(), key=lambda t: t[0]))
