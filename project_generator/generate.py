@@ -56,12 +56,12 @@ class Generator:
             if 'projects' in self.projects_dict:
                 found = True
                 for name, records in sorted(self.projects_dict['projects'].items(),
-                                            key=lambda (n,r): n):
+                                            key=lambda x: x[0]):
                     yield Project(name, load_yaml_records(uniqify(flatten(records))), self.settings)
             if 'workspaces' in self.projects_dict:
                 found = True
                 for name, records in sorted(self.projects_dict['workspaces'].items(),
-                                            key=lambda (n,r): n):
+                                            key=lambda x: x[0]):
                     workspace_settings = {}
                     if 'settings' in records:
                         workspace_settings = records['settings']
