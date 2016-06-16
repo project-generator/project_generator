@@ -304,6 +304,7 @@ class Project:
             self.project['export']['include_files'][use_group_name] = []
 
         for include_file in use_includes:
+            include_file = include_file.replace('\\', '/')
             # include might be set to None - empty yaml list
             if include_file:
                 if os.path.isdir(include_file):
