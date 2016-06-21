@@ -131,56 +131,9 @@ class Uvision(Tool, Builder, Exporter):
     def get_toolchain():
         return 'uvision'
 
-    def _expand_data(self, old_data, new_data, attribute, group):
-        """ data expansion - uvision needs filename and path separately. """
-        if group == 'Sources':
-            old_group = None
-        else:
-            old_group = group
-        for file in old_data[old_group]:
-            if file:
-                extension = file.split(".")[-1].lower()
-                if not extension in self.file_types.keys():
-                    logger.debug("Filetype for file %s not recognized" % file)
-                    continue
-                new_file = {"FilePath": file, "FileName": basename(file),
+    def _expand_one_file(self, source, new_data, extension):
+        return {"FilePath": source, "FileName": basename(source),
                             "FileType": self.file_types[extension]}
-                new_data['groups'][group].append(new_file)
-
-    def _iterate(self, data, expanded_data):
-        """ Iterate through all sources/includes, store the result expansion in extended dictionary. """
-        for attribute in SOURCE_KEYS:
-            for k, v in data[attribute].items():
-                if k == None:
-                    group = 'Sources'
-                else:
-                    group = k
-                self._expand_data(data[attribute], expanded_data, attribute, group)
-        for k, v in data['include_files'].items():
-            if k == None:
-                group = 'Includes'
-            else:
-                group = k
-            self._expand_data(data['include_files'], expanded_data, attribute, group)
-
-        # sort groups
-        expanded_data['groups'] = OrderedDict(sorted(expanded_data['groups'].items(), key=lambda t: t[0]))
-
-    def _get_groups(self, data):
-        """ Get all groups defined. """
-        groups = []
-        for attribute in SOURCE_KEYS:
-            for k, v in data[attribute].items():
-                if k == None:
-                    k = 'Sources'
-                if k not in groups:
-                    groups.append(k)
-            for k, v in data['include_files'].items():
-                if k == None:
-                    k = 'Includes'
-                if k not in groups:
-                    groups.append(k)
-        return groups
 
     def _normalize_mcu_def(self, mcu_def):
         for k, v in mcu_def['TargetOption'].items():
