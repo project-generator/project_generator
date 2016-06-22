@@ -109,7 +109,7 @@ class Exporter(object):
 
     def _expand_data(self, old_data, new_data, group):
         """ data expansion - uvision needs filename and path separately. """
-        for file in sum(old_data.values(), []):
+        for file in old_data:
             if file:
                 extension = file.split(".")[-1].lower()
                 if extension in self.file_types.keys():
@@ -145,7 +145,8 @@ class Exporter(object):
                     group = 'Sources'
                 else:
                     group = k
-                self._expand_data(data[attribute], expanded_data, group)
+                if group in data[attribute].keys():
+                    self._expand_data(data[attribute][group], expanded_data, group)
         for k, v in data['include_files'].items():
             if k == None:
                 group = 'Includes'
