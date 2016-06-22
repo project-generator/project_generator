@@ -17,37 +17,35 @@ import logging
 from ..tools_supported import ToolsSupported
 from ..generate import Generator
 from ..settings import ProjectSettings
+from . import argparse_filestring_type, argparse_string_type
 
 help = 'Build a project'
 
 
 def run(args):
     # Export if we know how, otherwise return
-    if os.path.exists(args.file):
-        generator = Generator(args.file)
-        build_failed = False
-        export_failed = False
-        for project in generator.generate(args.project):
-            if project.generate(args.tool, args.copy) == -1:
-                export_failed = True
-            if project.build(args.tool) == -1:
-                build_failed = True
+    generator = Generator(args.file)
+    build_failed = False
+    export_failed = False
+    for project in generator.generate(args.project):
+        if project.generate(args.tool, args.copy) == -1:
+            export_failed = True
+        if project.build(args.tool) == -1:
+            build_failed = True
 
-        if build_failed or export_failed:
-            return -1
-        else:
-            return 0
-    else:
-        # not project known by progen
-        logging.warning("%s not found." % args.file)
+    if build_failed or export_failed:
         return -1
+    else:
+        return 0
 
 def setup(subparser):
     subparser.add_argument(
-        "-f", "--file", help="YAML projects file", default='projects.yaml')
+        "-f", "--file", help="YAML projects file", default='projects.yaml',
+        type=argparse_filestring_type)
     subparser.add_argument(
         "-p", "--project", help="Name of the project to build", default = '')
     subparser.add_argument(
-        "-t", "--tool", help="Build a project files for provided tool")
+        "-t", "--tool", help="Build a project files for provided tool",
+        type=argparse_string_type(str.lower, False), choices=list(ToolsSupported.TOOLS_DICT.keys()) + list(ToolsSupported.TOOLS_ALIAS.keys()))
     subparser.add_argument(
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")
