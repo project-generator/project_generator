@@ -130,11 +130,11 @@ class Exporter(object):
                     k = 'Sources'
                 if k not in groups:
                     groups.append(k)
-            for k, v in data['include_files'].items():
-                if k == None:
-                    k = 'Includes'
-                if k not in groups:
-                    groups.append(k)
+        for k, v in data['include_files'].items():
+            if k == None:
+                k = 'Includes'
+            if k not in groups:
+                groups.append(k)
         return groups
 
     def _iterate(self, data, expanded_data):
@@ -152,7 +152,7 @@ class Exporter(object):
                 group = 'Includes'
             else:
                 group = k
-            self._expand_data(data['include_files'], expanded_data, group)
+            self._expand_data(data['include_files'][group], expanded_data, group)
 
         # sort groups
         expanded_data['groups'] = OrderedDict(sorted(expanded_data['groups'].items(), key=lambda t: t[0]))
