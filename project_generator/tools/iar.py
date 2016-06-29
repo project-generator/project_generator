@@ -16,6 +16,7 @@ import copy
 import logging
 import xmltodict
 import subprocess
+from subprocess import Popen, PIPE
 import time
 import copy
 import re
@@ -523,6 +524,16 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         project_path, eww = self.gen_file_raw(eww_xml, '%s.eww' % self.workspace['settings']['name'], self.workspace['settings']['path'])
         return project_path, [eww]
 
+    def _parse_subprocess_output(self, output):
+        num_errors = 0
+        lines = output.split("\n")
+        error_re = '\s*Total number of errors:\s*(\d+)\s*'
+        for line in lines:
+            m = re.match(error_re, line)
+            if m is not None:
+                num_errors = m.group(1)
+        return int(num_errors)
+
     def export_workspace(self):
         """ Export a workspace file """
         # we got a workspace defined, therefore one ewp generated only
@@ -554,15 +565,21 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         logger.debug(args)
 
         try:
-            ret_code = None
-            ret_code = subprocess.call(args)
+            p = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            output, err = p.communicate()
         except:
             logger.error("Project: %s build failed. Please check IARBUILD path in the user_settings.py file." % self.workspace['files']['ewp'])
             return -1
         else:
-            # no IAR doc describes errors from IarBuild
-            logger.info("Project: %s build completed." % self.workspace['files']['ewp'])
-            return 0
+            logger.debug(output)
+            num_errors = self._parse_subprocess_output(output)
+            if num_errors == 0:
+                logger.info("Project: %s build completed." % self.workspace['files']['ewp'])
+                return 0
+            else:
+                logger.error("Project: %s build failed with %d errors" %
+                             (self.workspace['files']['ewp'], num_errors))
+                return -1
 
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['ewp'], self.workspace['files']['eww'],
