@@ -288,7 +288,7 @@ class Uvision(Tool, Builder, Exporter):
                 if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx' or \
                     re.match('.*\.uvproj.tmpl$', template) or re.match('.*\.uvprojx.tmpl$', template):
                     try:
-                        uvproj_dic = xmltodict.parse(open(template))
+                        uvproj_dic = xmltodict.parse(open(template, encoding="utf8").read())
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         return None, None
