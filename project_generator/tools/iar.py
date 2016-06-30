@@ -395,7 +395,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         ewd_dic = self.definitions.ewd_file
-                if not template_ewp or not template_ewd:
+                if not template_ewp and not template_ewd:
                     logger.info("Template file %s contains unknown template extension (.ewp, .ewd are valid)" % template)
                     if not template_ewp and template_ewd:
                         ewp_dic, _ = self._get_default_templates() 
@@ -427,7 +427,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 else:
                     # load default ewd if not found in the templates
                     ewd_dic = self.definitions.ewd_file
-                if not template_ewp or not template_ewd:
+                if not template_ewp and not template_ewd:
                     logger.info("Template file %s contains unknown template extension (.ewp, .ewd are valid)" % template)
                     ewp_dic, ewd_dic = self._get_default_templates()
         else:
