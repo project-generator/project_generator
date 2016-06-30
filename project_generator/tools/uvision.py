@@ -19,6 +19,7 @@ import logging
 import xmltodict
 import copy
 import re
+from codecs import open
 
 from os import getcwd
 from os.path import basename, join, normpath
