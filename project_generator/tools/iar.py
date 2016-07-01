@@ -571,7 +571,9 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             logger.error("Project: %s build failed. Please check IARBUILD path in the user_settings.py file." % self.workspace['files']['ewp'])
             return -1
         else:
-            logger.debug(output)
+            build_log_path = os.path.join(os.path.dirname(proj_path),'build_log.txt')
+            with open(build_log_path, 'w') as f:
+                f.write(output)
             num_errors = self._parse_subprocess_output(output)
             if num_errors == 0:
                 logger.info("Project: %s build completed." % self.workspace['files']['ewp'])
