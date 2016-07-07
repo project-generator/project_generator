@@ -484,7 +484,7 @@ class Uvision5(Uvision):
         return generated_projects
 
     def get_generated_project_files(self):
-        return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvprojx'], self.workspace['files']['uvoptx']]}
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvprojx']]}
 
     def build_project(self):
         # tool_name uvision as uv4 is still used in uv5
