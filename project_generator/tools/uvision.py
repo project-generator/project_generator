@@ -37,6 +37,8 @@ class uVisionDefinitions():
 
     uvmpw_file = OrderedDict([(u'ProjectWorkspace', OrderedDict([(u'@xmlns:xsi', u'http://www.w3.org/2001/XMLSchema-instance'), (u'@xsi:noNamespaceSchemaLocation', u'project_mpw.xsd'), (u'SchemaVersion', u'1.0'), (u'Header', u'### uVision Project, (C) Keil Software'), (u'WorkspaceName', u'WorkSpace'), (u'project', OrderedDict([(u'PathAndName', None)]))]))])
 
+    uvoptx_file = OrderedDict([(u'ProjectOpt', OrderedDict(  [(u'@xmlns:xsi', u'http://www.w3.org/2001/XMLSchema-instance'), (u'@xsi:noNamespaceSchemaLocation', u'project_optx.xsd'), (u'SchemaVersion', u'1.0'), (u'Target', OrderedDict( [(u'TargetName', u''), (u'ToolsetNumber', u'0x4'), (u'ToolsetName', u'ARM-ADS'), (u'TargetOption', OrderedDict( [(u'DebugOpt', OrderedDict([(u'uSim', u'0'), (u'uTrg', u'1'), (u'nTsel', u''), (u'pMon', u'')])), (u'TargetDriverDllRegistry', OrderedDict( [(u'SetRegEntry', OrderedDict( [(u'Number', u'0'), (u'Key', u''), (u'Name', u'') ])) ])) ])) ])) ]))])
+
     debuggers = {
         'cmsis-dap': {
             'TargetDlls': {
@@ -68,6 +70,10 @@ class uVisionDefinitions():
             },
             'Utilities': {
                 'Flash2': 'STLink\\ST-LINKIII-KEIL_SWO.dll',
+            },
+            'OptxFile' : {
+                'DebuggerIdx' : '11',
+                'Key' : 'ST-LINKIII-KEIL_SWO',
             },
         },
         'nu-link': {
@@ -419,15 +425,66 @@ class Uvision5(Uvision):
     def get_toolnames():
         return ['uvision5']
 
+    def _export_single_project_options(self, tool_name):
+        expanded_dic = self.workspace.copy()
+
+        groups = self._get_groups(self.workspace)
+        expanded_dic['groups'] = {}
+        for group in groups:
+            expanded_dic['groups'][group] = []
+
+        # get relative path and fix all paths within a project
+        self._iterate(self.workspace, expanded_dic)
+
+        expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
+
+        pro_def = ProGenDef(tool_name)
+        if not pro_def.is_supported(expanded_dic['target'].lower()):
+            raise RuntimeError("Target %s is not supported. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
+        mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower())
+        if not mcu_def_dic:
+             raise RuntimeError(
+                "Target definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
+        logger.debug("Mcu definitions: %s" % mcu_def_dic)
+
+        # generic tool template specified or project
+        uvoptx_dic = self.definitions.uvoptx_file
+
+        try:
+            uvoptx_dic['ProjectOpt']['Target']['TargetName'] = expanded_dic['name']
+            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['TargetDriverDllRegistry']['SetRegEntry']['Name'] = str(mcu_def_dic['TargetOption']['TargetDriverDllRegistry_SetRegEntry_Name'][0]).encode('utf-8')
+        except KeyError:
+            return None, None
+
+        # set target only if defined, otherwise use from template/default one
+        extension = 'uvoptx'
+
+        # load debugger
+        try:
+            debugger_name = pro_def.get_debugger(expanded_dic['target'])['name']
+            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['DebugOpt']['nTsel'] = self.definitions.debuggers[debugger_name]['OptxFile']['DebuggerIdx']
+            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['DebugOpt']['pMon'] = self.definitions.debuggers[debugger_name]['TargetDlls']['Driver']
+            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['TargetDriverDllRegistry']['SetRegEntry']['Key'] = self.definitions.debuggers[debugger_name]['OptxFile']['Key']
+        except KeyError:
+            raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
+
+        # Project file
+        uvoptx_xml = xmltodict.unparse(uvoptx_dic, pretty=True)
+        path, files = self.gen_file_raw(uvoptx_xml, '%s.%s' % (expanded_dic['name'], extension), expanded_dic['output_dir']['path'])
+        return path, files
+
     def export_project(self):
         path, files = self._export_single_project('uvision5')
+        path2, files2 = self._export_single_project_options('uvision5')
         generated_projects = copy.deepcopy(self.generated_project)
         generated_projects['path'] = path
         generated_projects['files']['uvprojx'] = files
+        if not files2 is None:
+            generated_projects['files']['uvoptx'] = files2
         return generated_projects
 
     def get_generated_project_files(self):
-        return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvprojx']]}
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvprojx'], self.workspace['files']['uvoptx']]}
 
     def build_project(self):
         # tool_name uvision as uv4 is still used in uv5
