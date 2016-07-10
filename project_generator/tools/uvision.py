@@ -489,7 +489,7 @@ class Uvision(Tool, Builder, Exporter):
         path, files = self._export_single_project('uvision') #todo: uvision will switch to uv4
         generated_projects = copy.deepcopy(self.generated_project)
         generated_projects['path'] = path
-        generated_projects['files']['uvproj'] = files
+        generated_projects['files']['uvproj'] = files[0]
         return generated_projects
 
     def get_generated_project_files(self):
@@ -497,6 +497,7 @@ class Uvision(Tool, Builder, Exporter):
 
     def _build_project(self, tool_name, extension):
         # > UV4 -b [project_path]
+        print self.workspace['files']
         path = join(self.env_settings.root, self.workspace['files'][extension])
         if path.split('.')[-1] != extension:
             path = path + extension
@@ -551,7 +552,7 @@ class Uvision5(Uvision):
         generated_projects = copy.deepcopy(self.generated_project)
         generated_projects['path'] = path
         generated_projects['files']['uvprojx'] = files[0]
-        generated_projects['files']['uvoptjx'] = files[1]
+        generated_projects['files']['uvoptx'] = files[1]
         return generated_projects
 
     def get_generated_project_files(self):
