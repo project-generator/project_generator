@@ -40,51 +40,124 @@ class uVisionDefinitions():
     uvoptx_file = OrderedDict([(u'ProjectOpt', OrderedDict(  [(u'@xmlns:xsi', u'http://www.w3.org/2001/XMLSchema-instance'), (u'@xsi:noNamespaceSchemaLocation', u'project_optx.xsd'), (u'SchemaVersion', u'1.0'), (u'Target', OrderedDict( [(u'TargetName', u''), (u'ToolsetNumber', u'0x4'), (u'ToolsetName', u'ARM-ADS'), (u'TargetOption', OrderedDict( [(u'DebugOpt', OrderedDict([(u'uSim', u'0'), (u'uTrg', u'1'), (u'nTsel', u''), (u'pMon', u'')])), (u'TargetDriverDllRegistry', OrderedDict( [(u'SetRegEntry', OrderedDict( [(u'Number', u'0'), (u'Key', u''), (u'Name', u'') ])) ])) ])) ])) ]))])
 
     debuggers = {
-        'cmsis-dap': {
-            'TargetDlls': {
-                'Driver': 'BIN\\CMSIS_AGDI.dll',
+        'ulink2-me': {
+            'uvproj': {
+                'TargetDlls': {
+                    'Driver': 'BIN\\UL2CM3.dll',
+                },
+                'Utilities': {
+                    'Flash2': 'BIN\\UL2CM3.DLL',
+                },
             },
-            'Utilities': {
-                'Flash2': 'BIN\\CMSIS_AGDI.dll',
+            'uvoptx' : {
+                'DebugOpt' : {
+                    'nTsel' : '1',
+                    'pMon': 'BIN\\UL2CM3.DLL',
+                },
+                'SetRegEntry' : {
+                    'Key' : 'UL2CM3',
+                },
+            },
+        },
+        'cmsis-dap': {
+            'uvproj': {
+                'TargetDlls': {
+                    'Driver': 'BIN\\CMSIS_AGDI.dll',
+                },
+                'Utilities': {
+                    'Flash2': 'BIN\\CMSIS_AGDI.dll',
+                },
+            },
+            'uvoptx' : {
+                'DebugOpt' : {
+                    'nTsel' : '12',
+                    'pMon': 'BIN\\CMSIS_AGDI.dll',
+                },
+                'SetRegEntry' : {
+                    'Key' : 'CMSIS_AGDI',
+                },
             },
         },
         'j-link': {
-            'TargetDlls': {
-                'Driver': 'Segger\\JL2CM3.dll',
+            'uvproj': {
+                'TargetDlls': {
+                    'Driver': 'Segger\\JL2CM3.dll',
+                },
+                'Utilities': {
+                    'Flash2': 'Segger\\JL2CM3.dll',
+                },
             },
-            'Utilities': {
-                'Flash2': 'Segger\\JL2CM3.dll',
+            'uvoptx' : {
+                'DebugOpt' : {
+                    'nTsel' : '6',
+                    'pMon': 'Segger\\JL2CM3.dll',
+                },
+                'SetRegEntry' : {
+                    'Key' : 'JL2CM3',
+                },
             },
         },
         'ulink-pro': {
-            'TargetDlls': {
-                'Driver': 'BIN\\ULP2CM3.dll',
+            'uvproj': {
+                'TargetDlls': {
+                    'Driver': 'BIN\\ULP2CM3.dll',
+                },
+                'Utilities': {
+                    'Flash2': 'BIN\\ULP2CM3.dll',
+                },
             },
-            'Utilities': {
-                'Flash2': 'BIN\\ULP2CM3.dll',
+            'uvoptx' : {
+                'DebugOpt' : {
+                    'nTsel' : '7',
+                    'pMon': 'BIN\\ULP2CM3.DLL',
+                },
+                'SetRegEntry' : {
+                    'Key' : 'ULP2CM3',
+                },
             },
         },
         'st-link': {
-            'TargetDlls': {
-                'Driver': 'STLink\\ST-LINKIII-KEIL_SWO.dll',
+            'uvproj': {
+                'TargetDlls': {
+                    'Driver': 'STLink\\ST-LINKIII-KEIL_SWO.dll',
+                },
+                'Utilities': {
+                    'Flash2': 'STLink\\ST-LINKIII-KEIL_SWO.dll',
+                },
             },
-            'Utilities': {
-                'Flash2': 'STLink\\ST-LINKIII-KEIL_SWO.dll',
-            },
-            'OptxFile' : {
-                'DebuggerIdx' : '11',
-                'Key' : 'ST-LINKIII-KEIL_SWO',
+            'uvoptx' : {
+                'DebugOpt' : {
+                    'nTsel' : '11',
+                    'pMon': 'STLink\\ST-LINKIII-KEIL_SWO.dll',
+                },
+                'SetRegEntry' : {
+                    'Key' : 'ST-LINKIII-KEIL_SWO',
+                },
             },
         },
         'nu-link': {
-            'TargetDlls': {
-                'Driver': 'BIN\\Nu_Link.dll',
+            'uvproj': {
+                'TargetDlls': {
+                    'Driver': 'BIN\\Nu_Link.dll',
+                },
+                'Utilities': {
+                    'Flash2': 'BIN\\Nu_Link.dll',
+                },
             },
-            'Utilities': {
-                'Flash2': 'BIN\\Nu_Link.dll',
+            'uvoptx' : {
+                'DebugOpt' : {
+                    'nTsel' : '9',
+                    'pMon': 'NULink\\Nu_Link.dll',
+                },
+                'SetRegEntry' : {
+                    'Key' : 'Nu_Link',
+                },
             },
         },
     }
+
+    # use first debugger from Keil5 debugger selection combo box as default debugger
+    debuggers_default = 'ulink2-me'
 
 
 class Uvision(Tool, Builder, Exporter):
@@ -263,8 +336,8 @@ class Uvision(Tool, Builder, Exporter):
         # later progen can overwrite this if debugger is set in project data
         try:
             debugger_name = pro_def.get_debugger(expanded_dic['target'])['name']
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[debugger_name]['TargetDlls']['Driver']
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[debugger_name]['Utilities']['Flash2']
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[debugger_name]['uvproj']['TargetDlls']['Driver']
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[debugger_name]['uvproj']['Utilities']['Flash2']
         except (TypeError, KeyError) as err:
             pass
         # Support new device packs
@@ -273,6 +346,37 @@ class Uvision(Tool, Builder, Exporter):
                 # using software packs require v5
                 logger.info("The target might not be supported in %s, requires uvision5" % tool_name)
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['PackID'] = mcu_def_dic['TargetOption']['PackID'][0]
+
+    def _uvoptx_set_debugger(self, expanded_dic, uvoptx_dic, tool_name):
+        pro_def = ProGenDef(tool_name)
+        if not pro_def.is_supported(expanded_dic['target'].lower()):
+            raise RuntimeError("Target %s is not supported. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
+        mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower())
+        if not mcu_def_dic:
+             raise RuntimeError(
+                "Target definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
+        logger.debug("Mcu definitions: %s" % mcu_def_dic)
+
+        # set the same target name FlashDriverDll config as in uvprojx file
+        try:
+            uvoptx_dic['ProjectOpt']['Target']['TargetName'] = expanded_dic['name']
+            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['TargetDriverDllRegistry']['SetRegEntry']['Name'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
+        except KeyError:
+            return 
+
+        # load debugger from target dictionary or use default debugger
+        try:
+            debugger_dic = pro_def.get_debugger(expanded_dic['target'])
+            if debugger_dic is None:
+                debugger_name = self.definitions.debuggers_default
+            else:
+                debugger_name = debugger_dic['name']
+            print debugger_name
+            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['DebugOpt']['nTsel'] = self.definitions.debuggers[debugger_name]['uvoptx']['DebugOpt']['nTsel']
+            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['DebugOpt']['pMon'] = self.definitions.debuggers[debugger_name]['uvoptx']['DebugOpt']['pMon']
+            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['TargetDriverDllRegistry']['SetRegEntry']['Key'] = self.definitions.debuggers[debugger_name]['uvoptx']['SetRegEntry']['Key']
+        except KeyError:
+            raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
     def _export_single_project(self, tool_name):
         expanded_dic = self.workspace.copy()
@@ -351,15 +455,31 @@ class Uvision(Tool, Builder, Exporter):
         # load debugger
         if expanded_dic['debugger']:
             try:
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[expanded_dic['debugger']]['TargetDlls']['Driver']
-                uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[expanded_dic['debugger']]['Utilities']['Flash2']
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['DebugOption']['TargetDlls']['Driver'] = self.definitions.debuggers[expanded_dic['debugger']]['uvproj']['TargetDlls']['Driver']
+                uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities']['Flash2'] = self.definitions.debuggers[expanded_dic['debugger']]['uvproj']['Utilities']['Flash2']
             except KeyError:
                 raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
 
         # Project file
         uvproj_xml = xmltodict.unparse(uvproj_dic, pretty=True)
-        path, files = self.gen_file_raw(uvproj_xml, '%s.%s' % (expanded_dic['name'], extension), expanded_dic['output_dir']['path'])
-        return path, files
+        project_path, uvproj = self.gen_file_raw(uvproj_xml, '%s.%s' % (expanded_dic['name'], extension), expanded_dic['output_dir']['path'])
+
+        uvoptx = None
+        if tool_name == 'uvision5':
+
+            # generic tool template specified
+            uvoptx_dic = self.definitions.uvoptx_file
+
+            self._uvoptx_set_debugger(expanded_dic, uvoptx_dic, tool_name)
+
+            # set target only if defined, otherwise use from template/default one
+            extension = 'uvoptx'
+
+            # Project file
+            uvoptx_xml = xmltodict.unparse(uvoptx_dic, pretty=True)
+            project_path, uvoptx = self.gen_file_raw(uvoptx_xml, '%s.%s' % (expanded_dic['name'], extension), expanded_dic['output_dir']['path'])
+
+        return project_path, [uvproj, uvoptx]
 
     def export_workspace(self):
         path, workspace = self._generate_uvmpw_file()
@@ -415,6 +535,7 @@ class Uvision5(Uvision):
         'path': '',
         'files': {
             'uvprojx': '',
+            'uvoptx': '',
         }
     }
 
@@ -425,66 +546,16 @@ class Uvision5(Uvision):
     def get_toolnames():
         return ['uvision5']
 
-    def _export_single_project_options(self, tool_name):
-        expanded_dic = self.workspace.copy()
-
-        groups = self._get_groups(self.workspace)
-        expanded_dic['groups'] = {}
-        for group in groups:
-            expanded_dic['groups'][group] = []
-
-        # get relative path and fix all paths within a project
-        self._iterate(self.workspace, expanded_dic)
-
-        expanded_dic['build_dir'] = '.\\' + expanded_dic['build_dir'] + '\\'
-
-        pro_def = ProGenDef(tool_name)
-        if not pro_def.is_supported(expanded_dic['target'].lower()):
-            raise RuntimeError("Target %s is not supported. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
-        mcu_def_dic = pro_def.get_tool_definition(expanded_dic['target'].lower())
-        if not mcu_def_dic:
-             raise RuntimeError(
-                "Target definitions were not found for %s. Please add them to https://github.com/project-generator/project_generator_definitions" % expanded_dic['target'].lower())
-        logger.debug("Mcu definitions: %s" % mcu_def_dic)
-
-        # generic tool template specified or project
-        uvoptx_dic = self.definitions.uvoptx_file
-
-        try:
-            uvoptx_dic['ProjectOpt']['Target']['TargetName'] = expanded_dic['name']
-            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['TargetDriverDllRegistry']['SetRegEntry']['Name'] = str(mcu_def_dic['TargetOption']['TargetDriverDllRegistry_SetRegEntry_Name'][0]).encode('utf-8')
-        except KeyError:
-            return None, None
-
-        # set target only if defined, otherwise use from template/default one
-        extension = 'uvoptx'
-
-        # load debugger
-        try:
-            debugger_name = pro_def.get_debugger(expanded_dic['target'])['name']
-            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['DebugOpt']['nTsel'] = self.definitions.debuggers[debugger_name]['OptxFile']['DebuggerIdx']
-            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['DebugOpt']['pMon'] = self.definitions.debuggers[debugger_name]['TargetDlls']['Driver']
-            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['TargetDriverDllRegistry']['SetRegEntry']['Key'] = self.definitions.debuggers[debugger_name]['OptxFile']['Key']
-        except KeyError:
-            raise RuntimeError("Debugger %s is not supported" % expanded_dic['debugger'])
-
-        # Project file
-        uvoptx_xml = xmltodict.unparse(uvoptx_dic, pretty=True)
-        path, files = self.gen_file_raw(uvoptx_xml, '%s.%s' % (expanded_dic['name'], extension), expanded_dic['output_dir']['path'])
-        return path, files
-
     def export_project(self):
         path, files = self._export_single_project('uvision5')
-        path2, files2 = self._export_single_project_options('uvision5')
         generated_projects = copy.deepcopy(self.generated_project)
         generated_projects['path'] = path
-        generated_projects['files']['uvprojx'] = files
-        if not files2 is None:
-            generated_projects['files']['uvoptx'] = files2
+        generated_projects['files']['uvprojx'] = files[0]
+        generated_projects['files']['uvoptjx'] = files[1]
         return generated_projects
 
     def get_generated_project_files(self):
-        return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvprojx']]}
+        return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvprojx'], self.workspace['files']['uvoptx']]}
 
     def build_project(self):
         # tool_name uvision as uv4 is still used in uv5
