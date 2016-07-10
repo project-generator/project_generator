@@ -371,7 +371,6 @@ class Uvision(Tool, Builder, Exporter):
                 debugger_name = self.definitions.debuggers_default
             else:
                 debugger_name = debugger_dic['name']
-            print debugger_name
             uvoptx_dic['ProjectOpt']['Target']['TargetOption']['DebugOpt']['nTsel'] = self.definitions.debuggers[debugger_name]['uvoptx']['DebugOpt']['nTsel']
             uvoptx_dic['ProjectOpt']['Target']['TargetOption']['DebugOpt']['pMon'] = self.definitions.debuggers[debugger_name]['uvoptx']['DebugOpt']['pMon']
             uvoptx_dic['ProjectOpt']['Target']['TargetOption']['TargetDriverDllRegistry']['SetRegEntry']['Key'] = self.definitions.debuggers[debugger_name]['uvoptx']['SetRegEntry']['Key']
@@ -497,7 +496,6 @@ class Uvision(Tool, Builder, Exporter):
 
     def _build_project(self, tool_name, extension):
         # > UV4 -b [project_path]
-        print self.workspace['files']
         path = join(self.env_settings.root, self.workspace['files'][extension])
         if path.split('.')[-1] != extension:
             path = path + extension
