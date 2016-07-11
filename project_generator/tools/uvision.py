@@ -157,7 +157,7 @@ class uVisionDefinitions():
     }
 
     # use first debugger from Keil5 debugger selection combo box as default debugger
-    debuggers_default = 'ulink2-me'
+    debuggers_default = 'cmsis-dap'
 
 
 class Uvision(Tool, Builder, Exporter):
