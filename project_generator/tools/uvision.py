@@ -156,7 +156,7 @@ class uVisionDefinitions():
         },
     }
 
-    # use first debugger from Keil5 debugger selection combo box as default debugger
+    # use cmsis-dap debugger as default
     debuggers_default = 'cmsis-dap'
 
 
