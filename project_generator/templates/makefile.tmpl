@@ -89,10 +89,12 @@ LD_OPTIONS += {% block LD_OPTIONS %}{% endblock %}
 
 ARFLAGS = cr
 
-ifeq ($(OS),Windows_NT)
-	RM = rmdir /s /q
+ifeq ($(shell echo $$OS),$$OS)
+    MAKEDIR = if not exist "$(1)" mkdir "$(1)"
+    RM = rmdir /S /Q "$(1)"
 else
-	RM = rm -rf
+    MAKEDIR = $(SHELL) -c "mkdir -p \"$(1)\""
+    RM = $(SHELL) -c "rm -rf \"$(1)\""
 endif
 
 C_SRCS := {% for file in source_files_c %} {{file}} {% endfor %}
@@ -107,23 +109,26 @@ S_OBJS += $(patsubst %.S,$(OBJ_FOLDER)%.o,$(filter %.S,$(S_SRCS)))
 
 O_OBJS := {% for file in source_files_obj %} {{file}} {% endfor %}
 
-$(OBJ_FOLDER)%.o : %.c | create_outputdir
+$(OBJ_FOLDER)%.o : %.c
 	@echo 'Building file: $(@F)'
 	@echo 'Invoking: MCU C Compiler'
+	@$(call MAKEDIR,$(dir $@))
 	$(CC) $(CFLAGS) $(COMMON_FLAGS) $< -o $@
 	@echo 'Finished building: $(@F)'
 	@echo ' '
 
-$(OBJ_FOLDER)%.o : %.cpp | create_outputdir
+$(OBJ_FOLDER)%.o : %.cpp
 	@echo 'Building file: $(@F)'
 	@echo 'Invoking: MCU C++ Compiler'
+	@$(call MAKEDIR,$(dir $@))
 	$(CXX) $(CXXFLAGS) $(COMMON_FLAGS) $< -o $@
 	@echo 'Finished building: $(@F)'
 	@echo ' '
 
-$(OBJ_FOLDER)%.o : %.s | create_outputdir
+$(OBJ_FOLDER)%.o : %.s
 	@echo 'Building file: $(@F)'
 	@echo 'Invoking: MCU Assembler'
+	@$(call MAKEDIR,$(dir $@))
 	$(AS) $(ASFLAGS) $(COMMON_FLAGS) $< -o $@
 	@echo 'Finished building: $(@F)'
 	@echo ' '
@@ -133,22 +138,12 @@ PRE_BUILD_SCRIPT := $(shell{% for command in pre_build_script %} ../../../{{comm
 all: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) print_info
 	{% for command in post_build_script %} ../../../{{command}} && {% endfor %} true
 
-create_outputdir:
-ifeq ($(OS),Windows_NT)
-	-@mkdir $(OUT_FOLDER)
-{% for dir in source_paths %}
-	-@mkdir $(OBJ_FOLDER){{dir}}{% endfor %}
-else
-	@mkdir -p $(OBJ_FOLDER) 2>/dev/null
-{% for dir in source_paths %}
-	@mkdir -p $(OBJ_FOLDER){{dir}} 2>/dev/null{% endfor %}
-endif
-
 {% if output_type == 'exe' %}
 # Tool invocations
 $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
+	@$(call MAKEDIR,$(dir $@))
 	$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS) 
 	@echo 'Finished building target: $@'
 	@echo ' '
@@ -165,6 +160,7 @@ print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 {% else %}
 $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building library: $@'
+	@$(call MAKEDIR,$(dir $@))
 	$(AR) rcs $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS)
 	@echo 'Finished building library: $@'
 	@echo ' '
@@ -181,7 +177,7 @@ print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 # Other Targets
 clean:
 	@echo 'Removing entire out directory'
-	$(RM) $(TARGET)$(TARGET_EXT) $(TARGET).bin $(TARGET).map $(OBJ_FOLDER)*.* $(OBJ_FOLDER)
+	$(call RM $(TARGET)$(TARGET_EXT) $(TARGET).bin $(TARGET).map $(OBJ_FOLDER)*.* $(OBJ_FOLDER))
 	@echo ' '
 
 .PHONY: clean print_info
