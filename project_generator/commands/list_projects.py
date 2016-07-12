@@ -18,6 +18,7 @@ from project_generator_definitions.definitions import ProGenTargets
 from ..tools_supported import ToolsSupported
 from ..generate import Generator
 from ..settings import ProjectSettings
+from . import argparse_filestring_type
 
 help = 'List general progen data as projects, tools or targets'
 
@@ -49,4 +50,4 @@ def run(args):
 def setup(subparser):
     subparser.add_argument("section", choices = ['targets','tools','projects'],
                            help="What section you would like listed", default='projects')
-    subparser.add_argument("-f", "--file", help="YAML projects file")
+    subparser.add_argument("-f", "--file", help="YAML projects file", type=argparse_filestring_type)

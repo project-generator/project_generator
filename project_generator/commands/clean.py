@@ -14,24 +14,22 @@
 import os
 import logging
 
+from ..tools_supported import ToolsSupported
 from ..generate import Generator
+from . import argparse_filestring_type, argparse_string_type
 
 help = 'Clean generated projects'
 
 
 def run(args):
-    if os.path.exists(args.file):
-        generator = Generator(args.file)
-        for project in generator.generate(args.project):
-            project.clean(args.tool)
-    else:
-        # not project known by progen
-        logging.warning("%s not found." % args.file)
-        return -1
+    generator = Generator(args.file)
+    for project in generator.generate(args.project):
+        project.clean(args.tool)
     return 0
 
 def setup(subparser):
-    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
+    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml', type=argparse_filestring_type)
     subparser.add_argument("-p", "--project", required = True, help="Specify which project to be removed")
     subparser.add_argument(
-        "-t", "--tool", help="Clean project files for this tool")
+        "-t", "--tool", help="Clean project files for this tool",
+        type=argparse_string_type(str.lower, False), choices=list(ToolsSupported.TOOLS_DICT.keys()) + list(ToolsSupported.TOOLS_ALIAS.keys()))
