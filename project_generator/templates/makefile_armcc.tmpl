@@ -13,4 +13,4 @@
 
 {% block COMMON_FLAGS %} --cpu $(CPU) --$(INSTRUCTION_MODE){% endblock %}
 {% block LD_OPTIONS %}--strict --scatter $(LD_SCRIPT) $(patsubst %,--predefine "%",$(CC_SYMBOLS) $(INC_DIRS_F)){% endblock %}
-{% block ASM_SYMBOLS %}{% for symbol in macros %} --pd "{{ morph_define(symbol) }}" {% endfor %}{% endblock %}
+{% block ASM_SYMBOLS %}{% for symbol in macros %} --d "{{ morph_define(symbol) }}" {% endfor %}{% endblock %}
