@@ -150,7 +150,7 @@ $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-print_info:
+print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 	@echo 'Printing size'
 	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 	$(OBJCOPY) {% block TOHEX %}{% endblock %} $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) {% block objcopy_output %}{% endblock %} $(OBJ_FOLDER)$(TARGET).hex
@@ -166,7 +166,7 @@ $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Finished building library: $@'
 	@echo ' '
 
-print_info:
+print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 	@echo 'Printing size'
 	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 	@echo ' '
