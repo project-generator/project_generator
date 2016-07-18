@@ -38,12 +38,3 @@ class MakefileArmcc(MakefileTool):
         self.process_data_for_makefile(self.workspace)
         generated_projects['path'], generated_projects['files']['makefile'] = self.gen_file_jinja('makefile_armcc.tmpl', self.workspace, 'Makefile', self.workspace['output_dir']['path'])
         return generated_projects
-
-    def process_data_for_makefile(self, project_data):
-        def morph_define (define) :
-            if '=' in define :
-                return define.replace("=", " SETA ")
-            else :
-                return define + " SETA 1 "
-        project_data['morph_define'] = morph_define
-        MakefileTool.process_data_for_makefile(self, project_data)

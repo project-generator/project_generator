@@ -52,60 +52,12 @@ class EclipseGnuARM(Tool, Exporter, Builder):
     def get_toolchain():
         return 'gcc_arm'
 
-    def _expand_data(self, old_data, new_data, attribute, group):
-        """ data expansion - uvision needs filename and path separately. """
-        if group == 'Sources':
-            old_group = None
-        else:
-            old_group = group
-        for source in old_data[old_group]:
-            if source:
-                extension = source.split(".")[-1]
-                if not extension in self.file_types.keys():
-                    logger.debug("Filetype for file %s not recognized" % file)
-                    continue
-                # TODO: fix - workaround for windows, seems posixpath does not work
-                source = source.replace('\\', '/')
-                new_file = {"path": join('PARENT-%s-PROJECT_LOC' % new_data['output_dir']['rel_path'], normpath(source)), "name": basename(
+    def _expand_one_file(self, source, new_data, extension):
+        return {"path": join('PARENT-%s-PROJECT_LOC' % new_data['output_dir']['rel_path'], normpath(source)), "name": basename(
                     source), "type": self.file_types[extension.lower()]}
-                new_data['groups'][group].append(new_file)
-        new_data['groups'][group] = sorted(new_data['groups'][group], key=lambda x: x['name'].lower())
 
-#TODO: eliminate this duplicate in many tools. Same applies to _iterate
-    def _get_groups(self, data):
-        """ Get all groups defined. """
-        groups = []
-        for attribute in SOURCE_KEYS:
-            for k, v in data[attribute].items():
-                if k == None:
-                    k = 'Sources'
-                if k not in groups:
-                    groups.append(k)
-            for k, v in data['include_files'].items():
-                if k == None:
-                    k = 'Includes'
-                if k not in groups:
-                    groups.append(k)
-        return groups
-
-    def _iterate(self, data, expanded_data):
-        """ Iterate through all data, store the result expansion in extended dictionary. """
-        for attribute in SOURCE_KEYS:
-            for k, v in data[attribute].items():
-                if k == None:
-                    group = 'Sources'
-                else:
-                    group = k
-                self._expand_data(data[attribute], expanded_data, attribute, group)
-        for k, v in data['include_files'].items():
-            if k == None:
-                group = 'Includes'
-            else:
-                group = k
-            self._expand_data(data['include_files'], expanded_data, attribute, group)
-
-        # sort groups
-        expanded_data['groups'] = OrderedDict(sorted(expanded_data['groups'].items(), key=lambda t: t[0]))
+    def _expand_sort_key(self, file) :
+        return file['name'].lower()
 
     def export_workspace(self):
         logger.debug("Current version of CoIDE does not support workspaces")

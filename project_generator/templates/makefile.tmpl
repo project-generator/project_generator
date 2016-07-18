@@ -15,6 +15,8 @@
 
 # This project was exported via the project generator.  More information https://github.com/project-generator/project_generator
 
+.SUFFIXES: .
+
 CPU = {{core}}
 
 # toolchain specific
@@ -41,6 +43,7 @@ TARGET_EXT = .a
 {% endif %}
 
 LD_SCRIPT = {{linker_file}}
+VPATH += {{output_dir.rel_path}}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 ASM_SYMBOLS = {% block ASM_SYMBOLS %}{% endblock %}
@@ -76,7 +79,7 @@ C_FLAGS  = {% for option in c_flags %} {{option}} {% endfor %}
 CXX_FLAGS  = {% for option in cxx_flags %} {{option}} {% endfor %}
 ASM_FLAGS  = {% for option in asm_flags %} {{option}} {% endfor %}
 
-CFLAGS = $(C_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS)
+CFLAGS += $(C_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS)
 CXXFLAGS = $(CXX_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS)
 ASFLAGS = $(ASM_FLAGS) $(INC_DIRS_F) -c $(ASM_SYMBOLS)
 
@@ -84,33 +87,32 @@ ASFLAGS = $(ASM_FLAGS) $(INC_DIRS_F) -c $(ASM_SYMBOLS)
 LD_OPTIONS += {% for option in ld_flags %} {{option}} {% endfor %}
 LD_OPTIONS += {% block LD_OPTIONS %}{% endblock %}
 
-OBJCPFLAGS = -O ihex
-
 ARFLAGS = cr
 
-ifeq ($(OS),Windows_NT)
-	RM = rmdir /s /q
+ifeq ($(shell echo $$OS),$$OS)
+    MAKEDIR = if not exist "$(1)" mkdir "$(1)"
+    RM = rmdir /S /Q "$(1)"
 else
-	RM = rm -rf
+    MAKEDIR = $(SHELL) -c "mkdir -p \"$(1)\""
+    RM = $(SHELL) -c "rm -rf \"$(1)\""
 endif
 
 C_SRCS := {% for file in source_files_c %} {{file}} {% endfor %}
-C_OBJS := $(patsubst %.c,$(OBJ_FOLDER)%.o,$(notdir $(C_SRCS)))
+C_OBJS := $(patsubst %.c,$(OBJ_FOLDER)%.o,$(C_SRCS))
 
 CPP_SRCS := {% for file in source_files_cpp %} {{file}} {% endfor %}
-CPP_OBJS := $(patsubst %.cpp,$(OBJ_FOLDER)%.o,$(notdir $(CPP_SRCS)))
+CPP_OBJS := $(patsubst %.cpp,$(OBJ_FOLDER)%.o,$(CPP_SRCS))
 
 S_SRCS := {% for file in source_files_s %} {{file}} {% endfor %}
-S_OBJS = $(patsubst %.s,$(OBJ_FOLDER)%.o,$(filter %.s,$(notdir $(S_SRCS))))
-S_OBJS += $(patsubst %.S,$(OBJ_FOLDER)%.o,$(filter %.S,$(notdir $(S_SRCS))))
+S_OBJS = $(patsubst %.s,$(OBJ_FOLDER)%.o,$(filter %.s,$(S_SRCS)))
+S_OBJS += $(patsubst %.S,$(OBJ_FOLDER)%.o,$(filter %.S,$(S_SRCS)))
 
 O_OBJS := {% for file in source_files_obj %} {{file}} {% endfor %}
-
-VPATH := $(SRC_DIRS)
 
 $(OBJ_FOLDER)%.o : %.c
 	@echo 'Building file: $(@F)'
 	@echo 'Invoking: MCU C Compiler'
+	@$(call MAKEDIR,$(dir $@))
 	$(CC) $(CFLAGS) $(COMMON_FLAGS) $< -o $@
 	@echo 'Finished building: $(@F)'
 	@echo ' '
@@ -118,6 +120,7 @@ $(OBJ_FOLDER)%.o : %.c
 $(OBJ_FOLDER)%.o : %.cpp
 	@echo 'Building file: $(@F)'
 	@echo 'Invoking: MCU C++ Compiler'
+	@$(call MAKEDIR,$(dir $@))
 	$(CXX) $(CXXFLAGS) $(COMMON_FLAGS) $< -o $@
 	@echo 'Finished building: $(@F)'
 	@echo ' '
@@ -125,32 +128,27 @@ $(OBJ_FOLDER)%.o : %.cpp
 $(OBJ_FOLDER)%.o : %.s
 	@echo 'Building file: $(@F)'
 	@echo 'Invoking: MCU Assembler'
+	@$(call MAKEDIR,$(dir $@))
 	$(AS) $(ASFLAGS) $(COMMON_FLAGS) $< -o $@
 	@echo 'Finished building: $(@F)'
 	@echo ' '
 
 PRE_BUILD_SCRIPT := $(shell{% for command in pre_build_script %} ../../../{{command}} && {% endfor %} true)
 
-all: create_outputdir $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) print_info
+all: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) print_info
 	{% for command in post_build_script %} ../../../{{command}} && {% endfor %} true
-
-create_outputdir:
-ifeq ($(OS),Windows_NT)
-	-mkdir $(OUT_DIR)
-else
-	$(shell mkdir $(OBJ_FOLDER) 2>/dev/null)
-endif
 
 {% if output_type == 'exe' %}
 # Tool invocations
 $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
+	@$(call MAKEDIR,$(dir $@))
 	$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS) 
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-print_info:
+print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 	@echo 'Printing size'
 	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 	$(OBJCOPY) {% block TOHEX %}{% endblock %} $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) {% block objcopy_output %}{% endblock %} $(OBJ_FOLDER)$(TARGET).hex
@@ -162,20 +160,24 @@ print_info:
 {% else %}
 $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building library: $@'
+	@$(call MAKEDIR,$(dir $@))
 	$(AR) rcs $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS)
 	@echo 'Finished building library: $@'
 	@echo ' '
 
-print_info:
+print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 	@echo 'Printing size'
 	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 	@echo ' '
 {% endif %}
 
+{% for rule in additional_targets %}{{rule}}
+{% endfor %}
+
 # Other Targets
 clean:
 	@echo 'Removing entire out directory'
-	$(RM) $(TARGET)$(TARGET_EXT) $(TARGET).bin $(TARGET).map $(OBJ_FOLDER)*.* $(OBJ_FOLDER)
+	$(call RM $(TARGET)$(TARGET_EXT) $(TARGET).bin $(TARGET).map $(OBJ_FOLDER)*.* $(OBJ_FOLDER))
 	@echo ' '
 
 .PHONY: clean print_info

@@ -16,6 +16,7 @@ import copy
 import logging
 import xmltodict
 import subprocess
+from subprocess import Popen, PIPE
 import time
 import copy
 import re
@@ -394,14 +395,13 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         ewd_dic = self.definitions.ewd_file
-                if not template_ewp or not template_ewd:
-                    logger.info("Template file %s contains unknown template extension (.ewp, .ewd are valid)" % template)
-                    if not template_ewp and template_ewd:
-                        ewp_dic, _ = self._get_default_templates() 
-                    elif not template_ewd and template_ewp:
-                        _, ewd_dic = self._get_default_templates()
-                    else:
-                        ewp_dic, ewd_dic = self._get_default_templates()
+                # handle non valid template files or not specified
+                if not template_ewp and template_ewd:
+                    ewp_dic, _ = self._get_default_templates() 
+                elif not template_ewd and template_ewp:
+                    _, ewd_dic = self._get_default_templates()
+                else:
+                    ewp_dic, ewd_dic = self._get_default_templates()
         elif 'iar' in self.env_settings.templates.keys():
             template_ewp = False
             template_ewd = False
@@ -422,12 +422,13 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                         template_ewd = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
-                        ewd_dic = self.definitions.ewd_file
+                        ewd_dic = self.definitions.ewd_filele
+                # handle non valid template files or not specified
+                if not template_ewp and template_ewd:
+                    ewp_dic, _ = self._get_default_templates() 
+                elif not template_ewd and template_ewp:
+                    _, ewd_dic = self._get_default_templates()
                 else:
-                    # load default ewd if not found in the templates
-                    ewd_dic = self.definitions.ewd_file
-                if not template_ewp or not template_ewd:
-                    logger.info("Template file %s contains unknown template extension (.ewp, .ewd are valid)" % template)
                     ewp_dic, ewd_dic = self._get_default_templates()
         else:
             ewp_dic, ewd_dic = self._get_default_templates()
@@ -523,6 +524,16 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         project_path, eww = self.gen_file_raw(eww_xml, '%s.eww' % self.workspace['settings']['name'], self.workspace['settings']['path'])
         return project_path, [eww]
 
+    def _parse_subprocess_output(self, output):
+        num_errors = 0
+        lines = output.split("\n")
+        error_re = '\s*Total number of errors:\s*(\d+)\s*'
+        for line in lines:
+            m = re.match(error_re, line)
+            if m is not None:
+                num_errors = m.group(1)
+        return int(num_errors)
+
     def export_workspace(self):
         """ Export a workspace file """
         # we got a workspace defined, therefore one ewp generated only
@@ -554,15 +565,23 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         logger.debug(args)
 
         try:
-            ret_code = None
-            ret_code = subprocess.call(args)
+            p = Popen(args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            output, err = p.communicate()
         except:
             logger.error("Project: %s build failed. Please check IARBUILD path in the user_settings.py file." % self.workspace['files']['ewp'])
             return -1
         else:
-            # no IAR doc describes errors from IarBuild
-            logger.info("Project: %s build completed." % self.workspace['files']['ewp'])
-            return 0
+            build_log_path = os.path.join(os.path.dirname(proj_path),'build_log.txt')
+            with open(build_log_path, 'w') as f:
+                f.write(output)
+            num_errors = self._parse_subprocess_output(output)
+            if num_errors == 0:
+                logger.info("Project: %s build completed." % self.workspace['files']['ewp'])
+                return 0
+            else:
+                logger.error("Project: %s build failed with %d errors" %
+                             (self.workspace['files']['ewp'], num_errors))
+                return -1
 
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['ewp'], self.workspace['files']['eww'],

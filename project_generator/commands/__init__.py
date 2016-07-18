@@ -11,3 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import argparse
+from os.path import exists
+
+def argparse_filestring_type(string):
+    if not exists(string):
+        raise argparse.ArgumentTypeError("%s is not a file." % string)
+    else:
+        return string
+
+def argparse_string_type(case_converter, prefer_hyphen=False):
+    if prefer_hyphen:
+        return lambda string: case_converter(string).replace("_","-")
+    else:
+        return lambda string: case_converter(string).replace("-","_")
