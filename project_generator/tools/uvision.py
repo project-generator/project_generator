@@ -506,7 +506,8 @@ class Uvision(Tool, Builder, Exporter):
 
         logger.debug("Building uVision project: %s" % path)
 
-        args = [self.env_settings.get_env_settings(tool_name), '-r', '-j0', '-o', './build/build_log.txt', path]
+        build_log_path = join(os.path.dirname(path),'build','build_log.txt')
+        args = [self.env_settings.get_env_settings(tool_name), '-r', '-j0', '-o', build_log_path, path]
         logger.debug(args)
 
         try:
