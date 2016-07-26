@@ -24,6 +24,59 @@ from ..util import SOURCE_KEYS
 
 logger = logging.getLogger('progen.tools')
 
+
+def get_tool_template():
+    """ Internal project data
+
+    a dict with the following keys is returned:
+    source_paths - a list of source paths derived from s
+    include_paths - a list of include paths derived from sources
+    include_files - a dict of include files used in the copy function mapping
+                    groups to the files with each group (a list)
+    source_files_c - a dict of c source files mapping groups to a list of files
+                     within the group
+    source_files_cpp - a dict of c++ source files mapping groups to a list of
+                       files within the group
+    source_files_s - a dict of groups to lists of assembly source files within
+                     each group
+    source_files_obj - dict of groups to lists of object files within each group
+    source_files_lib - a dict of libraries mapping a group to a list of
+                       libraries
+    singular - a Boolean value indicating whether this is a singular project or
+               part of a workspace
+    output_dir - a dict containing:
+      path - directory that output files are generated into by the exported
+             project, relative to the current directory
+      rel_path - the relative path to the root
+      rel_count - the number of steps to the root
+    macros - a list of c pre-processor macros
+    template - a filename of an external template file
+    misc - a dict of miscellaneous tool options
+
+    """
+
+    internal_template = {
+        'source_paths': [],
+        'include_paths': [],
+        'include_files': {},
+        'source_files_c': {},
+        'source_files_cpp': {},
+        'source_files_s': {},
+        'source_files_obj': {},
+        'source_files_lib': {},
+        'singular': True,
+        'output_dir': {
+            'path': '',
+            'rel_path': '',
+            'rel_count': '',
+        },
+        "macros": [],
+        "template": None,
+        "misc": {}
+    }
+    return internal_template
+
+
 # Each new tool should at least support this Tool class methods
 # and Exporter class. The build is optional as not every tool supports building
 # via command line.
