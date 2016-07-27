@@ -20,6 +20,7 @@ import copy
 import yaml
 
 from .tools_supported import ToolsSupported
+from .tools.tools import get_tool_template
 from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS, fix_paths
 
 logger = logging.getLogger('progen.project')
@@ -168,31 +169,6 @@ class ProjectTemplate:
         project_template.update(ProjectTemplate._get_common_data_template())
         project_template.update(ProjectTemplate._get_tool_specific_data_template())
         return project_template
-
-class ProjectTemplateInternal:
-    """ Internal Project data, used by tools (generators) """
-
-    @staticmethod
-    def _get_project_template():
-        """ Internal project data """
-
-        internal_template = {
-            'source_paths': [],       # [internal] source paths derived from sources
-            'include_paths': [],      # [internal] include paths derived from sources
-            'include_files': {},      # [internal] include files - used in the copy function
-            'source_files_c': {},     # [internal] c source files
-            'source_files_cpp': {},   # [internal] c++ source files
-            'source_files_s': {},     # [internal] assembly source files
-            'source_files_obj': {},   # [internal] object files
-            'source_files_lib': {},   # [internal] libraries
-            'singular': True,         # [internal] singular project or part of a workspace
-            'output_dir': {           # [internal] The generated path dict
-                'path': '',           # path with all name mangling we add to export_dir
-                'rel_path': '',       # how far we are from root
-                'rel_count': '',      # Contains count of how far we are from root, used for eclipse for example
-            }
-        }
-        return internal_template
 
 class Project:
 
@@ -449,7 +425,7 @@ class Project:
         tool_keywords = list(set(tool_keywords))
 
         # Set the template keys an get the relative path to fix all paths
-        self.project['export'] = ProjectTemplateInternal._get_project_template()
+        self.project['export'] = get_tool_template()
         self.project['export'].update(self.project['common'])
 
         self._set_output_dir_path(tool, copied)
