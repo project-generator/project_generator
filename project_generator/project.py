@@ -20,7 +20,7 @@ import copy
 import yaml
 
 from .tools_supported import ToolsSupported
-from .tools.tools import get_tool_template
+from .tools.tool import get_tool_template
 from .util import merge_recursive, PartialFormatter, FILES_EXTENSIONS, VALID_EXTENSIONS, FILE_MAP, OUTPUT_TYPES, SOURCE_KEYS, fix_paths
 
 logger = logging.getLogger('progen.project')
