@@ -464,19 +464,21 @@ class Uvision(Tool, Builder, Exporter):
         project_path, uvproj = self.gen_file_raw(uvproj_xml, '%s.%s' % (expanded_dic['name'], extension), expanded_dic['output_dir']['path'])
 
         uvoptx = None
+
+        # generic tool template specified
+        uvoptx_dic = self.definitions.uvoptx_file
+
+        self._uvoptx_set_debugger(expanded_dic, uvoptx_dic, tool_name)
+
+        # set target only if defined, otherwise use from template/default one
         if tool_name == 'uvision5':
-
-            # generic tool template specified
-            uvoptx_dic = self.definitions.uvoptx_file
-
-            self._uvoptx_set_debugger(expanded_dic, uvoptx_dic, tool_name)
-
-            # set target only if defined, otherwise use from template/default one
             extension = 'uvoptx'
+        else:
+            extension = 'uvopt'
 
-            # Project file
-            uvoptx_xml = xmltodict.unparse(uvoptx_dic, pretty=True)
-            project_path, uvoptx = self.gen_file_raw(uvoptx_xml, '%s.%s' % (expanded_dic['name'], extension), expanded_dic['output_dir']['path'])
+        # Project file
+        uvoptx_xml = xmltodict.unparse(uvoptx_dic, pretty=True)
+        project_path, uvoptx = self.gen_file_raw(uvoptx_xml, '%s.%s' % (expanded_dic['name'], extension), expanded_dic['output_dir']['path'])
 
         return project_path, [uvproj, uvoptx]
 
