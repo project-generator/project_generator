@@ -94,7 +94,10 @@ class ProjectWorkspace:
                 if copy:
                     project._copy_sources_to_generated_destination()
                 project.project['export']['singular'] = False
-                files = tool_export(project.project['export'], self.settings).export_project()
+                tool_export = tool_export(project.project['export'], self.settings)
+                files = tool_export.export_project()
+                for filename, content in tool_export.PROJ_FILE_RAW.items():
+                    open(filename, "w").write(content)
                 # we gather all generated files, needed for workspace files
                 workspace_dic['projects'].append(files)
                 generated_files['projects'].append(files)
@@ -549,8 +552,11 @@ class Project:
                 logger.addHandler(handler)
                 logger.debug("\n" + yaml.dump(dump_data))
 
-            files = exporter(self.project['export'], self.settings).export_project()
+            exporter = exporter(self.project['export'], self.settings)
+            files = exporter.export_project()
             generated_files[export_tool] = files
+            for filename, content in exporter.PROJ_FILE_RAW.items():
+                open(filename, "w").write(content)
         self.generated_files = generated_files
         return result
 

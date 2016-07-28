@@ -106,7 +106,7 @@ class Exporter(object):
     """Just an exporter template for subclassing"""
 
     TEMPLATE_DIR = abspath(join(dirname(__file__), '..', 'templates'))
-
+    PROJ_FILE_RAW = {}
     # Any tool which exports should implement these methods 3 methods
     def export_workspace(self):
         raise NotImplementedError
@@ -133,8 +133,7 @@ class Exporter(object):
             os.makedirs(dest_path)
         output = join(dest_path, output)
         logger.debug("Generating: %s" % output)
-
-        open(output, "w").write(target_text)
+        self.PROJ_FILE_RAW[output] = target_text
         return dirname(output), output
 
     def gen_file_jinja(self, template_file, data, output, dest_path):
@@ -149,8 +148,7 @@ class Exporter(object):
         # TODO: undefined=StrictUndefined - this needs fixes in templates
         template = env.get_template(template_file)
         target_text = template.render(data)
-
-        open(output, "w").write(target_text)
+        self.PROJ_FILE_RAW[output] = target_text
         return dirname(output), output
 
     def fixup_executable(self, exe_path):
