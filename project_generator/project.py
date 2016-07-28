@@ -97,6 +97,8 @@ class ProjectWorkspace:
                 tool_export = tool_export(project.project['export'], self.settings)
                 files = tool_export.export_project()
                 for filename, content in tool_export.PROJ_FILE_RAW.items():
+                    if not os.path.exists(os.path.dirname(filename)):
+                        os.makedirs(os.path.dirname(filename))
                     open(filename, "w").write(content)
                 # we gather all generated files, needed for workspace files
                 workspace_dic['projects'].append(files)
@@ -556,6 +558,8 @@ class Project:
             files = exporter.export_project()
             generated_files[export_tool] = files
             for filename, content in exporter.PROJ_FILE_RAW.items():
+                if not os.path.exists(os.path.dirname(filename)):
+                    os.makedirs(os.path.dirname(filename))
                 open(filename, "w").write(content)
         self.generated_files = generated_files
         return result

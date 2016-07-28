@@ -129,16 +129,12 @@ class Exporter(object):
     # tool provides.
 
     def gen_file_raw(self, target_text, output, dest_path):
-        if not os.path.exists(dest_path):
-            os.makedirs(dest_path)
         output = join(dest_path, output)
         logger.debug("Generating: %s" % output)
         self.PROJ_FILE_RAW[output] = target_text
         return dirname(output), output
 
     def gen_file_jinja(self, template_file, data, output, dest_path):
-        if not os.path.exists(dest_path):
-            os.makedirs(dest_path)
         output = join(dest_path, output)
         logger.debug("Generating: %s" % output)
 
