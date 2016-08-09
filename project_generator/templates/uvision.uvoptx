@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectOpt xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="project_optx.xsd">
+	<SchemaVersion>1.0</SchemaVersion>
+	<Target>
+		<TargetName></TargetName>
+		<ToolsetNumber>0x4</ToolsetNumber>
+		<ToolsetName>ARM-ADS</ToolsetName>
+		<TargetOption>
+			<DebugOpt>
+				<uSim>0</uSim>
+				<uTrg>1</uTrg>
+				<nTsel></nTsel>
+				<pMon></pMon>
+			</DebugOpt>
+			<TargetDriverDllRegistry>
+				<SetRegEntry>
+					<Number>0</Number>
+					<Key></Key>
+					<Name></Name>
+				</SetRegEntry>
+			</TargetDriverDllRegistry>
+		</TargetOption>
+	</Target>
+</ProjectOpt>
