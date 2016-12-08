@@ -35,7 +35,7 @@ class ProjectWorkspace:
         self.workspace_settings = workspace_settings
         self.generated_files = {}
 
-    def generate(self, tool, copied=False, copy=False):
+    def generate(self, tool, copied=False, copy=False, fill=True):
         """ Generates a workspace """
 
         # copied - already done by external script, copy - do actual copy
@@ -516,7 +516,7 @@ class Project:
                 shutil.rmtree(path)
         return 0
 
-    def generate(self, tool, copied=False, copy=False):
+    def generate(self, tool, copied=False, copy=False, fill=True):
         """ Generates a project """
 
         tools = self._validate_tools(tool)
@@ -533,8 +533,8 @@ class Project:
                 result = -1
                 logger.debug("Tool: %s was not found" % export_tool)
                 continue
-
-            self._fill_export_dict(export_tool, copied)
+            if fill:
+                self._fill_export_dict(export_tool, copied)
             if copy:
                 logger.debug("Copying sources to the output directory")
                 self._copy_sources_to_generated_destination()
