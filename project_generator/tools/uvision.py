@@ -291,7 +291,7 @@ class Uvision(Tool, Builder, Exporter):
             i += 1
 
     def _generate_uvmpw_file(self):
-        uvmpw_dic = xmltodict.parse(open(self.uvmpw_file))
+        uvmpw_dic = xmltodict.parse(open(self.uvmpw_file, "rb"))
         uvmpw_dic['ProjectWorkspace']['project'] = []
 
         for project in self.workspace['projects']:
@@ -400,7 +400,7 @@ class Uvision(Tool, Builder, Exporter):
                         return None, None
                 else:
                     logger.info("Template file %s contains unknown template extension (.uvproj/x are valid). Using default one" % template)
-                    uvproj_dic = xmltodict.parse(open(self.uvproj_file))
+                    uvproj_dic = xmltodict.parse(open(self.uvproj_file, "rb"))
         elif 'uvision' in self.env_settings.templates.keys():
             # template overrides what is set in the yaml files
             for template in self.env_settings.templates['uvision']:
@@ -411,12 +411,12 @@ class Uvision(Tool, Builder, Exporter):
                         uvproj_dic = xmltodict.parse(open(template, encoding="utf8").read())
                     except IOError:
                         logger.info("Template file %s not found. Using default template" % template)
-                        uvproj_dic = xmltodict.parse(open(self.uvproj_file))
+                        uvproj_dic = xmltodict.parse(open(self.uvproj_file, "rb"))
                 else:
                     logger.info("Template file %s contains unknown template extension (.uvproj/x are valid). Using default one" % template)
                     uvproj_dic = xmltodict.parse(open(self.uvproj_file))
         else:
-            uvproj_dic = xmltodict.parse(open(self.uvproj_file))
+            uvproj_dic = xmltodict.parse(open(self.uvproj_file, "rb"))
 
         try:
             uvproj_dic['Project']['Targets']['Target']['TargetName'] = expanded_dic['name']
@@ -463,7 +463,7 @@ class Uvision(Tool, Builder, Exporter):
         uvoptx = None
 
         # generic tool template specified
-        uvoptx_dic = xmltodict.parse(open(self.uvoptx_file))
+        uvoptx_dic = xmltodict.parse(open(self.uvoptx_file, "rb"))
 
         self._uvoptx_set_debugger(expanded_dic, uvoptx_dic, tool_name)
 
