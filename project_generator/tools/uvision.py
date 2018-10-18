@@ -209,8 +209,11 @@ class Uvision(Tool, Builder, Exporter):
         return 'uvision'
 
     def _expand_one_file(self, source, new_data, extension):
-        return {"FilePath": source, "FileName": basename(source),
-                            "FileType": self.file_types[extension]}
+        ordered = OrderedDict() 
+        ordered["FileType"] = self.file_types[extension]
+        ordered["FileName"] = basename(source)
+        ordered["FilePath"] = source
+        return ordered
 
     def _normalize_mcu_def(self, mcu_def):
         for k, v in mcu_def['TargetOption'].items():
