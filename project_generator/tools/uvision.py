@@ -209,8 +209,11 @@ class Uvision(Tool, Builder, Exporter):
         return 'uvision'
 
     def _expand_one_file(self, source, new_data, extension):
-        return {"FilePath": source, "FileName": basename(source),
-                            "FileType": self.file_types[extension]}
+        ordered = OrderedDict() 
+        ordered["FileType"] = self.file_types[extension]
+        ordered["FileName"] = basename(source)
+        ordered["FilePath"] = source
+        return ordered
 
     def _normalize_mcu_def(self, mcu_def):
         for k, v in mcu_def['TargetOption'].items():
@@ -243,8 +246,8 @@ class Uvision(Tool, Builder, Exporter):
         self._uvproj_clean_xmldict(uvproj_dic['LDads'])
         uvproj_dic['LDads']['ScatterFile'] = project_dic['linker_file']
 
-        uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['include_paths']).encode('utf-8')
-        uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros']).encode('utf-8')
+        uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['include_paths'])
+        uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros'])
         if project_dic['macros']:
             uvproj_dic['Aads']['VariousControls']['MiscControls'] = '--cpreproc --cpreproc_opts=-D' + ',-D'.join(project_dic['macros'])
 
@@ -322,8 +325,8 @@ class Uvision(Tool, Builder, Exporter):
         uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['DeviceId'] = mcu_def_dic['TargetOption']['DeviceId'][0]
         try:
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Vendor'] = mcu_def_dic['TargetOption']['Vendor'][0]
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0].encode('utf-8')
-            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['Cpu'] = mcu_def_dic['TargetOption']['Cpu'][0]
+            uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['FlashDriverDll'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0])
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['SFDFile'] = mcu_def_dic['TargetOption']['SFDFile'][0]
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['RegisterFile'] = mcu_def_dic['TargetOption']['RegisterFile'][0]
         except KeyError:
@@ -357,7 +360,7 @@ class Uvision(Tool, Builder, Exporter):
         # set the same target name FlashDriverDll config as in uvprojx file
         try:
             uvoptx_dic['ProjectOpt']['Target']['TargetName'] = expanded_dic['name']
-            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['TargetDriverDllRegistry']['SetRegEntry']['Name'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0]).encode('utf-8')
+            uvoptx_dic['ProjectOpt']['Target']['TargetOption']['TargetDriverDllRegistry']['SetRegEntry']['Name'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0])
         except KeyError:
             return 
 
