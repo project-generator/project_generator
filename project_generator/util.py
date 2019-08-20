@@ -74,7 +74,7 @@ def load_yaml_records(yaml_files):
     for yaml_file in yaml_files:
         try:
             f = open(yaml_file, 'rt')
-            dictionaries.append(yaml.load(f))
+            dictionaries.append(yaml.load(f, Loader=yaml.FullLoader))
         except IOError:
            raise IOError("The file %s referenced in main yaml doesn't exist." % yaml_file)
     return dictionaries

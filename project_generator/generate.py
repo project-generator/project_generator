@@ -22,7 +22,7 @@ class Generator:
         if type(projects_file) is not dict:
             try:
                 with open(projects_file, 'rt') as f:
-                    self.projects_dict = yaml.load(f)
+                    self.projects_dict = yaml.load(f, Loader=yaml.FullLoader)
             except IOError:
                raise IOError("The main progen projects file %s doesn't exist." % projects_file)
         else:
