@@ -23,6 +23,9 @@ class MakefileGccArm(MakefileTool):
 
     def __init__(self, workspace, env_settings):
         MakefileTool.__init__(self, workspace, env_settings, logging)
+        # enable preprocessing linker files for GCC ARM
+        self.workspace['preprocess_linker_file'] = True
+        self.workspace['linker_extension'] = '.ld'
 
     @staticmethod
     def get_toolnames():
