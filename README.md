@@ -58,7 +58,7 @@ We use project generator definitions, which is a separate python module and cont
 
 Dependencies for Project generator
 -------------------------
-* Python 2.7
+* Python 2.7.x/3.x
  * [pyYAML](https://github.com/yaml/pyyaml)
  * [Setuptools](https://pypi.python.org/pypi/distribute)
  * [Jinja2](https://pypi.python.org/pypi/Jinja2)
