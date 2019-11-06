@@ -25,6 +25,7 @@ CXX = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block CXX %}{% endblock %}
 AS = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block AS %}{% endblock %}
 LD = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block LD %}{% endblock %}
 AR = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block AR %}{% endblock %}
+PREPROC = $(CC) -E -P
 
 SIZE = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)size
 OBJCOPY = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block OBJCOPY %}{% endblock %}
@@ -41,6 +42,12 @@ TARGET_EXT = .a
 {% endif %}
 
 LD_SCRIPT = {{linker_file}}
+LINKER_EXT = {{linker_extension}}
+
+{% if preprocess_linker_file %}
+$(TARGET).linker_script$(LINKER_EXT): $(LD_SCRIPT)
+	@$(PREPROC) $< -o $@
+{% endif %}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 ASM_SYMBOLS = {% block ASM_SYMBOLS %}{% endblock %}
@@ -148,8 +155,9 @@ else
 endif
 
 {% if output_type == 'exe' %}
+
 # Tool invocations
-$(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
+$(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): {% if preprocess_linker_file %} $(TARGET).linker_script$(LINKER_EXT) {% else %} $(LINKER_SCRIPT) {% endif %} $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
 	$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS) 
