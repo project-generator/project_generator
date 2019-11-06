@@ -204,13 +204,13 @@ class Coide(Tool, Exporter, Builder):
             logger.debug("Mcu definitions: %s" % mcu_def_dic)
             # correct attributes from definition, as yaml does not allowed multiple keys (=dict), we need to
             # do this magic.
-            for k, v in mcu_def_dic['Device'].items():
+            for k, v in dict(mcu_def_dic['Device']).items():
                 del mcu_def_dic['Device'][k]
                 mcu_def_dic['Device']['@' + k] = str(v)
             memory_areas = []
             for k, v in mcu_def_dic['MemoryAreas'].items():
                 # ??? duplicate use of k
-                for k, att in v.items():
+                for k, att in dict(v).items():
                     del v[k]
                     v['@' + k] = str(att)
                 memory_areas.append(v)
