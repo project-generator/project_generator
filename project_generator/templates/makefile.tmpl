@@ -44,13 +44,14 @@ TARGET_EXT = .a
 LD_SCRIPT = {{linker_file}}
 LINKER_EXT = {{linker_extension}}
 
-{% if preprocess_linker_file %}
-$(TARGET).linker_script$(LINKER_EXT): $(LD_SCRIPT)
-	@$(PREPROC) - < $< -o $@
-{% endif %}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 ASM_SYMBOLS = {% block ASM_SYMBOLS %}{% endblock %}
+
+{% if preprocess_linker_file %}
+$(TARGET).linker_script$(LINKER_EXT): $(LD_SCRIPT)
+	@$(PREPROC) $(CC_SYMBOLS) $(ASM_SYMBOLS) - < $< -o $@
+{% endif %}
 
 LIBS = {% for library in libraries %} -l{{library}} {% endfor %} 
 {% if standard_libraries %} 
