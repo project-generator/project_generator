@@ -25,7 +25,7 @@ CXX = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block CXX %}{% endblock %}
 AS = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block AS %}{% endblock %}
 LD = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block LD %}{% endblock %}
 AR = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block AR %}{% endblock %}
-PREPROC = $(CC) -E -P
+PREPROC = $(CC) -E -P -x c
 
 SIZE = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)size
 OBJCOPY = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block OBJCOPY %}{% endblock %}
@@ -50,7 +50,7 @@ ASM_SYMBOLS = {% block ASM_SYMBOLS %}{% endblock %}
 
 {% if preprocess_linker_file %}
 $(TARGET).linker_script$(LINKER_EXT): $(LD_SCRIPT)
-	@$(PREPROC) $(CC_SYMBOLS) - < $< -o $@
+	@$(PREPROC) $(CC_SYMBOLS) $< -o $@
 {% endif %}
 
 LIBS = {% for library in libraries %} -l{{library}} {% endfor %} 
