@@ -46,7 +46,7 @@ LINKER_EXT = {{linker_extension}}
 
 {% if preprocess_linker_file %}
 $(TARGET).linker_script$(LINKER_EXT): $(LD_SCRIPT)
-	@$(PREPROC) $< -o $@
+	@$(PREPROC) - < $< -o $@
 {% endif %}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
