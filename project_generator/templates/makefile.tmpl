@@ -41,17 +41,16 @@ TARGET_EXT = .elf
 TARGET_EXT = .a
 {% endif %}
 
-LD_SCRIPT = {{linker_file}}
 LINKER_EXT = {{linker_extension}}
-
+{% if preprocess_linker_file %}
+LD_SCRIPT_IN = {{linker_file}}
+LD_SCRIPT = $(OUT_DIR)/$(TARGET).generated$(LINKER_EXT)
+{% else %}
+LD_SCRIPT = {{linker_file}}
+{% endif %}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 ASM_SYMBOLS = {% block ASM_SYMBOLS %}{% endblock %}
-
-{% if preprocess_linker_file %}
-$(TARGET).generated$(LINKER_EXT): $(LD_SCRIPT)
-	@$(PREPROC) $(CC_SYMBOLS) $< -o $@
-{% endif %}
 
 LIBS = {% for library in libraries %} -l{{library}} {% endfor %} 
 {% if standard_libraries %} 
@@ -158,7 +157,12 @@ endif
 {% if output_type == 'exe' %}
 
 # Tool invocations
-$(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): {% if preprocess_linker_file %} $(TARGET).generated$(LINKER_EXT) {% else %} $(LINKER_SCRIPT) {% endif %} $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
+{% if preprocess_linker_file %}
+$(LD_SCRIPT): $(LD_SCRIPT_IN)
+	@$(PREPROC) $(INC_DIRS_F) $(CC_SYMBOLS) $< -o $@
+{% endif %}
+
+$(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
 	$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS) 

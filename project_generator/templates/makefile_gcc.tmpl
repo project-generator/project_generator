@@ -10,5 +10,5 @@
 {% block TOBIN %}-O binary{% endblock %}
 
 {% block COMMON_FLAGS %} -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -MMD -MP $(CC_SYMBOLS) {% endblock %}
-{% block LD_OPTIONS %} -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T $(filter-out %.o, $^) {% endblock %}
+{% block LD_OPTIONS %} -mcpu=$(CPU) -m$(INSTRUCTION_MODE) -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T$(LD_SCRIPT) {% endblock %}
 {% block ASM_SYMBOLS %}$(CC_SYMBOLS){% endblock %}
