@@ -52,10 +52,10 @@ LD_SCRIPT = {{linker_file}}
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 ASM_SYMBOLS = {% block ASM_SYMBOLS %}{% endblock %}
 
-LIBS = {% for library in libraries %} -l{{library}} {% endfor %} 
-{% if standard_libraries %} 
+LIBS = {% for library in libraries %} -l{{library}} {% endfor %}
+{% if standard_libraries %}
 LIBS += -Wl,--start-group  {% for library in standard_libraries %} -l{{library}} {% endfor %} -Wl,--end-group
-{% endif %} 
+{% endif %}
 
 LIB_PATHS = {% for path in lib_paths %} -L{{path}} {% endfor %}
 
@@ -77,7 +77,7 @@ endif
 
 # Flags
 COMMON_FLAGS = {% for option in common_flags %} {{option}} {% endfor %}
-COMMON_FLAGS += {% block COMMON_FLAGS %}{% endblock %} 
+COMMON_FLAGS += {% block COMMON_FLAGS %}{% endblock %}
 
 C_FLAGS  = {% for option in c_flags %} {{option}} {% endfor %}
 CXX_FLAGS  = {% for option in cxx_flags %} {{option}} {% endfor %}
@@ -165,7 +165,7 @@ $(LD_SCRIPT): $(LD_SCRIPT_IN)
 $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS) 
+	$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
