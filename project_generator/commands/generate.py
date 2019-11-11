@@ -18,6 +18,8 @@ from ..tools_supported import ToolsSupported
 from ..generate import Generator
 from . import argparse_filestring_type, argparse_string_type
 
+logger = logging.getLogger('progen.generate')
+
 help = 'Generate a project record'
 
 def run(args):
@@ -27,6 +29,10 @@ def run(args):
     generated = True
     for project in generator.generate(args.project):
         generated = False
+        if project.workspace_name is not None:
+            logger.info("Generating %s for %s in workspace %s", args.tool, project.name, project.workspace_name)
+        else:
+            logger.info("Generating %s for %s", args.tool, project.name)
         if project.generate(args.tool, copied=args.copy, copy=args.copy) == -1:
             export_failed = True
         if args.build:
