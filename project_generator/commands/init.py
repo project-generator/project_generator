@@ -32,6 +32,10 @@ def run(args):
 
 
 def setup(subparser):
+    subparser.add_argument('-v', dest='verbosity', action='count', default=0,
+                        help='Increase the verbosity of the output (repeat for more verbose output)')
+    subparser.add_argument('-q', dest='quietness', action='count', default=0,
+                        help='Decrease the verbosity of the output (repeat for more verbose output)')
     subparser.add_argument(
         '-p', '--project', help='Project name')
     subparser.add_argument(

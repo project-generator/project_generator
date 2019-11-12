@@ -39,6 +39,10 @@ def run(args):
         return 0
 
 def setup(subparser):
+    subparser.add_argument('-v', dest='verbosity', action='count', default=0,
+                        help='Increase the verbosity of the output (repeat for more verbose output)')
+    subparser.add_argument('-q', dest='quietness', action='count', default=0,
+                        help='Decrease the verbosity of the output (repeat for more verbose output)')
     subparser.add_argument(
         "-f", "--file", help="YAML projects file", default='projects.yaml',
         type=argparse_filestring_type)
