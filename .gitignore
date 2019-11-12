@@ -52,6 +52,7 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+tags
 .tags
 .tags_sorted_by_file
 

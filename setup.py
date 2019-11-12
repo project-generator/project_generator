@@ -45,8 +45,8 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            "project_generator=project_generator.main:main",
-            "progen=project_generator.main:main",
+            "project_generator=project_generator.__main__:main",
+            "progen=project_generator.__main__:main",
         ]
     },
 
