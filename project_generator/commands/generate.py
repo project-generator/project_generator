@@ -29,7 +29,7 @@ def run(args):
     generated = True
     for project in generator.generate(args.project):
         generated = False
-        if project.workspace_name is not None:
+        if hasattr(project, 'workspace_name') and (project.workspace_name is not None):
             logger.info("Generating %s for %s in workspace %s", args.tool, project.name, project.workspace_name)
         else:
             logger.info("Generating %s for %s", args.tool, project.name)
