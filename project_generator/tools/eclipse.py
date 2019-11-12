@@ -53,8 +53,12 @@ class EclipseGnuARM(Tool, Exporter, Builder):
         return 'gcc_arm'
 
     def _expand_one_file(self, source, new_data, extension):
-        return {"path": join('PARENT-%s-PROJECT_LOC' % new_data['output_dir']['rel_path'], normpath(source)), "name": basename(
-                    source), "type": self.file_types[extension.lower()]}
+        # Remove rel prefix.
+        rel_path = new_data['output_dir']['rel_path']
+        if source.startswith(rel_path):
+            non_rel_source = source[len(rel_path):]
+        return {"path": join('PARENT-%s-PROJECT_LOC' % new_data['output_dir']['rel_count'], normpath(non_rel_source)), "name": basename(
+                    non_rel_source), "type": self.file_types[extension.lower()]}
 
     def _expand_sort_key(self, file) :
         return file['name'].lower()
