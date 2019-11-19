@@ -106,6 +106,11 @@ S_OBJS += $(patsubst %.S,$(OBJ_FOLDER)%.o,$(filter %.S,$(notdir $(S_SRCS))))
 
 O_OBJS := {% for file in source_files_obj %} {{file}} {% endfor %}
 
+ALL_OBJS := $(C_OBJS) \
+	$(CPP_OBJS) \
+	$(S_OBJS) \
+	$(O_OBJS)
+
 VPATH := $(SRC_DIRS)
 
 $(OBJ_FOLDER)%.o : %.c
@@ -179,3 +184,6 @@ clean:
 	@echo ' '
 
 .PHONY: clean print_info
+
+# Include dependencies
+-include $(ALL_OBJS:.o=.d)
