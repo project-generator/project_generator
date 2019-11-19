@@ -91,9 +91,9 @@ class MakefileTool(Tool, Exporter):
     def process_data_for_makefile(self, project_data):
         # Flatten source dictionaries, we don't need groups
         for key in SOURCE_KEYS:
-            project_data[key] = list(chain(*project_data[key].values()))
+            project_data[key] = list(sorted(chain(*project_data[key].values())))
         # flatten also include files
-        project_data['include_files'] = list(chain(*project_data['include_files'].values()))
+        project_data['include_files'] = list(sorted(chain(*project_data['include_files'].values())))
 
         self._get_libs(project_data)
         self._parse_specific_options(project_data)
