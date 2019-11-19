@@ -121,7 +121,12 @@ class MakefileTool(Tool, Exporter):
         path = dirname(self.workspace['files']['makefile'])
         self.logging.debug("Building GCC ARM project: %s" % path)
 
-        args = ['make', 'all']
+        args = ['make']
+        try:
+            args += ['-j', str(kwargs['jobs'])]
+        except KeyError:
+            pass
+        args += ['all']
         self.logging.debug(args)
 
         try:
