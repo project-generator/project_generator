@@ -209,7 +209,7 @@ class Uvision(Tool, Builder, Exporter):
         return 'uvision'
 
     def _expand_one_file(self, source, new_data, extension):
-        ordered = OrderedDict() 
+        ordered = OrderedDict()
         ordered["FileType"] = self.file_types[extension]
         ordered["FileName"] = basename(source)
         ordered["FilePath"] = source
@@ -362,7 +362,7 @@ class Uvision(Tool, Builder, Exporter):
             uvoptx_dic['ProjectOpt']['Target']['TargetName'] = expanded_dic['name']
             uvoptx_dic['ProjectOpt']['Target']['TargetOption']['TargetDriverDllRegistry']['SetRegEntry']['Name'] = str(mcu_def_dic['TargetOption']['FlashDriverDll'][0])
         except KeyError:
-            return 
+            return
 
         # load debugger from target dictionary or use default debugger
         try:
@@ -528,7 +528,7 @@ class Uvision(Tool, Builder, Exporter):
                 logger.info("Project: %s build succeeded with the status: %s" % (self.workspace['files'][extension], self.ERRORLEVEL.get(ret_code, "Unknown")))
                 return 0
 
-    def build_project(self):
+    def build_project(self, **kwargs):
         return self._build_project('uvision', 'uvproj')
 
 class Uvision5(Uvision):
@@ -559,6 +559,6 @@ class Uvision5(Uvision):
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['uvprojx'], self.workspace['files']['uvoptx']]}
 
-    def build_project(self):
+    def build_project(self, **kwargs):
         # tool_name uvision as uv4 is still used in uv5
         return self._build_project('uvision', 'uvprojx')
