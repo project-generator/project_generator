@@ -79,6 +79,7 @@ ASM_FLAGS  = {% for option in asm_flags %} {{option}} {% endfor %}
 CFLAGS = $(C_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS)
 CXXFLAGS = $(CXX_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS)
 ASFLAGS = $(ASM_FLAGS) $(INC_DIRS_F) -c $(ASM_SYMBOLS)
+NMFLAGS = -n -f posix -C -l
 
 # Linker options
 LD_OPTIONS += {% for option in ld_flags %} {{option}} {% endfor %}
@@ -160,8 +161,7 @@ print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
 	$(OBJCOPY) {% block TOHEX %}{% endblock %} $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) {% block objcopy_output %}{% endblock %} $(OBJ_FOLDER)$(TARGET).hex
 	$(OBJCOPY) {% block TOBIN %}{% endblock %} -v $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) {{ self.objcopy_output() }} $(OBJ_FOLDER)$(TARGET).bin
-	-$(OBJDUMP) -D $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET).lst
-	-$(NM) $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
+	-$(NM) $(NMFLAGS) $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
 	@echo ' '
 
 {% else %}
