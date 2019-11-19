@@ -159,7 +159,7 @@ endif
 # Tool invocations
 {% if preprocess_linker_file %}
 $(LD_SCRIPT): $(LD_SCRIPT_IN)
-	@$(PREPROC) $(INC_DIRS_F) $(CC_SYMBOLS) $< -o $@
+	@$(PREPROC) $(INC_DIRS_F) $(CC_SYMBOLS) -MMD $< -o $@
 {% endif %}
 
 $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
@@ -200,3 +200,6 @@ clean:
 
 # Include dependencies
 -include $(ALL_OBJS:.o=.d)
+
+# Include the linker script
+-include $(LD_SCRIPT:.ld=.d)
