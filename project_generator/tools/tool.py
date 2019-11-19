@@ -97,7 +97,7 @@ class Tool(object):
 class Builder:
     """ Just a builder template to be subclassed """
 
-    def build_project(self):
+    def build_project(self, **kwargs):
         """ Should return 0 if built, otherwise return -1 """
         raise NotImplementedError
 
