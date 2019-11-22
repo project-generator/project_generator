@@ -37,9 +37,16 @@ INSTRUCTION_MODE = thumb
 TARGET = {{name}}
 {% if output_type == 'exe' %}
 TARGET_EXT = .elf
+# Executables also produce hex and binary outputs.
+ALL_TARGET_OUT_FILES = $(TARGET_OUT) $(TARGET_HEX) $(TARGET_BIN)
 {% else %}
 TARGET_EXT = .a
+ALL_TARGET_OUT_FILES = $(TARGET_OUT)
 {% endif %}
+
+TARGET_OUT = $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
+TARGET_HEX = $(OBJ_FOLDER)$(TARGET).hex
+TARGET_BIN = $(OBJ_FOLDER)$(TARGET).bin
 
 LINKER_EXT = {{linker_extension}}
 {% if preprocess_linker_file %}
@@ -144,8 +151,8 @@ $(OBJ_FOLDER)%.o : %.s
 
 PRE_BUILD_SCRIPT := $(shell{% for command in pre_build_script %} ../../../{{command}} && {% endfor %} true)
 
-all: create_outputdir $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) print_info
-	{% for command in post_build_script %} ../../../{{command}} && {% endfor %} true
+all: create_outputdir $(ALL_TARGET_OUT_FILES)
+	@{% for command in post_build_script %} ../../../{{command}} && {% endfor %} true
 
 create_outputdir:
 ifeq ($(OS),Windows_NT)
@@ -162,32 +169,31 @@ $(LD_SCRIPT): $(LD_SCRIPT_IN)
 	@$(PREPROC) $(INC_DIRS_F) $(CC_SYMBOLS) -MMD $< -o $@
 {% endif %}
 
-$(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
+$(TARGET_OUT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
 	$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS)
 	@echo 'Finished building target: $@'
 	@echo ' '
+	@$(SIZE) --totals $(TARGET_OUT)
+	@-$(NM) $(NMFLAGS) $(TARGET_OUT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
 
-print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
-	@echo 'Printing size'
-	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
-	$(OBJCOPY) {% block TOHEX %}{% endblock %} $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) {% block objcopy_output %}{% endblock %} $(OBJ_FOLDER)$(TARGET).hex
-	$(OBJCOPY) {% block TOBIN %}{% endblock %} -v $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) {{ self.objcopy_output() }} $(OBJ_FOLDER)$(TARGET).bin
-	-$(NM) $(NMFLAGS) $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
-	@echo ' '
+$(TARGET_HEX): $(TARGET_OUT)
+	@echo 'Converting $@'
+	@$(OBJCOPY) {% block TOHEX %}{% endblock %} $(TARGET_OUT) {% block objcopy_output %}{% endblock %} $(TARGET_HEX)
+
+$(TARGET_BIN): $(TARGET_OUT)
+	@echo 'Converting $@'
+	@$(OBJCOPY) {% block TOBIN %}{% endblock %} $(TARGET_OUT) {{ self.objcopy_output() }} $(TARGET_BIN)
 
 {% else %}
-$(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
+$(TARGET_OUT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@echo 'Building library: $@'
-	$(AR) rcs $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS)
+	$(AR) rcs $(TARGET_OUT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS)
 	@echo 'Finished building library: $@'
 	@echo ' '
+	@$(SIZE) --totals $(TARGET_OUT)
 
-print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
-	@echo 'Printing size'
-	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
-	@echo ' '
 {% endif %}
 
 # Other Targets
