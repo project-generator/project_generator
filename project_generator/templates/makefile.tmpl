@@ -284,5 +284,7 @@ clean:
 # Include dependencies
 -include $(ALL_OBJS:.o=.d)
 
-# Include the linker script
--include $(LD_SCRIPT:.ld=.d)
+{% if preprocess_linker_file %}
+# Include the linker script dependencies
+-include $(LD_SCRIPT:{{linker_extension}}=.d)
+{% endif %}
