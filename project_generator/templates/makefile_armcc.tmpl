@@ -11,6 +11,8 @@
 {% block TOHEX %}--i32{% endblock %}
 {% block objcopy_output %}--output{% endblock %}
 
+{% block TARGET_EXE_EXT %}.axf{% endblock %}
+
 {% block COMMON_FLAGS %} --cpu $(CPU) --$(INSTRUCTION_MODE){% endblock %}
 {% block LD_OPTIONS %}--strict --scatter $(LD_SCRIPT) $(patsubst %,--predefine "%",$(CC_SYMBOLS) $(INC_DIRS_F)){% endblock %}
 {% block ASM_SYMBOLS %} --cpreproc --cpreproc_opts=-D"{{macros|join("\",-D\"")}}"{% endblock %}

@@ -36,7 +36,7 @@ NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)nm
 INSTRUCTION_MODE = thumb
 TARGET = {{name}}
 {% if output_type == 'exe' %}
-TARGET_EXT = .elf
+TARGET_EXT = {% block TARGET_EXE_EXT %}{% endblock %}
 # Executables also produce hex and binary outputs.
 ALL_TARGET_OUT_FILES = $(TARGET_OUT) $(TARGET_HEX) $(TARGET_BIN)
 {% else %}
