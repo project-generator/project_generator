@@ -290,7 +290,17 @@ clean:
 	$(at)$(RM) $(OBJ_FOLDER)* $(OBJ_FOLDER)
 	@echo ' '
 
-.PHONY: clean print_info
+help:
+	@echo "Useful targets:"
+	@echo " - all (default)"
+	@echo " - clean"
+	@echo " - help"
+	@echo
+	@echo "Options:"
+	@echo " - VERBOSE={0|1} to show full command lines."
+	@echo " - USE_COLOR={0|1} to override color output."
+
+.PHONY: clean help
 
 # Include dependencies
 -include $(ALL_OBJS:.o=.d)
