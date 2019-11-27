@@ -40,7 +40,7 @@ setup(
         "Programming Language :: Python",
         "Topic :: Software Development"
     ],
-    long_description=read('pypi_readme.rst'),
+    long_description=read('README.md'),
     long_description_content_type='text/markdown',
     packages=find_packages(),
     entry_points={
