@@ -240,10 +240,13 @@ $(OBJ_FOLDER)%.o : %.s
 
 PRE_BUILD_SCRIPT := $(shell{% for command in pre_build_script %} ../../../{{command}} && {% endfor %} true)
 
-all: create_outputdir $(ALL_TARGET_OUT_FILES)
+all: $(ALL_TARGET_OUT_FILES)
 	$(at){% for command in post_build_script %} ../../../{{command}} && {% endfor %} true
 
-create_outputdir:
+# Make the build directory an order-only prerequisite for everything that goes in it.
+$(ALL_TARGET_OUT_FILES) $(ALL_OBJS) $(LD_SCRIPT): | $(OUT_DIR)
+
+$(OUT_DIR):
 ifeq ($(OS),Windows_NT)
 	$(at)-mkdir $(OUT_DIR)
 else
