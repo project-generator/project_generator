@@ -27,13 +27,16 @@ setup(
     author_email='c0170@rocketmail.com',
     keywords="c cpp project generator embedded",
     url="https://github.com/project-generator/project_generator",
-    classifiers= [
-        "Development Status :: 3 - Alpha",
+    license="Apache 2.0",
+    classifiers=[
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
+        "Programming Language :: C",
         "Topic :: Software Development"
+        "Topic :: Software Development :: Embedded Systems",
     ],
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
@@ -51,5 +54,11 @@ setup(
             "progen=project_generator.__main__:main",
         ]
     },
-    include_package_data = True,
+    include_package_data=True,
+    zip_safe=True,
+    options={
+        'bdist_wheel': {
+            'universal': True,
+        },
+    },
 )
