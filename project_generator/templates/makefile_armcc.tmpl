@@ -5,6 +5,7 @@
 {% block AS %}armasm{% endblock %}
 {% block LD %}armlink{% endblock %}
 {% block AR %}armar{% endblock %}
+{% block CPP %}armcc{% endblock %}
 {% block OBJCOPY %}fromelf{% endblock %}
 
 {% block TOBIN %}--bin{% endblock %}
@@ -15,4 +16,5 @@
 
 {% block COMMON_FLAGS %} --cpu $(CPU) --$(INSTRUCTION_MODE){% endblock %}
 {% block LD_OPTIONS %}--strict --scatter $(LD_SCRIPT) $(patsubst %,--predefine "%",$(CC_SYMBOLS) $(INC_DIRS_F)){% endblock %}
+{% block CPP_FLAGS %}-E{% endblock %}
 {% block ASM_SYMBOLS %} --cpreproc --cpreproc_opts=-D"{{macros|join("\",-D\"")}}"{% endblock %}
