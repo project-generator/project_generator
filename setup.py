@@ -41,9 +41,8 @@ setup(
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
     install_requires=[
-        'pyYAML',
-        'Jinja2'
-        'argparse',
+        'pyyaml>=5.1,<6.0',
+        'Jinja2>2.0<3.0',
         'xmltodict',
         'project_generator_definitions>=0.2.2,<0.3.0',
         ],
