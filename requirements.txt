@@ -1,5 +1,0 @@
-pyYAML
-Jinja2
-argparse
-xmltodict
-project_generator_definitions>=0.2.2,<0.3.0

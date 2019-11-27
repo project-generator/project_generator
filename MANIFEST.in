@@ -1,4 +1,3 @@
 include project_generator/templates/*
-include requirements.txt
 include LICENSE
 include README.md

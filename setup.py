@@ -13,16 +13,11 @@
 # limitations under the License.
 
 import os
-
 from setuptools import setup, find_packages
 
 def read(fname):
     with open(os.path.join(os.path.dirname(__file__), fname), 'r') as f:
         return f.read()
-
-def read_requirements():
-    req_lines = read('requirements.txt').splitlines()
-    return [req for req in req_lines if len(req) > 0 and not req.startswith("#")]
 
 setup(
     name='project_generator',
@@ -42,6 +37,13 @@ setup(
     ],
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
+    install_requires=[
+        'pyYAML',
+        'Jinja2'
+        'argparse',
+        'xmltodict',
+        'project_generator_definitions>=0.2.2,<0.3.0',
+        ],
     packages=find_packages(),
     entry_points={
         'console_scripts': [
@@ -49,7 +51,5 @@ setup(
             "progen=project_generator.__main__:main",
         ]
     },
-
-    install_requires = read_requirements(),
     include_package_data = True,
 )
