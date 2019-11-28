@@ -1,1 +1,3 @@
-include project_generator/templates/* requirements.txt LICENSE README.md pypi_readme.rst
+include project_generator/templates/*
+include LICENSE
+include README.md

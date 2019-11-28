@@ -13,16 +13,11 @@
 # limitations under the License.
 
 import os
-
 from setuptools import setup, find_packages
 
 def read(fname):
     with open(os.path.join(os.path.dirname(__file__), fname), 'r') as f:
         return f.read()
-
-def read_requirements():
-    req_lines = read('requirements.txt').splitlines()
-    return [req for req in req_lines if len(req) > 0 and not req.startswith("#")]
 
 setup(
     name='project_generator',
@@ -32,16 +27,25 @@ setup(
     author_email='c0170@rocketmail.com',
     keywords="c cpp project generator embedded",
     url="https://github.com/project-generator/project_generator",
-    classifiers= [
-        "Development Status :: 3 - Alpha",
+    license="Apache 2.0",
+    classifiers=[
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
+        "Programming Language :: C",
         "Topic :: Software Development"
+        "Topic :: Software Development :: Embedded Systems",
     ],
-    long_description=read('pypi_readme.rst'),
+    long_description=read('README.md'),
     long_description_content_type='text/markdown',
+    install_requires=[
+        'pyyaml>=5.1,<6.0',
+        'Jinja2>2.0<3.0',
+        'xmltodict',
+        'project_generator_definitions>=0.2.2,<0.3.0',
+        ],
     packages=find_packages(),
     entry_points={
         'console_scripts': [
@@ -49,7 +53,11 @@ setup(
             "progen=project_generator.__main__:main",
         ]
     },
-
-    install_requires = read_requirements(),
-    include_package_data = True,
+    include_package_data=True,
+    zip_safe=True,
+    options={
+        'bdist_wheel': {
+            'universal': True,
+        },
+    },
 )
