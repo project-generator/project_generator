@@ -146,8 +146,7 @@ class MakefileTool(Tool, Exporter):
                                    (ret_code, self.workspace['files']['makefile']))
                 return -1
             else:
-
-
-                self.logging.info("Build succeeded with the status: %s" %
-                             self.ERRORLEVEL[ret_code])
+                name = os.path.basename(self.workspace['path'])
+                self.logging.info("Built %s with the status: %s" %
+                             (name, self.ERRORLEVEL[ret_code]))
                 return 0
