@@ -47,7 +47,7 @@ In case of using this repository directly, be aware, the project generator is us
 
 ##### Getting started
 
-An example how to use progen [here](https://github.com/project-generator/project_generator_mbed_examples).
+An example how to use progen [baremetal blinky examples](https://github.com/project-generator/project_generator_frdm_boards_example) or more advanced [mbed blinky examples](https://github.com/project-generator/project_generator_mbed_examples).
 
 ###### Docs
 To get familiar with it, read our wiki. Good start is [Getting started guide (wiki)](https://github.com/project-generator/project_generator/wiki/Getting_started). There are other sections which describe the each blocks of the project generator.
