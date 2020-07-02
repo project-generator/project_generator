@@ -25,15 +25,22 @@ help = 'Build a project'
 def run(args):
     # Export if we know how, otherwise return
     generator = Generator(args.file)
-    build_failed = False
-    export_failed = False
+    any_build_failed = False
+    any_export_failed = False
     for project in generator.generate(args.project):
-        if project.generate(args.tool, args.copy) == -1:
-            export_failed = True
-        if project.build(args.tool) == -1:
-            build_failed = True
+        clean_failed = False
+        if args.clean and project.clean(args.tool) == -1:
+            clean_failed = True # So we don't attempt to generate or build this project.
+            any_build_failed = True
+        if not clean_failed:
+            if project.generate(args.tool, args.copy) == -1:
+                any_export_failed = True
+            if project.build(args.tool, jobs=args.jobs) == -1:
+                any_build_failed = True
+        if args.stop_on_failure and (any_build_failed or any_export_failed):
+            break
 
-    if build_failed or export_failed:
+    if any_build_failed or any_export_failed:
         return -1
     else:
         return 0
@@ -42,7 +49,7 @@ def setup(subparser):
     subparser.add_argument('-v', dest='verbosity', action='count', default=0,
                         help='Increase the verbosity of the output (repeat for more verbose output)')
     subparser.add_argument('-q', dest='quietness', action='count', default=0,
-                        help='Decrease the verbosity of the output (repeat for more verbose output)')
+                        help='Decrease the verbosity of the output (repeat for less verbose output)')
     subparser.add_argument(
         "-f", "--file", help="YAML projects file", default='projects.yaml',
         type=argparse_filestring_type)
@@ -53,3 +60,10 @@ def setup(subparser):
         type=argparse_string_type(str.lower, False), choices=list(ToolsSupported.TOOLS_DICT.keys()) + list(ToolsSupported.TOOLS_ALIAS.keys()))
     subparser.add_argument(
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")
+    subparser.add_argument(
+        "-k", "--clean", action="store_true", help="Clean project before building")
+    subparser.add_argument(
+        "-x", "--stop-on-failure", action="store_true", help="Stop on first failure")
+    subparser.add_argument(
+        "-j", "--jobs", action="store", type=int, default=1,
+        help="Number of concurrent build jobs (not supported by all tools)")

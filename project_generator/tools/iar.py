@@ -100,7 +100,7 @@ class IAREmbeddedWorkbenchProject:
 
     def _get_option(self, settings, find_key):
         """ Return index for provided key """
-        # This is used as in IAR template, everything 
+        # This is used as in IAR template, everything
         # is as an array with random positions. We look for key with an index
         for option in settings:
             if option['name'] == find_key:
@@ -252,11 +252,11 @@ class IAREmbeddedWorkbenchProject:
             except KeyError:
                 return None
 
-        # Get variant 
+        # Get variant
         Variant = _get_mcu_option('Variant')
         if not Variant:
             Variant = _get_mcu_option('CoreVariant')
-        GFPUCoreSlave = _get_mcu_option('GFPUCoreSlave') 
+        GFPUCoreSlave = _get_mcu_option('GFPUCoreSlave')
         if not GFPUCoreSlave:
             GFPUCoreSlave = _get_mcu_option('GFPUCoreSlave2')
         GBECoreSlave = _get_mcu_option('GBECoreSlave')
@@ -298,7 +298,7 @@ class IAREmbeddedWorkbenchProject:
         except TypeError as e:
             # use default
             pass
-        
+
 class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject):
 
     generated_project = {
@@ -388,7 +388,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                         ewd_dic = xmltodict.parse(open(self.ewd_file).read())
                 # handle non valid template files or not specified
                 if not template_ewp and template_ewd:
-                    ewp_dic, _ = self._get_default_templates() 
+                    ewp_dic, _ = self._get_default_templates()
                 elif not template_ewd and template_ewp:
                     _, ewd_dic = self._get_default_templates()
                 else:
@@ -416,7 +416,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                         ewd_dic = xmltodict.parse(open(self.ewd_file).read())
                 # handle non valid template files or not specified
                 if not template_ewp and template_ewd:
-                    ewp_dic, _ = self._get_default_templates() 
+                    ewp_dic, _ = self._get_default_templates()
                 elif not template_ewd and template_ewp:
                     _, ewd_dic = self._get_default_templates()
                 else:
@@ -541,7 +541,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         generated_projects['files']['ewd'] = files[2]
         return generated_projects
 
-    def build_project(self):
+    def build_project(self, **kwargs):
         """ Build IAR project """
         # > IarBuild [project_path] -build [project_name]
         proj_path = join(getcwd(), self.workspace['files']['ewp'])

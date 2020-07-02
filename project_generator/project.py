@@ -105,7 +105,7 @@ class ProjectWorkspace:
             self.generated_files[export_tool] = generated_files
             return result
 
-    def build(self, tool):
+    def build(self, tool, **kwargs):
         logger.info("Building a workspace is not currently supported")
         return -1
 
@@ -177,7 +177,7 @@ class Project:
     def __init__(self, name, project_dicts, settings, workspace_name=None):
         """ Initialise a project with a yaml file """
 
-        assert type(project_dicts) is list, "Project records/dics must be a list" % project_dicts 
+        assert type(project_dicts) is list, "Project records/dics must be a list" % project_dicts
 
         self.settings = settings
         self.name = name
@@ -452,7 +452,7 @@ class Project:
         for key in SOURCE_KEYS:
             self.project['export'][key] = merge_recursive(self.project['export'][key], tool_sources[key])
             # sort all sources within its own group and own category (=k)
-            # the tool needs to do sort files as tools require further processing based on 
+            # the tool needs to do sort files as tools require further processing based on
             # categories (we can't mix now cpp and c files for instance)
             for k, v in self.project['export'][key].items():
                 self.project['export'][key][k] = sorted(v, key=lambda x: os.path.basename(x))
@@ -554,7 +554,7 @@ class Project:
         self.generated_files = generated_files
         return result
 
-    def build(self, tool):
+    def build(self, tool, **kwargs):
         """build the project"""
 
         tools = self._validate_tools(tool)
@@ -573,7 +573,7 @@ class Project:
 
             logger.debug("Building for tool: %s", build_tool)
             logger.debug(self.generated_files)
-            if builder(self.generated_files[build_tool], self.settings).build_project() == -1:
+            if builder(self.generated_files[build_tool], self.settings).build_project(**kwargs) == -1:
                 # if one fails, set to -1 to report
                 result = -1
         return result

@@ -25,6 +25,7 @@ CXX = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block CXX %}{% endblock %}
 AS = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block AS %}{% endblock %}
 LD = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block LD %}{% endblock %}
 AR = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block AR %}{% endblock %}
+CPP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block CPP %}{% endblock %}
 
 SIZE = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)size
 OBJCOPY = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block OBJCOPY %}{% endblock %}
@@ -35,20 +36,33 @@ NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)nm
 INSTRUCTION_MODE = thumb
 TARGET = {{name}}
 {% if output_type == 'exe' %}
-TARGET_EXT = .elf
+TARGET_EXT = {% block TARGET_EXE_EXT %}{% endblock %}
+# Executables also produce hex and binary outputs.
+ALL_TARGET_OUT_FILES = $(TARGET_OUT) $(TARGET_HEX) $(TARGET_BIN)
 {% else %}
 TARGET_EXT = .a
+ALL_TARGET_OUT_FILES = $(TARGET_OUT)
 {% endif %}
 
+TARGET_OUT = $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
+TARGET_HEX = $(OBJ_FOLDER)$(TARGET).hex
+TARGET_BIN = $(OBJ_FOLDER)$(TARGET).bin
+
+LINKER_EXT = {{linker_extension}}
+{% if preprocess_linker_file %}
+LD_SCRIPT_IN = {{linker_file}}
+LD_SCRIPT = $(OUT_DIR)/$(TARGET).generated$(LINKER_EXT)
+{% else %}
 LD_SCRIPT = {{linker_file}}
+{% endif %}
 
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 ASM_SYMBOLS = {% block ASM_SYMBOLS %}{% endblock %}
 
-LIBS = {% for library in libraries %} -l{{library}} {% endfor %} 
-{% if standard_libraries %} 
+LIBS = {% for library in libraries %} -l{{library}} {% endfor %}
+{% if standard_libraries %}
 LIBS += -Wl,--start-group  {% for library in standard_libraries %} -l{{library}} {% endfor %} -Wl,--end-group
-{% endif %} 
+{% endif %}
 
 LIB_PATHS = {% for path in lib_paths %} -L{{path}} {% endfor %}
 
@@ -70,7 +84,7 @@ endif
 
 # Flags
 COMMON_FLAGS = {% for option in common_flags %} {{option}} {% endfor %}
-COMMON_FLAGS += {% block COMMON_FLAGS %}{% endblock %} 
+COMMON_FLAGS += {% block COMMON_FLAGS %}{% endblock %}
 
 C_FLAGS  = {% for option in c_flags %} {{option}} {% endfor %}
 CXX_FLAGS  = {% for option in cxx_flags %} {{option}} {% endfor %}
@@ -84,6 +98,14 @@ NMFLAGS = -n -f posix -C -l
 # Linker options
 LD_OPTIONS += {% for option in ld_flags %} {{option}} {% endfor %}
 LD_OPTIONS += {% block LD_OPTIONS %}{% endblock %}
+
+# Flags to run only preprocessor
+CPP_FLAGS = {% block CPP_FLAGS %}{% endblock %}
+
+{% if preprocess_linker_file %}
+# Flags to preprocess the linker script
+LD_CPP_FLAGS = {% block LD_CPP_FLAGS %}{% endblock %}
+{% endif %}
 
 OBJCPFLAGS = -O ihex
 
@@ -114,76 +136,176 @@ ALL_OBJS := $(C_OBJS) \
 
 VPATH := $(SRC_DIRS)
 
+#-------------------------------------------------------------------------------
+# Logging options
+#-------------------------------------------------------------------------------
+
+# Enable color output by default.
+USE_COLOR ?= 1
+
+# Normally, commands in recipes are prefixed with '@' so the command itself
+# is not echoed by make. But if VERBOSE is defined (set to anything non-empty),
+# then the '@' is removed from recipes. The 'at' variable is used to control
+# this.
+ifeq "$(VERBOSE)" "1"
+at :=
+else
+at := @
+endif
+
+# These colors must be printed with the printf command. echo won't handle the
+# escape sequences.
+color_default = \033[00m
+color_bold = \033[01m
+color_red = \033[31m
+color_green = \033[32m
+color_yellow = \033[33m
+color_blue = \033[34m
+color_magenta = \033[35m
+color_cyan = \033[36m
+color_orange = \033[38;5;172m
+color_light_blue = \033[38;5;039m
+color_gray = \033[38;5;008m
+color_purple = \033[38;5;097m
+
+ifeq "$(USE_COLOR)" "1"
+color_build := $(color_light_blue)
+color_c := $(color_green)
+color_cxx := $(color_green)
+color_cpp := $(color_orange)
+color_asm := $(color_magenta)
+color_ar := $(color_yellow)
+color_link := $(color_cyan)
+color_convert := $(color_gray)
+endif
+
+# Used in printmessage if the color args are not present.
+color_ :=
+
+# Use in recipes to print color messages if printing to a terminal. If
+# USE_COLOR is not set to 1, this reverts to a simple uncolorized printf.
+# A newline is added to the end of the printed message.
+#
+# Arguments:
+#  1 - name of the color variable (see above), minus the "color_" prefix
+#  2 - first colorized part of the message
+#  3 - first uncolorized part of the message
+#  4 - color name for second colorized message
+#  5 - second colorized message
+#  6 - second uncolorized part of the message
+#  7 - uncolorized prefix on the whole line; this is last because it is expected to be used rarely
+#
+# All arguments are optional.
+#
+# Use like:
+#  $(call printmessage,cyan,Building, remainder of the message...)
+ifeq "$(USE_COLOR)" "1"
+define printmessage
+if [ -t 1 ]; then printf "$(7)$(color_$(1))$(2)$(color_default)$(3)$(color_$(4))$(5)$(color_default)$(6)\n" ; \
+else printf "$(7)$(2)$(3)$(5)$(6)\n" ; fi
+endef
+else
+define printmessage
+printf "$(7)$(2)$(3)$(5)$(6)\n"
+endef
+endif
+
+#-------------------------------------------------------------------------------
+# Recipes
+#-------------------------------------------------------------------------------
+
+# Compile C sources.
 $(OBJ_FOLDER)%.o : %.c
-	@echo 'Building file: $(@F)'
-	@echo 'Invoking: MCU C Compiler'
-	$(CC) $(CFLAGS) $(COMMON_FLAGS) $< -o $@
-	@echo 'Finished building: $(@F)'
-	@echo ' '
+	@$(call printmessage,c,Compiling, $<)
+	$(at)$(CC) $(CFLAGS) $(COMMON_FLAGS) $< -o $@
 
+# Compile C++ sources.
 $(OBJ_FOLDER)%.o : %.cpp
-	@echo 'Building file: $(@F)'
-	@echo 'Invoking: MCU C++ Compiler'
-	$(CXX) $(CXXFLAGS) $(COMMON_FLAGS) $< -o $@
-	@echo 'Finished building: $(@F)'
-	@echo ' '
+	@$(call printmessage,cxx,Compiling, $<)
+	$(at)$(CXX) $(CXXFLAGS) $(COMMON_FLAGS) $< -o $@
 
+# Preprocess and assemble .S sources.
+$(OBJ_FOLDER)%.o : %.S
+	@$(call printmessage,asm,Assembling, $<)
+	$(at)$(AS) $(ASFLAGS) $(COMMON_FLAGS) $< -o $@
+
+# Assemble .s sources.
 $(OBJ_FOLDER)%.o : %.s
-	@echo 'Building file: $(@F)'
-	@echo 'Invoking: MCU Assembler'
-	$(AS) $(ASFLAGS) $(COMMON_FLAGS) $< -o $@
-	@echo 'Finished building: $(@F)'
-	@echo ' '
+	@$(call printmessage,asm,Assembling, $<)
+	$(at)$(AS) $(ASFLAGS) $(COMMON_FLAGS) $< -o $@
+
+#-------------------------------------------------------------------------------
+# Rules
+#-------------------------------------------------------------------------------
 
 PRE_BUILD_SCRIPT := $(shell{% for command in pre_build_script %} ../../../{{command}} && {% endfor %} true)
 
-all: create_outputdir $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) print_info
-	{% for command in post_build_script %} ../../../{{command}} && {% endfor %} true
+all: $(ALL_TARGET_OUT_FILES)
+	$(at){% for command in post_build_script %} ../../../{{command}} && {% endfor %} true
 
-create_outputdir:
+# Make the build directory an order-only prerequisite for everything that goes in it.
+$(ALL_TARGET_OUT_FILES) $(ALL_OBJS) $(LD_SCRIPT): | $(OUT_DIR)
+
+$(OUT_DIR):
 ifeq ($(OS),Windows_NT)
-	-mkdir $(OUT_DIR)
+	$(at)-mkdir $(OUT_DIR)
 else
-	$(shell mkdir $(OBJ_FOLDER) 2>/dev/null)
+	$(at)$(shell mkdir $(OBJ_FOLDER) 2>/dev/null)
 endif
 
 {% if output_type == 'exe' %}
-# Tool invocations
-$(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
-	@echo 'Building target: $@'
-	@echo 'Invoking: MCU Linker'
-	$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS) 
-	@echo 'Finished building target: $@'
-	@echo ' '
 
-print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
-	@echo 'Printing size'
-	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
-	$(OBJCOPY) {% block TOHEX %}{% endblock %} $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) {% block objcopy_output %}{% endblock %} $(OBJ_FOLDER)$(TARGET).hex
-	$(OBJCOPY) {% block TOBIN %}{% endblock %} -v $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) {{ self.objcopy_output() }} $(OBJ_FOLDER)$(TARGET).bin
-	-$(NM) $(NMFLAGS) $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
-	@echo ' '
+# Tool invocations
+{% if preprocess_linker_file %}
+$(LD_SCRIPT): $(LD_SCRIPT_IN)
+	@$(call printmessage,cpp,Preprocessing, $<)
+	$(at)$(CPP) $(CPP_FLAGS) $(LD_CPP_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -MMD $< -o $@
+{% endif %}
+
+$(TARGET_OUT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
+	@$(call printmessage,link,Linking, $@)
+	$(at)$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS)
+	$(at)$(SIZE) --totals $(TARGET_OUT)
+	$(at)-$(NM) $(NMFLAGS) $(TARGET_OUT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
+
+$(TARGET_HEX): $(TARGET_OUT)
+	@$(call printmessage,convert,Converting, $@)
+	$(at)@$(OBJCOPY) {% block TOHEX %}{% endblock %} $(TARGET_OUT) {% block objcopy_output %}{% endblock %} $(TARGET_HEX)
+
+$(TARGET_BIN): $(TARGET_OUT)
+	@$(call printmessage,convert,Converting, $@)
+	$(at)@$(OBJCOPY) {% block TOBIN %}{% endblock %} $(TARGET_OUT) {{ self.objcopy_output() }} $(TARGET_BIN)
 
 {% else %}
-$(OBJ_FOLDER)$(TARGET)$(TARGET_EXT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
-	@echo 'Building library: $@'
-	$(AR) rcs $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS)
-	@echo 'Finished building library: $@'
-	@echo ' '
+$(TARGET_OUT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
+	@$(call printmessage,ar,Archiving, $@)
+	$(at)$(AR) rcs $(TARGET_OUT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS)
+	@$(SIZE) --totals $(TARGET_OUT)
 
-print_info: $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
-	@echo 'Printing size'
-	$(SIZE) --totals $(OBJ_FOLDER)$(TARGET)$(TARGET_EXT)
-	@echo ' '
 {% endif %}
 
 # Other Targets
 clean:
 	@echo 'Removing entire out directory'
-	$(RM) $(TARGET)$(TARGET_EXT) $(TARGET).bin $(TARGET).map $(OBJ_FOLDER)*.* $(OBJ_FOLDER)
+	$(at)$(RM) $(OBJ_FOLDER)* $(OBJ_FOLDER)
 	@echo ' '
 
-.PHONY: clean print_info
+help:
+	@echo "Useful targets:"
+	@echo " - all (default)"
+	@echo " - clean"
+	@echo " - help"
+	@echo
+	@echo "Options:"
+	@echo " - VERBOSE={0|1} to show full command lines."
+	@echo " - USE_COLOR={0|1} to override color output."
+
+.PHONY: clean help
 
 # Include dependencies
 -include $(ALL_OBJS:.o=.d)
+
+{% if preprocess_linker_file %}
+# Include the linker script dependencies
+-include $(LD_SCRIPT:{{linker_extension}}=.d)
+{% endif %}

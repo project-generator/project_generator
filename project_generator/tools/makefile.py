@@ -29,7 +29,7 @@ from ..util import SOURCE_KEYS
 class MakefileTool(Tool, Exporter):
 
     ERRORLEVEL = {
-        0: 'no errors)',
+        0: 'no errors',
         1: 'targets not already up to date',
         2: 'errors'
     }
@@ -115,13 +115,18 @@ class MakefileTool(Tool, Exporter):
         if project_data['core'] == 'cortex-m0+':
             project_data['core'] = 'cortex-m0plus'
 
-    def build_project(self):
+    def build_project(self, **kwargs):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
         path = dirname(self.workspace['files']['makefile'])
         self.logging.debug("Building GCC ARM project: %s" % path)
 
-        args = ['make', 'all']
+        args = ['make']
+        try:
+            args += ['-j', str(kwargs['jobs'])]
+        except KeyError:
+            pass
+        args += ['all']
         self.logging.debug(args)
 
         try:
@@ -141,8 +146,7 @@ class MakefileTool(Tool, Exporter):
                                    (ret_code, self.workspace['files']['makefile']))
                 return -1
             else:
-
-
-                self.logging.info("Build succeeded with the status: %s" %
-                             self.ERRORLEVEL[ret_code])
+                name = os.path.basename(self.workspace['path'])
+                self.logging.info("Built %s with the status: %s" %
+                             (name, self.ERRORLEVEL[ret_code]))
                 return 0
