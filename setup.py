@@ -36,7 +36,6 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: C",
         "Topic :: Software Development"
-        "Topic :: Software Development :: Embedded Systems",
     ],
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
