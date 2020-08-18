@@ -90,10 +90,10 @@ C_FLAGS  = {% for option in c_flags %} {{option}} {% endfor %}
 CXX_FLAGS  = {% for option in cxx_flags %} {{option}} {% endfor %}
 ASM_FLAGS  = {% for option in asm_flags %} {{option}} {% endfor %}
 
-CFLAGS = $(C_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS)
-CXXFLAGS = $(CXX_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS)
-ASFLAGS = $(ASM_FLAGS) $(INC_DIRS_F) -c $(ASM_SYMBOLS)
-NMFLAGS = -n -f posix -C -l
+CFLAGS = {% block CFLAGS %}{% endblock %}
+CXXFLAGS = {% block CXXFLAGS %}{% endblock %}
+ASFLAGS = {% block ASFLAGS %}{% endblock %}
+NMFLAGS = {% block NMFLAGS %}{% endblock %}
 
 # Linker options
 LD_OPTIONS += {% for option in ld_flags %} {{option}} {% endfor %}
@@ -213,27 +213,27 @@ endif
 #-------------------------------------------------------------------------------
 # Recipes
 #-------------------------------------------------------------------------------
-
+{% block RECIPES %}
 # Compile C sources.
 $(OBJ_FOLDER)%.o : %.c
 	@$(call printmessage,c,Compiling, $<)
-	$(at)$(CC) $(CFLAGS) $(COMMON_FLAGS) $< -o $@
+	$(at)$(CC) $(CFLAGS) $< -o $@
 
 # Compile C++ sources.
 $(OBJ_FOLDER)%.o : %.cpp
 	@$(call printmessage,cxx,Compiling, $<)
-	$(at)$(CXX) $(CXXFLAGS) $(COMMON_FLAGS) $< -o $@
+	$(at)$(CXX) $(CXXFLAGS) $< -o $@
 
 # Preprocess and assemble .S sources.
 $(OBJ_FOLDER)%.o : %.S
 	@$(call printmessage,asm,Assembling, $<)
-	$(at)$(AS) $(ASFLAGS) $(COMMON_FLAGS) $< -o $@
+	$(at)$(AS) $(ASFLAGS) $< -o $@
 
 # Assemble .s sources.
 $(OBJ_FOLDER)%.o : %.s
 	@$(call printmessage,asm,Assembling, $<)
-	$(at)$(AS) $(ASFLAGS) $(COMMON_FLAGS) $< -o $@
-
+	$(at)$(AS) $(ASFLAGS) $< -o $@
+{% endblock %}
 #-------------------------------------------------------------------------------
 # Rules
 #-------------------------------------------------------------------------------
@@ -300,7 +300,7 @@ help:
 	@echo " - VERBOSE={0|1} to show full command lines."
 	@echo " - USE_COLOR={0|1} to override color output."
 
-.PHONY: clean help
+.PHONY: all clean help
 
 # Include dependencies
 -include $(ALL_OBJS:.o=.d)

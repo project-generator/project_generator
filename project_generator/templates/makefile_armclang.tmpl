@@ -2,7 +2,7 @@
 
 {% block CC %}armclang{% endblock %}
 {% block CXX %}armclang{% endblock %}
-{% block AS %}armasm{% endblock %}
+{% block AS %}armclang{% endblock %}
 {% block LD %}armlink{% endblock %}
 {% block AR %}armar{% endblock %}
 {% block CPP %}armclang{% endblock %}
@@ -14,7 +14,38 @@
 
 {% block TARGET_EXE_EXT %}.axf{% endblock %}
 
-{% block COMMON_FLAGS %} --cpu $(CPU) --$(INSTRUCTION_MODE){% endblock %}
+{% block COMMON_FLAGS %}{% endblock %}
+{% block CFLAGS %}$(COMMON_FLAGS) $(C_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS){% endblock %}
+{% block CXXFLAGS %}$(COMMON_FLAGS) $(CXX_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS){% endblock %}
+{% block ASFLAGS %}$(ASM_FLAGS) $(INC_DIRS_F) -c $(ASM_SYMBOLS){% endblock %}
+{% block NMFLAGS %}-n -f posix -C -l{% endblock %}
 {% block LD_OPTIONS %}--strict --scatter $(LD_SCRIPT) $(patsubst %,--predefine "%",$(CC_SYMBOLS) $(INC_DIRS_F)){% endblock %}
 {% block CPP_FLAGS %}-E{% endblock %}
-{% block ASM_SYMBOLS %} --cpreproc --cpreproc_opts=-D"{{macros|join("\",-D\"")}}"{% endblock %}
+{% block LD_CPP_FLAGS %}-E -xc{% endblock %}
+{% block ASM_SYMBOLS %} -D"{{macros|join("\" -D\"")}}"{% endblock %}
+
+{% block RECIPES %}
+# Compile C sources.
+$(OBJ_FOLDER)%.o : %.c
+	@$(call printmessage,c,Compiling, $<)
+	$(at)$(CC) $(CFLAGS) $< -S -w -o $(@:%.o=%.S)
+	$(at)$(CC) $(CFLAGS) $< -o $@
+#	$(at)fromelf --text -acdyrz --interleave=source $@ > $(@:%.o=%.lst)
+
+# Compile C++ sources.
+$(OBJ_FOLDER)%.o : %.cpp
+	@$(call printmessage,cxx,Compiling, $<)
+	$(at)$(CXX) $(CXXFLAGS) $< -S -w -o $(@:%.o=%.S)
+	$(at)$(CXX) $(CXXFLAGS) $< -o $@
+#	$(at)fromelf -cdyrz --interleave=source $@ > $(@:%.o=%.lst)
+
+# Preprocess and assemble .S sources.
+$(OBJ_FOLDER)%.o : %.S
+	@$(call printmessage,asm,Assembling, $<)
+	$(at)$(AS) $(ASFLAGS) $< -o $@
+
+# Assemble .s sources.
+$(OBJ_FOLDER)%.o : %.s
+	@$(call printmessage,asm,Assembling, $<)
+	$(at)$(AS) $(ASFLAGS) $< -o $@
+{% endblock %}
