@@ -544,11 +544,9 @@ class Project:
                 dump_data['common'] = self.project['common']
                 dump_data['tool_specific'] = self.project['tool_specific']
                 dump_data['merged'] = self.project['export']
-                handler = logging.FileHandler(os.path.join(os.getcwd(), "%s.log" % self.name),"w", encoding=None, delay="true")
-                handler.setLevel(logging.DEBUG)
-                logger.addHandler(handler)
-                logger.debug("\n" + yaml.dump(dump_data))
-
+                log_path = os.path.join(os.getcwd(), "%s-dump.yaml" % self.name)
+                with open(log_path, 'w') as f:
+                    f.write(yaml.dump(dump_data))
             files = exporter(self.project['export'], self.settings).export_project()
             generated_files[export_tool] = files
         self.generated_files = generated_files
