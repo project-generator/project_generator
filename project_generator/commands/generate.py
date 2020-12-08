@@ -13,6 +13,7 @@
 # limitations under the License.
 import os
 import logging
+import multiprocessing as mp
 
 from ..tools_supported import ToolsSupported
 from ..generate import Generator
@@ -22,26 +23,68 @@ logger = logging.getLogger('progen.generate')
 
 help = 'Generate a project record'
 
+def _setup_logging(args):
+    verbosity = args.verbosity - args.quietness
+
+    logging_level = max(logging.INFO - (10 * verbosity), 0)
+    logging.basicConfig(format="%(name)s %(levelname)s\t%(message)s", level=logging_level)
+    return logging.getLogger('progen.generate')
+
+def _generate_project(project, args):
+    logger = _setup_logging(args)
+    build_failed = False
+    export_failed = False
+    generated = False
+    if hasattr(project, 'workspace_name') and (project.workspace_name is not None):
+        logger.info("Generating %s for %s in workspace %s", args.tool, project.name, project.workspace_name)
+    else:
+        logger.info("Generating %s for %s", args.tool, project.name)
+    if project.generate(args.tool, copied=args.copy, copy=args.copy) == -1:
+        export_failed = True
+    if args.build:
+        if project.build(args.tool) == -1:
+            build_failed = True
+    return (build_failed, export_failed)
+
 def run(args):
     generator = Generator(args.file)
     build_failed = False
     export_failed = False
-    generated = True
-    for project in generator.generate(args.project):
-        generated = False
-        if hasattr(project, 'workspace_name') and (project.workspace_name is not None):
-            logger.info("Generating %s for %s in workspace %s", args.tool, project.name, project.workspace_name)
+    generated = False
+
+    try:
+        # Create a pool of processes to run generators.
+        pool = mp.Pool(args.jobs)
+
+        # Issue jobs.
+        results = [pool.apply_async(_generate_project, (project, args))
+                    for project in generator.generate(args.project)]
+
+        # Gather results
+        for r in results:
+            build_failed, export_failed = r.get(timeout=20.0)
+            if build_failed or export_failed:
+                # Force termination of running jobs.
+                pool.terminate()
+                break
+            else:
+                generated = True
+
+        if build_failed or export_failed or not generated:
+            return -1
         else:
-            logger.info("Generating %s for %s", args.tool, project.name)
-        if project.generate(args.tool, copied=args.copy, copy=args.copy) == -1:
-            export_failed = True
-        if args.build:
-            if project.build(args.tool) == -1:
-                build_failed = True
-    if build_failed or export_failed or generated:
-        return -1
-    else:
-        return 0
+            return 0
+    finally:
+        pool.close()
+        pool.join()
+
+def _get_default_jobs():
+    # Get number of CPUs.
+    try:
+        return mp.cpu_count()
+    except NotImplementedError:
+        # Default of 2 if we can't get the actual count.
+        return 2
 
 def setup(subparser):
     subparser.add_argument('-v', dest='verbosity', action='count', default=0,
@@ -59,3 +102,7 @@ def setup(subparser):
         "-b", "--build", action="store_true", help="Build defined projects")
     subparser.add_argument(
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")
+    num_cpus = _get_default_jobs()
+    subparser.add_argument(
+        "-j", "--jobs", action="store", type=int, default=num_cpus,
+                help=("Number of concurrent jobs to use for generating projects (default is %d)" % num_cpus))
