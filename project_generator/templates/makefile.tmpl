@@ -27,10 +27,10 @@ LD = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block LD %}{% endblock %}
 AR = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block AR %}{% endblock %}
 CPP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block CPP %}{% endblock %}
 
-SIZE = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)size
 OBJCOPY = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block OBJCOPY %}{% endblock %}
 OBJDUMP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)objdump
-NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)nm
+SIZE = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block SIZE %}{% endblock %}
+NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block NM %}{% endblock %}
 
 # application specific
 INSTRUCTION_MODE = thumb
@@ -93,6 +93,7 @@ ASM_FLAGS  = {% for option in asm_flags %} {{option}} {% endfor %}
 CFLAGS = {% block CFLAGS %}{% endblock %}
 CXXFLAGS = {% block CXXFLAGS %}{% endblock %}
 ASFLAGS = {% block ASFLAGS %}{% endblock %}
+SIZEFLAGS = {% block SIZEFLAGS %}{% endblock %}
 NMFLAGS = {% block NMFLAGS %}{% endblock %}
 
 # Linker options
@@ -265,8 +266,8 @@ $(LD_SCRIPT): $(LD_SCRIPT_IN)
 $(TARGET_OUT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@$(call printmessage,link,Linking, $@)
 	$(at)$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS)
-	$(at)$(SIZE) --totals $(TARGET_OUT)
-	$(at)-$(NM) $(NMFLAGS) $(TARGET_OUT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
+	$(at)$(SIZE) $(SIZEFLAGS) $(TARGET_OUT)
+	$(at)-$(NM) $(NMFLAGS) $(TARGET_OUT) {% block nm_output %}{% endblock %} $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
 
 $(TARGET_HEX): $(TARGET_OUT)
 	@$(call printmessage,convert,Converting, $@)
@@ -280,7 +281,7 @@ $(TARGET_BIN): $(TARGET_OUT)
 $(TARGET_OUT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@$(call printmessage,ar,Archiving, $@)
 	$(at)$(AR) rcs $(TARGET_OUT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS)
-	@$(SIZE) --totals $(TARGET_OUT)
+	@$(SIZE) $(SIZEFLAGS) $(TARGET_OUT)
 
 {% endif %}
 

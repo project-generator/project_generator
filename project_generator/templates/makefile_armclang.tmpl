@@ -7,10 +7,15 @@
 {% block AR %}armar{% endblock %}
 {% block CPP %}armclang{% endblock %}
 {% block OBJCOPY %}fromelf{% endblock %}
+{% block SIZE %}fromelf{% endblock %}
+{% block NM %}fromelf{% endblock %}
 
 {% block TOBIN %}--bincombined{% endblock %}
 {% block TOHEX %}--i32combined{% endblock %}
 {% block objcopy_output %}--output{% endblock %}
+{% block SIZEFLAGS %}--text -z{% endblock %}
+{% block nm_output %}--output{% endblock %}
+{% block NMFLAGS %}--text -arz{% endblock %}
 
 {% block TARGET_EXE_EXT %}.axf{% endblock %}
 
@@ -18,7 +23,6 @@
 {% block CFLAGS %}$(COMMON_FLAGS) $(C_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS){% endblock %}
 {% block CXXFLAGS %}$(COMMON_FLAGS) $(CXX_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS){% endblock %}
 {% block ASFLAGS %}$(ASM_FLAGS) $(INC_DIRS_F) -c $(ASM_SYMBOLS){% endblock %}
-{% block NMFLAGS %}-n -f posix -C -l{% endblock %}
 {% block LD_OPTIONS %}--strict --scatter $(LD_SCRIPT) $(patsubst %,--predefine "%",$(CC_SYMBOLS) $(INC_DIRS_F)){% endblock %}
 {% block CPP_FLAGS %}-E{% endblock %}
 {% block LD_CPP_FLAGS %}-E -xc{% endblock %}
