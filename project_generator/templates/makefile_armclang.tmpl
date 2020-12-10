@@ -23,10 +23,10 @@
 
 {% block TARGET_EXE_EXT %}.axf{% endblock %}
 
-{% block COMMON_FLAGS %}{% endblock %}
-{% block CFLAGS %}$(COMMON_FLAGS) $(C_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS){% endblock %}
-{% block CXXFLAGS %}$(COMMON_FLAGS) $(CXX_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS){% endblock %}
-{% block ASFLAGS %}$(ASM_FLAGS) $(INC_DIRS_F) -c $(ASM_SYMBOLS){% endblock %}
+{% block COMMON_FLAGS %}--target=arm-arm-none-eabi -mcpu=$(CPU) -m$(INSTRUCTION_MODE){% endblock %}
+{% block CFLAGS %}$(COMMON_FLAGS) $(C_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD{% endblock %}
+{% block CXXFLAGS %}$(COMMON_FLAGS) $(CXX_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD{% endblock %}
+{% block ASFLAGS %}$(COMMON_FLAGS) $(ASM_FLAGS) $(INC_DIRS_F) $(ASM_SYMBOLS) -c{% endblock %}
 {% block LD_OPTIONS %}--strict --scatter $(LD_SCRIPT) $(patsubst %,--predefine "%",$(CC_SYMBOLS) $(INC_DIRS_F)){% endblock %}
 {% block CPP_FLAGS %}-E -xc --target=arm-arm-none-eabi -mcpu=star{% endblock %}
 {% block ASM_SYMBOLS %} -D"{{macros|join("\" -D\"")}}"{% endblock %}
