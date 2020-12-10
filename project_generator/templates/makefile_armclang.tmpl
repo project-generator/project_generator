@@ -26,8 +26,8 @@
 {% block COMMON_FLAGS %}--target=arm-arm-none-eabi -mcpu=$(CPU) -m$(INSTRUCTION_MODE){% endblock %}
 {% block CFLAGS %}$(COMMON_FLAGS) $(C_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD{% endblock %}
 {% block CXXFLAGS %}$(COMMON_FLAGS) $(CXX_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD{% endblock %}
-# Add -Wa,armasm,--show_cmdline to debug calls to armasm through armclang
+# Add -Wa,armasm,--show_cmdline to ASFLAGS for armclang to display the armasm command
 {% block ASFLAGS %}-masm=auto -x assembler-with-cpp $(COMMON_FLAGS) $(ASM_FLAGS) $(INC_DIRS_F) $(ASM_SYMBOLS) -c{% endblock %}
 {% block LD_OPTIONS %}--strict --scatter=$(LD_SCRIPT) --map --list $(OBJ_FOLDER)$(TARGET).map{% endblock %}
-{% block CPP_FLAGS %}-E -xc --target=arm-arm-none-eabi -mcpu=star -MMD{% endblock %}
+{% block CPP_FLAGS %}-E -xc --target=arm-arm-none-eabi -mcpu=cortex-m4 -MMD{% endblock %}
 {% block ASM_SYMBOLS %}${CC_SYMBOLS}{% endblock %}
