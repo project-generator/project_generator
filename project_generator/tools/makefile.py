@@ -126,6 +126,8 @@ class MakefileTool(Tool, Exporter):
             args += ['-j', str(kwargs['jobs'])]
         except KeyError:
             pass
+        if 'verbose' in kwargs:
+            args += ["VERBOSE=%d" % (1 if kwargs['verbose'] else 0)]
         args += ['all']
         self.logging.debug(args)
 
