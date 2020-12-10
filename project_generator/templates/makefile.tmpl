@@ -110,8 +110,6 @@ CPP_FLAGS = {% block CPP_FLAGS %}{% endblock %}
 LD_CPP_FLAGS = {% block LD_CPP_FLAGS %}{% endblock %}
 {% endif %}
 
-OBJCPFLAGS = -O ihex
-
 ARFLAGS = cr
 
 ifeq ($(OS),Windows_NT)
@@ -274,7 +272,7 @@ endif
 {% if preprocess_linker_file %}
 $(LD_SCRIPT): $(LD_SCRIPT_IN)
 	@$(call printmessage,cpp,Preprocessing, $<)
-	$(at)$(CPP) $(CPP_FLAGS) $(LD_CPP_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -MMD $< -o $@
+	$(at)$(CPP) $(CPP_FLAGS) $(LD_CPP_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) $< -o $@
 {% endif %}
 
 $(TARGET_OUT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)

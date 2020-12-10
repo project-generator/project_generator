@@ -22,11 +22,10 @@
 
 {% block TARGET_EXE_EXT %}.elf{% endblock %}
 
-{% block CPP_FLAGS %}-E{% endblock %}
 {% block COMMON_FLAGS %}-mcpu=$(CPU) -m$(INSTRUCTION_MODE){% endblock %}
 {% block CFLAGS %}$(COMMON_FLAGS) $(C_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD -MP{% endblock %}
 {% block CXXFLAGS %}$(COMMON_FLAGS) $(CXX_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD -MP{% endblock %}
 {% block ASFLAGS %}$(COMMON_FLAGS) $(ASM_FLAGS) $(INC_DIRS_F) $(ASM_SYMBOLS) -c{% endblock %}
 {% block LD_OPTIONS %}$(COMMON_FLAGS) -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T$(LD_SCRIPT){% endblock %}
-{% block LD_CPP_FLAGS %}-x c -P{% endblock %}
+{% block CPP_FLAGS %}-E -x c -P -MMD{% endblock %}
 {% block ASM_SYMBOLS %}$(CC_SYMBOLS){% endblock %}
