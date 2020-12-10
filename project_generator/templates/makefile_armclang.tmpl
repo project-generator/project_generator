@@ -26,33 +26,9 @@
 {% block COMMON_FLAGS %}--target=arm-arm-none-eabi -mcpu=$(CPU) -m$(INSTRUCTION_MODE){% endblock %}
 {% block CFLAGS %}$(COMMON_FLAGS) $(C_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD{% endblock %}
 {% block CXXFLAGS %}$(COMMON_FLAGS) $(CXX_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD{% endblock %}
-{% block ASFLAGS %}$(COMMON_FLAGS) $(ASM_FLAGS) $(INC_DIRS_F) $(ASM_SYMBOLS) -c{% endblock %}
-{% block LD_OPTIONS %}--strict --scatter $(LD_SCRIPT) $(patsubst %,--predefine "%",$(CC_SYMBOLS) $(INC_DIRS_F)){% endblock %}
+{% block ASFLAGS %}-masm=auto -x assembler-with-cpp $(COMMON_FLAGS) $(ASM_FLAGS) $(INC_DIRS_F) $(ASM_SYMBOLS) -c{% endblock %}
+{% block LD_OPTIONS %}--strict --scatter=$(LD_SCRIPT){% endblock %}
 {% block CPP_FLAGS %}-E -xc --target=arm-arm-none-eabi -mcpu=star{% endblock %}
-{% block ASM_SYMBOLS %} -D"{{macros|join("\" -D\"")}}"{% endblock %}
+{% block ASM_SYMBOLS %}${CC_SYMBOLS}{% endblock %}
 
-{% block RECIPES %}
-# Compile C sources.
-$(OBJ_FOLDER)%.o : %.c
-	@$(call printmessage,c,Compiling, $<)
-	$(at)$(CC) $(CFLAGS) $< -S -w -o $(@:%.o=%.S)
-	$(at)$(CC) $(CFLAGS) $< -o $@
-#	$(at)fromelf --text -acdyrz --interleave=source $@ > $(@:%.o=%.lst)
 
-# Compile C++ sources.
-$(OBJ_FOLDER)%.o : %.cpp
-	@$(call printmessage,cxx,Compiling, $<)
-	$(at)$(CXX) $(CXXFLAGS) $< -S -w -o $(@:%.o=%.S)
-	$(at)$(CXX) $(CXXFLAGS) $< -o $@
-#	$(at)fromelf -cdyrz --interleave=source $@ > $(@:%.o=%.lst)
-
-# Preprocess and assemble .S sources.
-$(OBJ_FOLDER)%.o : %.S
-	@$(call printmessage,asm,Assembling, $<)
-	$(at)$(AS) $(ASFLAGS) $< -o $@
-
-# Assemble .s sources.
-$(OBJ_FOLDER)%.o : %.s
-	@$(call printmessage,asm,Assembling, $<)
-	$(at)$(AS) $(ASFLAGS) $< -o $@
-{% endblock %}
