@@ -7,12 +7,16 @@
 {% block AR %}armar{% endblock %}
 {% block CPP %}armcc{% endblock %}
 {% block OBJCOPY %}fromelf{% endblock %}
+{% block OBJDUMP %}fromelf{% endblock %}
 {% block SIZE %}fromelf{% endblock %}
 {% block NM %}fromelf{% endblock %}
 
 {% block TOBIN %}--bin{% endblock %}
 {% block TOHEX %}--i32{% endblock %}
 {% block objcopy_output %}--output{% endblock %}
+{% block objdump_output %}--output{% endblock %}
+{% block OBJDUMPFLAGS %}--text -acdyrz --interleave=source{% endblock %}
+{% block GENASMFLAGS %}-S -W{% endblock %}
 {% block SIZEFLAGS %}--text -z{% endblock %}
 {% block nm_output %}--output{% endblock %}
 {% block NMFLAGS %}--text -arz{% endblock %}

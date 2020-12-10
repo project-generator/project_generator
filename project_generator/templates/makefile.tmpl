@@ -28,7 +28,7 @@ AR = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block AR %}{% endblock %}
 CPP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block CPP %}{% endblock %}
 
 OBJCOPY = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block OBJCOPY %}{% endblock %}
-OBJDUMP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)objdump
+OBJDUMP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block OBJDUMP %}{% endblock %}
 SIZE = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block SIZE %}{% endblock %}
 NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block NM %}{% endblock %}
 
@@ -93,6 +93,8 @@ ASM_FLAGS  = {% for option in asm_flags %} {{option}} {% endfor %}
 CFLAGS = {% block CFLAGS %}{% endblock %}
 CXXFLAGS = {% block CXXFLAGS %}{% endblock %}
 ASFLAGS = {% block ASFLAGS %}{% endblock %}
+GENASMFLAGS = {% block GENASMFLAGS %}{% endblock %}
+OBJDUMPFLAGS = {% block OBJDUMPFLAGS %}{% endblock %}
 SIZEFLAGS = {% block SIZEFLAGS %}{% endblock %}
 NMFLAGS = {% block NMFLAGS %}{% endblock %}
 
@@ -218,12 +220,24 @@ endif
 # Compile C sources.
 $(OBJ_FOLDER)%.o : %.c
 	@$(call printmessage,c,Compiling, $<)
+ifeq ($(GENERATE_ASSEMBLY),1)
+	$(at)$(CC) $(CFLAGS) $(GENASMFLAGS) $<
+endif
 	$(at)$(CC) $(CFLAGS) $< -o $@
+ifeq ($(DISASSEMBLE_OBJECTS),1)
+	$(at)$(OBJDUMP) $(OBJDUMPFLAGS) $@ {% block objdump_output %}{% endblock %} $(@:%.o=%.lst)
+endif
 
 # Compile C++ sources.
 $(OBJ_FOLDER)%.o : %.cpp
 	@$(call printmessage,cxx,Compiling, $<)
+ifeq ($(GENERATE_ASSEMBLY),1)
+	$(at)$(CXX) $(CFLAGS) $(GENASMFLAGS) $<
+endif
 	$(at)$(CXX) $(CXXFLAGS) $< -o $@
+ifeq ($(DISASSEMBLE_OBJECTS),1)
+	$(at)$(OBJDUMP) $(OBJDUMPFLAGS) $@ {{ self.objdump_output() }} $(@:%.o=%.lst)
+endif
 
 # Preprocess and assemble .S sources.
 $(OBJ_FOLDER)%.o : %.S

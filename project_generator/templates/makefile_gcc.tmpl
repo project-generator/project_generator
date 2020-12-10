@@ -7,11 +7,15 @@
 {% block AR %}ar{% endblock %}
 {% block CPP %}cpp{% endblock %}
 {% block OBJCOPY %}objcopy{% endblock %}
+{% block OBJDUMP %}objdump{% endblock %}
 {% block SIZE %}size{% endblock %}
 {% block NM %}nm{% endblock %}
 
 {% block TOHEX %}-O ihex{% endblock %}
 {% block TOBIN %}-O binary{% endblock %}
+{% block objdump_output %}>{% endblock %}
+{% block OBJDUMPFLAGS %}-x --disassemble -S{% endblock %}
+{% block GENASMFLAGS %}-S -w{% endblock %}
 {% block SIZEFLAGS %}--totals{% endblock %}
 {% block nm_output %}>{% endblock %}
 {% block NMFLAGS %}-n -f posix -C -l{% endblock %}
