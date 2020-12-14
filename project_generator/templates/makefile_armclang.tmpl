@@ -29,5 +29,5 @@
 # Add -Wa,armasm,--show_cmdline to ASFLAGS for armclang to display the armasm command
 {% block ASFLAGS %}$(COMMON_FLAGS) $(ASM_FLAGS) $(INC_DIRS_F) $(ASM_SYMBOLS) -c{% endblock %}
 {% block LD_OPTIONS %}--strict --scatter=$(LD_SCRIPT) --map --list $(OBJ_FOLDER)$(TARGET).map{% endblock %}
-{% block CPP_FLAGS %}-E -xc --target=arm-arm-none-eabi -mcpu=cortex-m4 -MMD{% endblock %}
+{% block CPP_FLAGS %}-E -xc --target=arm-arm-none-eabi -mcpu=$(CPU) -MMD{% endblock %}
 {% block ASM_SYMBOLS %}${CC_SYMBOLS}{% endblock %}
