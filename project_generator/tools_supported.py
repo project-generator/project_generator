@@ -34,6 +34,8 @@ class ToolsSupported:
         'iar':           'iar_arm',
         'make_gcc':      'make_gcc_arm',
         'gcc_arm':       'make_gcc_arm',
+        'armcc':         'make_armcc',
+        'armclang':      'make_armclang',
         'eclipse':       'eclipse_make_gcc_arm',
         'sublime':       'sublime_make_gcc_arm',
         'sublime_text':  'sublime_make_gcc_arm',
