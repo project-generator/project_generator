@@ -120,7 +120,10 @@ class CMakeGccArm(Tool,Exporter):
         if not exists(build_path):
             os.mkdir(build_path)
 
-        args = ['cmake', "-S", path, "-B", build_path]
+        use_ninja = True if os.environ.get("USE_NINJA") else False
+        gen = 'Ninja' if use_ninja else 'Unix Makefiles'
+
+        args = ['cmake', '-G', gen, "-S", path, "-B", build_path]
         try:
             ret_code = None
             ret_code = subprocess.call(args)
@@ -128,14 +131,19 @@ class CMakeGccArm(Tool,Exporter):
             self.logging.error("Project: %s build error whilst calling cmake. Is it in your PATH?" % self.workspace['files']['cmakelist'])
             return -1
 
-        args = ['make', "-C", build_path]
-        try:
-            args += ['-j', str(kwargs['jobs'])]
-        except KeyError:
-            pass
-        if 'verbose' in kwargs:
-            args += ["VERBOSE=%d" % (1 if kwargs['verbose'] else 0)]
-        args += ['all']
+        if use_ninja:
+            args = ['ninja', "-C", build_path]
+            if 'verbose' in kwargs and kwargs['verbose']:
+                args += '-v'
+        else:
+            args = ['make', "-C", build_path]
+            try:
+                args += ['-j', str(kwargs['jobs'])]
+            except KeyError:
+                pass
+            if 'verbose' in kwargs:
+                args += ["VERBOSE=%d" % (1 if kwargs['verbose'] else 0)]
+            args += ['all']
 
         try:
             ret_code = None

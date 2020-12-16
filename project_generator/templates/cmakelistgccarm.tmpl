@@ -74,7 +74,8 @@ target_link_libraries({{name}} PRIVATE{% for library in source_files_lib %}
     -Wl,--end-group
     {% endif %})
 
-target_link_options({{name}} PRIVATE{% for flag in misc['common_flags'] %}
+target_link_options({{name}} PRIVATE
+    -mcpu={{core}} -mthumb{% for flag in misc['common_flags'] %}
     {{flag}}{% endfor %}{% for flag in misc['ld_flags'] %}
     {{flag}}{% endfor %}
     -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/{{name}}.map,--cref)
