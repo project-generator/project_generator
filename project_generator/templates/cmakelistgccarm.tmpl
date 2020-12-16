@@ -111,7 +111,7 @@ add_custom_command(TARGET {{name}} PRE_BUILD {{name}} {% for command in pre_buil
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 {% endif %}
 {% if post_build_script %}
-add_custom_command(TARGET {{name}} POST_BUILD {{name}} {% for command in post_build_script %}
+add_custom_command(TARGET {{name}}_binaries POST_BUILD {% for command in post_build_script %}
         COMMAND ../../../{{command}}{% endfor %}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 {% endif %}
