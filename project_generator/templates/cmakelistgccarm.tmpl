@@ -100,7 +100,18 @@ add_custom_target({{name}}_bin SOURCES ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.bin)
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.bin DEPENDS {{name}}
         COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:{{name}}> ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.bin)
 add_custom_target({{name}}_hex SOURCES ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.hex)
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.hex DEPENDS {{name}}
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.hex DEPENDS {{name}}
         COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:{{name}}> ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.hex)
 add_custom_target({{name}}_binaries ALL DEPENDS {{name}}_bin # DEPENDS {{name}}_elf
     DEPENDS {{name}}_hex)
+
+{% if pre_build_script %}
+add_custom_command(TARGET {{name}} PRE_BUILD {{name}} {% for command in pre_build_script %}
+        COMMAND ../../../{{command}}{% endfor %}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+{% endif %}
+{% if post_build_script %}
+add_custom_command(TARGET {{name}} POST_BUILD {{name}} {% for command in post_build_script %}
+        COMMAND ../../../{{command}}{% endfor %}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+{% endif %}
