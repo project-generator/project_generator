@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import copy
 import logging
 import subprocess
-from os import getcwd
-from os.path import dirname
 
+from os.path import join, normpath, dirname, exists
 from .tool import Tool, Exporter
 from .gccarm import MakefileGccArm
 from ..util import SOURCE_KEYS
@@ -26,12 +26,13 @@ logger = logging.getLogger('progen.tools.cmake_gcc_arm')
 
 class CMakeGccArm(Tool,Exporter):
 
-    SUCCESSVALUE = 0
     ERRORLEVEL = {
-        0: 'no errors)',
+        0: 'no errors',
         1: 'targets not already up to date',
         2: 'errors'
     }
+
+    SUCCESSVALUE = 0
 
     generated_project = {
         'path': '',
@@ -44,6 +45,9 @@ class CMakeGccArm(Tool,Exporter):
         self.workspace = workspace
         self.exporter = MakefileGccArm(workspace, env_settings)
         self.env_settings = env_settings
+        self.logging = logging
+        self.workspace['preprocess_linker_file'] = True
+
 
     @staticmethod
     def get_toolnames():
@@ -56,21 +60,32 @@ class CMakeGccArm(Tool,Exporter):
     def fix_paths_unix(self, data):
         # cmake seems to require unix paths
         # This might do proper handling in the gcc arm, pass there a param (force normpath to unix)
+        output_dir = os.path.join(os.getcwd(), data['output_dir']['path'].replace('\\', '/'))
         for key in SOURCE_KEYS:
             paths = []
             for value in data[key]:
                 # TODO: this needs to be fixed
-                paths.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'].replace('\\', '/') + '/' + value.replace('\\', '/'))
+                if value:
+                    v = value.replace('\\', '/')
+                    paths.append(normpath(os.path.join(output_dir, v)))
             data[key] = paths
         # fix includes
         includes = []
         for key in data['include_paths']:
-            includes.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'].replace('\\', '/') + '/' + key.replace('\\', '/'))
+            if key:
+                k = key.replace('\\', '/')
+                includes.append(normpath(os.path.join(output_dir, k)))
         data['include_paths'] = includes
-        data['linker_file'] = getcwd().replace('\\', '/') + '/' + data['output_dir']['path'].replace('\\', '/') + '/' + data['linker_file'].replace('\\', '/')
+
+        if 'linker_file' in data and data['linker_file']:
+            lf = data['linker_file'].replace('\\', '/')
+            data['linker_file'] = normpath(os.path.join(output_dir, lf))
+
         lib_paths = []
         for path in data['lib_paths']:
-            lib_paths.append(getcwd().replace('\\', '/') + '/' + data['output_dir']['path'].replace('\\', '/') + '/' + path.replace('\\', '/'))
+            if path:
+                p = path.replace('\\', '/')
+                lib_paths.append(paths.append(normpath(os.path.join(output_dir, p))))
         data['lib_paths'] = lib_paths
 
     def export_project(self):
@@ -95,56 +110,51 @@ class CMakeGccArm(Tool,Exporter):
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['cmakelist']]}
 
-    def build_project(self):
+    def build_project(self, **kwargs):
         # cwd: relpath(join(project_path, ("gcc_arm" + project)))
         # > make all
         path = dirname(self.workspace['files']['cmakelist'])
-        logging.debug("Building GCC ARM project: %s" % path)
+        self.logging.debug("Building make project: %s" % path)
 
-        args = ['cmake', '.']
-        logging.debug(args)
+        build_path = join(path, "build")
+        if not exists(build_path):
+            os.mkdir(build_path)
+
+        args = ['cmake', "-S", path, "-B", build_path]
+        try:
+            ret_code = None
+            ret_code = subprocess.call(args)
+        except:
+            self.logging.error("Project: %s build error whilst calling cmake. Is it in your PATH?" % self.workspace['files']['cmakelist'])
+            return -1
+
+        args = ['make', "-C", build_path]
+        try:
+            args += ['-j', str(kwargs['jobs'])]
+        except KeyError:
+            pass
+        if 'verbose' in kwargs:
+            args += ["VERBOSE=%d" % (1 if kwargs['verbose'] else 0)]
+        args += ['all']
 
         try:
             ret_code = None
-            ret_code = subprocess.call(args, cwd=path)
+            ret_code = subprocess.call(args)
         except:
-            logging.error("Project: %s build error whilst calling cmake. Is it in your PATH?" % self.workspace['files']['cmakelist'])
+            self.logging.error("Project: %s build error whilst calling make. Is it in your PATH?" % self.workspace['files']['cmakelist'])
             return -1
         else:
             if ret_code != self.SUCCESSVALUE:
                 # Seems like something went wrong.
                 if ret_code < 3:
-                    logging.error("Project: make failed with the status: %s" %
-                                  (self.ERRORLEVEL[ret_code]))
+                    self.logging.error("Project: %s build failed with the status: %s" %
+                                  (self.ERRORLEVEL[ret_code], self.workspace['files']['cmakelist']))
                 else:
-                    logging.error("Project: make failed with unknown error. Returned: %s" %
-                                   (ret_code))
+                    self.logging.error("Project: %s build failed with unknown error. Returned: %s" %
+                                   (ret_code, self.workspace['files']['cmakelist']))
                 return -1
             else:
-
-                logging.info("CMake succeeded with the status: %s" %
-                             self.ERRORLEVEL[ret_code])
-
-                args = ['make', 'all']
-                logging.debug(args)
-
-                try:
-                    ret_code = None
-                    ret_code = subprocess.call(args, cwd=path)
-                except:
-                    logging.error("Project: build error whilst calling make. Is it in your PATH?")
-                    return -1
-                else:
-                    if ret_code != self.SUCCESSVALUE:
-                        # Seems like something went wrong.
-                        if ret_code < 3:
-                            logging.error("Project: make failed with the status: %s" %
-                                        (self.ERRORLEVEL[ret_code]))
-                        else:
-                            logging.error("Project:make failed with unknown error. Returned: %s" %
-                                        (ret_code))
-                        return -1
-                    else:
-                        logging.info("Build succeeded with the status: %s" %
-                                    self.ERRORLEVEL[ret_code])
-                        return 0
+                name = os.path.basename(self.workspace['path'])
+                self.logging.info("Built %s with the status: %s" %
+                             (name, self.ERRORLEVEL[ret_code]))
+                return 0

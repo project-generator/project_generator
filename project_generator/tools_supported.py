@@ -96,5 +96,4 @@ class ToolsSupported:
             return None
 
     def get_supported(self):
-        return list(self.TOOLS_DICT.keys()) + list(self.TOOLS_ALIAS.keys())
-
+        return list(self.TOOLS_DICT.keys()) + list(self.TOOLS_ALIAS.keys()) + self.TOOLCHAINS
