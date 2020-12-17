@@ -17,7 +17,7 @@
 # This project was exported via the project generator.
 # More information https://github.com/project-generator/project_generator
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
 
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR arm)
@@ -59,7 +59,7 @@ target_compile_options({{name}} PRIVATE
     -mcpu={{core}} -mthumb{% for flag in misc['common_flags'] %}
     {{flag}}{% endfor %}{% for flag in misc['cxx_flags'] %}
     $<$<COMPILE_LANGUAGE:Cxx>:{{flag}}>{% endfor %}{% for flag in misc['c_flags'] %}
-    $<$<COMPILE_LANGUAGE:C>:{{flag}}>{% endfor %}{% for flag in misc['as_flags'] %}
+    $<$<COMPILE_LANGUAGE:C>:{{flag}}>{% endfor %}{% for flag in misc['asm_flags'] %}
     $<$<COMPILE_LANGUAGE:ASM>:{{flag}}>{% endfor %})
 
 set_target_properties({{name}} PROPERTIES LINKER_LANGUAGE C)

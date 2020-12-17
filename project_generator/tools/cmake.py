@@ -22,9 +22,9 @@ from .tool import Tool, Exporter
 from .gccarm import MakefileGccArm
 from ..util import SOURCE_KEYS
 
-logger = logging.getLogger('progen.tools.cmake_gcc_arm')
+logger = logging.getLogger('progen.tools.cmake')
 
-class CMakeGccArm(Tool,Exporter):
+class CMake(Tool,Exporter):
 
     ERRORLEVEL = {
         0: 'no errors',
@@ -46,16 +46,9 @@ class CMakeGccArm(Tool,Exporter):
         self.exporter = MakefileGccArm(workspace, env_settings)
         self.env_settings = env_settings
         self.logging = logging
-        self.workspace['preprocess_linker_file'] = True
 
-
-    @staticmethod
-    def get_toolnames():
-        return ['cmake_gcc_arm']
-
-    @staticmethod
-    def get_toolchain():
-        return 'gcc_arm'
+    def get_template(self):
+        raise NotImplementedError()
 
     def fix_paths_unix(self, data):
         # cmake seems to require unix paths
@@ -104,7 +97,7 @@ class CMakeGccArm(Tool,Exporter):
         self.fix_paths_unix(data_for_make)
 
         generated_projects['path'], generated_projects['files']['cmakelist'] = self.gen_file_jinja(
-            'cmakelistgccarm.tmpl', data_for_make, 'CMakeLists.txt', data_for_make['output_dir']['path'])
+            self.get_template(), data_for_make, 'CMakeLists.txt', data_for_make['output_dir']['path'])
         return generated_projects
 
     def get_generated_project_files(self):
