@@ -1,3 +1,5 @@
+Silly test
+
 # Project generator
 [![Build Status](https://travis-ci.org/project-generator/project_generator.svg?branch=master)](https://travis-ci.org/project-generator/project_generator)
 
