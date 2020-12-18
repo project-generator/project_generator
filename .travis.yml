@@ -4,7 +4,9 @@ python:
     - "2.7"
     - "3.6"
     - "3.7"
-    - "pypy"
+    - "3.8"
+    - "pypy2"
+    - "pypy3"
 install:
     - pip install .
     - pip install -r tests/requirements.txt
