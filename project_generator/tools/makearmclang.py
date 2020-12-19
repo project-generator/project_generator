@@ -23,7 +23,7 @@ class MakefileArmclang(MakefileTool):
 
     def __init__(self, workspace, env_settings):
         MakefileTool.__init__(self, workspace, env_settings, logger)
-        # enable preprocessing linker files for GCC ARM
+        # enable preprocessing linker files for AC6
         self.workspace['preprocess_linker_file'] = True
         self.workspace['linker_extension'] = '.sct'
 
@@ -40,6 +40,6 @@ class MakefileArmclang(MakefileTool):
         generated_projects = deepcopy(self.generated_projects)
         self.process_data_for_makefile(self.workspace)
         generated_projects['path'], generated_projects['files']['makefile'] = \
-                self.gen_file_jinja('makefile_armclang.tmpl', self.workspace, 'Makefile',
-                        self.workspace['output_dir']['path'])
+            self.gen_file_jinja('makefile_armclang.tmpl', self.workspace, 'Makefile',
+                                self.workspace['output_dir']['path'])
         return generated_projects
