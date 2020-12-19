@@ -251,10 +251,11 @@ $(OBJ_FOLDER)%.o : %.s
 # Rules
 #-------------------------------------------------------------------------------
 
-PRE_BUILD_SCRIPT := $(shell{% for command in pre_build_script %} ../../../{{command}} && {% endfor %} true)
+PRE_BUILD_SCRIPT :={% for command in pre_build_script %} \
+	$(shell {{output_dir.rel_path}}{{command}}){% endfor %}
 
-all: $(ALL_TARGET_OUT_FILES)
-	$(at){% for command in post_build_script %} ../../../{{command}} && {% endfor %} true
+all: $(ALL_TARGET_OUT_FILES){% for command in post_build_script %}
+	$(at)-{{output_dir.rel_path}}{{command}}{% endfor %}
 
 # Make the build directory an order-only prerequisite for everything that goes in it.
 $(ALL_TARGET_OUT_FILES) $(ALL_OBJS) $(LD_SCRIPT): | $(OUT_DIR)
