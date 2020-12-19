@@ -102,8 +102,8 @@ class CMake(Tool,Exporter):
         return generated_projects
 
     def export_workspace(self):
-        # print(self.workspace['settings'])
-        vars = { 'projects': [os.path.basename(p['path']) for p in self.workspace['projects']] }
+        vars = { 'projects': [os.path.basename(p['path']) for p in self.workspace['projects']],
+                 'name': self.workspace['settings']['name'] }
         generated_projects = deepcopy(self.generated_project)
         generated_projects['path'], makefile = \
             self.gen_file_jinja(self.get_workspace_template(), vars, 'CMakeLists.txt',

@@ -36,6 +36,13 @@ class Generator:
     def generate(self, name=''):
         found = False
         if name != '':
+            if (name == 'global_workspace'):
+                if 'workspaces' not in self.projects_dict:
+                    self.projects_dict['workspaces'] = {}
+                if  ('global_workspace' not in self.projects_dict['workspaces']):
+                    self.projects_dict['workspaces']['global_workspace'] = {
+                        "projects": list(self.projects_dict['projects'].keys())
+                    }
             # process project first, workspaces afterwards
             if 'projects' in self.projects_dict:
                 if name in self.projects_dict['projects'].keys():
@@ -49,6 +56,7 @@ class Generator:
                     records = self.projects_dict['workspaces'][name]
                     if 'settings' in records:
                         workspace_settings = records['settings'] 
+                    workspace_settings['name'] = name
                     projects = [Project(project, load_yaml_records(uniqify(flatten(self.projects_dict['projects'][project]))), self.settings, name) for project in records['projects']]
                     self.workspaces[name] = ProjectWorkspace(name, projects, self.settings, workspace_settings)
                     yield self.workspaces[name]
@@ -65,7 +73,7 @@ class Generator:
                     workspace_settings = {}
                     if 'settings' in records:
                         workspace_settings = records['settings']
-                    workspace['name'] = name
+                    workspace_settings['name'] = name
                     projects = [Project(project, load_yaml_records(uniqify(flatten(self.projects_dict['projects'][project]))), self.settings, name) for project in records['projects']]
                     self.workspaces[name] = ProjectWorkspace(name, projects, self.settings, workspace_settings)
                     yield self.workspaces[name]
