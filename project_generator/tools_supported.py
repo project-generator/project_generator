@@ -23,6 +23,7 @@ from .tools.makearmclang import MakefileArmclang
 from .tools.sublimetext import SublimeTextMakeGccARM
 from .tools.gdb import GDB, ARMNoneEABIGDB, JLinkGDB
 from .tools.cmakegccarm import CMakeGccArm
+from .tools.cmakearmcc import CMakeArmcc
 from .tools.cmakearmclang import CMakeArmClang
 from .tools.visual_studio import VisualStudioMakeGCCARM, VisualStudioGDB
 
@@ -63,6 +64,7 @@ class ToolsSupported:
         'arm_none_eabi_gdb':    ARMNoneEABIGDB,
         'jlink_gdb':            JLinkGDB,
         'cmake_gcc_arm':        CMakeGccArm,
+        'cmake_armcc':          CMakeArmcc,
         'cmake_armclang':       CMakeArmClang,
         'visual_studio_gdb':    VisualStudioGDB,
         'visual_studio_make_gcc_arm': VisualStudioMakeGCCARM,
