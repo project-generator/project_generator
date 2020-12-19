@@ -1,0 +1,48 @@
+#
+# Copyright (c) 2020 Mathias Brossard
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This project was exported via the project generator.
+# More information https://github.com/project-generator/project_generator
+
+
+# Normally, commands in recipes are prefixed with '@' so the command itself
+# is not echoed by make. But if VERBOSE is defined (set to anything non-empty),
+# then the '@' is removed from recipes. The 'at' variable is used to control
+# this.
+ifeq "$(VERBOSE)" "1"
+at :=
+else
+at := @
+endif
+
+export VERBOSE USE_COLOR
+
+all:{% for project in projects %}
+	$(at)$(MAKE) -C {{project}} all $(V){% endfor %}
+
+clean:{% for project in projects %}
+	$(at)$(MAKE) -C {{project}} clean $(V){% endfor %}
+
+help:
+	@echo "Useful targets:"
+	@echo " - all (default)"
+	@echo " - clean"
+	@echo " - help"
+	@echo
+	@echo "Options:"
+	@echo " - VERBOSE={0|1} to show full command lines."
+	@echo " - USE_COLOR={0|1} to override color output."
+
+.PHONY: all clean help

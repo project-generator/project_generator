@@ -65,6 +65,7 @@ class Generator:
                     workspace_settings = {}
                     if 'settings' in records:
                         workspace_settings = records['settings']
+                    workspace['name'] = name
                     projects = [Project(project, load_yaml_records(uniqify(flatten(self.projects_dict['projects'][project]))), self.settings, name) for project in records['projects']]
                     self.workspaces[name] = ProjectWorkspace(name, projects, self.settings, workspace_settings)
                     yield self.workspaces[name]
