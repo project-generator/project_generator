@@ -22,7 +22,7 @@ from project_generator.tools.gccarm import MakefileGccArm
 from project_generator.tools.makearmcc import MakefileArmcc
 from project_generator.tools.eclipse import EclipseGnuARM
 from project_generator.tools.sublimetext import SublimeTextMakeGccARM
-from project_generator.tools.cmake import CMakeGccArm
+from project_generator.tools.cmakegccarm import CMakeGccArm
 from project_generator.tools.visual_studio import VisualStudioMakeGCCARM, VisualStudioGDB
 
 
