@@ -40,3 +40,6 @@ class CMakeArmcc(CMake):
 
     def get_template(self):
         return 'cmakelist_armcc.tmpl'
+
+    def get_workspace_template(self):
+        return 'cmakelist_armcc_workspace.tmpl'
