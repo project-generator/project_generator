@@ -200,6 +200,11 @@ color_ :=
 #
 # Use like:
 #  $(call printmessage,cyan,Building, remainder of the message...)
+ifeq ($(OS),Windows_NT)
+define printmessage
+echo "$(7)$(2)$(3)$(5)$(6)"
+endef
+else
 ifeq "$(USE_COLOR)" "1"
 define printmessage
 if [ -t 1 ]; then printf "$(7)$(color_$(1))$(2)$(color_default)$(3)$(color_$(4))$(5)$(color_default)$(6)\n" ; \
@@ -209,6 +214,7 @@ else
 define printmessage
 printf "$(7)$(2)$(3)$(5)$(6)\n"
 endef
+endif
 endif
 
 #-------------------------------------------------------------------------------
