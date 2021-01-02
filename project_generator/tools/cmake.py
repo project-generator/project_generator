@@ -59,24 +59,22 @@ class CMake(Tool,Exporter):
             for value in data[key]:
                 # TODO: this needs to be fixed
                 if value:
-                    v = value.replace('\\', '/')
-                    paths.append(normpath(os.path.join(output_dir, v)))
+                    paths.append(normpath(os.path.join(output_dir, value)).replace('\\', '/'))
             data[key] = paths
 
         for k in ['include_paths', 'lib_paths']:
             paths = [path for path in data[k] if path]
-            paths = [normpath(os.path.join(output_dir, path.replace('\\', '/'))) for path in paths]
+            paths = [normpath(os.path.join(output_dir, path)).replace('\\', '/') for path in paths]
             data[k] = paths
 
         # Those paths are not fixed
         for k in ['pre_build_script', 'post_build_script']:
             paths = [path for path in data[k] if path]
-            paths = [normpath(os.path.join(os.getcwd(), path.replace('\\', '/'))) for path in paths]
+            paths = [normpath(os.path.join(os.getcwd(), path)).replace('\\', '/') for path in paths]
             data[k] = paths
 
         if 'linker_file' in data and data['linker_file']:
-            lf = data['linker_file'].replace('\\', '/')
-            data['linker_file'] = normpath(os.path.join(output_dir, lf))
+            data['linker_file'] = normpath(os.path.join(output_dir, data['linker_file'])).replace('\\', '/')
 
     def export_project(self):
         generated_projects = {}

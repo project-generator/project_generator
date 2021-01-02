@@ -48,11 +48,11 @@ target_sources({{name}} PUBLIC{% for file in source_files_c %}
 
 # Set macros
 target_compile_definitions({{name}} PRIVATE{% for symbol in macros %}
-    {{symbol}}{% endfor %})
+    "{{symbol | replace ('"', '\\"') }}"{% endfor %})
 
 # Set include_paths
 target_include_directories({{name}} PRIVATE{% for path in include_paths %}
-    {{path}}{% endfor %})
+    "{{path}}"{% endfor %})
 
 # Set compilation options
 target_compile_options({{name}} PRIVATE
@@ -67,27 +67,27 @@ target_compile_options({{name}} PRIVATE
 set_target_properties({{name}} PROPERTIES LINKER_LANGUAGE C)
 
 target_link_directories({{name}} PRIVATE{% for path in lib_paths %}
-    -L'{{path}}{% endfor %})
+    "{{path}}"{% endfor %})
 
 target_link_libraries({{name}} PRIVATE{% for library in source_files_lib %}
-    {{library}}{% endfor %}{% if misc['standard_libraries'] %}{% for library in misc['standard_libraries'] %}
-    {{library}}{% endfor %}{% endif %})
+    "{{library}}"{% endfor %}{% if misc['standard_libraries'] %}{% for library in misc['standard_libraries'] %}
+    "{{library}}"{% endfor %}{% endif %})
 
 target_link_options({{name}} PRIVATE
     --cpu={{core}}{% for flag in misc['ld_flags'] %}
     {{flag}}{% endfor %}
-    --map --list ${OUTPUT_DIR}/{{name}}.map
+    --map --list "${OUTPUT_DIR}/{{name}}.map"
     --predefine=-D$<JOIN:$<TARGET_PROPERTY:COMPILE_DEFINITIONS>, --predefine=-D>
     --predefine=-I$<JOIN:$<TARGET_PROPERTY:INCLUDE_DIRECTORIES>, --predefine=-I>
-    --strict --scatter={{linker_file}})
+    --strict "--scatter={{linker_file}}")
 
 # Create bin and hex
-add_custom_target({{name}}_bin SOURCES ${OUTPUT_DIR}/{{name}}.bin)
-add_custom_command(OUTPUT ${OUTPUT_DIR}/{{name}}.bin DEPENDS {{name}}
-        COMMAND ${CMAKE_OBJCOPY} --bin $<TARGET_FILE:{{name}}> --output ${OUTPUT_DIR}/{{name}}.bin)
-add_custom_target({{name}}_hex SOURCES ${OUTPUT_DIR}/{{name}}.hex)
-add_custom_command(OUTPUT ${OUTPUT_DIR}/{{name}}.hex DEPENDS {{name}}
-        COMMAND ${CMAKE_OBJCOPY} --i32 $<TARGET_FILE:{{name}}> --output ${OUTPUT_DIR}/{{name}}.hex)
+add_custom_target({{name}}_bin SOURCES "${OUTPUT_DIR}/{{name}}.bin")
+add_custom_command(OUTPUT "${OUTPUT_DIR}/{{name}}.bin" DEPENDS {{name}}
+        COMMAND ${CMAKE_OBJCOPY} --bin $<TARGET_FILE:{{name}}> --output "${OUTPUT_DIR}/{{name}}.bin")
+add_custom_target({{name}}_hex SOURCES "${OUTPUT_DIR}/{{name}}.hex")
+add_custom_command(OUTPUT "${OUTPUT_DIR}/{{name}}.hex" DEPENDS {{name}}
+        COMMAND ${CMAKE_OBJCOPY} --i32 $<TARGET_FILE:{{name}}> --output "${OUTPUT_DIR}/{{name}}.hex")
 add_custom_target({{name}}_binaries ALL DEPENDS {{name}} DEPENDS {{name}}_bin DEPENDS {{name}}_hex)
 
 {% if pre_build_script %}

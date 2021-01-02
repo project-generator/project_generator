@@ -202,7 +202,7 @@ color_ :=
 #  $(call printmessage,cyan,Building, remainder of the message...)
 ifeq ($(OS),Windows_NT)
 define printmessage
-echo "$(7)$(2)$(3)$(5)$(6)"
+echo $(7)$(2)$(3)$(5)$(6)
 endef
 else
 ifeq "$(USE_COLOR)" "1"
