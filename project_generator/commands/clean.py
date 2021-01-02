@@ -22,9 +22,11 @@ help = 'Clean generated projects'
 
 
 def run(args):
+    combined_projects = args.projects + args.project or ['']
     generator = Generator(args.file)
-    for project in generator.generate(args.project):
-        project.clean(args.tool)
+    for project_name in (combined_projects):
+        for project in generator.generate(project_name):
+            project.clean(args.tool)
     return 0
 
 def setup(subparser):
@@ -33,7 +35,10 @@ def setup(subparser):
     subparser.add_argument('-q', dest='quietness', action='count', default=0,
                         help='Decrease the verbosity of the output (repeat for more verbose output)')
     subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml', type=argparse_filestring_type)
-    subparser.add_argument("-p", "--project", required = True, help="Specify which project to be removed")
+    subparser.add_argument("-p", "--project", dest="projects", action='append', default=[],
+                        help="Specify which project to be removed")
     subparser.add_argument(
-        "-t", "--tool", help="Clean project files for this tool",
+        "-t", "--tool", help="Clean project files for this tool", required=True,
         type=argparse_string_type(str.lower, False), choices=list(ToolsSupported.TOOLS_DICT.keys()) + list(ToolsSupported.TOOLS_ALIAS.keys()))
+    subparser.add_argument("project", nargs='*',
+                        help="Specify projects to be removed")
