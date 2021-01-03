@@ -108,36 +108,46 @@ class CMake(Tool,Exporter):
         if not exists(build_path):
             os.mkdir(build_path)
 
-        use_ninja = True if os.environ.get("USE_NINJA") else False
-        gen = 'Ninja' if use_ninja else 'Unix Makefiles'
+        generator = kwargs['generator'] if 'generator' in kwargs else 'make'
+        generators = {
+            'make': { 'command': 'make', 'generator': 'Unix Makefiles' },
+            'mingw-make': { 'command': 'make', 'generator': 'MinGW Makefiles' },
+            'msys-make': { 'command': 'make', 'generator': 'MSYS Makefiles' },
+            'ninja': { 'command': 'ninja', 'generator': 'Ninja' },
+            'nmake': { 'command': 'nmake', 'generator': 'NMake Makefiles' }
+        }
+
+        cmd = generators[generator]['command']
+        gen = generators[generator]['generator']
 
         args = ['cmake', '-G', gen, "-S", path, "-B", build_path]
         try:
             ret_code = None
             ret_code = subprocess.call(args)
         except:
-            self.logging.error("Project: %s build error whilst calling cmake. Is it in your PATH?" % self.workspace['files']['cmakelist'])
+            self.logging.error("Project: %s build error whilst calling cmake with '%s' generator. Are all programs needed it in your PATH?" %
+                (self.workspace['files']['cmakelist'], gen))
             return -1
 
-        if use_ninja:
-            args = ['ninja', "-C", build_path]
+        args = [cmd, "-C", build_path]
+        if generator == 'ninja':
             if 'verbose' in kwargs and kwargs['verbose']:
-                args += '-v'
+                args += ['-v']
+            if 'jobs' not in kwargs:
+                args += ['-j', '1']
         else:
-            args = ['make', "-C", build_path]
-            try:
+            if 'jobs' in kwargs:
                 args += ['-j', str(kwargs['jobs'])]
-            except KeyError:
-                pass
-            if 'verbose' in kwargs:
-                args += ["VERBOSE=%d" % (1 if kwargs['verbose'] else 0)]
+            if 'verbose' in kwargs and kwargs['verbose']:
+                args += ["VERBOSE=1"]
             args += ['all']
 
         try:
             ret_code = None
             ret_code = subprocess.call(args)
         except:
-            self.logging.error("Project: %s build error whilst calling make. Is it in your PATH?" % self.workspace['files']['cmakelist'])
+            self.logging.error("Project: %s build error whilst calling make. Is '%s' in your PATH?" %
+                (self.workspace['files']['cmakelist'], cmd))
             return -1
         else:
             if ret_code != self.SUCCESSVALUE:
