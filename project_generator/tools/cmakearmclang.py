@@ -37,7 +37,6 @@ class CMakeArmClang(CMake):
 
     @staticmethod
     def get_toolchain():
-        logger.info("HERE")
         return 'armclang'
 
     def get_template(self):

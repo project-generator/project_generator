@@ -82,10 +82,10 @@ target_link_options({{name}} PRIVATE
     --strict "--scatter={{linker_file}}")
 
 # Create bin and hex
-add_custom_target({{name}}_bin SOURCES "${OUTPUT_DIR}/{{name}}.bin")
+add_custom_target({{name}}_bin DEPENDS "${OUTPUT_DIR}/{{name}}.bin")
 add_custom_command(OUTPUT "${OUTPUT_DIR}/{{name}}.bin" DEPENDS {{name}}
         COMMAND ${CMAKE_OBJCOPY} --bin $<TARGET_FILE:{{name}}> --output "${OUTPUT_DIR}/{{name}}.bin")
-add_custom_target({{name}}_hex SOURCES "${OUTPUT_DIR}/{{name}}.hex")
+add_custom_target({{name}}_hex DEPENDS "${OUTPUT_DIR}/{{name}}.hex")
 add_custom_command(OUTPUT "${OUTPUT_DIR}/{{name}}.hex" DEPENDS {{name}}
         COMMAND ${CMAKE_OBJCOPY} --i32 $<TARGET_FILE:{{name}}> --output "${OUTPUT_DIR}/{{name}}.hex")
 add_custom_target({{name}}_binaries ALL DEPENDS {{name}} DEPENDS {{name}}_bin DEPENDS {{name}}_hex)

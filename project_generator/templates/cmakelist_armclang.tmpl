@@ -100,7 +100,7 @@ target_link_options({{name}} PRIVATE
     --strict --map --list ${OUTPUT_DIR}/{{name}}.map)
 
 {% if preprocess_linker_file %}
-add_custom_command(OUTPUT "${OUTPUT_DIR}/{{name}}.ld"
+add_custom_command(OUTPUT "${OUTPUT_DIR}/{{name}}.sct"
                    MAIN_DEPENDENCY "{{linker_file}}"
                    COMMAND ${CMAKE_C_COMPILER} -E -xc --target=arm-arm-none-eabi -mcpu={{core}}
                    {% for path in include_paths %} "-I{{path}}"
@@ -115,10 +115,10 @@ target_link_options({{name}} PRIVATE "--scatter={{linker_file}}")
 {% endif %}
 
 # Create bin and hex
-add_custom_target({{name}}_bin SOURCES "${OUTPUT_DIR}/{{name}}.bin")
+add_custom_target({{name}}_bin DEPENDS "${OUTPUT_DIR}/{{name}}.bin")
 add_custom_command(OUTPUT "${OUTPUT_DIR}/{{name}}.bin" DEPENDS {{name}}
         COMMAND ${CMAKE_OBJCOPY} --bincombined $<TARGET_FILE:{{name}}> --output "${OUTPUT_DIR}/{{name}}.bin")
-add_custom_target({{name}}_hex SOURCES "${CMAKE_CURRENT_BINARY_DIR}/{{name}}.hex")
+add_custom_target({{name}}_hex DEPENDS "${OUTPUT_DIR}/{{name}}.hex")
 add_custom_command(OUTPUT "${OUTPUT_DIR}/{{name}}.hex" DEPENDS {{name}}
         COMMAND ${CMAKE_OBJCOPY} --i32combined $<TARGET_FILE:{{name}}> --output "${OUTPUT_DIR}/{{name}}.hex")
 add_custom_target({{name}}_binaries ALL DEPENDS {{name}} DEPENDS {{name}}_bin DEPENDS {{name}}_hex)
