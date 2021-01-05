@@ -27,7 +27,7 @@ logger = logging.getLogger('progen.tools.cmake_gcc_arm')
 
 class CMakeGccArm(CMake):
     def __init__(self, workspace, env_settings):
-        super().__init__(workspace, env_settings)
+        super(CMakeGccArm, self).__init__(workspace, env_settings)
         self.logging = logging
         self.workspace['preprocess_linker_file'] = True
 

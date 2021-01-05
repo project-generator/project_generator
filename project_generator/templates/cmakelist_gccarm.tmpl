@@ -39,6 +39,9 @@ project({{name}} LANGUAGES C CXX ASM)
 add_executable({{name}}){% else %}# Add Library
 add_library({{name}} STATIC){% endif %}
 
+set(OUTPUT_DIR "${CMAKE_BINARY_DIR}")
+set(BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+
 # Set source files
 target_sources({{name}} PUBLIC{% for file in source_files_c %}
     "{{file}}"{% endfor %}{% for file in source_files_cpp %}
@@ -78,40 +81,41 @@ target_link_options({{name}} PRIVATE
     -mcpu={{core}} -mthumb{% for flag in misc['common_flags'] %}
     {{flag}}{% endfor %}{% for flag in misc['ld_flags'] %}
     {{flag}}{% endfor %}
-    -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/{{name}}.map,--cref)
+    -Wl,-Map=${OUTPUT_DIR}/{{name}}.map,--cref)
 
 {% if preprocess_linker_file %}
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.ld
+add_custom_command(OUTPUT ${OUTPUT_DIR}/{{name}}.ld
                    MAIN_DEPENDENCY {{linker_file}}
                    COMMAND ${CMAKE_C_COMPILER} -E -x c -P -MMD
                    {% for path in include_paths %} -I{{path}}
                    {% endfor %}{% for symbol in macros %} -D{{symbol}}
-                   {% endfor %}-o ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.ld {{linker_file}}
+                   {% endfor %} -o ${OUTPUT_DIR}/{{name}}.ld {{linker_file}}
                    VERBATIM)
-add_custom_target({{name}}_linker_script DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.ld VERBATIM)
+add_custom_target({{name}}_linker_script DEPENDS ${OUTPUT_DIR}/{{name}}.ld VERBATIM)
 add_dependencies({{name}} {{name}}_linker_script)
-target_link_options({{name}} PRIVATE -T${CMAKE_CURRENT_BINARY_DIR}/{{name}}.ld -static)
+target_link_options({{name}} PRIVATE "-T${OUTPUT_DIR}/{{name}}.ld" -static)
 {% else %}
 target_link_options({{name}} PRIVATE "-T{{linker_file}}" -static)
 {% endif %}
 
 # Create bin and hex
-add_custom_target({{name}}_bin SOURCES ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.bin)
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.bin DEPENDS {{name}}
-        COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:{{name}}> ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.bin)
-add_custom_target({{name}}_hex SOURCES ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.hex)
-add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.hex DEPENDS {{name}}
-        COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:{{name}}> ${CMAKE_CURRENT_BINARY_DIR}/{{name}}.hex)
-add_custom_target({{name}}_binaries ALL DEPENDS {{name}}_bin # DEPENDS {{name}}_elf
-    DEPENDS {{name}}_hex)
+add_custom_target({{name}}_bin DEPENDS ${OUTPUT_DIR}/{{name}}.bin)
+add_custom_command(OUTPUT ${OUTPUT_DIR}/{{name}}.bin DEPENDS {{name}}
+        COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:{{name}}> ${OUTPUT_DIR}/{{name}}.bin)
+add_custom_target({{name}}_hex DEPENDS ${OUTPUT_DIR}/{{name}}.hex)
+add_custom_command(OUTPUT ${OUTPUT_DIR}/{{name}}.hex DEPENDS {{name}}
+        COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:{{name}}> ${OUTPUT_DIR}/{{name}}.hex)
+add_custom_target({{name}}_binaries ALL DEPENDS {{name}} DEPENDS {{name}}_bin DEPENDS {{name}}_hex)
 
 {% if pre_build_script %}
-add_custom_command(TARGET {{name}} PRE_BUILD {{name}}{% for command in pre_build_script %}
+add_custom_target({{name}}_pre_build {% for command in pre_build_script %}
         COMMAND {{command}}{% endfor %}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+        WORKING_DIRECTORY ${BUILD_DIR})
+add_dependencies({{name}} {{name}}_pre_build)
 {% endif %}
+
 {% if post_build_script %}
 add_custom_command(TARGET {{name}}_binaries POST_BUILD{% for command in post_build_script %}
         COMMAND {{command}}{% endfor %}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+        WORKING_DIRECTORY ${BUILD_DIR})
 {% endif %}
