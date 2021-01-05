@@ -17,7 +17,7 @@ import multiprocessing as mp
 
 from ..tools_supported import ToolsSupported
 from ..generate import Generator
-from . import argparse_filestring_type, argparse_string_type
+from . import argparse_filestring_type, argparse_string_type, split_options
 
 logger = logging.getLogger('progen.generate')
 
@@ -42,7 +42,8 @@ def _generate_project(project, args):
     if project.generate(args.tool, copied=args.copy, copy=args.copy) == -1:
         export_failed = True
     if args.build:
-        if project.build(args.tool) == -1:
+        kwargs = split_options(args.options)
+        if project.build(args.tool, **kwargs) == -1:
             build_failed = True
     return (build_failed, export_failed)
 
@@ -102,6 +103,8 @@ def setup(subparser):
         "-b", "--build", action="store_true", help="Build defined projects")
     subparser.add_argument(
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")
+    subparser.add_argument(
+        "-o", "--options", action="append", help="Toolchain options")
     num_cpus = _get_default_jobs()
     subparser.add_argument(
         "-j", "--jobs", action="store", type=int, default=num_cpus,

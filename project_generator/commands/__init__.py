@@ -26,3 +26,12 @@ def argparse_string_type(case_converter, prefer_hyphen=False):
         return lambda string: case_converter(string).replace("_","-")
     else:
         return lambda string: case_converter(string).replace("-","_")
+
+def split_options(opts):
+    options = {}
+    if opts is None:
+        return options
+    for o in opts:
+        r = o.split('=', 1)
+        options[r[0]] = None if len(r) == 1 else r[1]
+    return options

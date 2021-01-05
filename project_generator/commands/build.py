@@ -17,10 +17,9 @@ import logging
 from ..tools_supported import ToolsSupported
 from ..generate import Generator
 from ..settings import ProjectSettings
-from . import argparse_filestring_type, argparse_string_type
+from . import argparse_filestring_type, argparse_string_type, split_options
 
 help = 'Build a project'
-
 
 def run(args):
     # Export if we know how, otherwise return
@@ -35,7 +34,8 @@ def run(args):
         if not clean_failed:
             if project.generate(args.tool, args.copy) == -1:
                 any_export_failed = True
-            if project.build(args.tool, jobs=args.jobs) == -1:
+            kwargs = split_options(args.options)
+            if project.build(args.tool, jobs=args.jobs, **kwargs) == -1:
                 any_build_failed = True
         if args.stop_on_failure and (any_build_failed or any_export_failed):
             break
@@ -62,6 +62,8 @@ def setup(subparser):
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")
     subparser.add_argument(
         "-k", "--clean", action="store_true", help="Clean project before building")
+    subparser.add_argument(
+        "-o", "--options", action="append", help="Toolchain options")
     subparser.add_argument(
         "-x", "--stop-on-failure", action="store_true", help="Stop on first failure")
     subparser.add_argument(
