@@ -69,6 +69,8 @@ class CMake(Tool,Exporter):
 
         # Those paths are not fixed
         for k in ['pre_build_script', 'post_build_script']:
+            if k not in data:
+                continue
             paths = [path for path in data[k] if path]
             paths = [normpath(os.path.join(os.getcwd(), path)).replace('\\', '/') for path in paths]
             data[k] = paths

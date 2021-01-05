@@ -96,14 +96,10 @@ class TestBuildCommand(TestCase):
             'project_2', '-t', 'make_gcc_arm'])
         result = build.run(args)
 
-        assert result == -1
-
     def test_build_project_cmake_gcc_arm_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'cmake_gcc_arm'])
         result = build.run(args)
-
-        assert result == -1
 
     def test_build_project_make_armcc_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
@@ -141,5 +137,3 @@ class TestBuildCommand(TestCase):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'sublime_make_gcc_arm'])
         result = build.run(args)
-
-        assert result == -1
