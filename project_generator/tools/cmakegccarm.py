@@ -41,3 +41,6 @@ class CMakeGccArm(CMake):
 
     def get_template(self):
         return 'cmakelist_gccarm.tmpl'
+
+    def get_workspace_template(self):
+        return 'cmakelist_gccarm_workspace.tmpl'

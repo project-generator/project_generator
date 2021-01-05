@@ -19,6 +19,7 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
 
+{% if singular %}
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR arm)
 
@@ -31,6 +32,7 @@ set(CMAKE_EXECUTABLE_SUFFIX_C ".elf")
 
 # Do not try to compile for the host
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+{% endif %}
 
 # Start project
 project({{name}} LANGUAGES C CXX ASM)
@@ -39,8 +41,19 @@ project({{name}} LANGUAGES C CXX ASM)
 add_executable({{name}}){% else %}# Add Library
 add_library({{name}} STATIC){% endif %}
 
+{% if singular %}
 set(OUTPUT_DIR "${CMAKE_BINARY_DIR}")
 set(BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+{% else %}
+set_target_properties({{name}}
+  PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/{{name}}/build"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/{{name}}/build"
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/{{name}}/build"
+)
+set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/{{name}}/build")
+set(BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/{{name}}")
+{% endif %}
 
 # Set source files
 target_sources({{name}} PUBLIC{% for file in source_files_c %}

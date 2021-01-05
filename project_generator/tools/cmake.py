@@ -17,6 +17,7 @@ import copy
 import logging
 import subprocess
 
+from copy import deepcopy
 from os.path import join, normpath, dirname, exists
 from .tool import Tool, Exporter
 from .gccarm import MakefileGccArm
@@ -48,6 +49,9 @@ class CMake(Tool,Exporter):
         self.logging = logging
 
     def get_template(self):
+        raise NotImplementedError()
+
+    def get_workspace_template(self):
         raise NotImplementedError()
 
     def fix_paths_unix(self, data):
@@ -95,6 +99,17 @@ class CMake(Tool,Exporter):
 
         generated_projects['path'], generated_projects['files']['cmakelist'] = self.gen_file_jinja(
             self.get_template(), data_for_make, 'CMakeLists.txt', data_for_make['output_dir']['path'])
+        return generated_projects
+
+    def export_workspace(self):
+        # print(self.workspace['settings'])
+        vars = { 'projects': [os.path.basename(p['path']) for p in self.workspace['projects']] }
+        generated_projects = deepcopy(self.generated_project)
+        generated_projects['path'], makefile = \
+            self.gen_file_jinja(self.get_workspace_template(), vars, 'CMakeLists.txt',
+                                os.path.dirname(self.workspace['settings']['path']))
+        generated_projects['files']['cmakelist'] = [makefile] + \
+            [os.path.basename(p['files']['cmakelist']) for p in self.workspace['projects']]
         return generated_projects
 
     def get_generated_project_files(self):
