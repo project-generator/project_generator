@@ -1,4 +1,5 @@
 # Copyright 2014-2015 0xc0170
+# Copyright (c) 2020 Chris Reed
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,6 +19,7 @@ from .tools.coide import Coide
 from .tools.eclipse import EclipseGnuARM
 from .tools.gccarm import MakefileGccArm
 from .tools.makearmcc import MakefileArmcc
+from .tools.makearmclang import MakefileArmclang
 from .tools.sublimetext import SublimeTextMakeGccARM
 from .tools.gdb import GDB, ARMNoneEABIGDB, JLinkGDB
 from .tools.cmake import CMakeGccArm
@@ -32,6 +34,8 @@ class ToolsSupported:
         'iar':           'iar_arm',
         'make_gcc':      'make_gcc_arm',
         'gcc_arm':       'make_gcc_arm',
+        'armcc':         'make_armcc',
+        'armclang':      'make_armclang',
         'eclipse':       'eclipse_make_gcc_arm',
         'sublime':       'sublime_make_gcc_arm',
         'sublime_text':  'sublime_make_gcc_arm',
@@ -50,7 +54,8 @@ class ToolsSupported:
         'uvision5':             Uvision5,
         'coide':                Coide,
         'make_gcc_arm':         MakefileGccArm,
-        'make_armcc':           MakefileArmcc,
+        'make_armcc':           MakefileArmcc, 
+        'make_armclang':        MakefileArmclang,
         'eclipse_make_gcc_arm': EclipseGnuARM,
         'sublime_make_gcc_arm': SublimeTextMakeGccARM,
         'gdb':                  GDB,

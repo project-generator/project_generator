@@ -1,4 +1,4 @@
-# Copyright 2014-2015 0xc0170
+# Copyright 2020 Chris Reed
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,26 +17,29 @@ import logging
 
 from .makefile import MakefileTool
 
-logger = logging.getLogger('progen.tools.armcc')
+logger = logging.getLogger('progen.tools.armclang')
 
-class MakefileArmcc(MakefileTool):
+class MakefileArmclang(MakefileTool):
 
     def __init__(self, workspace, env_settings):
         MakefileTool.__init__(self, workspace, env_settings, logger)
+        # enable preprocessing linker files for AC6
+        self.workspace['preprocess_linker_file'] = True
+        self.workspace['linker_extension'] = '.sct'
 
     @staticmethod
     def get_toolnames():
-        return ['make_armcc']
+        return ['make_armclang']
 
     @staticmethod
     def get_toolchain():
-        return 'armcc'
+        return 'armclang'
 
     def export_project(self):
-        """ Processes misc options specific for ARMCC, and run generator """
+        """ Processes misc options specific for AC6, and run generator """
         generated_projects = deepcopy(self.generated_projects)
         self.process_data_for_makefile(self.workspace)
         generated_projects['path'], generated_projects['files']['makefile'] = \
-            self.gen_file_jinja('makefile_armcc.tmpl', self.workspace, 'Makefile',
+            self.gen_file_jinja('makefile_armclang.tmpl', self.workspace, 'Makefile',
                                 self.workspace['output_dir']['path'])
         return generated_projects

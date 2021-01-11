@@ -28,13 +28,12 @@ def run(args):
         generator = Generator(args.file)
         for project in generator.generate():
             if args.section == 'targets':
-                print("%s supports: %s"%(project.project['name'], project.project['target']))
+                print("%s supports: %s" % (project.name, project.project['target']))
             elif args.section == 'projects':
                 print (project.name)
             elif args.section == 'tools':
-                tools = [tool for tool, value in project.tool_specific.items() if value.linker_file is not None]
-                tools = ", ".join(tools)
-                print("%s supports: %s\n"%(project.project['name'], tools))
+                tools = [tool for tool, value in project.project['tool_specific'].items() if value.get('linker_file')]
+                print("%s supports: %s" % (project.name, ", ".join(tools)))
     else:
         if args.section == 'targets':
             print("\nProgen supports the following targets:\n")

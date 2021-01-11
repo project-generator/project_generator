@@ -1,0 +1,33 @@
+{% extends "makefile.tmpl" %}
+
+{% block CC %}armclang{% endblock %}
+{% block CXX %}armclang{% endblock %}
+{% block AS %}armclang{% endblock %}
+{% block LD %}armlink{% endblock %}
+{% block AR %}armar{% endblock %}
+{% block CPP %}armclang{% endblock %}
+{% block OBJCOPY %}fromelf{% endblock %}
+{% block OBJDUMP %}fromelf{% endblock %}
+{% block SIZE %}fromelf{% endblock %}
+{% block NM %}fromelf{% endblock %}
+
+{% block TOBIN %}--bincombined{% endblock %}
+{% block TOHEX %}--i32combined{% endblock %}
+{% block objcopy_output %}--output{% endblock %}
+{% block objdump_output %}--output{% endblock %}
+{% block OBJDUMPFLAGS %}--text -acdyrz --interleave=source{% endblock %}
+{% block GENASMFLAGS %}-S -W{% endblock %}
+{% block SIZEFLAGS %}--text -z{% endblock %}
+{% block nm_output %}--output{% endblock %}
+{% block NMFLAGS %}--text -arz{% endblock %}
+
+{% block TARGET_EXE_EXT %}.axf{% endblock %}
+
+{% block COMMON_FLAGS %}--target=arm-arm-none-eabi -mcpu=$(CPU) -m$(INSTRUCTION_MODE){% endblock %}
+{% block CFLAGS %}$(COMMON_FLAGS) $(C_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD{% endblock %}
+{% block CXXFLAGS %}$(COMMON_FLAGS) $(CXX_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD{% endblock %}
+# Add -Wa,armasm,--show_cmdline to ASFLAGS for armclang to display the armasm command
+{% block ASFLAGS %}$(COMMON_FLAGS) $(ASM_FLAGS) $(INC_DIRS_F) $(ASM_SYMBOLS) -c{% endblock %}
+{% block LD_OPTIONS %}--strict --scatter=$(LD_SCRIPT) --map --list $(OBJ_FOLDER)$(TARGET).map{% endblock %}
+{% block CPP_FLAGS %}-E -xc --target=arm-arm-none-eabi -mcpu=$(CPU) -MMD{% endblock %}
+{% block ASM_SYMBOLS %}${CC_SYMBOLS}{% endblock %}

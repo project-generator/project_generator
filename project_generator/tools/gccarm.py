@@ -22,7 +22,7 @@ logger = logging.getLogger('progen.tools.gccarm')
 class MakefileGccArm(MakefileTool):
 
     def __init__(self, workspace, env_settings):
-        MakefileTool.__init__(self, workspace, env_settings, logging)
+        MakefileTool.__init__(self, workspace, env_settings, logger)
         # enable preprocessing linker files for GCC ARM
         self.workspace['preprocess_linker_file'] = True
         self.workspace['linker_extension'] = '.ld'
@@ -39,7 +39,9 @@ class MakefileGccArm(MakefileTool):
         """ Processes misc options specific for GCC ARM, and run generator """
         generated_projects = deepcopy(self.generated_projects)
         self.process_data_for_makefile(self.workspace)
-        generated_projects['path'], generated_projects['files']['makefile'] = self.gen_file_jinja('makefile_gcc.tmpl', self.workspace, 'Makefile', self.workspace['output_dir']['path'])
+        generated_projects['path'], generated_projects['files']['makefile'] = \
+            self.gen_file_jinja('makefile_gcc.tmpl', self.workspace, 'Makefile',
+                                self.workspace['output_dir']['path'])
         return generated_projects
 
     def process_data_for_makefile(self, project_data):

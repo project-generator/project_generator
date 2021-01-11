@@ -27,10 +27,10 @@ LD = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block LD %}{% endblock %}
 AR = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block AR %}{% endblock %}
 CPP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block CPP %}{% endblock %}
 
-SIZE = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)size
 OBJCOPY = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block OBJCOPY %}{% endblock %}
-OBJDUMP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)objdump
-NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN)nm
+OBJDUMP = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block OBJDUMP %}{% endblock %}
+SIZE = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block SIZE %}{% endblock %}
+NM = $(TOOLCHAIN_BINPATH)$(TOOLCHAIN){% block NM %}{% endblock %}
 
 # application specific
 INSTRUCTION_MODE = thumb
@@ -90,10 +90,13 @@ C_FLAGS  = {% for option in c_flags %} {{option}} {% endfor %}
 CXX_FLAGS  = {% for option in cxx_flags %} {{option}} {% endfor %}
 ASM_FLAGS  = {% for option in asm_flags %} {{option}} {% endfor %}
 
-CFLAGS = $(C_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS)
-CXXFLAGS = $(CXX_FLAGS) $(INC_DIRS_F) -c $(CC_SYMBOLS)
-ASFLAGS = $(ASM_FLAGS) $(INC_DIRS_F) -c $(ASM_SYMBOLS)
-NMFLAGS = -n -f posix -C -l
+CFLAGS = {% block CFLAGS %}{% endblock %}
+CXXFLAGS = {% block CXXFLAGS %}{% endblock %}
+ASFLAGS = {% block ASFLAGS %}{% endblock %}
+GENASMFLAGS = {% block GENASMFLAGS %}{% endblock %}
+OBJDUMPFLAGS = {% block OBJDUMPFLAGS %}{% endblock %}
+SIZEFLAGS = {% block SIZEFLAGS %}{% endblock %}
+NMFLAGS = {% block NMFLAGS %}{% endblock %}
 
 # Linker options
 LD_OPTIONS += {% for option in ld_flags %} {{option}} {% endfor %}
@@ -106,8 +109,6 @@ CPP_FLAGS = {% block CPP_FLAGS %}{% endblock %}
 # Flags to preprocess the linker script
 LD_CPP_FLAGS = {% block LD_CPP_FLAGS %}{% endblock %}
 {% endif %}
-
-OBJCPFLAGS = -O ihex
 
 ARFLAGS = cr
 
@@ -199,6 +200,11 @@ color_ :=
 #
 # Use like:
 #  $(call printmessage,cyan,Building, remainder of the message...)
+ifeq ($(OS),Windows_NT)
+define printmessage
+echo "$(7)$(2)$(3)$(5)$(6)"
+endef
+else
 ifeq "$(USE_COLOR)" "1"
 define printmessage
 if [ -t 1 ]; then printf "$(7)$(color_$(1))$(2)$(color_default)$(3)$(color_$(4))$(5)$(color_default)$(6)\n" ; \
@@ -209,39 +215,53 @@ define printmessage
 printf "$(7)$(2)$(3)$(5)$(6)\n"
 endef
 endif
+endif
 
 #-------------------------------------------------------------------------------
 # Recipes
 #-------------------------------------------------------------------------------
-
+{% block RECIPES %}
 # Compile C sources.
 $(OBJ_FOLDER)%.o : %.c
 	@$(call printmessage,c,Compiling, $<)
-	$(at)$(CC) $(CFLAGS) $(COMMON_FLAGS) $< -o $@
+ifeq ($(GENERATE_ASSEMBLY),1)
+	$(at)$(CC) $(CFLAGS) $(GENASMFLAGS) $<
+endif
+	$(at)$(CC) $(CFLAGS) $< -o $@
+ifeq ($(DISASSEMBLE_OBJECTS),1)
+	$(at)$(OBJDUMP) $(OBJDUMPFLAGS) $@ {% block objdump_output %}{% endblock %} $(@:%.o=%.lst)
+endif
 
 # Compile C++ sources.
 $(OBJ_FOLDER)%.o : %.cpp
 	@$(call printmessage,cxx,Compiling, $<)
-	$(at)$(CXX) $(CXXFLAGS) $(COMMON_FLAGS) $< -o $@
+ifeq ($(GENERATE_ASSEMBLY),1)
+	$(at)$(CXX) $(CFLAGS) $(GENASMFLAGS) $<
+endif
+	$(at)$(CXX) $(CXXFLAGS) $< -o $@
+ifeq ($(DISASSEMBLE_OBJECTS),1)
+	$(at)$(OBJDUMP) $(OBJDUMPFLAGS) $@ {{ self.objdump_output() }} $(@:%.o=%.lst)
+endif
 
 # Preprocess and assemble .S sources.
 $(OBJ_FOLDER)%.o : %.S
 	@$(call printmessage,asm,Assembling, $<)
-	$(at)$(AS) $(ASFLAGS) $(COMMON_FLAGS) $< -o $@
+	$(at)$(AS) $(ASFLAGS) $< -o $@
 
 # Assemble .s sources.
 $(OBJ_FOLDER)%.o : %.s
 	@$(call printmessage,asm,Assembling, $<)
-	$(at)$(AS) $(ASFLAGS) $(COMMON_FLAGS) $< -o $@
-
+	$(at)$(AS) $(ASFLAGS) $< -o $@
+{% endblock %}
 #-------------------------------------------------------------------------------
 # Rules
 #-------------------------------------------------------------------------------
 
-PRE_BUILD_SCRIPT := $(shell{% for command in pre_build_script %} ../../../{{command}} && {% endfor %} true)
+PRE_BUILD_SCRIPT :={% for command in pre_build_script %} \
+	$(shell {{output_dir.rel_path}}{{command}}){% endfor %}
 
-all: $(ALL_TARGET_OUT_FILES)
-	$(at){% for command in post_build_script %} ../../../{{command}} && {% endfor %} true
+all: $(ALL_TARGET_OUT_FILES){% for command in post_build_script %}
+	$(at)-{{output_dir.rel_path}}{{command}}{% endfor %}
 
 # Make the build directory an order-only prerequisite for everything that goes in it.
 $(ALL_TARGET_OUT_FILES) $(ALL_OBJS) $(LD_SCRIPT): | $(OUT_DIR)
@@ -259,14 +279,14 @@ endif
 {% if preprocess_linker_file %}
 $(LD_SCRIPT): $(LD_SCRIPT_IN)
 	@$(call printmessage,cpp,Preprocessing, $<)
-	$(at)$(CPP) $(CPP_FLAGS) $(LD_CPP_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -MMD $< -o $@
+	$(at)$(CPP) $(CPP_FLAGS) $(LD_CPP_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) $< -o $@
 {% endif %}
 
 $(TARGET_OUT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@$(call printmessage,link,Linking, $@)
 	$(at)$(LD) $(LIB_PATHS) -o $@ $(CPP_OBJS) $(C_OBJS) $(S_OBJS) $(O_OBJS) $(LIBS) $(LD_OPTIONS)
-	$(at)$(SIZE) --totals $(TARGET_OUT)
-	$(at)-$(NM) $(NMFLAGS) $(TARGET_OUT) > $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
+	$(at)$(SIZE) $(SIZEFLAGS) $(TARGET_OUT)
+	$(at)-$(NM) $(NMFLAGS) $(TARGET_OUT) {% block nm_output %}{% endblock %} $(OBJ_FOLDER)$(TARGET)-symbol-table.txt
 
 $(TARGET_HEX): $(TARGET_OUT)
 	@$(call printmessage,convert,Converting, $@)
@@ -280,7 +300,7 @@ $(TARGET_BIN): $(TARGET_OUT)
 $(TARGET_OUT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 	@$(call printmessage,ar,Archiving, $@)
 	$(at)$(AR) rcs $(TARGET_OUT) $(CPP_OBJS) $(C_OBJS) $(S_OBJS)
-	@$(SIZE) --totals $(TARGET_OUT)
+	@$(SIZE) $(SIZEFLAGS) $(TARGET_OUT)
 
 {% endif %}
 
@@ -300,7 +320,7 @@ help:
 	@echo " - VERBOSE={0|1} to show full command lines."
 	@echo " - USE_COLOR={0|1} to override color output."
 
-.PHONY: clean help
+.PHONY: all clean help
 
 # Include dependencies
 -include $(ALL_OBJS:.o=.d)
