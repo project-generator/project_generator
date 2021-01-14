@@ -17,7 +17,7 @@ import multiprocessing as mp
 
 from ..tools_supported import ToolsSupported
 from ..generate import Generator
-from . import argparse_filestring_type, argparse_string_type
+from . import argparse_filestring_type, argparse_string_type, split_options
 
 logger = logging.getLogger('progen.generate')
 
@@ -42,11 +42,13 @@ def _generate_project(project, args):
     if project.generate(args.tool, copied=args.copy, copy=args.copy) == -1:
         export_failed = True
     if args.build:
-        if project.build(args.tool) == -1:
+        kwargs = split_options(args.options)
+        if project.build(args.tool, **kwargs) == -1:
             build_failed = True
     return (build_failed, export_failed)
 
 def run(args):
+    combined_projects = args.projects + args.project or ['']
     generator = Generator(args.file)
     build_failed = False
     export_failed = False
@@ -58,7 +60,8 @@ def run(args):
 
         # Issue jobs.
         results = [pool.apply_async(_generate_project, (project, args))
-                    for project in generator.generate(args.project)]
+                    for project_name in combined_projects
+                    for project in generator.generate(project_name)]
 
         # Gather results
         for r in results:
@@ -94,7 +97,7 @@ def setup(subparser):
     subparser.add_argument(
         "-f", "--file", help="YAML projects file", default='projects.yaml', type=argparse_filestring_type)
     subparser.add_argument(
-        "-p", "--project", help="Project to be generated", default = '')
+        "-p", "--project", dest="projects", action='append', default=[], help="Project to be generated")
     subparser.add_argument(
         "-t", "--tool", help="Create project files for provided tool",
         type=argparse_string_type(str.lower, False), choices=list(ToolsSupported.TOOLS_DICT.keys()) + list(ToolsSupported.TOOLS_ALIAS.keys()))
@@ -102,7 +105,11 @@ def setup(subparser):
         "-b", "--build", action="store_true", help="Build defined projects")
     subparser.add_argument(
         "-c", "--copy", action="store_true", help="Copy all files to the exported directory")
+    subparser.add_argument(
+        "-o", "--options", action="append", help="Toolchain options")
     num_cpus = _get_default_jobs()
     subparser.add_argument(
         "-j", "--jobs", action="store", type=int, default=num_cpus,
                 help=("Number of concurrent jobs to use for generating projects (default is %d)" % num_cpus))
+    subparser.add_argument("project", nargs='*',
+                        help="Specify projects to be generated")

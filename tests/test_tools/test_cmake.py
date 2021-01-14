@@ -20,7 +20,7 @@ from unittest import TestCase
 from project_generator.generate import Generator
 from project_generator.project import Project
 from project_generator.settings import ProjectSettings
-from project_generator.tools.cmake import CMakeGccArm
+from project_generator.tools.cmakegccarm import CMakeGccArm
 
 from .simple_project import project_1_yaml, projects_1_yaml
 
