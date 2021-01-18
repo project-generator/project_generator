@@ -1,0 +1,58 @@
+{#
+# Copyright (c) 2020 Mathias Brossard
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#}
+# This project was exported via the project generator.
+# More information https://github.com/project-generator/project_generator
+
+CMAKE_MINIMUM_REQUIRED(VERSION 3.6)
+
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_ARCH arm-arm-none-eabi)
+
+################## Ignore this section ##################
+# This section works around some of the problems of armclang
+# support in CMake (some of them are mentioned in this ticket
+# https://gitlab.kitware.com/cmake/cmake/-/issues/21173)
+
+# Disable default of CMAKE_SYSTEM_PROCESSOR mandatory
+set(__march_flag_set True FORCE)
+set(__mcpu_flag_set True FORCE)
+
+# Do not try to check that the compiler works
+set(CMAKE_C_COMPILER_WORKS True)
+set(CMAKE_CXX_COMPILER_WORKS True)
+set(CMAKE_ASM_COMPILER_WORKS True)
+
+set(CMAKE_C_COMPILER_FORCED True)
+set(CMAKE_CXX_COMPILER_FORCED True)
+set(CMAKE_ASM_COMPILER_FORCED True)
+
+# Do not try to compile for the host
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+################## /Ignore this section ##################
+
+set(CMAKE_C_COMPILER armclang)
+set(CMAKE_CXX_COMPILER armclang)
+set(CMAKE_ASM_COMPILER armclang)
+set(CMAKE_AR armar)
+set(CMAKE_LINKER armlinker)
+set(CMAKE_OBJCOPY fromelf)
+set(CMAKE_EXECUTABLE_SUFFIX_C ".axf")
+
+project({% if name %}{{name}}{% else %}workspace{% endif %})
+
+{% for project in projects %}include({{project}}/CMakeLists.txt)
+{% endfor %}

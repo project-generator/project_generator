@@ -41,3 +41,6 @@ class CMakeArmClang(CMake):
 
     def get_template(self):
         return 'cmakelist_armclang.tmpl'
+
+    def get_workspace_template(self):
+        return 'cmakelist_armclang_workspace.tmpl'

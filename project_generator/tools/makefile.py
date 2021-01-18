@@ -18,6 +18,7 @@ import logging
 import ntpath
 import subprocess
 from itertools import chain
+from copy import deepcopy
 
 from os.path import join, normpath,dirname
 from project_generator_definitions.definitions import ProGenDef
@@ -82,7 +83,14 @@ class MakefileTool(Tool, Exporter):
                 project_data['libraries'].append(file.replace("lib",''))
 
     def export_workspace(self):
-        self.logging.debug("Makefiles currently do not support workspaces")
+        vars = { 'projects': [os.path.basename(p['path']) for p in self.workspace['projects']] }
+        generated_projects = deepcopy(self.generated_projects)
+        generated_projects['path'], makefile = \
+            self.gen_file_jinja('makefile_workspace.tmpl', vars, 'Makefile',
+                                os.path.dirname(self.workspace['settings']['path']))
+        generated_projects['files']['makefile'] = [makefile] + \
+            [os.path.basename(p['files']['makefile']) for p in self.workspace['projects']]
+        return self.generated_projects
 
     def get_generated_project_files(self):
         return {'path': self.workspace['path'], 'files': [self.workspace['files']['makefile']]}
