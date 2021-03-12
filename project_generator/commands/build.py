@@ -1,4 +1,5 @@
 # Copyright 2015 0xc0170
+# Copyright (c) 2021 Chris Reed
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,6 +31,7 @@ def run(args):
     any_export_failed = False
     for project_name in combined_projects:
         for project in generator.generate(project_name):
+            project.debug_dump = args.dump_debug_yaml
             clean_failed = False
             if args.clean and project.clean(args.tool) == -1:
                 clean_failed = True # So we don't attempt to generate or build this project.
@@ -52,6 +54,9 @@ def setup(subparser):
                         help='Increase the verbosity of the output (repeat for more verbose output)')
     subparser.add_argument('-q', dest='quietness', action='count', default=0,
                         help='Decrease the verbosity of the output (repeat for less verbose output)')
+    subparser.add_argument(
+        "--dump-debug-yaml", action="store_true",
+                        help="Write processed yaml to a <project>-dump.yaml file for debugging.")
     subparser.add_argument(
         "-f", "--file", help="YAML projects file", default='projects.yaml',
         type=argparse_filestring_type)

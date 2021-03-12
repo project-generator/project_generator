@@ -1,4 +1,5 @@
 # Copyright 2014-2015 0xc0170
+# Copyright (c) 2021 Chris Reed
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,6 +40,7 @@ def _generate_project(project, args):
         logger.info("Generating %s for %s in workspace %s", args.tool, project.name, project.workspace_name)
     else:
         logger.info("Generating %s for %s", args.tool, project.name)
+    project.debug_dump = args.dump_debug_yaml
     if project.generate(args.tool, copied=args.copy, copy=args.copy) == -1:
         export_failed = True
     if args.build:
@@ -94,6 +96,9 @@ def setup(subparser):
                         help='Increase the verbosity of the output (repeat for more verbose output)')
     subparser.add_argument('-q', dest='quietness', action='count', default=0,
                         help='Decrease the verbosity of the output (repeat for more verbose output)')
+    subparser.add_argument(
+        "--dump-debug-yaml", action="store_true",
+                        help="Write processed yaml to a <project>-dump.yaml file for debugging.")
     subparser.add_argument(
         "-f", "--file", help="YAML projects file", default='projects.yaml', type=argparse_filestring_type)
     subparser.add_argument(
