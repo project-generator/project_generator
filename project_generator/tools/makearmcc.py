@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import ntpath
+
 from copy import deepcopy
 import logging
 
@@ -31,6 +34,21 @@ class MakefileArmcc(MakefileTool):
     @staticmethod
     def get_toolchain():
         return 'armcc'
+
+    def _get_libs(self, project_data):
+        project_data['lib_paths'] =[]
+        project_data['libraries'] =[]
+        for lib in project_data['source_files_lib']:
+            head, tail = ntpath.split(lib)
+            file = tail
+            if (os.path.splitext(file)[1] != ".lib"):
+                self.logging.debug("Found %s lib with non-valid extension (!=.lib)" % file)
+                continue
+            else:
+                lib_path = ntpath.join(self.workspace['output_dir']['path'], head)
+                lib_path = ntpath.abspath(lib_path)
+                project_data['lib_paths'].append(lib_path)
+                project_data['libraries'].append(file)
 
     def export_project(self):
         """ Processes misc options specific for ARMCC, and run generator """

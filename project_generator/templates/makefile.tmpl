@@ -59,13 +59,16 @@ LD_SCRIPT = {{linker_file}}
 CC_SYMBOLS = {% for symbol in macros %} -D{{symbol}} {% endfor %}
 ASM_SYMBOLS = {% block ASM_SYMBOLS %}{% endblock %}
 
+{% block LIBS %}
 LIBS = {% for library in libraries %} -l{{library}} {% endfor %}
 {% if standard_libraries %}
 LIBS += -Wl,--start-group  {% for library in standard_libraries %} -l{{library}} {% endfor %} -Wl,--end-group
 {% endif %}
+{% endblock %}
 
+{% block LIB_PATHS %}
 LIB_PATHS = {% for path in lib_paths %} -L{{path}} {% endfor %}
-
+{% endblock %}
 
 # directories
 INC_DIRS = {% for path in include_paths %} {{path}} {% endfor %}
@@ -113,7 +116,7 @@ LD_CPP_FLAGS = {% block LD_CPP_FLAGS %}{% endblock %}
 ARFLAGS = cr
 
 ifeq ($(OS),Windows_NT)
-	RM = rmdir /s /q
+	RM = cmd /c rd /s /q
 else
 	RM = rm -rf
 endif
@@ -307,7 +310,11 @@ $(TARGET_OUT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 # Other Targets
 clean:
 	@echo 'Removing entire out directory'
+ifeq ($(OS),Windows_NT)
+	$(at)-$(RM) $(subst /,\\,$(OBJ_FOLDER))
+else
 	$(at)$(RM) $(OBJ_FOLDER)* $(OBJ_FOLDER)
+endif
 	@echo ' '
 
 help:
