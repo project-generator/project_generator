@@ -146,13 +146,13 @@ class CMake(Tool,Exporter):
                 (self.workspace['files']['cmakelist'], gen))
             return -1
 
-        args = [cmd, "-C", build_path]
+        args = [cmd]
         if generator == 'ninja':
             if 'verbose' in kwargs and kwargs['verbose']:
                 args += ['-v']
             if 'jobs' not in kwargs:
                 args += ['-j', '1']
-        else:
+        elif generator != 'nmake':
             if 'jobs' in kwargs:
                 args += ['-j', str(kwargs['jobs'])]
             if 'verbose' in kwargs and kwargs['verbose']:
@@ -161,7 +161,7 @@ class CMake(Tool,Exporter):
 
         try:
             ret_code = None
-            ret_code = subprocess.call(args)
+            ret_code = subprocess.call(args, cwd=build_path)
         except:
             self.logging.error("Project: %s build error whilst calling make. Is '%s' in your PATH?" %
                 (self.workspace['files']['cmakelist'], cmd))
