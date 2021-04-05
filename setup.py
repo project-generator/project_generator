@@ -21,7 +21,7 @@ def read(fname):
 
 setup(
     name='project_generator',
-    version='0.11.0',
+    version='0.11.1',
     description='Project generators for various embedded tools (IDE). IAR, uVision, Makefile and many more in the roadmap!',
     author='Martin Kojtal',
     author_email='c0170@rocketmail.com',
