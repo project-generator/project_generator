@@ -1,0 +1,19 @@
+*.bat       text eol=crlf
+*.ewd       text eol=crlf
+*.ewp       text eol=crlf
+*.eww       text eol=crlf
+*.in        text
+*.ini       text
+*.json      text
+*.md        text
+*.py        text
+*.rst       text
+*.tmpl      text
+*.txt       text
+*.uvmpw     text eol=crlf
+*.uvoptx    text eol=crlf
+*.uvproj    text
+*.xml       text
+*.yaml      text
+*.yml       text
+.git_archival.txt   export-subst

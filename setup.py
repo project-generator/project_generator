@@ -21,7 +21,6 @@ def read(fname):
 
 setup(
     name='project_generator',
-    version='0.11.1',
     description='Project generators for various embedded tools (IDE). IAR, uVision, Makefile and many more in the roadmap!',
     author='Martin Kojtal',
     author_email='c0170@rocketmail.com',
@@ -35,10 +34,21 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: C",
+        "Programming Language :: C++",
         "Topic :: Software Development"
+        "Topic :: Software Development :: Embedded Systems",
     ],
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
+    use_scm_version={
+        'local_scheme': 'dirty-tag',
+        'write_to': 'project_generator/_version.py'
+    },
+    setup_requires=[
+        'setuptools>=40.0',
+        'setuptools_scm!=1.5.3,!=1.5.4',
+        'setuptools_scm_git_archive',
+        ],
     install_requires=[
         'pyyaml>=5.1,<6.0',
         'Jinja2>2.0<3.0',
