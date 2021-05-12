@@ -24,11 +24,14 @@ help = 'List general progen data as projects, tools or targets'
 
 
 def run(args):
-    if args.file and os.path.exists(args.file):
+    if not args.all:
         generator = Generator(args.file)
         for project in generator.generate():
             if args.section == 'targets':
-                print("%s supports: %s" % (project.name, project.project['target']))
+                try:
+                    print("%s supports: %s" % (project.name, project.project['target']))
+                except KeyError:
+                    print("%s supports: (no targets specified)" % project.name)
             elif args.section == 'projects':
                 print (project.name)
             elif args.section == 'tools':
@@ -36,13 +39,13 @@ def run(args):
                 print("%s supports: %s" % (project.name, ", ".join(tools)))
     else:
         if args.section == 'targets':
-            print("\nProgen supports the following targets:\n")
-            print("\n".join(ProGenTargets().get_targets()))
+            print("Progen supports the following targets:\n")
+            print("\n".join(sorted(ProGenTargets().get_targets())))
         elif args.section == 'tools':
-            print("\nProgen supports the following tools:\n")
-            print("\n".join(ToolsSupported().get_supported()))
+            print("Progen supports the following tools:\n")
+            print("\n".join(sorted(ToolsSupported().get_supported())))
         elif args.section == 'projects':
-            print("\nFile needs to be defined for projects.")
+            print("--all does not apply to projects.")
     return 0
 
 
@@ -51,6 +54,7 @@ def setup(subparser):
                         help='Increase the verbosity of the output (repeat for more verbose output)')
     subparser.add_argument('-q', dest='quietness', action='count', default=0,
                         help='Decrease the verbosity of the output (repeat for more verbose output)')
-    subparser.add_argument("section", choices = ['targets','tools','projects'],
+    subparser.add_argument("section", choices = ['targets','tools','projects'], nargs="?",
                            help="What section you would like listed", default='projects')
-    subparser.add_argument("-f", "--file", help="YAML projects file", type=argparse_filestring_type)
+    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml', type=argparse_filestring_type)
+    subparser.add_argument("-a", "--all", help="List all available options.", action="store_true")
