@@ -182,6 +182,7 @@ class Project:
         self.settings = settings
         self.name = name
         self.workspace_name = workspace_name
+        self.debug_dump = False
         self.project = {}
         self.project['common'] = {}
         self.project['export'] = {} # merged common and tool
@@ -539,14 +540,10 @@ class Project:
                 logger.debug("Copying sources to the output directory")
                 self._copy_sources_to_generated_destination()
             # dump a log file if debug is enabled
-            if logger.isEnabledFor(logging.DEBUG):
-                dump_data = {}
-                dump_data['common'] = self.project['common']
-                dump_data['tool_specific'] = self.project['tool_specific']
-                dump_data['merged'] = self.project['export']
+            if self.debug_dump:
                 log_path = os.path.join(os.getcwd(), "%s-dump.yaml" % self.name)
                 with open(log_path, 'w') as f:
-                    f.write(yaml.dump(dump_data))
+                    f.write(yaml.dump(self.project))
             files = exporter(self.project['export'], self.settings).export_project()
             generated_files[export_tool] = files
         self.generated_files = generated_files
