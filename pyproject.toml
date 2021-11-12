@@ -1,0 +1,13 @@
+[build-system]
+# These are the assumed default build requirements from pip:
+# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
+requires = [
+    "setuptools>=51",
+    "wheel",
+    "setuptools_scm[toml]>=6.0",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "project_generator/_version.py"
+local_scheme = "dirty-tag"

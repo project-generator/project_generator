@@ -66,3 +66,6 @@ test_projects
 
 # Mac files
 .DS_Store
+
+# virtualenvs
+/venv*
