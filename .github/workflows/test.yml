@@ -1,0 +1,37 @@
+name: test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+        - 3.6
+        - 3.7
+        - 3.8
+        - 3.9
+        - "3.10"
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade setuptools pip wheel
+        pip install -e .[test]
+
+    - name: Test build
+      run: |
+        python setup.py sdist bdist_wheel
+
+    - name: Test with pytest
+      run: |
+        pip install -r tests/requirements.txt
+        pytest --junitxml=test-results-${{ matrix.python-version }}.xml --cov=project_generator --cov-report=xml

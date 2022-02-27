@@ -18,7 +18,7 @@ import yaml
 import shutil
 
 from unittest import TestCase
-from nose.tools import *
+import pytest
 
 from project_generator.commands import build
 from .simple_project import project_1_yaml, projects_yaml, project_2_yaml
@@ -85,7 +85,7 @@ class TestBuildCommand(TestCase):
         # CI does not have IAR ARM tool installed should fail , or even a project is not valid
         assert result == -1
 
-    @raises(NotImplementedError)
+    @pytest.mark.xfail(raises=NotImplementedError)
     def test_build_project_coide_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'coide'])
@@ -108,19 +108,19 @@ class TestBuildCommand(TestCase):
 
         assert result == -1
 
-    @raises(NotImplementedError)
+    @pytest.mark.xfail(raises=NotImplementedError)
     def test_build_project_eclipse_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'eclipse_make_gcc_arm'])
         result = build.run(args)
 
-    @raises(NotImplementedError)
+    @pytest.mark.xfail(raises=NotImplementedError)
     def test_build_project_gdb_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'gdb'])
         result = build.run(args)
 
-    @raises(NotImplementedError)
+    @pytest.mark.xfail(raises=NotImplementedError)
     def test_build_project_arm_none_eabi_gdb_tool(self):
         args = self.parser.parse_args(['build','-f','test_workspace/projects.yaml','-p',
             'project_2', '-t', 'arm_none_eabi_gdb'])

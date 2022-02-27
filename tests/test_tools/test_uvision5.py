@@ -16,7 +16,6 @@ import yaml
 import shutil
 
 from unittest import TestCase
-from nose.tools import *
 
 from project_generator.generate import Generator
 from project_generator.project import Project
