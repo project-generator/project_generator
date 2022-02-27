@@ -56,5 +56,5 @@ def setup(subparser):
                         help='Decrease the verbosity of the output (repeat for more verbose output)')
     subparser.add_argument("section", choices = ['targets','tools','projects'], nargs="?",
                            help="What section you would like listed", default='projects')
-    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml', type=argparse_filestring_type)
+    subparser.add_argument("-f", "--file", help="YAML projects file", default='projects.yaml')
     subparser.add_argument("-a", "--all", help="List all available options.", action="store_true")
