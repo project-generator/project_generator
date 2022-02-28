@@ -27,13 +27,6 @@ class TestListCommand(TestCase):
     """test list command"""
 
     def setUp(self):
-        # we produce some files, to check if list projects listing the projects we defined
-        if not os.path.exists('test_workspace'):
-            os.makedirs('test_workspace')
-        # write projects file
-        with open(os.path.join(os.getcwd(), 'test_workspace/projects.yaml'), 'wt') as f:
-            f.write(yaml.dump(projects_yaml, default_flow_style=False))
-
         self.parser = argparse.ArgumentParser()
         subparsers = self.parser.add_subparsers(help='commands')
         self.subparser = subparsers.add_parser('list', help=list_projects.help)
@@ -45,7 +38,7 @@ class TestListCommand(TestCase):
     def test_list_projects(self):
         # For now list projects should not fail, we should add checking stdout if projects match
         list_projects.setup(self.subparser)
-        args = self.parser.parse_args(['list','projects'])
+        args = self.parser.parse_args(['list','projects','--all'])
         result = list_projects.run(args)
 
         assert result == 0
@@ -53,7 +46,7 @@ class TestListCommand(TestCase):
     def test_list_targets(self):
         # For now list projects should not fail, we should add checking stdout if targets match
         list_projects.setup(self.subparser)
-        args = self.parser.parse_args(['list','targets'])
+        args = self.parser.parse_args(['list','targets','--all'])
         result = list_projects.run(args)
 
         assert result == 0
@@ -61,7 +54,7 @@ class TestListCommand(TestCase):
     def test_list_tools(self):
         # For now list projects should not fail, we should add checking stdout if tools match
         list_projects.setup(self.subparser)
-        args = self.parser.parse_args(['list','tools'])
+        args = self.parser.parse_args(['list','tools','--all'])
         result = list_projects.run(args)
 
         assert result == 0
