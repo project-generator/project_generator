@@ -32,6 +32,11 @@ def main():
     # Parse Options
     parser = argparse.ArgumentParser()
 
+    def print_usage(args):
+        parser.print_usage()
+
+    parser.set_defaults(func=print_usage)
+
     parser.add_argument('-v', dest='verbosity', action='count', default=0,
                         help='Increase the verbosity of the output (repeat for more verbose output)')
     parser.add_argument('-q', dest='quietness', action='count', default=0,
