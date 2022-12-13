@@ -354,8 +354,8 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         data['groups'] = OrderedDict(sorted(data['groups'].items(), key=lambda t: t[0]))
 
     def _get_default_templates(self):
-        ewp_dic = xmltodict.parse(open(self.ewp_file).read())
-        ewd_dic = xmltodict.parse(open(self.ewd_file).read())
+        ewp_dic = xmltodict.parse(open(self.ewp_file,'rb').read())
+        ewd_dic = xmltodict.parse(open(self.ewd_file,'rb').read())
         return ewp_dic, ewd_dic
 
     def _export_single_project(self):
@@ -374,18 +374,18 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 # we support .ewp or .ewp.tmpl templates
                 if os.path.splitext(template)[1] == '.ewp' or re.match('.*\.ewp.tmpl$', template):
                     try:
-                        ewp_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                        ewp_dic = xmltodict.parse(open(template,'rb'), dict_constructor=dict)
                         template_ewp = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
-                        ewp_dic = xmltodict.parse(open(self.ewp_file).read())
+                        ewp_dic = xmltodict.parse(open(self.ewp_file,'rb').read())
                 if os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
                     try:
-                        ewd_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                        ewd_dic = xmltodict.parse(open(template,'rb'), dict_constructor=dict)
                         template_ewd = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
-                        ewd_dic = xmltodict.parse(open(self.ewd_file).read())
+                        ewd_dic = xmltodict.parse(open(self.ewd_file,'rb').read())
                 # handle non valid template files or not specified
                 if not template_ewp and template_ewd:
                     ewp_dic, _ = self._get_default_templates()
@@ -401,19 +401,19 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
                 template = join(getcwd(), template)
                 if os.path.splitext(template)[1] == '.ewp' or re.match('.*\.ewp.tmpl$', template):
                     try:
-                        ewp_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                        ewp_dic = xmltodict.parse(open(template,'rb'), dict_constructor=dict)
                         template_ewp = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
-                        ewp_dic = xmltodict.parse(open(self.ewp_file).read())
+                        ewp_dic = xmltodict.parse(open(self.ewp_file,'rb').read())
                 if os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
                     # get ewd template
                     try:
-                        ewd_dic = xmltodict.parse(open(template), dict_constructor=dict)
+                        ewd_dic = xmltodict.parse(open(template,'rb'), dict_constructor=dict)
                         template_ewd = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
-                        ewd_dic = xmltodict.parse(open(self.ewd_file).read())
+                        ewd_dic = xmltodict.parse(open(self.ewd_file,'rb').read())
                 # handle non valid template files or not specified
                 if not template_ewp and template_ewd:
                     ewp_dic, _ = self._get_default_templates()
@@ -507,7 +507,7 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
         return project_path, [ewp, eww, ewd]
 
     def _generate_eww_file(self):
-        eww_dic = xmltodict.parse(open(self.eww_file).read())
+        eww_dic = xmltodict.parse(open(self.eww_file,'rb').read())
         self._eww_set_path_multiple_project(eww_dic)
 
         # generate the file
