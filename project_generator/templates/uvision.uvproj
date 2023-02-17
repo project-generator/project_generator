@@ -7,6 +7,7 @@
 			<TargetName></TargetName>
 			<ToolsetNumber>0x4</ToolsetNumber>
 			<ToolsetName>ARM-ADS</ToolsetName>
+			<uAC6>1</uAC6>
 			<TargetOption>
 				<TargetCommonOption>
 					<Device>LPC1768</Device>
@@ -356,6 +357,8 @@
 						<uSurpInc>0</uSurpInc>
 						<uC99>1</uC99>
 						<useXO>0</useXO>
+						<v6Lang>6</v6Lang>
+						<v6LangP>3</v6LangP>
 						<VariousControls>
 							<MiscControls></MiscControls>
 							<Define></Define>
