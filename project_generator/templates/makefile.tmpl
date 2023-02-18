@@ -293,11 +293,11 @@ $(TARGET_OUT): $(LD_SCRIPT) $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
 
 $(TARGET_HEX): $(TARGET_OUT)
 	@$(call printmessage,convert,Converting, $@)
-	$(at)@$(OBJCOPY) {% block TOHEX %}{% endblock %} $(TARGET_OUT) {% block objcopy_output %}{% endblock %} $(TARGET_HEX)
+	$(at)$(OBJCOPY) {% block TOHEX %}{% endblock %} $(TARGET_OUT) {% block objcopy_output %}{% endblock %} $(TARGET_HEX)
 
 $(TARGET_BIN): $(TARGET_OUT)
 	@$(call printmessage,convert,Converting, $@)
-	$(at)@$(OBJCOPY) {% block TOBIN %}{% endblock %} $(TARGET_OUT) {{ self.objcopy_output() }} $(TARGET_BIN)
+	$(at)$(OBJCOPY) {% block TOBIN %}{% endblock %} $(TARGET_OUT) {{ self.objcopy_output() }} $(TARGET_BIN)
 
 {% else %}
 $(TARGET_OUT): $(C_OBJS) $(CPP_OBJS) $(S_OBJS)
