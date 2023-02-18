@@ -1,0 +1,31 @@
+{% extends "makefile.tmpl" %}
+
+{% block CC %}clang{% endblock %}
+{% block CXX %}clang++{% endblock %}
+{% block AS %}clang{% endblock %}
+{% block LD %}clang{% endblock %}
+{% block AR %}llvm-ar{% endblock %}
+{% block CPP %}clang{% endblock %}
+{% block OBJCOPY %}llvm-objcopy{% endblock %}
+{% block OBJDUMP %}llvm-objdump{% endblock %}
+{% block SIZE %}llvm-size{% endblock %}
+{% block NM %}llvm-nm{% endblock %}
+
+{% block TOHEX %}-O ihex{% endblock %}
+{% block TOBIN %}-O binary{% endblock %}
+{% block objdump_output %}>{% endblock %}
+{% block OBJDUMPFLAGS %}-x --disassemble -S{% endblock %}
+{% block GENASMFLAGS %}-S -w{% endblock %}
+{% block SIZEFLAGS %}--totals{% endblock %}
+{% block nm_output %}>{% endblock %}
+{% block NMFLAGS %}-n -f posix -C{% endblock %}
+
+{% block TARGET_EXE_EXT %}.elf{% endblock %}
+
+{% block COMMON_FLAGS %}-mcpu=$(CPU) -m$(INSTRUCTION_MODE){% endblock %}
+{% block CFLAGS %}$(COMMON_FLAGS) $(C_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD -MP{% endblock %}
+{% block CXXFLAGS %}$(COMMON_FLAGS) $(CXX_FLAGS) $(INC_DIRS_F) $(CC_SYMBOLS) -c -MMD -MP{% endblock %}
+{% block ASFLAGS %}$(COMMON_FLAGS) $(ASM_FLAGS) $(INC_DIRS_F) $(ASM_SYMBOLS) -c{% endblock %}
+{% block LD_OPTIONS %}$(COMMON_FLAGS) -Wl,-Map=$(OBJ_FOLDER)$(TARGET).map,--cref -T$(LD_SCRIPT){% endblock %}
+{% block CPP_FLAGS %}-E -x c -P -MMD{% endblock %}
+{% block ASM_SYMBOLS %}$(CC_SYMBOLS){% endblock %}

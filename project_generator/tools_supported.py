@@ -18,6 +18,7 @@ from .tools.uvision import Uvision, Uvision5, UvisionArmC6, Uvision5ArmC6
 from .tools.coide import Coide
 from .tools.eclipse import EclipseGnuARM
 from .tools.gccarm import MakefileGccArm
+from .tools.llvm_arm import MakefileLlvmArm
 from .tools.makearmcc import MakefileArmcc
 from .tools.makearmclang import MakefileArmclang
 from .tools.sublimetext import SublimeTextMakeGccARM
@@ -37,6 +38,7 @@ class ToolsSupported:
         'iar':           'iar_arm',
         'make_gcc':      'make_gcc_arm',
         'gcc_arm':       'make_gcc_arm',
+        'llvm_arm':      'make_llvm_arm',
         'armcc':         'make_armcc',
         'armclang':      'make_armclang',
         'eclipse':       'eclipse_make_gcc_arm',
@@ -59,6 +61,7 @@ class ToolsSupported:
         'uvision5_armc6':       Uvision5ArmC6,
         'coide':                Coide,
         'make_gcc_arm':         MakefileGccArm,
+        'make_llvm_arm':        MakefileLlvmArm,
         'make_armcc':           MakefileArmcc,
         'make_armclang':        MakefileArmclang,
         'eclipse_make_gcc_arm': EclipseGnuARM,
