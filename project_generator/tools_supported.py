@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from .tools.iar import IAREmbeddedWorkbench
-from .tools.uvision import Uvision, Uvision5
+from .tools.uvision import Uvision, Uvision5, UvisionArmC6, Uvision5ArmC6
 from .tools.coide import Coide
 from .tools.eclipse import EclipseGnuARM
 from .tools.gccarm import MakefileGccArm
@@ -33,6 +33,7 @@ class ToolsSupported:
     # Default tools - aliases
     TOOLS_ALIAS = {
         'uvision':       'uvision4',
+        'uvision_armc6': 'uvision4_armc6',
         'iar':           'iar_arm',
         'make_gcc':      'make_gcc_arm',
         'gcc_arm':       'make_gcc_arm',
@@ -53,10 +54,12 @@ class ToolsSupported:
     TOOLS_DICT = {
         'iar_arm':              IAREmbeddedWorkbench,
         'uvision4':             Uvision,
+        'uvision4_armc6':       UvisionArmC6,
         'uvision5':             Uvision5,
+        'uvision5_armc6':       Uvision5ArmC6,
         'coide':                Coide,
         'make_gcc_arm':         MakefileGccArm,
-        'make_armcc':           MakefileArmcc, 
+        'make_armcc':           MakefileArmcc,
         'make_armclang':        MakefileArmclang,
         'eclipse_make_gcc_arm': EclipseGnuARM,
         'sublime_make_gcc_arm': SublimeTextMakeGccARM,

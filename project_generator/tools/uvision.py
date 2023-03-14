@@ -191,6 +191,9 @@ class Uvision(Tool, Builder, Exporter):
         }
     }
 
+    def use_armclang(self):
+        return False
+
     def __init__(self, workspace, env_settings):
         self.definitions = uVisionDefinitions()
         # workspace or project
@@ -249,7 +252,10 @@ class Uvision(Tool, Builder, Exporter):
         uvproj_dic['Cads']['VariousControls']['IncludePath'] = '; '.join(project_dic['include_paths'])
         uvproj_dic['Cads']['VariousControls']['Define'] = ', '.join(project_dic['macros'])
         if project_dic['macros']:
-            uvproj_dic['Aads']['VariousControls']['MiscControls'] = '--cpreproc --cpreproc_opts=-D' + ',-D'.join(project_dic['macros'])
+            if self.use_armclang():
+                uvproj_dic['Aads']['VariousControls']['MiscControls'] = '-D' + ' -D'.join(project_dic['macros'])
+            else:
+                uvproj_dic['Aads']['VariousControls']['MiscControls'] = '--cpreproc --cpreproc_opts=-D' + ',-D'.join(project_dic['macros'])
 
         for misc_keys in project_dic['misc'].keys():
             # ld-flags dont follow the same as asm/c flags, why?!? Please KEIL fix this
@@ -332,6 +338,8 @@ class Uvision(Tool, Builder, Exporter):
         except KeyError:
             pass
 
+        uvproj_dic['Project']['Targets']['Target']['uAC6'] = "1" if self.use_armclang() else "0"
+
         # overwrite the template if target has defined debugger
         # later progen can overwrite this if debugger is set in project data
         try:
@@ -342,7 +350,7 @@ class Uvision(Tool, Builder, Exporter):
             pass
         # Support new device packs
         if 'PackID' in  mcu_def_dic['TargetOption']:
-            if tool_name != 'uvision5':
+            if 'uvision5' in tool_name:
                 # using software packs require v5
                 logger.info("The target might not be supported in %s, requires uvision5" % tool_name)
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['TargetCommonOption']['PackID'] = mcu_def_dic['TargetOption']['PackID'][0]
@@ -441,7 +449,7 @@ class Uvision(Tool, Builder, Exporter):
             uvproj_dic['Project']['Targets']['Target']['TargetOption']['Utilities'], expanded_dic)
 
         # set target only if defined, otherwise use from template/default one
-        if tool_name == 'uvision5':
+        if 'uvision5' in tool_name:
             extension = 'uvprojx'
             uvproj_dic['Project']['SchemaVersion'] = '2.1'
         else:
@@ -471,7 +479,7 @@ class Uvision(Tool, Builder, Exporter):
         self._uvoptx_set_debugger(expanded_dic, uvoptx_dic, tool_name)
 
         # set target only if defined, otherwise use from template/default one
-        if tool_name == 'uvision5':
+        if 'uvision5' in tool_name:
             extension = 'uvoptx'
         else:
             extension = 'uvopt'
@@ -562,3 +570,52 @@ class Uvision5(Uvision):
     def build_project(self, **kwargs):
         # tool_name uvision as uv4 is still used in uv5
         return self._build_project('uvision', 'uvprojx')
+
+
+class UvisionArmC6(Uvision):
+
+    generated_project = {
+        'path': '',
+        'files': {
+            'uvprojx': '',
+            'uvoptx': '',
+        }
+    }
+
+    def use_armclang(self):
+        return True
+
+    def __init__(self, workspace, env_settings):
+        super(UvisionArmC6, self).__init__(workspace, env_settings)
+
+    @staticmethod
+    def get_toolnames():
+        return ['uvision_armc6']
+
+    @staticmethod
+    def get_toolchain():
+        return 'uvision_armc6'
+
+class Uvision5ArmC6(Uvision5):
+
+    generated_project = {
+        'path': '',
+        'files': {
+            'uvprojx': '',
+            'uvoptx': '',
+        }
+    }
+
+    def use_armclang(self):
+        return True
+
+    def __init__(self, workspace, env_settings):
+        super(Uvision5ArmC6, self).__init__(workspace, env_settings)
+
+    @staticmethod
+    def get_toolnames():
+        return ['uvision5_armc6']
+
+    @staticmethod
+    def get_toolchain():
+        return 'uvision_armc6'
