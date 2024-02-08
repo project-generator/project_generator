@@ -403,7 +403,7 @@ class Uvision(Tool, Builder, Exporter):
             for template in expanded_dic['template']:
                 template = join(getcwd(), template)
                 if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx' or \
-                    re.match('.*\.uvproj.tmpl$', template) or re.match('.*\.uvprojx.tmpl$', template):
+                    re.match(r".*\.uvproj.tmpl$", template) or re.match(r".*\.uvprojx.tmpl$", template):
                     try:
                         uvproj_dic = xmltodict.parse(open(template, encoding="utf8").read())
                     except IOError:
@@ -417,7 +417,7 @@ class Uvision(Tool, Builder, Exporter):
             for template in self.env_settings.templates['uvision']:
                 template = join(getcwd(), template)
                 if os.path.splitext(template)[1] == '.uvproj' or os.path.splitext(template)[1] == '.uvprojx' or \
-                    re.match('.*\.uvproj.tmpl$', template) or re.match('.*\.uvprojx.tmpl$', template):
+                    re.match(r".*\.uvproj.tmpl$", template) or re.match(r".*\.uvprojx.tmpl$", template):
                     try:
                         uvproj_dic = xmltodict.parse(open(template, encoding="utf8").read())
                     except IOError:
