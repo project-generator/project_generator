@@ -17,13 +17,16 @@ from unittest import TestCase
 from project_generator.project import Project, ProjectTemplate
 from project_generator.settings import ProjectSettings
 
-class TestProjectTemplate:
+class TestProjectTemplate(TestCase):
 
-    def setup(self):
+    def setUp(self):
         # set common and tool specific options
         self.project_dic = {}
         self.project_dic['common'] = ProjectTemplate().get_project_template()
         self.project_dic['tool_specific'] = ProjectTemplate().get_project_template()
+
+    def tearDown(self):
+        self.project_dic.clear()
 
     def testDefaultCtor(self):
         assert self.project_dic['common']['name'] == 'Default'
