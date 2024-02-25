@@ -54,11 +54,9 @@ def _scan(section, directory, extensions):
                     #get all the folders along the path
                     dirs = relpath.split(os.path.sep)
                     for i in range(1, len(dirs)+1):
-                        """ add all combinations of them, because we don't know how they will be referenced in program files
-                            Example - there is a .h file in the path Here\is\include\include.h
-                            We want to catch any possible combo, so add Here, Here\is, and Here\is\include
-
-                        """
+                        # add all combinations of them, because we don't know how they will be referenced in program files
+                        # Example - there is a .h file in the path Here\is\include\include.h
+                        # We want to catch any possible combo, so add Here, Here\is, and Here\is\include
                         data_dict.append(os.path.normpath(os.path.sep.join(dirs[:i])))
                 else:
                     data_dict.append(os.path.normpath(os.path.join(relpath, filename)))
