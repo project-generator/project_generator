@@ -372,14 +372,14 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             for template in expanded_dic['template']:
                 template = join(getcwd(), template)
                 # we support .ewp or .ewp.tmpl templates
-                if os.path.splitext(template)[1] == '.ewp' or re.match('.*\.ewp.tmpl$', template):
+                if os.path.splitext(template)[1] == '.ewp' or re.match(r".*\.ewp.tmpl$", template):
                     try:
                         ewp_dic = xmltodict.parse(open(template,'rb'), dict_constructor=dict)
                         template_ewp = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         ewp_dic = xmltodict.parse(open(self.ewp_file,'rb').read())
-                if os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
+                if os.path.splitext(template)[1] == '.ewd' or re.match(r".*\.ewd.tmpl$", template):
                     try:
                         ewd_dic = xmltodict.parse(open(template,'rb'), dict_constructor=dict)
                         template_ewd = True
@@ -399,14 +399,14 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
             # template overrides what is set in the yaml files
             for template in self.env_settings.templates['iar']:
                 template = join(getcwd(), template)
-                if os.path.splitext(template)[1] == '.ewp' or re.match('.*\.ewp.tmpl$', template):
+                if os.path.splitext(template)[1] == '.ewp' or re.match(r".*\.ewp.tmpl$", template):
                     try:
                         ewp_dic = xmltodict.parse(open(template,'rb'), dict_constructor=dict)
                         template_ewp = True
                     except IOError:
                         logger.info("Template file %s not found" % template)
                         ewp_dic = xmltodict.parse(open(self.ewp_file,'rb').read())
-                if os.path.splitext(template)[1] == '.ewd' or re.match('.*\.ewd.tmpl$', template):
+                if os.path.splitext(template)[1] == '.ewd' or re.match(r".*\.ewd.tmpl$", template):
                     # get ewd template
                     try:
                         ewd_dic = xmltodict.parse(open(template,'rb'), dict_constructor=dict)
@@ -518,9 +518,8 @@ class IAREmbeddedWorkbench(Tool, Builder, Exporter, IAREmbeddedWorkbenchProject)
     def _parse_subprocess_output(self, output):
         num_errors = 0
         lines = output.split("\n")
-        error_re = '\s*Total number of errors:\s*(\d+)\s*'
         for line in lines:
-            m = re.match(error_re, line)
+            m = re.match(r"\s*Total number of errors:\s*(\d+)\s*", line)
             if m is not None:
                 num_errors = m.group(1)
         return int(num_errors)

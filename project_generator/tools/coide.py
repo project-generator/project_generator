@@ -148,7 +148,7 @@ class Coide(Tool, Exporter, Builder):
         if expanded_dic['template']:
             for template in expanded_dic['template']:
                 template = join(getcwd(), template)
-                if splitext(template)[1] == '.coproj' or re.match('.*\.coproj.tmpl$', template):
+                if splitext(template)[1] == '.coproj' or re.match(r".*\.coproj.tmpl$", template):
                     try:
                         coproj_dic = xmltodict.parse(open(template))
                     except IOError:
@@ -161,7 +161,7 @@ class Coide(Tool, Exporter, Builder):
             # template overrides what is set in the yaml files
             for template in self.env_settings.templates['coide']:
                 template = join(getcwd(), template)
-                if splitext(template)[1] == '.coproj' or re.match('.*\.coproj.tmpl$', template):
+                if splitext(template)[1] == '.coproj' or re.match(r".*\.coproj.tmpl$", template):
                     try:
                         coproj_dic = xmltodict.parse(open(template))
                     except IOError:
